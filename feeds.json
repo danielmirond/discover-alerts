@@ -1,0 +1,20 @@
+{
+  "feeds": [
+    { "name": "El País", "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada", "category": "generalista" },
+    { "name": "El Mundo", "url": "https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml", "category": "generalista" },
+    { "name": "La Vanguardia", "url": "https://www.lavanguardia.com/rss/home.xml", "category": "generalista" },
+    { "name": "20 Minutos", "url": "https://www.20minutos.es/rss/", "category": "generalista" },
+    { "name": "ABC", "url": "https://www.abc.es/rss/2.0/portada/", "category": "generalista" },
+    { "name": "El Confidencial", "url": "https://rss.elconfidencial.com/espana/", "category": "generalista" },
+
+    { "name": "Marca", "url": "https://e00-marca.uecdn.es/rss/portada.xml", "category": "deportivo" },
+    { "name": "AS", "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/portada", "category": "deportivo" },
+    { "name": "Sport", "url": "https://www.sport.es/es/rss/rss.xml", "category": "deportivo" },
+    { "name": "Mundo Deportivo", "url": "https://www.mundodeportivo.com/rss/home.xml", "category": "deportivo" },
+
+    { "name": "Search Engine Journal", "url": "https://www.searchenginejournal.com/feed/", "category": "tech-marketing" },
+    { "name": "Search Engine Land", "url": "https://searchengineland.com/feed", "category": "tech-marketing" },
+    { "name": "Moz Blog", "url": "https://moz.com/devblog/feed", "category": "tech-marketing" },
+    { "name": "Ahrefs Blog", "url": "https://ahrefs.com/blog/feed/", "category": "tech-marketing" }
+  ]
+}
