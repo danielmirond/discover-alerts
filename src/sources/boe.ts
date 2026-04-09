@@ -7,6 +7,14 @@ function toArray<T>(val: T | T[] | undefined): T[] {
   return Array.isArray(val) ? val : [val];
 }
 
+// url_pdf can be a plain string or an object with a texto field when it has attributes
+function extractUrl(val: any): string {
+  if (!val) return '';
+  if (typeof val === 'string') return val.trim();
+  if (typeof val === 'object') return (val.texto ?? val['#text'] ?? '').toString().trim();
+  return '';
+}
+
 function todayDateStr(): string {
   const now = new Date();
   const y = now.getFullYear();
@@ -31,7 +39,11 @@ function extractItems(data: any): BoeItem[] {
 
       for (const depto of departamentos) {
         const deptoNombre = depto?.['@nombre'] ?? depto?.nombre ?? '';
-        const epigrafes = toArray(depto.epigrafe);
+        // Epigrafes can be direct children or nested under a texto element
+        const epigrafes = [
+          ...toArray(depto.epigrafe),
+          ...toArray(depto.texto?.epigrafe),
+        ];
 
         for (const epigrafe of epigrafes) {
           const epigrafeNombre = epigrafe?.['@nombre'] ?? epigrafe?.nombre ?? '';
@@ -45,8 +57,8 @@ function extractItems(data: any): BoeItem[] {
             items.push({
               identificador,
               titulo,
-              urlPdf: item?.urlPdf ?? item?.url_pdf ?? '',
-              urlHtml: item?.urlHtml ?? item?.url_html ?? '',
+              urlPdf: extractUrl(item?.urlPdf ?? item?.url_pdf),
+              urlHtml: extractUrl(item?.urlHtml ?? item?.url_html),
               seccion: seccionNombre,
               departamento: deptoNombre,
               epigrafe: epigrafeNombre,
@@ -64,8 +76,8 @@ function extractItems(data: any): BoeItem[] {
           items.push({
             identificador,
             titulo,
-            urlPdf: item?.urlPdf ?? item?.url_pdf ?? '',
-            urlHtml: item?.urlHtml ?? item?.url_html ?? '',
+            urlPdf: extractUrl(item?.urlPdf ?? item?.url_pdf),
+            urlHtml: extractUrl(item?.urlHtml ?? item?.url_html),
             seccion: seccionNombre,
             departamento: deptoNombre,
             epigrafe: '',
