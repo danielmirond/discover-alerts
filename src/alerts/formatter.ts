@@ -65,6 +65,44 @@ function formatCategory(a: Extract<Alert, { type: 'category' }>): SlackBlock[] {
   ];
 }
 
+function formatDomain(a: Extract<Alert, { type: 'domain' }>): SlackBlock[] {
+  const emoji = a.subtype === 'new' ? ':globe_with_meridians:' : ':chart_with_upwards_trend:';
+  const label = a.subtype === 'new' ? 'Nuevo dominio' : 'Spike en dominio';
+  const scoreDiff = a.score - a.prevScore;
+  const pubPct = a.prevPublications > 0
+    ? Math.round(((a.publications - a.prevPublications) / a.prevPublications) * 100)
+    : 0;
+
+  return [
+    header(`${emoji} ${label}: ${a.domain}`),
+    fields(
+      `*Score:* ${a.score}${a.prevScore ? ` (+${scoreDiff})` : ''}`,
+      `*Posicion:* #${a.position}${a.prevPosition > 0 ? ` (era #${a.prevPosition})` : ''}`,
+      `*Publicaciones:* ${a.publications}${pubPct > 0 ? ` (+${pubPct}%)` : ''}`,
+    ),
+    context('DiscoverSnoop LiveDomains | ES'),
+  ];
+}
+
+function formatSocial(a: Extract<Alert, { type: 'social' }>): SlackBlock[] {
+  const emoji = a.subtype === 'new' ? ':mega:' : ':chart_with_upwards_trend:';
+  const label = a.subtype === 'new' ? 'Nuevo canal social' : 'Spike en canal social';
+  const scoreDiff = a.score - a.prevScore;
+  const pubPct = a.prevPublications > 0
+    ? Math.round(((a.publications - a.prevPublications) / a.prevPublications) * 100)
+    : 0;
+
+  return [
+    header(`${emoji} ${label}: ${a.channel}`),
+    fields(
+      `*Score:* ${a.score}${a.prevScore ? ` (+${scoreDiff})` : ''}`,
+      `*Posicion:* #${a.position}${a.prevPosition > 0 ? ` (era #${a.prevPosition})` : ''}`,
+      `*Publicaciones:* ${a.publications}${pubPct > 0 ? ` (+${pubPct}%)` : ''}`,
+    ),
+    context('DiscoverSnoop LiveSocial | ES'),
+  ];
+}
+
 function formatHeadline(a: Extract<Alert, { type: 'headline_pattern' }>): SlackBlock[] {
   const titles = a.matchingTitles.map(t => `• ${t}`).join('\n');
   return [
@@ -136,6 +174,8 @@ function formatSingleAlert(alert: Alert): SlackBlock[] {
   switch (alert.type) {
     case 'entity': return formatEntity(alert);
     case 'category': return formatCategory(alert);
+    case 'domain': return formatDomain(alert);
+    case 'social': return formatSocial(alert);
     case 'headline_pattern': return formatHeadline(alert);
     case 'trends_correlation': return formatCorrelation(alert);
     case 'trends_new_topic': return formatNewTrend(alert);

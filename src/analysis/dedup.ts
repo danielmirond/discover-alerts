@@ -8,6 +8,10 @@ function alertKey(alert: Alert): string {
       return `entity:${alert.name}`;
     case 'category':
       return `category:${alert.id}`;
+    case 'domain':
+      return `domain:${alert.domain}`;
+    case 'social':
+      return `social:${alert.channel}`;
     case 'headline_pattern':
       return `headline:${alert.ngram}`;
     case 'trends_correlation':

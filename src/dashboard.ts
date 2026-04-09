@@ -17,6 +17,14 @@ async function loadFeeds(): Promise<MediaFeed[]> {
 }
 
 async function handleApi(path: string): Promise<object> {
+  if (path === '/api/health') {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+    };
+  }
   if (path === '/api/trends') {
     const trends = await fetchGoogleTrends();
     return { trends };

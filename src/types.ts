@@ -129,6 +129,13 @@ export interface DomainSnapshot {
   lastUpdated: string;
 }
 
+export interface SocialSnapshot {
+  score: number;
+  position: number;
+  publications: number;
+  lastUpdated: string;
+}
+
 export interface TrendSnapshot {
   approxTraffic: number;
   firstSeen: string;
@@ -140,13 +147,20 @@ export interface AppState {
   categories: Record<number, CategorySnapshot>;
   pages: Record<string, PageSnapshot>;
   domains: Record<string, DomainSnapshot>;
+  social: Record<string, SocialSnapshot>;
   trends: Record<string, TrendSnapshot>;
   headlinePatterns: Record<string, number>;
   dedupHashes: Record<string, number>;
   mediaArticles: Record<string, { feedName: string; firstSeen: string }>;
+  alertHistory: AlertHistoryEntry[];
   lastPollDiscover: string | null;
   lastPollTrends: string | null;
   lastPollMedia: string | null;
+}
+
+export interface AlertHistoryEntry {
+  alert: Alert;
+  timestamp: string;
 }
 
 // Alert types
@@ -168,6 +182,30 @@ export interface CategoryAlert {
   subtype: 'spike';
   id: number;
   name: string;
+  score: number;
+  prevScore: number;
+  position: number;
+  prevPosition: number;
+  publications: number;
+  prevPublications: number;
+}
+
+export interface DomainAlert {
+  type: 'domain';
+  subtype: 'new' | 'spike';
+  domain: string;
+  score: number;
+  prevScore: number;
+  position: number;
+  prevPosition: number;
+  publications: number;
+  prevPublications: number;
+}
+
+export interface SocialAlert {
+  type: 'social';
+  subtype: 'new' | 'spike';
+  channel: string;
   score: number;
   prevScore: number;
   position: number;
@@ -203,6 +241,8 @@ export interface TrendsNewTopicAlert {
 export type Alert =
   | EntityAlert
   | CategoryAlert
+  | DomainAlert
+  | SocialAlert
   | HeadlinePatternAlert
   | TrendsCorrelationAlert
   | TrendsNewTopicAlert

@@ -1,4 +1,6 @@
 import { config } from '../config.js';
+import { withRetry } from '../utils/retry.js';
+import { validateApiResponse } from '../utils/validate.js';
 import type {
   ApiResponse,
   DiscoverEntity,
@@ -11,7 +13,7 @@ import type {
 
 const { baseUrl, token, country, hours, lines } = config.discoversnoop;
 
-async function fetchEndpoint<T>(
+async function fetchEndpointOnce<T>(
   path: string,
   params: Record<string, string | number> = {},
 ): Promise<T[]> {
@@ -29,12 +31,20 @@ async function fetchEndpoint<T>(
     throw new Error(`DiscoverSnoop ${path} ${res.status}: ${text}`);
   }
 
-  const json = (await res.json()) as ApiResponse<T>;
+  const raw = await res.json();
+  const json = validateApiResponse<T>(raw, `DiscoverSnoop ${path}`);
   if (!json.status) {
     throw new Error(`DiscoverSnoop ${path} returned status=false: ${json.transaction_state}`);
   }
 
   return json.data ?? [];
+}
+
+function fetchEndpoint<T>(
+  path: string,
+  params: Record<string, string | number> = {},
+): Promise<T[]> {
+  return withRetry(() => fetchEndpointOnce<T>(path, params), `DiscoverSnoop ${path}`);
 }
 
 export function fetchLiveEntities(): Promise<DiscoverEntity[]> {

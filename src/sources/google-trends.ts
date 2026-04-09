@@ -1,4 +1,5 @@
 import { XMLParser } from 'fast-xml-parser';
+import { withRetry } from '../utils/retry.js';
 import type { TrendsItem, TrendsNewsItem } from '../types.js';
 
 const RSS_URL = 'https://trends.google.com/trending/rss?geo=ES';
@@ -19,7 +20,7 @@ function toArray<T>(val: T | T[] | undefined): T[] {
   return Array.isArray(val) ? val : [val];
 }
 
-export async function fetchGoogleTrends(): Promise<TrendsItem[]> {
+async function fetchGoogleTrendsOnce(): Promise<TrendsItem[]> {
   const res = await fetch(RSS_URL);
   if (!res.ok) {
     throw new Error(`Google Trends RSS ${res.status}: ${await res.text().catch(() => '')}`);
@@ -48,4 +49,8 @@ export async function fetchGoogleTrends(): Promise<TrendsItem[]> {
       newsItems,
     };
   });
+}
+
+export function fetchGoogleTrends(): Promise<TrendsItem[]> {
+  return withRetry(fetchGoogleTrendsOnce, 'Google Trends RSS');
 }

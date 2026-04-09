@@ -1,7 +1,8 @@
 import { Redis } from '@upstash/redis';
-import type { AppState } from '../types.js';
+import type { AppState, Alert } from '../types.js';
 
 const STATE_KEY = 'discover-alerts:state';
+const MAX_ALERT_HISTORY = 500;
 
 function emptyState(): AppState {
   return {
@@ -9,10 +10,12 @@ function emptyState(): AppState {
     categories: {},
     pages: {},
     domains: {},
+    social: {},
     trends: {},
     headlinePatterns: {},
     dedupHashes: {},
     mediaArticles: {},
+    alertHistory: [],
     lastPollDiscover: null,
     lastPollTrends: null,
     lastPollMedia: null,
@@ -57,4 +60,14 @@ export function getState(): AppState {
 
 export function updateState(partial: Partial<AppState>): void {
   Object.assign(state, partial);
+}
+
+export function persistAlerts(alerts: Alert[]): void {
+  const now = new Date().toISOString();
+  const entries = alerts.map(alert => ({ alert, timestamp: now }));
+  state.alertHistory = [...entries, ...state.alertHistory].slice(0, MAX_ALERT_HISTORY);
+}
+
+export function getAlertHistory(): AppState['alertHistory'] {
+  return state.alertHistory;
 }

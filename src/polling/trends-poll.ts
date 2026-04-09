@@ -3,7 +3,7 @@ import { detectNewTrends, detectTrendsCorrelations } from '../analysis/trends-co
 import { dedup } from '../analysis/dedup.js';
 import { formatAlerts } from '../alerts/formatter.js';
 import { sendBatch } from '../alerts/slack.js';
-import { getState, updateState, saveState } from '../state/store.js';
+import { getState, updateState, saveState, persistAlerts } from '../state/store.js';
 import type { Alert } from '../types.js';
 
 export async function runTrendsPoll(): Promise<void> {
@@ -56,10 +56,11 @@ export async function runTrendsPoll(): Promise<void> {
     alerts.push(...detectTrendsCorrelations(trends, cachedEntities, cachedPages));
   }
 
-  // Dedup and send
+  // Dedup, persist and send
   const filtered = dedup(alerts);
   if (filtered.length > 0) {
     console.log(`[trends] Sending ${filtered.length} alerts`);
+    persistAlerts(filtered);
     const messages = formatAlerts(filtered);
     await sendBatch(messages);
   } else {

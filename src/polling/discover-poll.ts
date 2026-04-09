@@ -7,12 +7,14 @@ import {
 } from '../sources/discoversnoop.js';
 import { detectEntityAlerts } from '../analysis/entity-detector.js';
 import { detectCategoryAlerts } from '../analysis/category-detector.js';
+import { detectDomainAlerts } from '../analysis/domain-detector.js';
+import { detectSocialAlerts } from '../analysis/social-detector.js';
 import { detectHeadlinePatterns } from '../analysis/headline-patterns.js';
 import { detectTrendsCorrelations } from '../analysis/trends-correlator.js';
 import { dedup } from '../analysis/dedup.js';
 import { formatAlerts } from '../alerts/formatter.js';
 import { sendBatch } from '../alerts/slack.js';
-import { getState, updateState, saveState } from '../state/store.js';
+import { getState, updateState, saveState, persistAlerts } from '../state/store.js';
 import type { Alert } from '../types.js';
 
 export async function runDiscoverPoll(): Promise<void> {
@@ -44,6 +46,8 @@ export async function runDiscoverPoll(): Promise<void> {
   const alerts: Alert[] = [];
   alerts.push(...detectEntityAlerts(ent));
   alerts.push(...detectCategoryAlerts(cat));
+  alerts.push(...detectDomainAlerts(dom));
+  alerts.push(...detectSocialAlerts(soc));
   alerts.push(...detectHeadlinePatterns(pag));
 
   // Cross-reference with cached trends data
@@ -59,10 +63,11 @@ export async function runDiscoverPoll(): Promise<void> {
     alerts.push(...detectTrendsCorrelations(cachedTrends, ent, pag));
   }
 
-  // Dedup and send
+  // Dedup, persist and send
   const filtered = dedup(alerts);
   if (filtered.length > 0) {
     console.log(`[discover] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
+    persistAlerts(filtered);
     const messages = formatAlerts(filtered);
     await sendBatch(messages);
   } else {

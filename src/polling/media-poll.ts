@@ -4,26 +4,21 @@ import { detectMediaDiscoverCorrelations } from '../analysis/media-correlator.js
 import { dedup } from '../analysis/dedup.js';
 import { formatAlerts } from '../alerts/formatter.js';
 import { sendBatch } from '../alerts/slack.js';
-import { getState, updateState, saveState } from '../state/store.js';
+import { getState, updateState, saveState, persistAlerts } from '../state/store.js';
 import type { Alert } from '../types.js';
-
-let feedsLoaded = false;
-let feeds: Awaited<ReturnType<typeof loadFeeds>> = [];
 
 export async function runMediaPoll(): Promise<void> {
   console.log('[media] Starting poll...');
 
-  // Load feeds config
-  if (!feedsLoaded) {
-    try {
-      const feedsPath = join(process.cwd(), 'feeds.json');
-      feeds = await loadFeeds(feedsPath);
-      feedsLoaded = true;
-      console.log(`[media] Loaded ${feeds.length} feeds`);
-    } catch (err) {
-      console.error('[media] Failed to load feeds.json:', err);
-      return;
-    }
+  // Reload feeds config on every poll to pick up changes
+  let feeds: Awaited<ReturnType<typeof loadFeeds>>;
+  try {
+    const feedsPath = join(process.cwd(), 'feeds.json');
+    feeds = await loadFeeds(feedsPath);
+    console.log(`[media] Loaded ${feeds.length} feeds`);
+  } catch (err) {
+    console.error('[media] Failed to load feeds.json:', err);
+    return;
   }
 
   const articles = await fetchAllFeeds(feeds);
@@ -75,6 +70,7 @@ export async function runMediaPoll(): Promise<void> {
   const filtered = dedup(alerts);
   if (filtered.length > 0) {
     console.log(`[media] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
+    persistAlerts(filtered);
     const messages = formatAlerts(filtered);
     await sendBatch(messages);
   } else {

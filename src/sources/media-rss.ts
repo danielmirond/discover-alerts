@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { XMLParser } from 'fast-xml-parser';
+import { withRetry } from '../utils/retry.js';
 import type { MediaFeed, MediaArticle } from '../types.js';
 
 const parser = new XMLParser({
@@ -61,7 +62,7 @@ export async function fetchFeed(feed: MediaFeed): Promise<MediaArticle[]> {
 
 export async function fetchAllFeeds(feeds: MediaFeed[]): Promise<MediaArticle[]> {
   const results = await Promise.allSettled(
-    feeds.map(feed => fetchFeed(feed)),
+    feeds.map(feed => withRetry(() => fetchFeed(feed), `RSS ${feed.name}`, { maxAttempts: 2 })),
   );
 
   const articles: MediaArticle[] = [];
