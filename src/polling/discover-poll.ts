@@ -15,10 +15,11 @@ import { dedup } from '../analysis/dedup.js';
 import { formatAlerts } from '../alerts/formatter.js';
 import { sendBatch } from '../alerts/slack.js';
 import { getState, updateState, saveState, persistAlerts } from '../state/store.js';
+import { logger } from '../utils/logger.js';
 import type { Alert } from '../types.js';
 
 export async function runDiscoverPoll(): Promise<void> {
-  console.log('[discover] Starting poll...');
+  logger.info('[discover] Starting poll...');
 
   const [entities, categories, pages, domains, social] = await Promise.allSettled([
     fetchLiveEntities(),
@@ -34,13 +35,13 @@ export async function runDiscoverPoll(): Promise<void> {
   const dom = domains.status === 'fulfilled' ? domains.value : [];
   const soc = social.status === 'fulfilled' ? social.value : [];
 
-  if (entities.status === 'rejected') console.error('[discover] entities error:', entities.reason);
-  if (categories.status === 'rejected') console.error('[discover] categories error:', categories.reason);
-  if (pages.status === 'rejected') console.error('[discover] pages error:', pages.reason);
-  if (domains.status === 'rejected') console.error('[discover] domains error:', domains.reason);
-  if (social.status === 'rejected') console.error('[discover] social error:', social.reason);
+  if (entities.status === 'rejected') logger.error('[discover] entities error', { error: String(entities.reason) });
+  if (categories.status === 'rejected') logger.error('[discover] categories error', { error: String(categories.reason) });
+  if (pages.status === 'rejected') logger.error('[discover] pages error', { error: String(pages.reason) });
+  if (domains.status === 'rejected') logger.error('[discover] domains error', { error: String(domains.reason) });
+  if (social.status === 'rejected') logger.error('[discover] social error', { error: String(social.reason) });
 
-  console.log(`[discover] Fetched: ${ent.length} entities, ${cat.length} categories, ${pag.length} pages, ${dom.length} domains, ${soc.length} social`);
+  logger.info('[discover] Fetched data', { entities: ent.length, categories: cat.length, pages: pag.length, domains: dom.length, social: soc.length });
 
   // Run detectors
   const alerts: Alert[] = [];
@@ -66,15 +67,15 @@ export async function runDiscoverPoll(): Promise<void> {
   // Dedup, persist and send
   const filtered = dedup(alerts);
   if (filtered.length > 0) {
-    console.log(`[discover] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
+    logger.info('[discover] Sending alerts', { count: filtered.length, beforeDedup: alerts.length });
     persistAlerts(filtered);
     const messages = formatAlerts(filtered);
     await sendBatch(messages);
   } else {
-    console.log(`[discover] No new alerts (${alerts.length} suppressed by dedup)`);
+    logger.info('[discover] No new alerts', { suppressed: alerts.length });
   }
 
   updateState({ lastPollDiscover: new Date().toISOString() });
   await saveState();
-  console.log('[discover] Poll complete');
+  logger.info('[discover] Poll complete');
 }

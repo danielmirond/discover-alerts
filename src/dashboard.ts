@@ -315,6 +315,14 @@ const HTML = `<!DOCTYPE html>
             <span class="config-value">3 repeticiones</span>
           </div>
           <div class="config-item">
+            <span class="config-label">Threshold Dominio</span>
+            <span class="config-value">+20 score / +50% pubs</span>
+          </div>
+          <div class="config-item">
+            <span class="config-label">Threshold Canal Social</span>
+            <span class="config-value">+20 score / +50% pubs</span>
+          </div>
+          <div class="config-item">
             <span class="config-label">Correlacion Min</span>
             <span class="config-value">60% similitud</span>
           </div>
@@ -357,7 +365,7 @@ const HTML = `<!DOCTYPE html>
       <div class="card full-width">
         <div class="card-header">
           <h2>🔔 Tipos de Alerta (ejemplo)</h2>
-          <span class="badge badge-purple">6 tipos</span>
+          <span class="badge badge-purple">8 tipos</span>
         </div>
         <div class="card-body" id="alerts-list">
           <div class="alert-item alert-entity">
@@ -374,6 +382,16 @@ const HTML = `<!DOCTYPE html>
             <div class="alert-type" style="color: #60a5fa;">📊 Spike en categoria</div>
             <div class="alert-title">Deportes</div>
             <div class="alert-detail">Score +22 (de 65 a 87) | Publicaciones: 48 (+60%) | Posicion: #1 (era #4)</div>
+          </div>
+          <div class="alert-item alert-entity">
+            <div class="alert-type" style="color: #4ade80;">🌐 Nuevo dominio</div>
+            <div class="alert-title">marca.com</div>
+            <div class="alert-detail">Score: 65 | Posicion: #2 | Publicaciones: 32</div>
+          </div>
+          <div class="alert-item alert-category">
+            <div class="alert-type" style="color: #60a5fa;">📢 Spike en canal social</div>
+            <div class="alert-title">twitter</div>
+            <div class="alert-detail">Score: 80 (+40) | Posicion: #1 (era #5) | Publicaciones: 45 (+80%)</div>
           </div>
           <div class="alert-item alert-headline">
             <div class="alert-type" style="color: #fb923c;">📰 Patron de titular</div>

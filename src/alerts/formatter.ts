@@ -211,7 +211,7 @@ export function formatHeartbeat(): { blocks: SlackBlock[] } {
       section(
         `*Hora:* ${now}\n` +
         `*Pais:* ES\n` +
-        `*Monitorizando:* Entidades, Categorias, Patrones de titular, Google Trends, RSS Medios`,
+        `*Monitorizando:* Entidades, Categorias, Dominios, Canales sociales, Patrones de titular, Google Trends, RSS Medios`,
       ),
     ],
   };

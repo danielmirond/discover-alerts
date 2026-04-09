@@ -3,6 +3,7 @@ import { loadState } from './state/store.js';
 import { runDiscoverPoll } from './polling/discover-poll.js';
 import { runTrendsPoll } from './polling/trends-poll.js';
 import { runMediaPoll } from './polling/media-poll.js';
+import { logger } from './utils/logger.js';
 
 const target = process.argv[2]; // 'discover' | 'trends' | 'media' | 'all'
 
@@ -25,14 +26,14 @@ async function main() {
       await runMediaPoll();
       break;
     default:
-      console.error(`Usage: run-poll.ts <discover|trends|media|all>`);
+      logger.error(`Usage: run-poll.ts <discover|trends|media|all>`);
       process.exit(1);
   }
 
-  console.log(`[run-poll] ${target} completed`);
+  logger.info(`[run-poll] ${target} completed`);
 }
 
 main().catch(err => {
-  console.error('[run-poll] Fatal:', err);
+  logger.error('[run-poll] Fatal', { error: err instanceof Error ? err.message : String(err) });
   process.exit(1);
 });

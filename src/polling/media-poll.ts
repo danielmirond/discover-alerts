@@ -5,24 +5,25 @@ import { dedup } from '../analysis/dedup.js';
 import { formatAlerts } from '../alerts/formatter.js';
 import { sendBatch } from '../alerts/slack.js';
 import { getState, updateState, saveState, persistAlerts } from '../state/store.js';
+import { logger } from '../utils/logger.js';
 import type { Alert } from '../types.js';
 
 export async function runMediaPoll(): Promise<void> {
-  console.log('[media] Starting poll...');
+  logger.info('[media] Starting poll...');
 
   // Reload feeds config on every poll to pick up changes
   let feeds: Awaited<ReturnType<typeof loadFeeds>>;
   try {
     const feedsPath = join(process.cwd(), 'feeds.json');
     feeds = await loadFeeds(feedsPath);
-    console.log(`[media] Loaded ${feeds.length} feeds`);
+    logger.info('[media] Loaded feeds', { count: feeds.length });
   } catch (err) {
-    console.error('[media] Failed to load feeds.json:', err);
+    logger.error('[media] Failed to load feeds.json', { error: err instanceof Error ? err.message : String(err) });
     return;
   }
 
   const articles = await fetchAllFeeds(feeds);
-  console.log(`[media] Fetched ${articles.length} articles from ${feeds.length} feeds`);
+  logger.info('[media] Fetched articles', { articles: articles.length, feeds: feeds.length });
 
   // Get cached Discover data for correlation
   const state = getState();
@@ -64,20 +65,20 @@ export async function runMediaPoll(): Promise<void> {
   if (cachedEntities.length > 0 || cachedPages.length > 0) {
     alerts.push(...detectMediaDiscoverCorrelations(articles, cachedEntities, cachedPages));
   } else {
-    console.log('[media] No Discover data cached yet, skipping correlation');
+    logger.info('[media] No Discover data cached yet, skipping correlation');
   }
 
   const filtered = dedup(alerts);
   if (filtered.length > 0) {
-    console.log(`[media] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
+    logger.info('[media] Sending alerts', { count: filtered.length, beforeDedup: alerts.length });
     persistAlerts(filtered);
     const messages = formatAlerts(filtered);
     await sendBatch(messages);
   } else {
-    console.log(`[media] No new alerts (${alerts.length} suppressed by dedup)`);
+    logger.info('[media] No new alerts', { suppressed: alerts.length });
   }
 
   updateState({ lastPollMedia: new Date().toISOString() });
   await saveState();
-  console.log('[media] Poll complete');
+  logger.info('[media] Poll complete');
 }

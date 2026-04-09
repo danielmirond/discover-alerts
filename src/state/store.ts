@@ -1,4 +1,5 @@
 import { Redis } from '@upstash/redis';
+import { logger } from '../utils/logger.js';
 import type { AppState, Alert } from '../types.js';
 
 const STATE_KEY = 'discover-alerts:state';
@@ -39,9 +40,9 @@ export async function loadState(): Promise<void> {
   try {
     const raw = await getRedis().get<AppState>(STATE_KEY);
     state = raw ? { ...emptyState(), ...raw } : emptyState();
-    console.log('[store] State loaded from Redis');
+    logger.info('[store] State loaded from Redis');
   } catch (err) {
-    console.error('[store] Redis load failed, starting fresh:', err);
+    logger.error('[store] Redis load failed, starting fresh', { error: err instanceof Error ? err.message : String(err) });
     state = emptyState();
   }
 }
@@ -50,7 +51,7 @@ export async function saveState(): Promise<void> {
   try {
     await getRedis().set(STATE_KEY, state);
   } catch (err) {
-    console.error('[store] Redis save failed:', err);
+    logger.error('[store] Redis save failed', { error: err instanceof Error ? err.message : String(err) });
   }
 }
 

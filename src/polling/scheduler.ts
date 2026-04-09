@@ -2,19 +2,20 @@ import { config } from '../config.js';
 import { runDiscoverPoll } from './discover-poll.js';
 import { runTrendsPoll } from './trends-poll.js';
 import { runMediaPoll } from './media-poll.js';
+import { logger } from '../utils/logger.js';
 
 function safeRun(name: string, fn: () => Promise<void>): () => void {
   return () => {
-    fn().catch(err => console.error(`[scheduler] ${name} poll failed:`, err));
+    fn().catch(err => logger.error(`[scheduler] ${name} poll failed`, { error: err instanceof Error ? err.message : String(err) }));
   };
 }
 
 export function startPolling(): { stop: () => void } {
-  console.log(
-    `[scheduler] Starting polls: Discover every ${config.polling.discoverIntervalMs / 1000}s, ` +
-    `Trends every ${config.polling.trendsIntervalMs / 1000}s, ` +
-    `Media every ${config.polling.mediaIntervalMs / 1000}s`,
-  );
+  logger.info('[scheduler] Starting polls', {
+    discoverIntervalSec: config.polling.discoverIntervalMs / 1000,
+    trendsIntervalSec: config.polling.trendsIntervalMs / 1000,
+    mediaIntervalSec: config.polling.mediaIntervalMs / 1000,
+  });
 
   // Immediate first polls (staggered)
   const initialDiscover = setTimeout(safeRun('discover', runDiscoverPoll), 1000);
@@ -43,7 +44,7 @@ export function startPolling(): { stop: () => void } {
       clearInterval(discoverInterval);
       clearInterval(trendsInterval);
       clearInterval(mediaInterval);
-      console.log('[scheduler] Polling stopped');
+      logger.info('[scheduler] Polling stopped');
     },
   };
 }

@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { XMLParser } from 'fast-xml-parser';
 import { withRetry } from '../utils/retry.js';
+import { logger } from '../utils/logger.js';
 import type { MediaFeed, MediaArticle } from '../types.js';
 
 const parser = new XMLParser({
@@ -71,7 +72,7 @@ export async function fetchAllFeeds(feeds: MediaFeed[]): Promise<MediaArticle[]>
     if (r.status === 'fulfilled') {
       articles.push(...r.value);
     } else {
-      console.warn(`[media-rss] Failed to fetch ${feeds[i].name}:`, r.reason?.message);
+      logger.warn(`[media-rss] Failed to fetch ${feeds[i].name}`, { error: r.reason?.message });
     }
   }
 

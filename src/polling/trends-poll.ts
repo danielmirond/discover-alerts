@@ -4,13 +4,14 @@ import { dedup } from '../analysis/dedup.js';
 import { formatAlerts } from '../alerts/formatter.js';
 import { sendBatch } from '../alerts/slack.js';
 import { getState, updateState, saveState, persistAlerts } from '../state/store.js';
+import { logger } from '../utils/logger.js';
 import type { Alert } from '../types.js';
 
 export async function runTrendsPoll(): Promise<void> {
-  console.log('[trends] Starting poll...');
+  logger.info('[trends] Starting poll...');
 
   const trends = await fetchGoogleTrends();
-  console.log(`[trends] Fetched ${trends.length} trending topics`);
+  logger.info('[trends] Fetched trending topics', { count: trends.length });
 
   const alerts: Alert[] = [];
 
@@ -59,15 +60,15 @@ export async function runTrendsPoll(): Promise<void> {
   // Dedup, persist and send
   const filtered = dedup(alerts);
   if (filtered.length > 0) {
-    console.log(`[trends] Sending ${filtered.length} alerts`);
+    logger.info('[trends] Sending alerts', { count: filtered.length });
     persistAlerts(filtered);
     const messages = formatAlerts(filtered);
     await sendBatch(messages);
   } else {
-    console.log(`[trends] No new alerts`);
+    logger.info('[trends] No new alerts');
   }
 
   updateState({ lastPollTrends: new Date().toISOString() });
   await saveState();
-  console.log('[trends] Poll complete');
+  logger.info('[trends] Poll complete');
 }

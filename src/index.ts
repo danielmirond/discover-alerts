@@ -2,9 +2,15 @@ import { loadState, saveState } from './state/store.js';
 import { sendToSlack } from './alerts/slack.js';
 import { formatHeartbeat } from './alerts/formatter.js';
 import { startPolling } from './polling/scheduler.js';
+import { logger } from './utils/logger.js';
+import { validateSlackWebhookUrl } from './utils/validate.js';
+import { config } from './config.js';
 
 async function main(): Promise<void> {
-  console.log('Discover Alerts starting...');
+  logger.info('Discover Alerts starting...');
+
+  // Validate config early
+  validateSlackWebhookUrl(config.slack.webhookUrl);
 
   // Load persisted state
   await loadState();
@@ -12,9 +18,9 @@ async function main(): Promise<void> {
   // Send heartbeat to Slack
   try {
     await sendToSlack(formatHeartbeat());
-    console.log('[main] Heartbeat sent to Slack');
+    logger.info('[main] Heartbeat sent to Slack');
   } catch (err) {
-    console.error('[main] Failed to send heartbeat:', err);
+    logger.error('[main] Failed to send heartbeat', { error: err instanceof Error ? err.message : String(err) });
   }
 
   // Start polling loops
@@ -22,10 +28,10 @@ async function main(): Promise<void> {
 
   // Graceful shutdown
   const shutdown = async () => {
-    console.log('\n[main] Shutting down...');
+    logger.info('[main] Shutting down...');
     stop();
     await saveState();
-    console.log('[main] State saved. Goodbye!');
+    logger.info('[main] State saved. Goodbye!');
     process.exit(0);
   };
 
@@ -34,6 +40,6 @@ async function main(): Promise<void> {
 }
 
 main().catch(err => {
-  console.error('[main] Fatal error:', err);
+  logger.error('[main] Fatal error', { error: err instanceof Error ? err.message : String(err) });
   process.exit(1);
 });

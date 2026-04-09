@@ -1,4 +1,5 @@
 import { config } from '../config.js';
+import { logger } from '../utils/logger.js';
 
 const RATE_LIMIT_MS = 1000;
 let lastSent = 0;
@@ -32,7 +33,7 @@ export async function sendBatch(messages: object[]): Promise<void> {
     try {
       await sendToSlack(msg);
     } catch (err) {
-      console.error('[slack] Error sending message:', err);
+      logger.error('[slack] Error sending message', { error: err instanceof Error ? err.message : String(err) });
     }
   }
 }

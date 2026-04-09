@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { runTrendsPoll } from '../../src/polling/trends-poll.js';
 import { loadState } from '../../src/state/store.js';
+import { logger } from '../../src/utils/logger.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -12,7 +13,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await runTrendsPoll();
     res.json({ ok: true, timestamp: new Date().toISOString() });
   } catch (err: any) {
-    console.error('[cron/trends] Error:', err);
+    logger.error('[cron/trends] Error', { error: err.message });
     res.status(500).json({ error: err.message });
   }
 }
