@@ -13,9 +13,11 @@ function emptyState(): AppState {
     headlinePatterns: {},
     dedupHashes: {},
     mediaArticles: {},
+    boeItems: {},
     lastPollDiscover: null,
     lastPollTrends: null,
     lastPollMedia: null,
+    lastPollBoe: null,
   };
 }
 

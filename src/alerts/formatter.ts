@@ -132,6 +132,30 @@ function formatMediaCorrelation(a: Extract<Alert, { type: 'media_discover_correl
   ];
 }
 
+function formatBoeCorrelation(a: Extract<Alert, { type: 'boe_discover_correlation' }>): SlackBlock[] {
+  const parts: string[] = [];
+  const linkText = a.boeUrl
+    ? `<${a.boeUrl}|${a.boeTitle}>`
+    : a.boeTitle;
+  parts.push(`*Publicacion BOE:* ${linkText}`);
+  if (a.boeId) parts.push(`*ID:* ${a.boeId}`);
+  if (a.departamento) parts.push(`*Departamento:* ${a.departamento}`);
+  if (a.seccion) parts.push(`*Seccion:* ${a.seccion}`);
+
+  if (a.matchingEntities.length > 0) {
+    parts.push(`*Entidades Discover:* ${a.matchingEntities.join(', ')}`);
+  }
+  if (a.matchingPageTitles.length > 0) {
+    parts.push(`*Paginas Discover:*\n${a.matchingPageTitles.map(t => `• ${t}`).join('\n')}`);
+  }
+
+  return [
+    header(`:classical_building: BOE <-> Discover`),
+    section(parts.join('\n')),
+    context(`Similitud: ${(a.similarityScore * 100).toFixed(0)}% | BOE + DiscoverSnoop ES`),
+  ];
+}
+
 function formatSingleAlert(alert: Alert): SlackBlock[] {
   switch (alert.type) {
     case 'entity': return formatEntity(alert);
@@ -140,6 +164,7 @@ function formatSingleAlert(alert: Alert): SlackBlock[] {
     case 'trends_correlation': return formatCorrelation(alert);
     case 'trends_new_topic': return formatNewTrend(alert);
     case 'media_discover_correlation': return formatMediaCorrelation(alert);
+    case 'boe_discover_correlation': return formatBoeCorrelation(alert);
   }
 }
 
@@ -171,7 +196,7 @@ export function formatHeartbeat(): { blocks: SlackBlock[] } {
       section(
         `*Hora:* ${now}\n` +
         `*Pais:* ES\n` +
-        `*Monitorizando:* Entidades, Categorias, Patrones de titular, Google Trends, RSS Medios`,
+        `*Monitorizando:* Entidades, Categorias, Patrones de titular, Google Trends, RSS Medios, BOE`,
       ),
     ],
   };

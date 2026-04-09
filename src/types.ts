@@ -144,9 +144,11 @@ export interface AppState {
   headlinePatterns: Record<string, number>;
   dedupHashes: Record<string, number>;
   mediaArticles: Record<string, { feedName: string; firstSeen: string }>;
+  boeItems: Record<string, { firstSeen: string }>;
   lastPollDiscover: string | null;
   lastPollTrends: string | null;
   lastPollMedia: string | null;
+  lastPollBoe: string | null;
 }
 
 // Alert types
@@ -206,7 +208,8 @@ export type Alert =
   | HeadlinePatternAlert
   | TrendsCorrelationAlert
   | TrendsNewTopicAlert
-  | MediaDiscoverCorrelationAlert;
+  | MediaDiscoverCorrelationAlert
+  | BoeDiscoverCorrelationAlert;
 
 // Media RSS types
 export interface MediaFeed {
@@ -230,6 +233,29 @@ export interface MediaDiscoverCorrelationAlert {
   articleLink: string;
   feedName: string;
   feedCategory: string;
+  matchingEntities: string[];
+  matchingPageTitles: string[];
+  similarityScore: number;
+}
+
+// BOE types
+export interface BoeItem {
+  identificador: string;
+  titulo: string;
+  urlPdf: string;
+  urlHtml: string;
+  seccion: string;
+  departamento: string;
+  epigrafe: string;
+}
+
+export interface BoeDiscoverCorrelationAlert {
+  type: 'boe_discover_correlation';
+  boeTitle: string;
+  boeId: string;
+  boeUrl: string;
+  departamento: string;
+  seccion: string;
   matchingEntities: string[];
   matchingPageTitles: string[];
   similarityScore: number;
