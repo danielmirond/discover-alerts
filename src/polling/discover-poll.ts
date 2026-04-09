@@ -13,7 +13,7 @@ import { dedup } from '../analysis/dedup.js';
 import { formatAlerts } from '../alerts/formatter.js';
 import { sendBatch } from '../alerts/slack.js';
 import { getState, updateState, saveState } from '../state/store.js';
-import type { Alert } from '../types.js';
+import type { Alert, PageSnapshot } from '../types.js';
 
 export async function runDiscoverPoll(): Promise<void> {
   console.log('[discover] Starting poll...');
@@ -39,6 +39,21 @@ export async function runDiscoverPoll(): Promise<void> {
   if (social.status === 'rejected') console.error('[discover] social error:', social.reason);
 
   console.log(`[discover] Fetched: ${ent.length} entities, ${cat.length} categories, ${pag.length} pages, ${dom.length} domains, ${soc.length} social`);
+
+  // Cache page snapshots so trends and media pollers can correlate against them
+  const now = new Date().toISOString();
+  const pageSnapshots: Record<string, PageSnapshot> = {};
+  for (const p of pag) {
+    pageSnapshots[p.url] = {
+      title: p.title || p.title_original,
+      score: p.score,
+      position: p.position,
+      lastUpdated: now,
+    };
+  }
+  if (Object.keys(pageSnapshots).length > 0) {
+    updateState({ pages: pageSnapshots });
+  }
 
   // Run detectors
   const alerts: Alert[] = [];
