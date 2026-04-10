@@ -211,22 +211,10 @@ export function detectEntityAlerts(
     };
 
     if (!old) {
-      // New entity
-      if (e.score >= config.thresholds.entityNewMinScore) {
-        alerts.push({
-          type: 'entity',
-          subtype: 'new',
-          name: e.entity,
-          score: e.score,
-          prevScore: 0,
-          scoreDecimal: e.score_decimal,
-          position: e.position,
-          prevPosition: 0,
-          publications: e.publications,
-          firstviewed: next[e.entity].firstSeen,
-          category: entityCategory,
-        });
-      }
+      // New entity: just seed state, do NOT emit an alert.
+      // "new" alerts were too noisy (700+ per poll with lines=1000).
+      // The entity will trigger a spike/flash/ascending alert once it
+      // accumulates enough appearances, which is far more signal.
       continue;
     }
 

@@ -8,6 +8,11 @@ import type { Alert } from '../types.js';
 export async function runTrendsPoll(): Promise<void> {
   console.log('[trends] Starting poll...');
 
+  const isColdStart = getState().lastPollTrends === null;
+  if (isColdStart) {
+    console.log('[trends] Cold start detected — will seed state without sending alerts');
+  }
+
   const trends = await fetchGoogleTrends();
   console.log(`[trends] Fetched ${trends.length} trending topics`);
 
@@ -37,13 +42,17 @@ export async function runTrendsPoll(): Promise<void> {
     alerts.push(...detectTrendsCorrelations(trends, cachedEntities, cachedPages));
   }
 
-  // Dedup, route and send
-  const filtered = dedup(alerts);
-  if (filtered.length > 0) {
-    console.log(`[trends] Sending ${filtered.length} alerts`);
-    await dispatchAlerts(filtered, 'trends');
+  if (isColdStart) {
+    console.log(`[trends] Cold start: generated ${alerts.length} alerts but suppressing them`);
   } else {
-    console.log(`[trends] No new alerts`);
+    // Dedup, route and send
+    const filtered = dedup(alerts);
+    if (filtered.length > 0) {
+      console.log(`[trends] Sending ${filtered.length} alerts`);
+      await dispatchAlerts(filtered, 'trends');
+    } else {
+      console.log(`[trends] No new alerts`);
+    }
   }
 
   updateState({ lastPollTrends: new Date().toISOString() });

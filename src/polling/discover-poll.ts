@@ -37,6 +37,14 @@ async function getCategoryNames(): Promise<Record<number, string>> {
 export async function runDiscoverPoll(): Promise<void> {
   console.log('[discover] Starting poll...');
 
+  // Cold-start detection: if we have no previous discover poll, this is the
+  // first run. Seed state but do NOT dispatch alerts, otherwise we'd flood
+  // Slack with every entity/category being "new" at once.
+  const isColdStart = getState().lastPollDiscover === null;
+  if (isColdStart) {
+    console.log('[discover] Cold start detected — will seed state without sending alerts');
+  }
+
   try {
     console.time('[discover] fetch');
 
@@ -93,17 +101,21 @@ export async function runDiscoverPoll(): Promise<void> {
 
     console.time('[discover] dispatch');
 
-    const filtered = dedup(alerts);
-
-    if (filtered.length > 0) {
-      console.log(`[discover] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
-      try {
-        await dispatchAlerts(filtered, 'discover');
-      } catch (err) {
-        console.error('[discover] dispatch error:', err);
-      }
+    if (isColdStart) {
+      console.log(`[discover] Cold start: generated ${alerts.length} alerts but suppressing them`);
     } else {
-      console.log(`[discover] No new alerts (${alerts.length} suppressed by dedup)`);
+      const filtered = dedup(alerts);
+
+      if (filtered.length > 0) {
+        console.log(`[discover] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
+        try {
+          await dispatchAlerts(filtered, 'discover');
+        } catch (err) {
+          console.error('[discover] dispatch error:', err);
+        }
+      } else {
+        console.log(`[discover] No new alerts (${alerts.length} suppressed by dedup)`);
+      }
     }
 
     console.timeEnd('[discover] dispatch');
