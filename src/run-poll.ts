@@ -1,43 +1,42 @@
-// Standalone script for GitHub Actions: runs one poll cycle and exits
-import { loadState } from './state/store.js';
-import { runDiscoverPoll } from './polling/discover-poll.js';
-import { runTrendsPoll } from './polling/trends-poll.js';
-import { runMediaPoll } from './polling/media-poll.js';
-import { runXPoll } from './polling/x-poll.js';
-
-const target = process.argv[2]; // 'discover' | 'trends' | 'media' | 'x' | 'all'
-
 async function main() {
-  await loadState();
+  try {
+    await loadState();
+  } catch (err) {
+    console.error('[run-poll] loadState error:', err);
+    // seguimos sin estado, no es crítico
+  }
 
-  switch (target) {
-    case 'discover':
-      await runDiscoverPoll();
-      break;
-    case 'trends':
-      await runTrendsPoll();
-      break;
-    case 'media':
-      await runMediaPoll();
-      break;
-    case 'x':
-      await runXPoll();
-      break;
-    case 'all':
-      await runDiscoverPoll();
-      await runTrendsPoll();
-      await runMediaPoll();
-      await runXPoll();
-      break;
-    default:
-      console.error(`Usage: run-poll.ts <discover|trends|media|x|all>`);
-      process.exit(1);
+  try {
+    switch (target) {
+      case 'discover':
+        await runDiscoverPoll();
+        break;
+      case 'trends':
+        await runTrendsPoll();
+        break;
+      case 'media':
+        await runMediaPoll();
+        break;
+      case 'x':
+        await runXPoll();
+        break;
+      case 'all':
+        await runDiscoverPoll();
+        await runTrendsPoll();
+        await runMediaPoll();
+        await runXPoll();
+        break;
+      default:
+        console.error(`Usage: run-poll.ts <discover|trends|media|x|all>`);
+        return;
+    }
+  } catch (err) {
+    console.error('[run-poll] poll error:', err);
   }
 
   console.log(`[run-poll] ${target} completed`);
 }
 
 main().catch(err => {
-  console.error('[run-poll] Fatal:', err);
-  process.exit(1);
+  console.error('[run-poll] Fatal (unexpected):', err);
 });
