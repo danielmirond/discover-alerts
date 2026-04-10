@@ -10,6 +10,7 @@ import { detectEntityAlerts } from '../analysis/entity-detector.js';
 import { detectCategoryAlerts } from '../analysis/category-detector.js';
 import { detectHeadlinePatterns } from '../analysis/headline-patterns.js';
 import { detectTrendsCorrelations } from '../analysis/trends-correlator.js';
+import { detectConcordanceAlerts } from '../analysis/concordance-detector.js';
 import { dedup } from '../analysis/dedup.js';
 import { dispatchAlerts } from '../alerts/dispatch.js';
 import { getState, updateState, saveState } from '../state/store.js';
@@ -64,6 +65,10 @@ export async function runDiscoverPoll(): Promise<void> {
   alerts.push(...detectEntityAlerts(ent, pag, categoryNames));
   alerts.push(...detectCategoryAlerts(cat, categoryNames, pag));
   alerts.push(...detectHeadlinePatterns(pag));
+
+  // Cross-source concordance alerts (after entity detector so categoryMap is fresh)
+  const state2 = getState();
+  alerts.push(...detectConcordanceAlerts(ent, state2.entityCategoryMap));
 
   // Cross-reference with cached trends data
   const state = getState();

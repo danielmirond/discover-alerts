@@ -45,6 +45,24 @@ interface LiveCategory {
   score24hAgo: number | null;
   scoreDelta24h: number | null;
   historyPoints: number;
+  examplePages: Array<{ title: string; url: string; publisher?: string }>;
+}
+
+interface LiveConcordance {
+  entityName: string;
+  subtype: 'discover_trends_x' | 'discover_rss' | 'discover_trends' | 'discover_x';
+  score: number;
+  position: number;
+  category?: string;
+  matchingTrends: Array<{ title: string; approxTraffic: number }>;
+  matchingXTrends: Array<{ topic: string; rank: number }>;
+  matchingArticles: Array<{ title: string; link: string; feedName: string }>;
+}
+
+interface LiveHeadlinePattern {
+  ngram: string;
+  count: number;
+  words: number;
 }
 
 interface LiveViewResponse {
@@ -54,6 +72,8 @@ interface LiveViewResponse {
   lastPollX: string | null;
   entities: LiveEntity[];
   categories: LiveCategory[];
+  concordances: LiveConcordance[];
+  headlinePatterns: LiveHeadlinePattern[];
   totals: {
     entitiesTracked: number;
     categoriesTracked: number;
@@ -180,16 +200,18 @@ export function buildLiveView(): LiveViewResponse {
     return b.score - a.score;
   });
 
-  // Live categories with 24h delta
+  // Live categories with 24h delta + example URLs
   const categories: LiveCategory[] = [];
   for (const [idStr, snap] of Object.entries(state.categories)) {
     const history = snap.history ?? [];
     const oldest = history.length > 0 ? history[0] : null;
     const score24hAgo = oldest?.score ?? null;
     const delta = score24hAgo != null ? snap.score - score24hAgo : null;
+    const id = Number(idStr);
+    const examplePages = (state.categoryExamplePages[id] ?? []).slice(0, 5);
 
     categories.push({
-      id: Number(idStr),
+      id,
       name: snap.name,
       score: snap.score,
       position: snap.position,
@@ -197,11 +219,104 @@ export function buildLiveView(): LiveViewResponse {
       score24hAgo,
       scoreDelta24h: delta,
       historyPoints: history.length,
+      examplePages,
     });
   }
 
   // Sort categories by absolute 24h delta descending
   categories.sort((a, b) => Math.abs(b.scoreDelta24h ?? 0) - Math.abs(a.scoreDelta24h ?? 0));
+
+  // Compute cross-source concordances across all tracked entities
+  const concordances: LiveConcordance[] = [];
+  const entitiesByScore = Object.entries(state.entities)
+    .sort((a, b) => b[1].score - a[1].score)
+    .slice(0, 100);
+
+  for (const [name, snap] of entitiesByScore) {
+    const nameNorm = normalize(name);
+
+    const matchingTrends: LiveConcordance['matchingTrends'] = [];
+    for (const [title, s] of Object.entries(state.trends)) {
+      const tNorm = normalize(title);
+      if (
+        tNorm.includes(nameNorm) ||
+        nameNorm.includes(tNorm) ||
+        diceCoefficient(name, title) >= fuzzy
+      ) {
+        matchingTrends.push({ title, approxTraffic: s.approxTraffic });
+      }
+    }
+
+    const matchingXTrends: LiveConcordance['matchingXTrends'] = [];
+    for (const [topic, s] of Object.entries(state.xTrends)) {
+      const tNorm = normalize(topic.replace(/^#/, ''));
+      if (tNorm.length < 3) continue;
+      if (
+        tNorm.includes(nameNorm) ||
+        nameNorm.includes(tNorm) ||
+        diceCoefficient(name, topic) >= fuzzy
+      ) {
+        matchingXTrends.push({ topic, rank: s.rank });
+      }
+    }
+
+    const matchingArticles: LiveConcordance['matchingArticles'] = [];
+    for (const meta of Object.values(state.mediaArticles)) {
+      if (!meta.title) continue;
+      const titleNorm = normalize(meta.title);
+      if (titleNorm.includes(nameNorm) && nameNorm.length > 3) {
+        matchingArticles.push({
+          title: meta.title,
+          link: meta.link,
+          feedName: meta.feedName,
+        });
+        if (matchingArticles.length >= 5) break;
+      }
+    }
+
+    const hasTrends = matchingTrends.length > 0;
+    const hasX = matchingXTrends.length > 0;
+    const hasRss = matchingArticles.length > 0;
+    const sourceCount = (hasTrends ? 1 : 0) + (hasX ? 1 : 0) + (hasRss ? 1 : 0);
+
+    let subtype: LiveConcordance['subtype'] | null = null;
+    if (hasTrends && hasX) subtype = 'discover_trends_x';
+    else if (hasRss && (hasTrends || hasX)) subtype = 'discover_rss';
+    else if (hasTrends) subtype = 'discover_trends';
+    else if (hasX) subtype = 'discover_x';
+    else if (hasRss) subtype = 'discover_rss';
+
+    if (!subtype) continue;
+    if (sourceCount < 2 && !(hasRss && matchingArticles.length >= 3)) continue;
+
+    concordances.push({
+      entityName: name,
+      subtype,
+      score: snap.score,
+      position: snap.position,
+      category: state.entityCategoryMap[name],
+      matchingTrends: matchingTrends.slice(0, 3),
+      matchingXTrends: matchingXTrends.slice(0, 3),
+      matchingArticles,
+    });
+  }
+
+  // Sort: triple match first, then by score
+  const concRank: Record<LiveConcordance['subtype'], number> = {
+    discover_trends_x: 4, discover_rss: 3, discover_trends: 2, discover_x: 1,
+  };
+  concordances.sort((a, b) => {
+    const r = concRank[b.subtype] - concRank[a.subtype];
+    if (r !== 0) return r;
+    return b.score - a.score;
+  });
+
+  // Headline patterns (3+ words, 3+ occurrences)
+  const headlinePatterns: LiveHeadlinePattern[] = Object.entries(state.headlinePatterns)
+    .map(([ngram, count]) => ({ ngram, count, words: ngram.split(' ').length }))
+    .filter(p => p.words >= 3 && p.count >= 3)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 20);
 
   return {
     lastPollDiscover: state.lastPollDiscover,
@@ -210,6 +325,8 @@ export function buildLiveView(): LiveViewResponse {
     lastPollX: state.lastPollX,
     entities: entities.slice(0, 20),
     categories: categories.slice(0, 15),
+    concordances: concordances.slice(0, 20),
+    headlinePatterns,
     totals: {
       entitiesTracked: Object.keys(state.entities).length,
       categoriesTracked: Object.keys(state.categories).length,

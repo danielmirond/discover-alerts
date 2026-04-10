@@ -44,6 +44,8 @@ function getCategoryForAlert(alert: Alert): string | undefined {
       return alert.category;
     case 'entity_coverage':
       return alert.category;
+    case 'entity_concordance':
+      return alert.category;
     case 'trends_correlation':
     case 'trends_new_topic':
       return undefined; // no category context

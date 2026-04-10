@@ -7,6 +7,7 @@ function emptyState(): AppState {
   return {
     entities: {},
     categories: {},
+    categoryExamplePages: {},
     pages: {},
     domains: {},
     trends: {},

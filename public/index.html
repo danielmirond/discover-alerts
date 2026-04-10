@@ -60,6 +60,8 @@
     .alert-spike { background: rgba(250,204,21,0.08); border-color: #facc15; }
     .alert-flash { background: rgba(239,68,68,0.10); border-color: #ef4444; }
     .alert-day-spike { background: rgba(236,72,153,0.08); border-color: #ec4899; }
+    .alert-concordance { background: rgba(56,189,248,0.08); border-color: #38bdf8; }
+    .alert-triple { background: rgba(239,68,68,0.12); border-color: #f97316; box-shadow: 0 0 0 1px rgba(249,115,22,0.2); }
     .alert-category { background: rgba(96,165,250,0.06); border-color: #60a5fa; }
     .alert-headline { background: rgba(251,146,60,0.06); border-color: #fb923c; }
     .alert-correlation { background: rgba(167,139,250,0.06); border-color: #a78bfa; }
@@ -115,11 +117,31 @@
 
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
+        <h2>&#128279; Concordancias cross-source</h2>
+        <span class="badge badge-purple" id="live-conc-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="live-concordances" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando concordancias...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
         <h2>&#128202; Categorias (spike 24h)</h2>
         <span class="badge badge-blue" id="live-cat-count">Cargando...</span>
       </div>
       <div class="card-body" id="live-categories" style="max-height: none;">
         <div class="loading"><div class="spinner"></div><br>Cargando categorias...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128221; Patrones de titular (3+ palabras)</h2>
+        <span class="badge badge-orange" id="live-hl-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="live-headlines" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando patrones...</div>
       </div>
     </div>
 
@@ -326,6 +348,54 @@
           document.getElementById('live-alerts').innerHTML = html;
         }
 
+        // Concordances
+        var concs = data.concordances || [];
+        document.getElementById('live-conc-count').textContent = concs.length + ' activas';
+        if (concs.length === 0) {
+          document.getElementById('live-concordances').innerHTML = '<div class="loading">Sin concordancias cross-source ahora mismo</div>';
+        } else {
+          var concMap = {
+            discover_trends_x: { cls: 'alert-triple', icon: '&#128165;', label: 'TRIPLE: Discover + Trends + X' },
+            discover_rss: { cls: 'alert-concordance', icon: '&#128225;', label: 'Discover + Medios' },
+            discover_trends: { cls: 'alert-concordance', icon: '&#128279;', label: 'Discover + Google Trends' },
+            discover_x: { cls: 'alert-concordance', icon: '&#128038;', label: 'Discover + X/Twitter' }
+          };
+          var concHtml = concs.map(function(c) {
+            var m = concMap[c.subtype] || concMap.discover_rss;
+            var enrich = '<div class="alert-enrich">';
+            if (c.matchingTrends.length > 0) {
+              enrich += '<div class="alert-enrich-title">&#128279; Google Trends</div><ul>';
+              c.matchingTrends.forEach(function(t) {
+                enrich += '<li>&bull; <strong>' + escapeHtml(t.title) + '</strong>' + (t.approxTraffic > 0 ? ' &mdash; ' + t.approxTraffic.toLocaleString() + '+' : '') + '</li>';
+              });
+              enrich += '</ul>';
+            }
+            if (c.matchingXTrends.length > 0) {
+              enrich += '<div class="alert-enrich-title" style="margin-top:6px">&#128038; X/Twitter</div><ul>';
+              c.matchingXTrends.forEach(function(t) {
+                enrich += '<li>&bull; <strong>' + escapeHtml(t.topic) + '</strong> &mdash; #' + t.rank + '</li>';
+              });
+              enrich += '</ul>';
+            }
+            if (c.matchingArticles.length > 0) {
+              enrich += '<div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios</div><ul>';
+              c.matchingArticles.forEach(function(a) {
+                enrich += '<li>&bull; <a href="' + escapeHtml(a.link) + '" target="_blank">' + escapeHtml(a.title) + '</a> <em>(' + escapeHtml(a.feedName) + ')</em></li>';
+              });
+              enrich += '</ul>';
+            }
+            enrich += '</div>';
+            var cat = c.category ? ' &mdash; ' + escapeHtml(c.category) : '';
+            return '<div class="alert-item ' + m.cls + '">' +
+              '<div class="alert-type" style="color:#38bdf8">' + m.icon + ' ' + m.label + cat + '</div>' +
+              '<div class="alert-title">' + escapeHtml(c.entityName) + '</div>' +
+              '<div class="alert-detail">Score: ' + c.score + ' | Posicion: #' + c.position + '</div>' +
+              enrich +
+            '</div>';
+          }).join('');
+          document.getElementById('live-concordances').innerHTML = concHtml;
+        }
+
         // Categories
         var cats = data.categories || [];
         document.getElementById('live-cat-count').textContent = cats.length + ' tracked';
@@ -337,12 +407,37 @@
               (c.scoreDelta24h > 0 ? '+' : '') + c.scoreDelta24h + ' en 24h (de ' + c.score24hAgo + ' a ' + c.score + ')';
             var cls = c.scoreDelta24h != null && c.scoreDelta24h >= 30 ? 'alert-day-spike' :
                       c.scoreDelta24h != null && c.scoreDelta24h >= 15 ? 'alert-category' : 'alert-entity';
+            var examples = (c.examplePages || []).slice(0, 5);
+            var examplesHtml = '';
+            if (examples.length > 0) {
+              examplesHtml = '<div class="alert-enrich"><div class="alert-enrich-title">&#128240; Ejemplos (' + examples.length + ')</div><ul>';
+              examples.forEach(function(p) {
+                examplesHtml += '<li>&bull; <a href="' + escapeHtml(p.url) + '" target="_blank">' + escapeHtml(p.title) + '</a>' + (p.publisher ? ' <em>(' + escapeHtml(p.publisher) + ')</em>' : '') + '</li>';
+              });
+              examplesHtml += '</ul></div>';
+            }
             return '<div class="alert-item ' + cls + '">' +
               '<div class="alert-title">' + escapeHtml(c.name) + ' <span style="color:#666;font-weight:400">(#' + c.position + ')</span></div>' +
               '<div class="alert-detail">' + deltaText + ' | Publicaciones: ' + c.publications + ' | Muestras: ' + c.historyPoints + '/24h</div>' +
+              examplesHtml +
             '</div>';
           }).join('');
           document.getElementById('live-categories').innerHTML = catHtml;
+        }
+
+        // Headline patterns
+        var hls = data.headlinePatterns || [];
+        document.getElementById('live-hl-count').textContent = hls.length + ' patrones';
+        if (hls.length === 0) {
+          document.getElementById('live-headlines').innerHTML = '<div class="loading">Sin patrones detectados aun (necesita 3+ repeticiones de 3+ palabras)</div>';
+        } else {
+          var hlHtml = hls.map(function(h) {
+            return '<div class="alert-item alert-headline">' +
+              '<div class="alert-title">"' + escapeHtml(h.ngram) + '"</div>' +
+              '<div class="alert-detail">Repetido ' + h.count + ' veces | ' + h.words + ' palabras</div>' +
+            '</div>';
+          }).join('');
+          document.getElementById('live-headlines').innerHTML = hlHtml;
         }
       } catch(e) {
         document.getElementById('live-alerts').innerHTML = '<div class="loading">Error cargando alertas: ' + escapeHtml(e.message) + '</div>';

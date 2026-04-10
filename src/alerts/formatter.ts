@@ -178,6 +178,50 @@ function formatNewTrend(a: Extract<Alert, { type: 'trends_new_topic' }>): SlackB
   ];
 }
 
+function formatConcordance(a: Extract<Alert, { type: 'entity_concordance' }>): SlackBlock[] {
+  const labelMap: Record<typeof a.subtype, { icon: string; label: string }> = {
+    discover_trends_x: { icon: ':boom:', label: 'TRIPLE MATCH: Discover + Trends + X' },
+    discover_rss:      { icon: ':satellite:', label: 'Discover + Medios RSS' },
+    discover_trends:   { icon: ':link:', label: 'Discover + Google Trends' },
+    discover_x:        { icon: ':bird:', label: 'Discover + X/Twitter' },
+  };
+  const { icon, label } = labelMap[a.subtype];
+
+  const blocks: SlackBlock[] = [
+    header(`${icon} Concordancia: ${a.entityName}`),
+    fields(
+      `*Tipo:* ${label}`,
+      `*Score:* ${a.score}`,
+      `*Posicion:* #${a.position}`,
+      `*Publicaciones:* ${a.publications}`,
+    ),
+  ];
+
+  if (a.matchingTrends.length > 0) {
+    const lines = a.matchingTrends
+      .map(t => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
+      .join('\n');
+    blocks.push(section(`:link: *Google Trends:*\n${lines}`));
+  }
+
+  if (a.matchingXTrends.length > 0) {
+    const lines = a.matchingXTrends
+      .map(t => `• <${t.url}|${t.topic}> — #${t.rank} en X`)
+      .join('\n');
+    blocks.push(section(`:bird: *X/Twitter:*\n${lines}`));
+  }
+
+  if (a.matchingArticles.length > 0) {
+    const lines = a.matchingArticles
+      .map(m => `• <${m.link}|${m.title}> _(${m.feedName})_`)
+      .join('\n');
+    blocks.push(section(`:newspaper: *Medios:*\n${lines}`));
+  }
+
+  blocks.push(context(`Cross-source concordance | DiscoverSnoop ES`));
+  return blocks;
+}
+
 function formatEntityCoverage(a: Extract<Alert, { type: 'entity_coverage' }>): SlackBlock[] {
   const outletList = a.mediaOutlets.join(' • ');
   const articleLines = a.articles
@@ -204,6 +248,7 @@ function formatSingleAlert(alert: Alert): SlackBlock[] {
     case 'trends_correlation': return formatCorrelation(alert);
     case 'trends_new_topic': return formatNewTrend(alert);
     case 'entity_coverage': return formatEntityCoverage(alert);
+    case 'entity_concordance': return formatConcordance(alert);
   }
 }
 

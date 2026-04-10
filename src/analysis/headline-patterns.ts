@@ -58,10 +58,12 @@ export function detectHeadlinePatterns(pages: DiscoverPage[]): HeadlinePatternAl
     if (!title) continue;
 
     const words = normalize(title);
-    const bigrams = generateNgrams(words, 2);
+    // Only 3+ word n-grams: trigrams, 4-grams, 5-grams
     const trigrams = generateNgrams(words, 3);
+    const fourgrams = generateNgrams(words, 4);
+    const fivegrams = generateNgrams(words, 5);
 
-    for (const ngram of [...bigrams, ...trigrams]) {
+    for (const ngram of [...trigrams, ...fourgrams, ...fivegrams]) {
       let entry = ngramData.get(ngram);
       if (!entry) {
         entry = { count: 0, titles: new Set() };

@@ -68,6 +68,7 @@ export function detectCategoryAlerts(
   const now = new Date().toISOString();
   const nowMs = Date.now();
   const next: Record<number, CategorySnapshot> = {};
+  const nextExamples: Record<number, CategoryExamplePage[]> = { ...state.categoryExamplePages };
 
   for (const c of categories) {
     const name = categoryNames[c.id] ?? prev[c.id]?.name ?? `Category ${c.id}`;
@@ -88,6 +89,12 @@ export function detectCategoryAlerts(
       lastUpdated: now,
       history: updatedHistory,
     };
+
+    // Refresh example pages for this category
+    const freshExamples = getExamplePagesForCategory(pages, c.id, categoryNames);
+    if (freshExamples.length > 0) {
+      nextExamples[c.id] = freshExamples;
+    }
 
     const old = prev[c.id];
     if (!old) continue;
@@ -142,6 +149,6 @@ export function detectCategoryAlerts(
     }
   }
 
-  updateState({ categories: next });
+  updateState({ categories: next, categoryExamplePages: nextExamples });
   return alerts;
 }

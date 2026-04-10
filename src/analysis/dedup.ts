@@ -16,6 +16,8 @@ function alertKey(alert: Alert): string {
       return `trend_new:${alert.title}`;
     case 'entity_coverage':
       return `entity_coverage:${alert.entityName}`;
+    case 'entity_concordance':
+      return `concordance:${alert.subtype}:${alert.entityName}`;
   }
 }
 

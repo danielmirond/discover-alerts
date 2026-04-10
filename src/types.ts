@@ -159,6 +159,7 @@ export interface TrendSnapshot {
 export interface AppState {
   entities: Record<string, EntitySnapshot>;
   categories: Record<number, CategorySnapshot>;
+  categoryExamplePages: Record<number, CategoryExamplePage[]>;
   pages: Record<string, PageSnapshot>;
   domains: Record<string, DomainSnapshot>;
   trends: Record<string, TrendSnapshot>;
@@ -263,7 +264,8 @@ export type Alert =
   | HeadlinePatternAlert
   | TrendsCorrelationAlert
   | TrendsNewTopicAlert
-  | EntityCoverageAlert;
+  | EntityCoverageAlert
+  | EntityConcordanceAlert;
 
 // Media RSS types
 export interface MediaFeed {
@@ -293,6 +295,19 @@ export interface EntityCoverageAlert {
     feedCategory: string;
   }>;
   category?: string; // derived entity category (for routing)
+}
+
+export interface EntityConcordanceAlert {
+  type: 'entity_concordance';
+  subtype: 'discover_trends_x' | 'discover_rss' | 'discover_trends' | 'discover_x';
+  entityName: string;
+  score: number;
+  position: number;
+  publications: number;
+  category?: string;
+  matchingTrends: MatchedTrend[];
+  matchingXTrends: MatchedXTrend[];
+  matchingArticles: MatchedMediaArticle[];
 }
 
 // Poll results
