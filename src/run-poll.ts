@@ -1,9 +1,17 @@
+import { loadState } from './state/store.js';
+import { runDiscoverPoll } from './polling/discover-poll.js';
+import { runTrendsPoll } from './polling/trends-poll.js';
+import { runMediaPoll } from './polling/media-poll.js';
+import { runXPoll } from './polling/x-poll.js';
+
+const target = process.argv[2]; // 'discover' | 'trends' | 'media' | 'x' | 'all'
+
 async function main() {
+  // 🔴 No dejar que Redis rompa el proceso
   try {
     await loadState();
   } catch (err) {
     console.error('[run-poll] loadState error:', err);
-    // seguimos sin estado, no es crítico
   }
 
   try {
@@ -37,6 +45,7 @@ async function main() {
   console.log(`[run-poll] ${target} completed`);
 }
 
+// ⚠️ IMPORTANTE: no hacer process.exit(1)
 main().catch(err => {
   console.error('[run-poll] Fatal (unexpected):', err);
 });
