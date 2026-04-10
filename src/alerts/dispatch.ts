@@ -1,9 +1,12 @@
 import { formatAlerts } from './formatter.js';
 import { sendBatch } from './slack.js';
 import { routeAlerts } from './router.js';
+import { getState, updateState } from '../state/store.js';
 import type { Alert } from '../types.js';
 
 const MAX_ALERTS_PER_POLL = parseInt(process.env.MAX_ALERTS_PER_POLL || '10', 10);
+const RECENT_ALERTS_MAX = 200;
+const RECENT_ALERTS_RETENTION_HOURS = 6;
 
 /**
  * Priority ranking: higher number = higher priority (sent first if over cap).
@@ -99,6 +102,22 @@ export async function dispatchAlerts(
   const routeCounts: Record<string, number> = {};
   for (const r of routed) routeCounts[r.routeName] = (routeCounts[r.routeName] ?? 0) + 1;
   console.log(`[${pollName}] Routing: ${JSON.stringify(routeCounts)}`);
+
+  // Persist to state.recentAlerts (for dashboard display)
+  const now = new Date().toISOString();
+  const nowMs = Date.now();
+  const retentionMs = RECENT_ALERTS_RETENTION_HOURS * 3600_000;
+  const state = getState();
+  const previous = (state.recentAlerts ?? []).filter(
+    r => nowMs - new Date(r.timestamp).getTime() <= retentionMs,
+  );
+  const newEntries = routed.map(r => ({
+    alert: r.alert,
+    timestamp: now,
+    routeName: r.routeName,
+  }));
+  const combined = [...newEntries, ...previous].slice(0, RECENT_ALERTS_MAX);
+  updateState({ recentAlerts: combined });
 
   // Send per webhook
   for (const [webhookUrl, webhookAlerts] of byWebhook) {

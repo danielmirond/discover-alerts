@@ -168,6 +168,7 @@ export interface AppState {
   dedupHashes: Record<string, number>;
   mediaArticles: Record<string, { feedName: string; feedCategory: string; title: string; link: string; firstSeen: string }>;
   entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)
+  recentAlerts: Array<{ alert: Alert; timestamp: string; routeName: string }>; // last 6h of alerts sent to Slack
   lastPollDiscover: string | null;
   lastPollTrends: string | null;
   lastPollMedia: string | null;

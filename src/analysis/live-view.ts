@@ -65,6 +65,15 @@ interface LiveHeadlinePattern {
   words: number;
 }
 
+interface LiveRecentAlert {
+  type: string;
+  subtype?: string;
+  title: string;
+  detail: string;
+  timestamp: string;
+  routeName: string;
+}
+
 interface LiveViewResponse {
   lastPollDiscover: string | null;
   lastPollTrends: string | null;
@@ -74,6 +83,7 @@ interface LiveViewResponse {
   categories: LiveCategory[];
   concordances: LiveConcordance[];
   headlinePatterns: LiveHeadlinePattern[];
+  recentAlerts: LiveRecentAlert[];
   totals: {
     entitiesTracked: number;
     categoriesTracked: number;
@@ -311,6 +321,51 @@ export function buildLiveView(): LiveViewResponse {
     return b.score - a.score;
   });
 
+  // Recent alerts (flat view of what was sent to Slack)
+  const recentAlerts: LiveRecentAlert[] = (state.recentAlerts ?? []).map(r => {
+    const a = r.alert as any;
+    let title = '';
+    let detail = '';
+    switch (a.type) {
+      case 'entity':
+        title = a.name;
+        detail = `score=${a.score} | pos=#${a.position}${a.appearanceCount != null ? ` | ${a.appearanceCount} en ${a.windowHours}h` : ''}`;
+        break;
+      case 'entity_concordance':
+        title = a.entityName;
+        detail = `score=${a.score} | pos=#${a.position}`;
+        break;
+      case 'entity_coverage':
+        title = a.entityName;
+        detail = `${a.coverageCount} publicaciones en ${a.mediaOutlets.length} medios`;
+        break;
+      case 'category':
+        title = a.name;
+        detail = `score ${a.prevScore} → ${a.score}${a.windowHours ? ` (${a.windowHours}h)` : ''}`;
+        break;
+      case 'headline_pattern':
+        title = `"${a.ngram}"`;
+        detail = `${a.count} titulares`;
+        break;
+      case 'trends_correlation':
+        title = a.trendTitle;
+        detail = `${a.matchingEntities.length} entidades | trafico ~${a.approxTraffic}`;
+        break;
+      case 'trends_new_topic':
+        title = a.title;
+        detail = `nuevo trending | trafico ~${a.approxTraffic}`;
+        break;
+    }
+    return {
+      type: a.type,
+      subtype: a.subtype,
+      title,
+      detail,
+      timestamp: r.timestamp,
+      routeName: r.routeName,
+    };
+  });
+
   // Headline patterns (3+ words, 3+ occurrences)
   const headlinePatterns: LiveHeadlinePattern[] = Object.entries(state.headlinePatterns)
     .map(([ngram, count]) => ({ ngram, count, words: ngram.split(' ').length }))
@@ -327,6 +382,7 @@ export function buildLiveView(): LiveViewResponse {
     categories: categories.slice(0, 15),
     concordances: concordances.slice(0, 20),
     headlinePatterns,
+    recentAlerts,
     totals: {
       entitiesTracked: Object.keys(state.entities).length,
       categoriesTracked: Object.keys(state.categories).length,
