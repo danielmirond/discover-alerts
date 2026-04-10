@@ -144,16 +144,28 @@ export interface AppState {
   trends: Record<string, TrendSnapshot>;
   headlinePatterns: Record<string, number>;
   dedupHashes: Record<string, number>;
-  mediaArticles: Record<string, { feedName: string; firstSeen: string }>;
+  mediaArticles: Record<string, { feedName: string; feedCategory: string; title: string; link: string; firstSeen: string }>;
   lastPollDiscover: string | null;
   lastPollTrends: string | null;
   lastPollMedia: string | null;
 }
 
 // Alert types
+export interface MatchedMediaArticle {
+  feedName: string;
+  feedCategory: string;
+  title: string;
+  link: string;
+}
+
+export interface MatchedTrend {
+  title: string;
+  approxTraffic: number;
+}
+
 export interface EntityAlert {
   type: 'entity';
-  subtype: 'new' | 'rising' | 'ascending';
+  subtype: 'new' | 'rising' | 'ascending' | 'spike';
   name: string;
   score: number;
   prevScore: number;
@@ -162,8 +174,10 @@ export interface EntityAlert {
   prevPosition: number;
   publications: number;
   firstviewed: string;
-  appearanceCount?: number; // only for 'ascending' subtype
-  windowHours?: number;     // only for 'ascending' subtype
+  appearanceCount?: number;        // only for 'ascending' subtype
+  windowHours?: number;            // only for 'ascending' subtype
+  matchingTrends?: MatchedTrend[]; // enrichment for 'ascending'
+  matchingArticles?: MatchedMediaArticle[]; // enrichment for 'ascending'
 }
 
 export interface CategoryAlert {

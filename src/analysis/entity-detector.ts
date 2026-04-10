@@ -1,6 +1,84 @@
 import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
-import type { DiscoverEntity, EntityAlert, EntitySnapshot } from '../types.js';
+import type {
+  DiscoverEntity,
+  EntityAlert,
+  EntitySnapshot,
+  MatchedTrend,
+  MatchedMediaArticle,
+} from '../types.js';
+
+// Dice coefficient for fuzzy matching
+function diceCoefficient(a: string, b: string): number {
+  const norm = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  const aN = norm(a);
+  const bN = norm(b);
+
+  if (aN === bN) return 1;
+  if (aN.length < 2 || bN.length < 2) return 0;
+
+  const bigramsA = new Set<string>();
+  for (let i = 0; i < aN.length - 1; i++) bigramsA.add(aN.slice(i, i + 2));
+
+  let intersection = 0;
+  const bigramsBSize = bN.length - 1;
+  for (let i = 0; i < bN.length - 1; i++) {
+    if (bigramsA.has(bN.slice(i, i + 2))) intersection++;
+  }
+
+  return (2 * intersection) / (bigramsA.size + bigramsBSize);
+}
+
+function normalize(s: string): string {
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+/**
+ * Enriches an ascending/spike entity with matching Google Trends topics
+ * and matching media articles (from cached state).
+ */
+function enrichAscending(
+  entityName: string,
+  state: ReturnType<typeof getState>,
+  fuzzyThreshold: number,
+): { matchingTrends: MatchedTrend[]; matchingArticles: MatchedMediaArticle[] } {
+  const entityNorm = normalize(entityName);
+
+  // Match against cached Google Trends topics
+  const matchingTrends: MatchedTrend[] = [];
+  for (const [trendTitle, snap] of Object.entries(state.trends)) {
+    const trendNorm = normalize(trendTitle);
+    if (
+      trendNorm.includes(entityNorm) ||
+      entityNorm.includes(trendNorm) ||
+      diceCoefficient(entityName, trendTitle) >= fuzzyThreshold
+    ) {
+      matchingTrends.push({ title: trendTitle, approxTraffic: snap.approxTraffic });
+    }
+  }
+
+  // Match against cached media articles (substring on title)
+  const matchingArticles: MatchedMediaArticle[] = [];
+  for (const meta of Object.values(state.mediaArticles)) {
+    if (!meta.title) continue;
+    const titleNorm = normalize(meta.title);
+    if (titleNorm.includes(entityNorm) && entityNorm.length > 3) {
+      matchingArticles.push({
+        feedName: meta.feedName,
+        feedCategory: meta.feedCategory,
+        title: meta.title,
+        link: meta.link,
+      });
+    }
+  }
+
+  return {
+    matchingTrends: matchingTrends.slice(0, 3),
+    matchingArticles: matchingArticles.slice(0, 5),
+  };
+}
 
 export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
   const state = getState();
@@ -12,12 +90,18 @@ export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
 
   const ascendingMin = config.thresholds.entityAscendingMinAppearances;
   const ascendingWindowMs = config.thresholds.entityAscendingWindowHours * 3600_000;
+  const spikeMin = config.thresholds.entitySpikeMinAppearances;
+  const spikeWindowMs = config.thresholds.entitySpikeWindowHours * 3600_000;
+  const fuzzyThreshold = config.thresholds.trendCorrelationMin;
+
+  const countInWindow = (timestamps: string[], windowMs: number): number =>
+    timestamps.filter(ts => nowMs - new Date(ts).getTime() <= windowMs).length;
 
   for (const e of entities) {
     const old = prev[e.entity];
-
-    // Build appearances array: previous ones (pruned) + current poll timestamp
     const prevAppearances = old?.appearances ?? [];
+
+    // Prune appearances outside the longest window we care about (ascending)
     const appearances = [
       ...prevAppearances.filter(ts => nowMs - new Date(ts).getTime() <= ascendingWindowMs),
       now,
@@ -49,51 +133,71 @@ export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
           firstviewed: next[e.entity].firstSeen,
         });
       }
-    } else {
-      // Rising entity (score jump)
-      const scoreDelta = e.score - old.score;
-      if (scoreDelta >= config.thresholds.entityScoreJump) {
-        alerts.push({
-          type: 'entity',
-          subtype: 'rising',
-          name: e.entity,
-          score: e.score,
-          prevScore: old.score,
-          scoreDecimal: e.score_decimal,
-          position: e.position,
-          prevPosition: old.position,
-          publications: e.publications,
-          firstviewed: old.firstSeen,
-        });
-      }
+      continue;
+    }
 
-      // Ascending entity: fires when the entity crosses the appearances threshold
-      // in the current polling window. Only triggers on the crossing poll to avoid
-      // repeating the same alert on every subsequent poll.
-      const prevAppearancesInWindow = prevAppearances.filter(
-        ts => nowMs - new Date(ts).getTime() <= ascendingWindowMs,
-      ).length;
-      const currentAppearancesInWindow = appearances.length;
+    // Rising (score jump) — independent of appearances
+    const scoreDelta = e.score - old.score;
+    if (scoreDelta >= config.thresholds.entityScoreJump) {
+      alerts.push({
+        type: 'entity',
+        subtype: 'rising',
+        name: e.entity,
+        score: e.score,
+        prevScore: old.score,
+        scoreDecimal: e.score_decimal,
+        position: e.position,
+        prevPosition: old.position,
+        publications: e.publications,
+        firstviewed: old.firstSeen,
+      });
+    }
 
-      if (
-        prevAppearancesInWindow < ascendingMin &&
-        currentAppearancesInWindow >= ascendingMin
-      ) {
-        alerts.push({
-          type: 'entity',
-          subtype: 'ascending',
-          name: e.entity,
-          score: e.score,
-          prevScore: old.score,
-          scoreDecimal: e.score_decimal,
-          position: e.position,
-          prevPosition: old.position,
-          publications: e.publications,
-          firstviewed: old.firstSeen,
-          appearanceCount: currentAppearancesInWindow,
-          windowHours: config.thresholds.entityAscendingWindowHours,
-        });
-      }
+    // Spike check first (priority over ascending)
+    const prevSpikeCount = countInWindow(prevAppearances, spikeWindowMs);
+    const currSpikeCount = countInWindow(appearances, spikeWindowMs);
+    const spikeJustCrossed = prevSpikeCount < spikeMin && currSpikeCount >= spikeMin;
+
+    if (spikeJustCrossed) {
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      alerts.push({
+        type: 'entity',
+        subtype: 'spike',
+        name: e.entity,
+        score: e.score,
+        prevScore: old.score,
+        scoreDecimal: e.score_decimal,
+        position: e.position,
+        prevPosition: old.position,
+        publications: e.publications,
+        firstviewed: old.firstSeen,
+        appearanceCount: currSpikeCount,
+        windowHours: config.thresholds.entitySpikeWindowHours,
+        ...enrichment,
+      });
+      continue; // spike takes precedence — don't also fire ascending
+    }
+
+    // Ascending check (wider window)
+    const prevAscCount = countInWindow(prevAppearances, ascendingWindowMs);
+    const currAscCount = countInWindow(appearances, ascendingWindowMs);
+    if (prevAscCount < ascendingMin && currAscCount >= ascendingMin) {
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      alerts.push({
+        type: 'entity',
+        subtype: 'ascending',
+        name: e.entity,
+        score: e.score,
+        prevScore: old.score,
+        scoreDecimal: e.score_decimal,
+        position: e.position,
+        prevPosition: old.position,
+        publications: e.publications,
+        firstviewed: old.firstSeen,
+        appearanceCount: currAscCount,
+        windowHours: config.thresholds.entityAscendingWindowHours,
+        ...enrichment,
+      });
     }
   }
 

@@ -33,6 +33,8 @@ export function getConfig() {
       entityNewMinScore: envInt('THRESHOLD_ENTITY_NEW_MIN_SCORE', 10),
       entityAscendingMinAppearances: envInt('THRESHOLD_ENTITY_ASCENDING_MIN_APPEARANCES', 3),
       entityAscendingWindowHours: envInt('THRESHOLD_ENTITY_ASCENDING_WINDOW_HOURS', 6),
+      entitySpikeMinAppearances: envInt('THRESHOLD_ENTITY_SPIKE_MIN_APPEARANCES', 3),
+      entitySpikeWindowHours: envInt('THRESHOLD_ENTITY_SPIKE_WINDOW_HOURS', 2),
       categoryScoreJump: envInt('THRESHOLD_CATEGORY_SCORE_JUMP', 15),
       categoryPublicationsJumpPct: envFloat('THRESHOLD_CATEGORY_PUB_JUMP_PCT', 0.5),
       headlineMinFrequency: envInt('THRESHOLD_HEADLINE_MIN_FREQUENCY', 3),

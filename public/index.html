@@ -57,10 +57,17 @@
     .alert-item { padding: 12px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid; }
     .alert-item:last-child { margin-bottom: 0; }
     .alert-entity { background: rgba(74,222,128,0.06); border-color: #4ade80; }
+    .alert-spike { background: rgba(250,204,21,0.08); border-color: #facc15; }
     .alert-category { background: rgba(96,165,250,0.06); border-color: #60a5fa; }
     .alert-headline { background: rgba(251,146,60,0.06); border-color: #fb923c; }
     .alert-correlation { background: rgba(167,139,250,0.06); border-color: #a78bfa; }
     .alert-media { background: rgba(248,113,113,0.06); border-color: #f87171; }
+    .alert-enrich { margin-top: 8px; padding-top: 8px; border-top: 1px solid #2a2a2a; font-size: 12px; color: #aaa; }
+    .alert-enrich-title { color: #ccc; font-weight: 600; margin-bottom: 3px; }
+    .alert-enrich ul { list-style: none; padding-left: 8px; }
+    .alert-enrich li { margin: 2px 0; }
+    .alert-enrich a { color: #60a5fa; text-decoration: none; }
+    .alert-enrich a:hover { text-decoration: underline; }
     .alert-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
     .alert-title { font-weight: 600; font-size: 14px; color: #fff; }
     .alert-detail { font-size: 13px; color: #888; margin-top: 4px; }
@@ -127,7 +134,7 @@
       <div class="card full-width">
         <div class="card-header">
           <h2>&#128276; Tipos de Alerta (ejemplo)</h2>
-          <span class="badge badge-purple">7 tipos</span>
+          <span class="badge badge-purple">8 tipos</span>
         </div>
         <div class="card-body">
           <div class="alert-item alert-entity">
@@ -140,10 +147,38 @@
             <div class="alert-title">Kylian Mbappe</div>
             <div class="alert-detail">Score: 72 (+35) | Posicion: #5 (era #18) | Publicaciones: 16</div>
           </div>
+          <div class="alert-item alert-spike">
+            <div class="alert-type" style="color: #facc15;">&#128293; ENTIDAD EN SPIKE</div>
+            <div class="alert-title">Pedro Sanchez</div>
+            <div class="alert-detail">Apariciones: 4 en 2h | Score: 100 | Posicion: #22 | Publicaciones: 11</div>
+            <div class="alert-enrich">
+              <div class="alert-enrich-title">&#128279; Matches en Google Trends</div>
+              <ul>
+                <li>&bull; <strong>Pedro Sanchez</strong> &mdash; 200,000+ busquedas</li>
+              </ul>
+              <div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios publicando</div>
+              <ul>
+                <li>&bull; <a href="#">El Pais: "Sanchez convoca consejo extraordinario..."</a> <em>(El Pais)</em></li>
+                <li>&bull; <a href="#">Marca: "Sanchez asiste al partido del Real Madrid..."</a> <em>(Marca)</em></li>
+                <li>&bull; <a href="#">El Mundo: "El presidente negocia con Bruselas..."</a> <em>(El Mundo)</em></li>
+              </ul>
+            </div>
+          </div>
           <div class="alert-item alert-entity">
             <div class="alert-type" style="color: #4ade80;">&#128640; ENTIDAD EN ASCENSO</div>
-            <div class="alert-title">Pedro Sanchez</div>
-            <div class="alert-detail">Apariciones: 4 en 6h | Score: 100 | Posicion: #22 | Publicaciones: 11</div>
+            <div class="alert-title">Kylian Mbappe</div>
+            <div class="alert-detail">Apariciones: 4 en 6h | Score: 85 | Posicion: #5 | Publicaciones: 16</div>
+            <div class="alert-enrich">
+              <div class="alert-enrich-title">&#128279; Matches en Google Trends</div>
+              <ul>
+                <li>&bull; <strong>Mbappe</strong> &mdash; 500,000+ busquedas</li>
+              </ul>
+              <div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios publicando</div>
+              <ul>
+                <li>&bull; <a href="#">Marca: "Mbappe confirma su fichaje por el Real Madrid..."</a> <em>(Marca)</em></li>
+                <li>&bull; <a href="#">AS: "La Liga se frota las manos con Mbappe..."</a> <em>(AS)</em></li>
+              </ul>
+            </div>
           </div>
           <div class="alert-item alert-category">
             <div class="alert-type" style="color: #60a5fa;">&#128202; SPIKE EN CATEGORIA</div>

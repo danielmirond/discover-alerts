@@ -42,10 +42,17 @@ export function detectMediaDiscoverCorrelations(
   const threshold = config.thresholds.trendCorrelationMin;
   const alerts: MediaDiscoverCorrelationAlert[] = [];
   const now = new Date().toISOString();
+  const nowMs = Date.now();
+  const retentionMs = 24 * 3600_000; // keep articles for 24h for entity enrichment lookups
 
-  // Track seen articles to avoid re-alerting
+  // Start with pruned previous articles (older than 24h are dropped)
   const prevArticles = state.mediaArticles;
-  const nextArticles: Record<string, { feedName: string; firstSeen: string }> = {};
+  const nextArticles: Record<string, { feedName: string; feedCategory: string; title: string; link: string; firstSeen: string }> = {};
+  for (const [key, meta] of Object.entries(prevArticles)) {
+    if (nowMs - new Date(meta.firstSeen).getTime() <= retentionMs) {
+      nextArticles[key] = meta;
+    }
+  }
 
   for (const article of articles) {
     if (!article.title) continue;
@@ -53,6 +60,9 @@ export function detectMediaDiscoverCorrelations(
     const articleKey = article.link || article.title;
     nextArticles[articleKey] = {
       feedName: article.feedName,
+      feedCategory: article.feedCategory,
+      title: article.title,
+      link: article.link,
       firstSeen: prevArticles[articleKey]?.firstSeen ?? now,
     };
 

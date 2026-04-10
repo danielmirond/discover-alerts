@@ -33,10 +33,12 @@ function divider(): SlackBlock {
 function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
   const emoji =
     a.subtype === 'new' ? ':new:' :
+    a.subtype === 'spike' ? ':fire:' :
     a.subtype === 'ascending' ? ':rocket:' :
     ':chart_with_upwards_trend:';
   const label =
     a.subtype === 'new' ? 'Nueva entidad' :
+    a.subtype === 'spike' ? 'Entidad en SPIKE' :
     a.subtype === 'ascending' ? 'Entidad en ascenso' :
     'Entidad en subida';
   const scoreDiff = a.score - a.prevScore;
@@ -49,17 +51,35 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
     `*Visto:* ${a.firstviewed}`,
   ];
 
-  if (a.subtype === 'ascending' && a.appearanceCount != null) {
+  if ((a.subtype === 'ascending' || a.subtype === 'spike') && a.appearanceCount != null) {
     baseFields.push(
       `*Apariciones:* ${a.appearanceCount} en ${a.windowHours}h`,
     );
   }
 
-  return [
+  const blocks: SlackBlock[] = [
     header(`${emoji} ${label}: ${a.name}`),
     fields(...baseFields),
-    context('DiscoverSnoop LiveEntities | ES'),
   ];
+
+  // Enrichment: matching Google Trends
+  if (a.matchingTrends && a.matchingTrends.length > 0) {
+    const trendLines = a.matchingTrends
+      .map(t => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
+      .join('\n');
+    blocks.push(section(`:link: *Matches en Google Trends:*\n${trendLines}`));
+  }
+
+  // Enrichment: matching media articles
+  if (a.matchingArticles && a.matchingArticles.length > 0) {
+    const articleLines = a.matchingArticles
+      .map(m => `• <${m.link}|${m.title}> _(${m.feedName})_`)
+      .join('\n');
+    blocks.push(section(`:newspaper: *Medios publicando:*\n${articleLines}`));
+  }
+
+  blocks.push(context('DiscoverSnoop LiveEntities | ES'));
+  return blocks;
 }
 
 function formatCategory(a: Extract<Alert, { type: 'category' }>): SlackBlock[] {
