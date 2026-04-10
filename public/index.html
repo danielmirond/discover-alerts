@@ -104,6 +104,26 @@
 
   <div class="container">
     <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128293; Entidades en vivo</h2>
+        <span class="badge badge-purple" id="live-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="live-alerts" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando alertas en vivo desde Redis...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128202; Categorias (spike 24h)</h2>
+        <span class="badge badge-blue" id="live-cat-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="live-categories" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando categorias...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header"><h2>&#9881;&#65039; Configuracion</h2></div>
       <div class="card-body">
         <div class="config-grid">
@@ -160,25 +180,6 @@
         </div>
       </div>
 
-      <div class="card full-width">
-        <div class="card-header">
-          <h2>&#128293; Entidades en vivo</h2>
-          <span class="badge badge-purple" id="live-count">Cargando...</span>
-        </div>
-        <div class="card-body" id="live-alerts">
-          <div class="loading"><div class="spinner"></div><br>Cargando alertas en vivo desde Redis...</div>
-        </div>
-      </div>
-
-      <div class="card full-width" style="margin-top: 20px;">
-        <div class="card-header">
-          <h2>&#128202; Categorias (spike 24h)</h2>
-          <span class="badge badge-blue" id="live-cat-count">Cargando...</span>
-        </div>
-        <div class="card-body" id="live-categories">
-          <div class="loading"><div class="spinner"></div><br>Cargando categorias...</div>
-        </div>
-      </div>
     </div>
   </div>
 
