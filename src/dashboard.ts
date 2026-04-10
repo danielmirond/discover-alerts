@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { fetchGoogleTrends } from './sources/google-trends.js';
+import { fetchXTrends } from './sources/x-trends.js';
 import type { MediaFeed } from './types.js';
 
 const PORT = 3333;
@@ -29,6 +30,10 @@ async function loadRouting(): Promise<any[]> {
 async function handleApi(path: string): Promise<object> {
   if (path === '/api/trends') {
     const trends = await fetchGoogleTrends();
+    return { trends };
+  }
+  if (path === '/api/x-trends') {
+    const trends = await fetchXTrends();
     return { trends };
   }
   if (path === '/api/feeds') {

@@ -6,6 +6,7 @@ import type {
   EntityAlert,
   EntitySnapshot,
   MatchedTrend,
+  MatchedXTrend,
   MatchedMediaArticle,
 } from '../types.js';
 
@@ -87,7 +88,11 @@ function enrichAscending(
   entityName: string,
   state: ReturnType<typeof getState>,
   fuzzyThreshold: number,
-): { matchingTrends: MatchedTrend[]; matchingArticles: MatchedMediaArticle[] } {
+): {
+  matchingTrends: MatchedTrend[];
+  matchingXTrends: MatchedXTrend[];
+  matchingArticles: MatchedMediaArticle[];
+} {
   const entityNorm = normalize(entityName);
 
   // Match against cached Google Trends topics
@@ -100,6 +105,25 @@ function enrichAscending(
       diceCoefficient(entityName, trendTitle) >= fuzzyThreshold
     ) {
       matchingTrends.push({ title: trendTitle, approxTraffic: snap.approxTraffic });
+    }
+  }
+
+  // Match against cached X/Twitter trends
+  const matchingXTrends: MatchedXTrend[] = [];
+  for (const [topic, snap] of Object.entries(state.xTrends)) {
+    const topicNorm = normalize(topic.replace(/^#/, ''));
+    if (topicNorm.length < 3) continue;
+    if (
+      topicNorm.includes(entityNorm) ||
+      entityNorm.includes(topicNorm) ||
+      diceCoefficient(entityName, topic) >= fuzzyThreshold
+    ) {
+      // Rebuild URL if lost (state only keeps rank)
+      matchingXTrends.push({
+        topic,
+        rank: snap.rank,
+        url: `https://getdaytrends.com/es/spain/trend/${encodeURIComponent(topic)}/`,
+      });
     }
   }
 
@@ -120,6 +144,7 @@ function enrichAscending(
 
   return {
     matchingTrends: matchingTrends.slice(0, 3),
+    matchingXTrends: matchingXTrends.slice(0, 3),
     matchingArticles: matchingArticles.slice(0, 5),
   };
 }
@@ -143,6 +168,8 @@ export function detectEntityAlerts(
   const ascendingWindowMs = config.thresholds.entityAscendingWindowHours * 3600_000;
   const spikeMin = config.thresholds.entitySpikeMinAppearances;
   const spikeWindowMs = config.thresholds.entitySpikeWindowHours * 3600_000;
+  const flashMin = config.thresholds.entityFlashMinAppearances;
+  const flashWindowMs = config.thresholds.entityFlashWindowHours * 3600_000;
   const fuzzyThreshold = config.thresholds.trendCorrelationMin;
 
   const countInWindow = (timestamps: string[], windowMs: number): number =>
@@ -207,7 +234,33 @@ export function detectEntityAlerts(
       });
     }
 
-    // Spike check first (priority over ascending)
+    // Flash check (strictest window = highest priority)
+    const prevFlashCount = countInWindow(prevAppearances, flashWindowMs);
+    const currFlashCount = countInWindow(appearances, flashWindowMs);
+    const flashJustCrossed = prevFlashCount < flashMin && currFlashCount >= flashMin;
+
+    if (flashJustCrossed) {
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      alerts.push({
+        type: 'entity',
+        subtype: 'flash',
+        name: e.entity,
+        score: e.score,
+        prevScore: old.score,
+        scoreDecimal: e.score_decimal,
+        position: e.position,
+        prevPosition: old.position,
+        publications: e.publications,
+        firstviewed: old.firstSeen,
+        appearanceCount: currFlashCount,
+        windowHours: config.thresholds.entityFlashWindowHours,
+        category: entityCategory,
+        ...enrichment,
+      });
+      continue; // flash takes precedence — don't also fire spike or ascending
+    }
+
+    // Spike check (priority over ascending)
     const prevSpikeCount = countInWindow(prevAppearances, spikeWindowMs);
     const currSpikeCount = countInWindow(appearances, spikeWindowMs);
     const spikeJustCrossed = prevSpikeCount < spikeMin && currSpikeCount >= spikeMin;

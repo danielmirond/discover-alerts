@@ -62,7 +62,7 @@ export async function runDiscoverPoll(): Promise<void> {
   const categoryNames = await getCategoryNames();
   const alerts: Alert[] = [];
   alerts.push(...detectEntityAlerts(ent, pag, categoryNames));
-  alerts.push(...detectCategoryAlerts(cat, categoryNames));
+  alerts.push(...detectCategoryAlerts(cat, categoryNames, pag));
   alerts.push(...detectHeadlinePatterns(pag));
 
   // Cross-reference with cached trends data

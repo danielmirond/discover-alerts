@@ -79,6 +79,19 @@ export interface CategoryListItem {
   name: string;
 }
 
+// X (Twitter) trends via getdaytrends.com
+export interface XTrendItem {
+  rank: number;
+  topic: string;
+  url: string;
+}
+
+export interface XTrendSnapshot {
+  rank: number;
+  firstSeen: string;
+  lastUpdated: string;
+}
+
 // Google Trends RSS types
 export interface TrendsNewsItem {
   title: string;
@@ -107,6 +120,12 @@ export interface EntitySnapshot {
   appearances: string[]; // ISO timestamps of each time this entity was seen in a poll
 }
 
+export interface CategoryHistoryPoint {
+  timestamp: string;
+  score: number;
+  publications: number;
+}
+
 export interface CategorySnapshot {
   name: string;
   score: number;
@@ -114,6 +133,7 @@ export interface CategorySnapshot {
   position: number;
   publications: number;
   lastUpdated: string;
+  history: CategoryHistoryPoint[]; // rolling 24h of samples
 }
 
 export interface PageSnapshot {
@@ -142,6 +162,7 @@ export interface AppState {
   pages: Record<string, PageSnapshot>;
   domains: Record<string, DomainSnapshot>;
   trends: Record<string, TrendSnapshot>;
+  xTrends: Record<string, XTrendSnapshot>; // Twitter/X trends
   headlinePatterns: Record<string, number>;
   dedupHashes: Record<string, number>;
   mediaArticles: Record<string, { feedName: string; feedCategory: string; title: string; link: string; firstSeen: string }>;
@@ -149,6 +170,7 @@ export interface AppState {
   lastPollDiscover: string | null;
   lastPollTrends: string | null;
   lastPollMedia: string | null;
+  lastPollX: string | null;
 }
 
 // Alert types
@@ -164,9 +186,15 @@ export interface MatchedTrend {
   approxTraffic: number;
 }
 
+export interface MatchedXTrend {
+  topic: string;
+  rank: number;
+  url: string;
+}
+
 export interface EntityAlert {
   type: 'entity';
-  subtype: 'new' | 'rising' | 'ascending' | 'spike';
+  subtype: 'new' | 'rising' | 'ascending' | 'spike' | 'flash';
   name: string;
   score: number;
   prevScore: number;
@@ -178,13 +206,20 @@ export interface EntityAlert {
   category?: string;               // derived from pages (for routing)
   appearanceCount?: number;        // only for 'ascending' subtype
   windowHours?: number;            // only for 'ascending' subtype
-  matchingTrends?: MatchedTrend[]; // enrichment for 'ascending'
-  matchingArticles?: MatchedMediaArticle[]; // enrichment for 'ascending'
+  matchingTrends?: MatchedTrend[];  // Google Trends enrichment
+  matchingXTrends?: MatchedXTrend[]; // X/Twitter trends enrichment
+  matchingArticles?: MatchedMediaArticle[]; // Media articles enrichment
+}
+
+export interface CategoryExamplePage {
+  title: string;
+  url: string;
+  publisher?: string;
 }
 
 export interface CategoryAlert {
   type: 'category';
-  subtype: 'spike';
+  subtype: 'spike' | 'day_spike';
   id: number;
   name: string;
   score: number;
@@ -193,6 +228,8 @@ export interface CategoryAlert {
   prevPosition: number;
   publications: number;
   prevPublications: number;
+  windowHours?: number; // for day_spike: how far back we compared
+  examplePages?: CategoryExamplePage[]; // example news in this category
 }
 
 export interface HeadlinePatternAlert {

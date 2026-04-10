@@ -58,6 +58,8 @@
     .alert-item:last-child { margin-bottom: 0; }
     .alert-entity { background: rgba(74,222,128,0.06); border-color: #4ade80; }
     .alert-spike { background: rgba(250,204,21,0.08); border-color: #facc15; }
+    .alert-flash { background: rgba(239,68,68,0.10); border-color: #ef4444; }
+    .alert-day-spike { background: rgba(236,72,153,0.08); border-color: #ec4899; }
     .alert-category { background: rgba(96,165,250,0.06); border-color: #60a5fa; }
     .alert-headline { background: rgba(251,146,60,0.06); border-color: #fb923c; }
     .alert-correlation { background: rgba(167,139,250,0.06); border-color: #a78bfa; }
@@ -95,6 +97,7 @@
       <div class="status-pill"><div class="dot"></div> DiscoverSnoop (5 min)</div>
       <div class="status-pill"><div class="dot blue"></div> Google Trends (30 min)</div>
       <div class="status-pill"><div class="dot orange"></div> Media RSS (15 min)</div>
+      <div class="status-pill"><div class="dot"></div> X/Twitter Trends (30 min)</div>
       <div class="status-pill"><div class="dot purple"></div> Slack Webhook</div>
     </div>
   </div>
@@ -139,6 +142,16 @@
 
       <div class="card">
         <div class="card-header">
+          <h2>&#128038; X/Twitter Trends ES</h2>
+          <span class="badge badge-green" id="xtrends-count">Cargando...</span>
+        </div>
+        <div class="card-body" id="xtrends-list">
+          <div class="loading"><div class="spinner"></div><br>Cargando X trends...</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
           <h2>&#128240; Feeds RSS Configurados</h2>
           <span class="badge badge-blue" id="feeds-count">Cargando...</span>
         </div>
@@ -150,7 +163,7 @@
       <div class="card full-width">
         <div class="card-header">
           <h2>&#128276; Tipos de Alerta (ejemplo)</h2>
-          <span class="badge badge-purple">8 tipos</span>
+          <span class="badge badge-purple">10 tipos</span>
         </div>
         <div class="card-body">
           <div class="alert-item alert-entity">
@@ -163,14 +176,34 @@
             <div class="alert-title">Kylian Mbappe</div>
             <div class="alert-detail">Score: 72 (+35) | Posicion: #5 (era #18) | Publicaciones: 16</div>
           </div>
+          <div class="alert-item alert-flash">
+            <div class="alert-type" style="color: #ef4444;">&#9889; ENTIDAD FLASH (1h)</div>
+            <div class="alert-title">Carlos Alcaraz</div>
+            <div class="alert-detail">Apariciones: 4 en 1h | Score: 95 | Posicion: #3 | Publicaciones: 8</div>
+            <div class="alert-enrich">
+              <div class="alert-enrich-title">&#128038; X/Twitter Trends</div>
+              <ul>
+                <li>&bull; <a href="#">Alcaraz</a> &mdash; #4 en X</li>
+              </ul>
+              <div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios publicando</div>
+              <ul>
+                <li>&bull; <a href="#">Marca: "Alcaraz gana el Monte Carlo Masters"</a> <em>(Marca)</em></li>
+                <li>&bull; <a href="#">AS: "Historico triunfo de Alcaraz sobre Sinner"</a> <em>(AS)</em></li>
+              </ul>
+            </div>
+          </div>
           <div class="alert-item alert-spike">
             <div class="alert-type" style="color: #facc15;">&#128293; ENTIDAD EN SPIKE</div>
             <div class="alert-title">Pedro Sanchez</div>
             <div class="alert-detail">Apariciones: 4 en 2h | Score: 100 | Posicion: #22 | Publicaciones: 11</div>
             <div class="alert-enrich">
-              <div class="alert-enrich-title">&#128279; Matches en Google Trends</div>
+              <div class="alert-enrich-title">&#128279; Google Trends</div>
               <ul>
                 <li>&bull; <strong>Pedro Sanchez</strong> &mdash; 200,000+ busquedas</li>
+              </ul>
+              <div class="alert-enrich-title" style="margin-top:6px">&#128038; X/Twitter Trends</div>
+              <ul>
+                <li>&bull; <a href="#">Sanchez</a> &mdash; #7 en X</li>
               </ul>
               <div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios publicando</div>
               <ul>
@@ -200,6 +233,19 @@
             <div class="alert-type" style="color: #60a5fa;">&#128202; SPIKE EN CATEGORIA</div>
             <div class="alert-title">Deportes</div>
             <div class="alert-detail">Score +22 (de 65 a 87) | Publicaciones: 48 (+60%) | Posicion: #1 (era #4)</div>
+          </div>
+          <div class="alert-item alert-day-spike">
+            <div class="alert-type" style="color: #ec4899;">&#128680; SPIKE 24H EN CATEGORIA</div>
+            <div class="alert-title">Politica</div>
+            <div class="alert-detail">Score +40 en las ultimas 24h (de 25 a 65) | Publicaciones: 220 (+180%)</div>
+            <div class="alert-enrich">
+              <div class="alert-enrich-title">&#128240; Ejemplos de noticias</div>
+              <ul>
+                <li>&bull; <a href="#">"Congreso aprueba presupuestos con enmiendas de ERC"</a> <em>(El Pais)</em></li>
+                <li>&bull; <a href="#">"Vox presenta mocion de censura"</a> <em>(ABC)</em></li>
+                <li>&bull; <a href="#">"Sanchez anuncia convocatoria electoral"</a> <em>(El Mundo)</em></li>
+              </ul>
+            </div>
           </div>
           <div class="alert-item alert-headline">
             <div class="alert-type" style="color: #fb923c;">&#128240; PATRON DE TITULAR</div>
@@ -282,6 +328,26 @@
       }
     }
 
+    async function loadXTrends() {
+      try {
+        var res = await fetch('/api/x-trends');
+        var data = await res.json();
+        var trends = data.trends || [];
+        document.getElementById('xtrends-count').textContent = trends.length + ' trending';
+        var html = trends.slice(0, 15).map(function(t) {
+          return '<div class="trend-item">' +
+            '<div class="trend-rank">#' + t.rank + '</div>' +
+            '<div class="trend-info">' +
+              '<div class="trend-title">' + t.topic + '</div>' +
+              '<div class="trend-news"><a href="' + t.url + '" target="_blank">Ver en getdaytrends.com</a></div>' +
+            '</div></div>';
+        }).join('');
+        document.getElementById('xtrends-list').innerHTML = html || '<div class="loading">Sin datos</div>';
+      } catch(e) {
+        document.getElementById('xtrends-list').innerHTML = '<div class="loading">Error cargando X trends</div>';
+      }
+    }
+
     async function loadRoutes() {
       try {
         var res = await fetch('/api/routing');
@@ -311,6 +377,7 @@
     }
 
     loadTrends();
+    loadXTrends();
     loadFeeds();
     loadRoutes();
   </script>

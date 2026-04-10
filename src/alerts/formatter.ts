@@ -33,11 +33,13 @@ function divider(): SlackBlock {
 function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
   const emoji =
     a.subtype === 'new' ? ':new:' :
+    a.subtype === 'flash' ? ':zap:' :
     a.subtype === 'spike' ? ':fire:' :
     a.subtype === 'ascending' ? ':rocket:' :
     ':chart_with_upwards_trend:';
   const label =
     a.subtype === 'new' ? 'Nueva entidad' :
+    a.subtype === 'flash' ? 'Entidad FLASH (1h)' :
     a.subtype === 'spike' ? 'Entidad en SPIKE' :
     a.subtype === 'ascending' ? 'Entidad en ascenso' :
     'Entidad en subida';
@@ -51,7 +53,10 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
     `*Visto:* ${a.firstviewed}`,
   ];
 
-  if ((a.subtype === 'ascending' || a.subtype === 'spike') && a.appearanceCount != null) {
+  if (
+    (a.subtype === 'ascending' || a.subtype === 'spike' || a.subtype === 'flash') &&
+    a.appearanceCount != null
+  ) {
     baseFields.push(
       `*Apariciones:* ${a.appearanceCount} en ${a.windowHours}h`,
     );
@@ -67,7 +72,15 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
     const trendLines = a.matchingTrends
       .map(t => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
       .join('\n');
-    blocks.push(section(`:link: *Matches en Google Trends:*\n${trendLines}`));
+    blocks.push(section(`:link: *Google Trends:*\n${trendLines}`));
+  }
+
+  // Enrichment: matching X/Twitter trends
+  if (a.matchingXTrends && a.matchingXTrends.length > 0) {
+    const xLines = a.matchingXTrends
+      .map(t => `• <${t.url}|${t.topic}> — #${t.rank} en X`)
+      .join('\n');
+    blocks.push(section(`:bird: *X/Twitter Trends:*\n${xLines}`));
   }
 
   // Enrichment: matching media articles
@@ -88,15 +101,33 @@ function formatCategory(a: Extract<Alert, { type: 'category' }>): SlackBlock[] {
     ? Math.round(((a.publications - a.prevPublications) / a.prevPublications) * 100)
     : 0;
 
-  return [
-    header(`:bar_chart: Spike en categoria: ${a.name}`),
+  const emoji = a.subtype === 'day_spike' ? ':rotating_light:' : ':bar_chart:';
+  const label = a.subtype === 'day_spike'
+    ? `Spike 24h en categoria: ${a.name}`
+    : `Spike en categoria: ${a.name}`;
+
+  const baseline = a.subtype === 'day_spike'
+    ? `Score *+${scoreDiff}* en las ultimas *${a.windowHours}h* (de ${a.prevScore} a ${a.score})`
+    : `Score *+${scoreDiff}* (de ${a.prevScore} a ${a.score})`;
+
+  const blocks: SlackBlock[] = [
+    header(`${emoji} ${label}`),
     section(
-      `Score *+${scoreDiff}* (de ${a.prevScore} a ${a.score})\n` +
+      `${baseline}\n` +
       `Publicaciones: *${a.publications}*${pubPct > 0 ? ` (+${pubPct}%)` : ''}\n` +
       `Posicion: #${a.position}${a.prevPosition !== a.position ? ` (era #${a.prevPosition})` : ''}`,
     ),
-    context('DiscoverSnoop LiveCategories | ES'),
   ];
+
+  if (a.examplePages && a.examplePages.length > 0) {
+    const lines = a.examplePages
+      .map(p => `• <${p.url}|${p.title}>${p.publisher ? ` _(${p.publisher})_` : ''}`)
+      .join('\n');
+    blocks.push(section(`:newspaper: *Ejemplos de noticias:*\n${lines}`));
+  }
+
+  blocks.push(context('DiscoverSnoop LiveCategories | ES'));
+  return blocks;
 }
 
 function formatHeadline(a: Extract<Alert, { type: 'headline_pattern' }>): SlackBlock[] {

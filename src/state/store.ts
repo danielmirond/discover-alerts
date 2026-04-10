@@ -10,6 +10,7 @@ function emptyState(): AppState {
     pages: {},
     domains: {},
     trends: {},
+    xTrends: {},
     headlinePatterns: {},
     dedupHashes: {},
     mediaArticles: {},
@@ -17,6 +18,7 @@ function emptyState(): AppState {
     lastPollDiscover: null,
     lastPollTrends: null,
     lastPollMedia: null,
+    lastPollX: null,
   };
 }
 
