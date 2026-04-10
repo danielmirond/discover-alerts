@@ -2,13 +2,14 @@ name: Trends Poll
 
 on:
   schedule:
-    - cron: '*/30 * * * *'   # cada 30 minutos
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 jobs:
   poll:
     runs-on: ubuntu-latest
     timeout-minutes: 2
+    environment: production
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
