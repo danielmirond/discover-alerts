@@ -162,115 +162,21 @@
 
       <div class="card full-width">
         <div class="card-header">
-          <h2>&#128276; Tipos de Alerta (ejemplo)</h2>
-          <span class="badge badge-purple">10 tipos</span>
+          <h2>&#128293; Entidades en vivo</h2>
+          <span class="badge badge-purple" id="live-count">Cargando...</span>
         </div>
-        <div class="card-body">
-          <div class="alert-item alert-entity">
-            <div class="alert-type" style="color: #4ade80;">&#127381; NUEVA ENTIDAD</div>
-            <div class="alert-title">Real Madrid</div>
-            <div class="alert-detail">Score: 87 | Posicion: #3 | Publicaciones: 24 | Primera aparicion: hace 2h</div>
-          </div>
-          <div class="alert-item alert-entity">
-            <div class="alert-type" style="color: #4ade80;">&#128200; ENTIDAD EN SUBIDA</div>
-            <div class="alert-title">Kylian Mbappe</div>
-            <div class="alert-detail">Score: 72 (+35) | Posicion: #5 (era #18) | Publicaciones: 16</div>
-          </div>
-          <div class="alert-item alert-flash">
-            <div class="alert-type" style="color: #ef4444;">&#9889; ENTIDAD FLASH (1h)</div>
-            <div class="alert-title">Carlos Alcaraz</div>
-            <div class="alert-detail">Apariciones: 4 en 1h | Score: 95 | Posicion: #3 | Publicaciones: 8</div>
-            <div class="alert-enrich">
-              <div class="alert-enrich-title">&#128038; X/Twitter Trends</div>
-              <ul>
-                <li>&bull; <a href="#">Alcaraz</a> &mdash; #4 en X</li>
-              </ul>
-              <div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios publicando</div>
-              <ul>
-                <li>&bull; <a href="#">Marca: "Alcaraz gana el Monte Carlo Masters"</a> <em>(Marca)</em></li>
-                <li>&bull; <a href="#">AS: "Historico triunfo de Alcaraz sobre Sinner"</a> <em>(AS)</em></li>
-              </ul>
-            </div>
-          </div>
-          <div class="alert-item alert-spike">
-            <div class="alert-type" style="color: #facc15;">&#128293; ENTIDAD EN SPIKE</div>
-            <div class="alert-title">Pedro Sanchez</div>
-            <div class="alert-detail">Apariciones: 4 en 2h | Score: 100 | Posicion: #22 | Publicaciones: 11</div>
-            <div class="alert-enrich">
-              <div class="alert-enrich-title">&#128279; Google Trends</div>
-              <ul>
-                <li>&bull; <strong>Pedro Sanchez</strong> &mdash; 200,000+ busquedas</li>
-              </ul>
-              <div class="alert-enrich-title" style="margin-top:6px">&#128038; X/Twitter Trends</div>
-              <ul>
-                <li>&bull; <a href="#">Sanchez</a> &mdash; #7 en X</li>
-              </ul>
-              <div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios publicando</div>
-              <ul>
-                <li>&bull; <a href="#">El Pais: "Sanchez convoca consejo extraordinario..."</a> <em>(El Pais)</em></li>
-                <li>&bull; <a href="#">Marca: "Sanchez asiste al partido del Real Madrid..."</a> <em>(Marca)</em></li>
-                <li>&bull; <a href="#">El Mundo: "El presidente negocia con Bruselas..."</a> <em>(El Mundo)</em></li>
-              </ul>
-            </div>
-          </div>
-          <div class="alert-item alert-entity">
-            <div class="alert-type" style="color: #4ade80;">&#128640; ENTIDAD EN ASCENSO</div>
-            <div class="alert-title">Kylian Mbappe</div>
-            <div class="alert-detail">Apariciones: 4 en 6h | Score: 85 | Posicion: #5 | Publicaciones: 16</div>
-            <div class="alert-enrich">
-              <div class="alert-enrich-title">&#128279; Matches en Google Trends</div>
-              <ul>
-                <li>&bull; <strong>Mbappe</strong> &mdash; 500,000+ busquedas</li>
-              </ul>
-              <div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios publicando</div>
-              <ul>
-                <li>&bull; <a href="#">Marca: "Mbappe confirma su fichaje por el Real Madrid..."</a> <em>(Marca)</em></li>
-                <li>&bull; <a href="#">AS: "La Liga se frota las manos con Mbappe..."</a> <em>(AS)</em></li>
-              </ul>
-            </div>
-          </div>
-          <div class="alert-item alert-category">
-            <div class="alert-type" style="color: #60a5fa;">&#128202; SPIKE EN CATEGORIA</div>
-            <div class="alert-title">Deportes</div>
-            <div class="alert-detail">Score +22 (de 65 a 87) | Publicaciones: 48 (+60%) | Posicion: #1 (era #4)</div>
-          </div>
-          <div class="alert-item alert-day-spike">
-            <div class="alert-type" style="color: #ec4899;">&#128680; SPIKE 24H EN CATEGORIA</div>
-            <div class="alert-title">Politica</div>
-            <div class="alert-detail">Score +40 en las ultimas 24h (de 25 a 65) | Publicaciones: 220 (+180%)</div>
-            <div class="alert-enrich">
-              <div class="alert-enrich-title">&#128240; Ejemplos de noticias</div>
-              <ul>
-                <li>&bull; <a href="#">"Congreso aprueba presupuestos con enmiendas de ERC"</a> <em>(El Pais)</em></li>
-                <li>&bull; <a href="#">"Vox presenta mocion de censura"</a> <em>(ABC)</em></li>
-                <li>&bull; <a href="#">"Sanchez anuncia convocatoria electoral"</a> <em>(El Mundo)</em></li>
-              </ul>
-            </div>
-          </div>
-          <div class="alert-item alert-headline">
-            <div class="alert-type" style="color: #fb923c;">&#128240; PATRON DE TITULAR</div>
-            <div class="alert-title">"fichaje sorpresa"</div>
-            <div class="alert-detail">Encontrado en 5 titulos: "El fichaje sorpresa del Barcelona...", "Fichaje sorpresa en el Real Madrid...", ...</div>
-          </div>
-          <div class="alert-item alert-correlation">
-            <div class="alert-type" style="color: #a78bfa;">&#128279; TRENDS &#8596; DISCOVER</div>
-            <div class="alert-title">Mbappe (Google Trends) &#8594; Kylian Mbappe (Discover)</div>
-            <div class="alert-detail">Trafico: 200,000+ | Similitud: 89% | 8 paginas mencionan "Mbappe"</div>
-          </div>
-          <div class="alert-item alert-media">
-            <div class="alert-type" style="color: #f87171;">&#128225; COBERTURA MEDIATICA (ENTIDAD)</div>
-            <div class="alert-title">Kylian Mbappe: publicada 6 veces</div>
-            <div class="alert-detail">Medios (4): Marca &bull; AS &bull; Sport &bull; Mundo Deportivo</div>
-            <div class="alert-enrich">
-              <div class="alert-enrich-title">&#128240; Titulares</div>
-              <ul>
-                <li>&bull; <a href="#">"Mbappe confirma su fichaje por el Real Madrid"</a> <em>(Marca)</em></li>
-                <li>&bull; <a href="#">"La Liga se frota las manos con Mbappe"</a> <em>(AS)</em></li>
-                <li>&bull; <a href="#">"Mbappe llega a Madrid esta semana"</a> <em>(Sport)</em></li>
-                <li>&bull; <a href="#">"Florentino cierra el fichaje del ano"</a> <em>(Mundo Deportivo)</em></li>
-              </ul>
-            </div>
-          </div>
+        <div class="card-body" id="live-alerts">
+          <div class="loading"><div class="spinner"></div><br>Cargando alertas en vivo desde Redis...</div>
+        </div>
+      </div>
+
+      <div class="card full-width" style="margin-top: 20px;">
+        <div class="card-header">
+          <h2>&#128202; Categorias (spike 24h)</h2>
+          <span class="badge badge-blue" id="live-cat-count">Cargando...</span>
+        </div>
+        <div class="card-body" id="live-categories">
+          <div class="loading"><div class="spinner"></div><br>Cargando categorias...</div>
         </div>
       </div>
     </div>
@@ -348,6 +254,101 @@
       }
     }
 
+    function escapeHtml(s) {
+      return (s || '').replace(/[&<>"']/g, function(c) {
+        return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+      });
+    }
+
+    async function loadLiveAlerts() {
+      try {
+        var res = await fetch('/api/live-alerts');
+        if (!res.ok) throw new Error('http ' + res.status);
+        var data = await res.json();
+
+        // Entities
+        var entities = data.entities || [];
+        document.getElementById('live-count').textContent = entities.length + ' activas / ' + data.totals.entitiesTracked + ' tracked';
+
+        if (entities.length === 0) {
+          document.getElementById('live-alerts').innerHTML =
+            '<div class="loading">Sin entidades en flash/spike/ascending ahora mismo.<br><br>' +
+            '<small>Ultimo poll Discover: ' + (data.lastPollDiscover || 'nunca') + '</small></div>';
+        } else {
+          var html = entities.map(function(e) {
+            var statusMap = {
+              flash: { cls: 'alert-flash', icon: '&#9889;', label: 'FLASH (1h)', color: '#ef4444' },
+              spike: { cls: 'alert-spike', icon: '&#128293;', label: 'SPIKE (2h)', color: '#facc15' },
+              ascending: { cls: 'alert-entity', icon: '&#128640;', label: 'ASCENSO (6h)', color: '#4ade80' }
+            };
+            var st = statusMap[e.status] || statusMap.ascending;
+            var appearanceInfo = e.status === 'flash' ? (e.appearancesLastHour + ' en 1h') :
+                                 e.status === 'spike' ? (e.appearancesLast2h + ' en 2h') :
+                                 (e.appearancesLast6h + ' en 6h');
+
+            var enrichHtml = '';
+            var hasEnrich = (e.matchingGoogleTrends.length + e.matchingXTrends.length + e.matchingArticles.length) > 0;
+            if (hasEnrich) {
+              enrichHtml += '<div class="alert-enrich">';
+              if (e.matchingGoogleTrends.length > 0) {
+                enrichHtml += '<div class="alert-enrich-title">&#128279; Google Trends</div><ul>';
+                e.matchingGoogleTrends.forEach(function(t) {
+                  enrichHtml += '<li>&bull; <strong>' + escapeHtml(t.title) + '</strong>' +
+                    (t.approxTraffic > 0 ? ' &mdash; ' + t.approxTraffic.toLocaleString() + '+ busquedas' : '') + '</li>';
+                });
+                enrichHtml += '</ul>';
+              }
+              if (e.matchingXTrends.length > 0) {
+                enrichHtml += '<div class="alert-enrich-title" style="margin-top:6px">&#128038; X/Twitter Trends</div><ul>';
+                e.matchingXTrends.forEach(function(t) {
+                  enrichHtml += '<li>&bull; <strong>' + escapeHtml(t.topic) + '</strong> &mdash; #' + t.rank + ' en X</li>';
+                });
+                enrichHtml += '</ul>';
+              }
+              if (e.matchingArticles.length > 0) {
+                enrichHtml += '<div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios publicando</div><ul>';
+                e.matchingArticles.forEach(function(a) {
+                  enrichHtml += '<li>&bull; <a href="' + escapeHtml(a.link) + '" target="_blank">' + escapeHtml(a.title) + '</a> <em>(' + escapeHtml(a.feedName) + ')</em></li>';
+                });
+                enrichHtml += '</ul>';
+              }
+              enrichHtml += '</div>';
+            }
+
+            return '<div class="alert-item ' + st.cls + '">' +
+              '<div class="alert-type" style="color:' + st.color + '">' + st.icon + ' ' + st.label + (e.category ? ' &mdash; ' + escapeHtml(e.category) : '') + '</div>' +
+              '<div class="alert-title">' + escapeHtml(e.name) + '</div>' +
+              '<div class="alert-detail">Apariciones: ' + appearanceInfo + ' | Score: ' + e.score + ' | Posicion: #' + e.position + ' | Publicaciones: ' + e.publications + '</div>' +
+              enrichHtml +
+            '</div>';
+          }).join('');
+          document.getElementById('live-alerts').innerHTML = html;
+        }
+
+        // Categories
+        var cats = data.categories || [];
+        document.getElementById('live-cat-count').textContent = cats.length + ' tracked';
+        if (cats.length === 0) {
+          document.getElementById('live-categories').innerHTML = '<div class="loading">Sin categorias tracked aun</div>';
+        } else {
+          var catHtml = cats.map(function(c) {
+            var deltaText = c.scoreDelta24h == null ? 'Sin baseline 24h aun' :
+              (c.scoreDelta24h > 0 ? '+' : '') + c.scoreDelta24h + ' en 24h (de ' + c.score24hAgo + ' a ' + c.score + ')';
+            var cls = c.scoreDelta24h != null && c.scoreDelta24h >= 30 ? 'alert-day-spike' :
+                      c.scoreDelta24h != null && c.scoreDelta24h >= 15 ? 'alert-category' : 'alert-entity';
+            return '<div class="alert-item ' + cls + '">' +
+              '<div class="alert-title">' + escapeHtml(c.name) + ' <span style="color:#666;font-weight:400">(#' + c.position + ')</span></div>' +
+              '<div class="alert-detail">' + deltaText + ' | Publicaciones: ' + c.publications + ' | Muestras: ' + c.historyPoints + '/24h</div>' +
+            '</div>';
+          }).join('');
+          document.getElementById('live-categories').innerHTML = catHtml;
+        }
+      } catch(e) {
+        document.getElementById('live-alerts').innerHTML = '<div class="loading">Error cargando alertas: ' + escapeHtml(e.message) + '</div>';
+        document.getElementById('live-categories').innerHTML = '<div class="loading">Error</div>';
+      }
+    }
+
     async function loadRoutes() {
       try {
         var res = await fetch('/api/routing');
@@ -380,6 +381,10 @@
     loadXTrends();
     loadFeeds();
     loadRoutes();
+    loadLiveAlerts();
+
+    // Auto-refresh live alerts every 60s
+    setInterval(loadLiveAlerts, 60000);
   </script>
 </body>
 </html>
