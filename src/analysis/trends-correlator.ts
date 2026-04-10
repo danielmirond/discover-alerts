@@ -46,9 +46,9 @@ export function detectTrendsCorrelations(
     let bestScore = 0;
 
     for (const entity of entities) {
-      const sim = diceCoefficient(trend.title, entity.name);
+      const sim = diceCoefficient(trend.title, entity.entity);
       if (sim >= threshold) {
-        matchingEntities.push(entity.name);
+        matchingEntities.push(entity.entity);
         bestScore = Math.max(bestScore, sim);
       }
     }

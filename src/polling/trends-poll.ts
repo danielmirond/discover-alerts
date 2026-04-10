@@ -19,37 +19,19 @@ export async function runTrendsPoll(): Promise<void> {
 
   // Cross-reference with cached Discover data
   const state = getState();
-  const cachedEntities = Object.entries(state.entities).map(([name, snap]) => ({
-    name,
+  const cachedEntities = Object.entries(state.entities).map(([entityName, snap]) => ({
+    entity: entityName,
+    country: 'ES',
     score: snap.score,
     score_decimal: snap.scoreDecimal,
     position: snap.position,
     publications: snap.publications,
-    firstviewed: snap.firstSeen,
-    lastviewed: snap.lastUpdated,
   }));
   const cachedPages = Object.entries(state.pages).map(([url, snap]) => ({
     url,
     title: snap.title,
-    title_original: snap.title,
-    title_english: '',
-    image: '',
-    snippet: '',
-    publisher: '',
-    domain: '',
-    category: '',
-    story_type: '',
     score: snap.score,
-    score_decimal: 0,
     position: snap.position,
-    publications: 0,
-    firstviewed: '',
-    lastviewed: snap.lastUpdated,
-    is_new: false,
-    is_video: false,
-    is_webstory: false,
-    entities: [],
-    ai_overviews: [],
   }));
 
   if (cachedEntities.length > 0 || cachedPages.length > 0) {

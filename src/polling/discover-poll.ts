@@ -4,6 +4,7 @@ import {
   fetchLivePages,
   fetchLiveDomains,
   fetchLiveSocial,
+  fetchCategoriesList,
 } from '../sources/discoversnoop.js';
 import { detectEntityAlerts } from '../analysis/entity-detector.js';
 import { detectCategoryAlerts } from '../analysis/category-detector.js';
@@ -14,6 +15,24 @@ import { formatAlerts } from '../alerts/formatter.js';
 import { sendBatch } from '../alerts/slack.js';
 import { getState, updateState, saveState } from '../state/store.js';
 import type { Alert } from '../types.js';
+
+let categoryNamesCache: Record<number, string> | null = null;
+
+async function getCategoryNames(): Promise<Record<number, string>> {
+  if (categoryNamesCache) return categoryNamesCache;
+  try {
+    const list = await fetchCategoriesList();
+    const map: Record<number, string> = {};
+    for (const c of list as any[]) {
+      if (c?.id != null && c?.name) map[c.id] = c.name;
+    }
+    categoryNamesCache = map;
+    return map;
+  } catch (err) {
+    console.warn('[discover] Could not fetch categories list:', (err as Error).message);
+    return {};
+  }
+}
 
 export async function runDiscoverPoll(): Promise<void> {
   console.log('[discover] Starting poll...');
@@ -41,9 +60,10 @@ export async function runDiscoverPoll(): Promise<void> {
   console.log(`[discover] Fetched: ${ent.length} entities, ${cat.length} categories, ${pag.length} pages, ${dom.length} domains, ${soc.length} social`);
 
   // Run detectors
+  const categoryNames = await getCategoryNames();
   const alerts: Alert[] = [];
   alerts.push(...detectEntityAlerts(ent));
-  alerts.push(...detectCategoryAlerts(cat));
+  alerts.push(...detectCategoryAlerts(cat, categoryNames));
   alerts.push(...detectHeadlinePatterns(pag));
 
   // Cross-reference with cached trends data

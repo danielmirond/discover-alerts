@@ -8,70 +8,70 @@ export interface ApiResponse<T> {
   info?: unknown[];
 }
 
-// DiscoverSnoop data types
+// DiscoverSnoop data types (matching actual API response)
 export interface DiscoverEntity {
-  name: string;
+  entity: string;
+  country: string;
   score: number;
   score_decimal: number;
   position: number;
   publications: number;
-  firstviewed: string;
-  lastviewed: string;
 }
 
 export interface DiscoverCategory {
   id: number;
-  name: string;
+  is_root: boolean;
   score: number;
   score_decimal: number;
   position: number;
   publications: number;
-  firstviewed: string;
-  lastviewed: string;
 }
 
 export interface DiscoverPage {
   url: string;
   title: string;
-  title_original: string;
-  title_english: string;
-  image: string;
-  snippet: string;
-  publisher: string;
-  domain: string;
-  category: string;
-  story_type: string;
+  title_original?: string;
+  title_english?: string;
+  image?: string;
+  snippet?: string;
+  publisher?: string;
+  domain?: string;
+  category?: string | number;
+  story_type?: string;
   score: number;
-  score_decimal: number;
-  position: number;
-  publications: number;
-  firstviewed: string;
-  lastviewed: string;
-  is_new: boolean;
-  is_video: boolean;
-  is_webstory: boolean;
-  entities: string[];
-  ai_overviews: string[];
+  score_decimal?: number;
+  position?: number;
+  publications?: number;
+  firstviewed?: string;
+  lastviewed?: string;
+  is_new?: boolean;
+  is_video?: boolean;
+  is_webstory?: boolean;
+  entities?: string[];
+  ai_overviews?: string[];
 }
 
 export interface DiscoverDomain {
-  domain: string;
+  publisher: string;
+  publisher_url: string;
   score: number;
   score_decimal: number;
   position: number;
   publications: number;
-  firstviewed: string;
-  lastviewed: string;
+  firstviewed?: string;
+  lastviewed?: string;
 }
 
 export interface DiscoverSocial {
+  platform: string;
   channel: string;
+  publisher_url: string | null;
   score: number;
   score_decimal: number;
   position: number;
   publications: number;
-  firstviewed: string;
-  lastviewed: string;
+  firstviewed?: string;
+  lastviewed?: string;
 }
 
 export interface CategoryListItem {

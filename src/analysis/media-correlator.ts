@@ -66,19 +66,19 @@ export function detectMediaDiscoverCorrelations(
     // Check against Discover entities
     for (const entity of entities) {
       const articleNorm = normalizeForSubstring(article.title);
-      const entityNorm = normalizeForSubstring(entity.name);
+      const entityNorm = normalizeForSubstring(entity.entity);
 
       // Substring match: entity name appears in article title
       if (articleNorm.includes(entityNorm) && entityNorm.length > 3) {
-        matchingEntities.push(entity.name);
+        matchingEntities.push(entity.entity);
         bestScore = Math.max(bestScore, 0.9);
         continue;
       }
 
       // Fuzzy match
-      const sim = diceCoefficient(article.title, entity.name);
+      const sim = diceCoefficient(article.title, entity.entity);
       if (sim >= threshold) {
-        matchingEntities.push(entity.name);
+        matchingEntities.push(entity.entity);
         bestScore = Math.max(bestScore, sim);
       }
     }

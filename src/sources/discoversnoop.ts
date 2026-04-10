@@ -30,17 +30,19 @@ async function fetchEndpoint<T>(
     throw new Error(`DiscoverSnoop ${path} HTTP ${res.status}: ${rawText}`);
   }
 
-  let json: ApiResponse<T>;
+  let parsed: unknown;
   try {
-    json = JSON.parse(rawText) as ApiResponse<T>;
+    parsed = JSON.parse(rawText);
   } catch {
     throw new Error(`DiscoverSnoop ${path} invalid JSON: ${rawText.slice(0, 500)}`);
   }
 
-  if (!json.status) {
-    console.error(`[discoversnoop] ${path} full response:`, JSON.stringify(json).slice(0, 1000));
+  // API wraps the response in an array: [{ status, data, ... }]
+  const json = (Array.isArray(parsed) ? parsed[0] : parsed) as ApiResponse<T>;
+
+  if (!json?.status) {
     throw new Error(
-      `DiscoverSnoop ${path} status=false | state=${json.transaction_state} | full=${JSON.stringify(json).slice(0, 300)}`,
+      `DiscoverSnoop ${path} status=false: ${JSON.stringify(json).slice(0, 300)}`,
     );
   }
 

@@ -2,7 +2,10 @@ import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
 import type { DiscoverCategory, CategoryAlert, CategorySnapshot } from '../types.js';
 
-export function detectCategoryAlerts(categories: DiscoverCategory[]): CategoryAlert[] {
+export function detectCategoryAlerts(
+  categories: DiscoverCategory[],
+  categoryNames: Record<number, string> = {},
+): CategoryAlert[] {
   const state = getState();
   const prev = state.categories;
   const alerts: CategoryAlert[] = [];
@@ -10,8 +13,9 @@ export function detectCategoryAlerts(categories: DiscoverCategory[]): CategoryAl
   const next: Record<number, CategorySnapshot> = {};
 
   for (const c of categories) {
+    const name = categoryNames[c.id] ?? prev[c.id]?.name ?? `Category ${c.id}`;
     next[c.id] = {
-      name: c.name,
+      name,
       score: c.score,
       scoreDecimal: c.score_decimal,
       position: c.position,
@@ -35,7 +39,7 @@ export function detectCategoryAlerts(categories: DiscoverCategory[]): CategoryAl
         type: 'category',
         subtype: 'spike',
         id: c.id,
-        name: c.name,
+        name,
         score: c.score,
         prevScore: old.score,
         position: c.position,
