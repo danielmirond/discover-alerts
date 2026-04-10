@@ -24,14 +24,24 @@ async function fetchEndpoint<T>(
     headers: { Authorization: `Bearer ${token}` },
   });
 
+  const rawText = await res.text();
+
   if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`DiscoverSnoop ${path} ${res.status}: ${text}`);
+    throw new Error(`DiscoverSnoop ${path} HTTP ${res.status}: ${rawText}`);
   }
 
-  const json = (await res.json()) as ApiResponse<T>;
+  let json: ApiResponse<T>;
+  try {
+    json = JSON.parse(rawText) as ApiResponse<T>;
+  } catch {
+    throw new Error(`DiscoverSnoop ${path} invalid JSON: ${rawText.slice(0, 500)}`);
+  }
+
   if (!json.status) {
-    throw new Error(`DiscoverSnoop ${path} returned status=false: ${json.transaction_state}`);
+    console.error(`[discoversnoop] ${path} full response:`, JSON.stringify(json).slice(0, 1000));
+    throw new Error(
+      `DiscoverSnoop ${path} status=false | state=${json.transaction_state} | full=${JSON.stringify(json).slice(0, 300)}`,
+    );
   }
 
   return json.data ?? [];
