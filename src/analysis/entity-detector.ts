@@ -175,6 +175,20 @@ export function detectEntityAlerts(
   const countInWindow = (timestamps: string[], windowMs: number): number =>
     timestamps.filter(ts => nowMs - new Date(ts).getTime() <= windowMs).length;
 
+  // Preserve old entities that weren't in this poll but still have recent appearances.
+  // Without this, an entity that appears in poll #1 and #3 but not #2 would lose its
+  // history, breaking the flash/spike/ascending detection for intermittent entities.
+  const currentEntitySet = new Set(entities.map(e => e.entity));
+  for (const [name, oldSnap] of Object.entries(prev)) {
+    if (currentEntitySet.has(name)) continue;
+    const prunedAppearances = (oldSnap.appearances ?? []).filter(
+      ts => nowMs - new Date(ts).getTime() <= ascendingWindowMs,
+    );
+    // Drop entities whose appearances all expired
+    if (prunedAppearances.length === 0) continue;
+    next[name] = { ...oldSnap, appearances: prunedAppearances };
+  }
+
   for (const e of entities) {
     const old = prev[e.entity];
     const prevAppearances = old?.appearances ?? [];

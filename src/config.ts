@@ -23,7 +23,7 @@ export function getConfig() {
       baseUrl: 'https://api.discoversnoop.com',
       country: env('DISCOVER_COUNTRY', 'ES'),
       hours: envInt('DISCOVER_HOURS', 6),
-      lines: envInt('DISCOVER_LINES', 100),
+      lines: envInt('DISCOVER_LINES', 1000),
     },
     slack: {
       // Default webhook - used as fallback when no route matches in routing.json
