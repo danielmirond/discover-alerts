@@ -5,18 +5,25 @@ on:
     - cron: '*/10 * * * *'
   workflow_dispatch:
 
+concurrency:
+  group: discover-poll
+  cancel-in-progress: true
+
 jobs:
   poll:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    environment: production
+    timeout-minutes: 3
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
-      - run: npm ci
+
+      - run: npm ci --prefer-offline
+
       - run: npx tsx src/run-poll.ts discover
         env:
           DISCOVERSNOOP_TOKEN: ${{ secrets.DISCOVERSNOOP_TOKEN }}
