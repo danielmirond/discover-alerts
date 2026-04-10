@@ -11,8 +11,7 @@ import { detectCategoryAlerts } from '../analysis/category-detector.js';
 import { detectHeadlinePatterns } from '../analysis/headline-patterns.js';
 import { detectTrendsCorrelations } from '../analysis/trends-correlator.js';
 import { dedup } from '../analysis/dedup.js';
-import { formatAlerts } from '../alerts/formatter.js';
-import { sendBatch } from '../alerts/slack.js';
+import { dispatchAlerts } from '../alerts/dispatch.js';
 import { getState, updateState, saveState } from '../state/store.js';
 import type { Alert } from '../types.js';
 
@@ -62,7 +61,7 @@ export async function runDiscoverPoll(): Promise<void> {
   // Run detectors
   const categoryNames = await getCategoryNames();
   const alerts: Alert[] = [];
-  alerts.push(...detectEntityAlerts(ent));
+  alerts.push(...detectEntityAlerts(ent, pag, categoryNames));
   alerts.push(...detectCategoryAlerts(cat, categoryNames));
   alerts.push(...detectHeadlinePatterns(pag));
 
@@ -79,12 +78,11 @@ export async function runDiscoverPoll(): Promise<void> {
     alerts.push(...detectTrendsCorrelations(cachedTrends, ent, pag));
   }
 
-  // Dedup and send
+  // Dedup, route, and send
   const filtered = dedup(alerts);
   if (filtered.length > 0) {
     console.log(`[discover] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
-    const messages = formatAlerts(filtered);
-    await sendBatch(messages);
+    await dispatchAlerts(filtered, 'discover');
   } else {
     console.log(`[discover] No new alerts (${alerts.length} suppressed by dedup)`);
   }

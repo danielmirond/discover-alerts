@@ -79,6 +79,12 @@
     .config-item { display: flex; flex-direction: column; gap: 2px; }
     .config-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
     .config-value { font-size: 14px; color: #fff; font-weight: 600; font-family: 'SF Mono', monospace; }
+    .route-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #222; }
+    .route-item:last-child { border-bottom: none; }
+    .route-arrow { color: #555; font-size: 14px; }
+    .route-name { font-weight: 600; font-size: 14px; color: #fff; min-width: 140px; }
+    .route-cats { color: #888; font-size: 12px; flex: 1; }
+    .route-env { font-family: 'SF Mono', monospace; font-size: 11px; color: #4ade80; background: rgba(74,222,128,0.08); padding: 3px 8px; border-radius: 4px; }
   </style>
 </head>
 <body>
@@ -107,6 +113,16 @@
           <div class="config-item"><span class="config-label">Ventana Dedup</span><span class="config-value">6 horas</span></div>
           <div class="config-item"><span class="config-label">Max resultados/poll</span><span class="config-value">100 por endpoint</span></div>
         </div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128273; Routing Slack por Categoria</h2>
+        <span class="badge badge-green" id="routes-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="routes-list">
+        <div class="loading"><div class="spinner"></div><br>Cargando rutas...</div>
       </div>
     </div>
 
@@ -196,9 +212,18 @@
             <div class="alert-detail">Trafico: 200,000+ | Similitud: 89% | 8 paginas mencionan "Mbappe"</div>
           </div>
           <div class="alert-item alert-media">
-            <div class="alert-type" style="color: #f87171;">&#128225; MEDIO &#8596; DISCOVER</div>
-            <div class="alert-title">Marca: "Mbappe confirma su fichaje por..."</div>
-            <div class="alert-detail">Entidades Discover: Kylian Mbappe, Real Madrid | Similitud: 92% | Deportivo</div>
+            <div class="alert-type" style="color: #f87171;">&#128225; COBERTURA MEDIATICA (ENTIDAD)</div>
+            <div class="alert-title">Kylian Mbappe: publicada 6 veces</div>
+            <div class="alert-detail">Medios (4): Marca &bull; AS &bull; Sport &bull; Mundo Deportivo</div>
+            <div class="alert-enrich">
+              <div class="alert-enrich-title">&#128240; Titulares</div>
+              <ul>
+                <li>&bull; <a href="#">"Mbappe confirma su fichaje por el Real Madrid"</a> <em>(Marca)</em></li>
+                <li>&bull; <a href="#">"La Liga se frota las manos con Mbappe"</a> <em>(AS)</em></li>
+                <li>&bull; <a href="#">"Mbappe llega a Madrid esta semana"</a> <em>(Sport)</em></li>
+                <li>&bull; <a href="#">"Florentino cierra el fichaje del ano"</a> <em>(Mundo Deportivo)</em></li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -257,8 +282,37 @@
       }
     }
 
+    async function loadRoutes() {
+      try {
+        var res = await fetch('/api/routing');
+        var data = await res.json();
+        var routes = data.routes;
+        document.getElementById('routes-count').textContent = (routes.length + 1) + ' rutas';
+        var html = '';
+
+        routes.forEach(function(r) {
+          html += '<div class="route-item">' +
+            '<div class="route-name">' + r.name + '</div>' +
+            '<div class="route-arrow">&rarr;</div>' +
+            '<div class="route-cats">' + r.categories.join(', ') + '</div>' +
+            '<div class="route-env">$' + r.webhookEnv + '</div>' +
+          '</div>';
+        });
+        html += '<div class="route-item">' +
+          '<div class="route-name" style="color:#888">Default (fallback)</div>' +
+          '<div class="route-arrow">&rarr;</div>' +
+          '<div class="route-cats">todo lo que no matchee arriba</div>' +
+          '<div class="route-env">$SLACK_WEBHOOK_URL</div>' +
+        '</div>';
+        document.getElementById('routes-list').innerHTML = html;
+      } catch(e) {
+        document.getElementById('routes-list').innerHTML = '<div class="loading">Error cargando rutas</div>';
+      }
+    }
+
     loadTrends();
     loadFeeds();
+    loadRoutes();
   </script>
 </body>
 </html>

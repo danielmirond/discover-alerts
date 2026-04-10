@@ -145,6 +145,7 @@ export interface AppState {
   headlinePatterns: Record<string, number>;
   dedupHashes: Record<string, number>;
   mediaArticles: Record<string, { feedName: string; feedCategory: string; title: string; link: string; firstSeen: string }>;
+  entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)
   lastPollDiscover: string | null;
   lastPollTrends: string | null;
   lastPollMedia: string | null;
@@ -174,6 +175,7 @@ export interface EntityAlert {
   prevPosition: number;
   publications: number;
   firstviewed: string;
+  category?: string;               // derived from pages (for routing)
   appearanceCount?: number;        // only for 'ascending' subtype
   windowHours?: number;            // only for 'ascending' subtype
   matchingTrends?: MatchedTrend[]; // enrichment for 'ascending'
@@ -199,6 +201,7 @@ export interface HeadlinePatternAlert {
   count: number;
   prevCount: number;
   matchingTitles: string[];
+  category?: string; // derived from matching pages
 }
 
 export interface TrendsCorrelationAlert {
@@ -223,7 +226,7 @@ export type Alert =
   | HeadlinePatternAlert
   | TrendsCorrelationAlert
   | TrendsNewTopicAlert
-  | MediaDiscoverCorrelationAlert;
+  | EntityCoverageAlert;
 
 // Media RSS types
 export interface MediaFeed {
@@ -241,15 +244,18 @@ export interface MediaArticle {
   description: string;
 }
 
-export interface MediaDiscoverCorrelationAlert {
-  type: 'media_discover_correlation';
-  articleTitle: string;
-  articleLink: string;
-  feedName: string;
-  feedCategory: string;
-  matchingEntities: string[];
-  matchingPageTitles: string[];
-  similarityScore: number;
+export interface EntityCoverageAlert {
+  type: 'entity_coverage';
+  entityName: string;
+  coverageCount: number;
+  mediaOutlets: string[];
+  articles: Array<{
+    title: string;
+    link: string;
+    feedName: string;
+    feedCategory: string;
+  }>;
+  category?: string; // derived entity category (for routing)
 }
 
 // Poll results

@@ -2,11 +2,55 @@ import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
 import type {
   DiscoverEntity,
+  DiscoverPage,
   EntityAlert,
   EntitySnapshot,
   MatchedTrend,
   MatchedMediaArticle,
 } from '../types.js';
+
+/**
+ * Builds a map of entity name -> most frequent category based on
+ * DiscoverPages that mention each entity. Uses majority vote.
+ */
+function buildEntityCategoryMap(
+  pages: DiscoverPage[],
+  categoryNames: Record<number, string>,
+): Record<string, string> {
+  const counts: Record<string, Record<string, number>> = {};
+
+  for (const page of pages) {
+    if (!page.entities || page.entities.length === 0) continue;
+
+    // Resolve category name (page.category can be a name string or numeric id)
+    let categoryName: string | undefined;
+    if (typeof page.category === 'number') {
+      categoryName = categoryNames[page.category];
+    } else if (typeof page.category === 'string' && page.category.trim()) {
+      categoryName = page.category;
+    }
+    if (!categoryName) continue;
+
+    for (const entityName of page.entities) {
+      if (!counts[entityName]) counts[entityName] = {};
+      counts[entityName][categoryName] = (counts[entityName][categoryName] ?? 0) + 1;
+    }
+  }
+
+  const result: Record<string, string> = {};
+  for (const [entityName, catCounts] of Object.entries(counts)) {
+    let bestCat = '';
+    let bestCount = 0;
+    for (const [cat, count] of Object.entries(catCounts)) {
+      if (count > bestCount) {
+        bestCat = cat;
+        bestCount = count;
+      }
+    }
+    if (bestCat) result[entityName] = bestCat;
+  }
+  return result;
+}
 
 // Dice coefficient for fuzzy matching
 function diceCoefficient(a: string, b: string): number {
@@ -80,13 +124,20 @@ function enrichAscending(
   };
 }
 
-export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
+export function detectEntityAlerts(
+  entities: DiscoverEntity[],
+  pages: DiscoverPage[] = [],
+  categoryNames: Record<number, string> = {},
+): EntityAlert[] {
   const state = getState();
   const prev = state.entities;
   const alerts: EntityAlert[] = [];
   const now = new Date().toISOString();
   const nowMs = Date.now();
   const next: Record<string, EntitySnapshot> = {};
+
+  // Derive category for each entity from pages that mention it
+  const entityCategoryMap = buildEntityCategoryMap(pages, categoryNames);
 
   const ascendingMin = config.thresholds.entityAscendingMinAppearances;
   const ascendingWindowMs = config.thresholds.entityAscendingWindowHours * 3600_000;
@@ -100,6 +151,7 @@ export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
   for (const e of entities) {
     const old = prev[e.entity];
     const prevAppearances = old?.appearances ?? [];
+    const entityCategory = entityCategoryMap[e.entity];
 
     // Prune appearances outside the longest window we care about (ascending)
     const appearances = [
@@ -131,6 +183,7 @@ export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
           prevPosition: 0,
           publications: e.publications,
           firstviewed: next[e.entity].firstSeen,
+          category: entityCategory,
         });
       }
       continue;
@@ -150,6 +203,7 @@ export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
         prevPosition: old.position,
         publications: e.publications,
         firstviewed: old.firstSeen,
+        category: entityCategory,
       });
     }
 
@@ -173,6 +227,7 @@ export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
         firstviewed: old.firstSeen,
         appearanceCount: currSpikeCount,
         windowHours: config.thresholds.entitySpikeWindowHours,
+        category: entityCategory,
         ...enrichment,
       });
       continue; // spike takes precedence — don't also fire ascending
@@ -196,11 +251,16 @@ export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
         firstviewed: old.firstSeen,
         appearanceCount: currAscCount,
         windowHours: config.thresholds.entityAscendingWindowHours,
+        category: entityCategory,
         ...enrichment,
       });
     }
   }
 
-  updateState({ entities: next });
+  // Persist the entity→category mapping so other polls (media) can route correctly
+  updateState({
+    entities: next,
+    entityCategoryMap: { ...getState().entityCategoryMap, ...entityCategoryMap },
+  });
   return alerts;
 }

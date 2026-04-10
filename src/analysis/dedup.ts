@@ -14,8 +14,8 @@ function alertKey(alert: Alert): string {
       return `correlation:${alert.trendTitle}`;
     case 'trends_new_topic':
       return `trend_new:${alert.title}`;
-    case 'media_discover_correlation':
-      return `media:${alert.articleLink || alert.articleTitle}`;
+    case 'entity_coverage':
+      return `entity_coverage:${alert.entityName}`;
   }
 }
 

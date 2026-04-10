@@ -1,8 +1,7 @@
 import { fetchGoogleTrends } from '../sources/google-trends.js';
 import { detectNewTrends, detectTrendsCorrelations } from '../analysis/trends-correlator.js';
 import { dedup } from '../analysis/dedup.js';
-import { formatAlerts } from '../alerts/formatter.js';
-import { sendBatch } from '../alerts/slack.js';
+import { dispatchAlerts } from '../alerts/dispatch.js';
 import { getState, updateState, saveState } from '../state/store.js';
 import type { Alert } from '../types.js';
 
@@ -38,12 +37,11 @@ export async function runTrendsPoll(): Promise<void> {
     alerts.push(...detectTrendsCorrelations(trends, cachedEntities, cachedPages));
   }
 
-  // Dedup and send
+  // Dedup, route and send
   const filtered = dedup(alerts);
   if (filtered.length > 0) {
     console.log(`[trends] Sending ${filtered.length} alerts`);
-    const messages = formatAlerts(filtered);
-    await sendBatch(messages);
+    await dispatchAlerts(filtered, 'trends');
   } else {
     console.log(`[trends] No new alerts`);
   }

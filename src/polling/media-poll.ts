@@ -2,8 +2,7 @@ import { join } from 'node:path';
 import { loadFeeds, fetchAllFeeds } from '../sources/media-rss.js';
 import { detectMediaDiscoverCorrelations } from '../analysis/media-correlator.js';
 import { dedup } from '../analysis/dedup.js';
-import { formatAlerts } from '../alerts/formatter.js';
-import { sendBatch } from '../alerts/slack.js';
+import { dispatchAlerts } from '../alerts/dispatch.js';
 import { getState, updateState, saveState } from '../state/store.js';
 import type { Alert } from '../types.js';
 
@@ -49,7 +48,14 @@ export async function runMediaPoll(): Promise<void> {
   const alerts: Alert[] = [];
 
   if (cachedEntities.length > 0 || cachedPages.length > 0) {
-    alerts.push(...detectMediaDiscoverCorrelations(articles, cachedEntities, cachedPages));
+    alerts.push(
+      ...detectMediaDiscoverCorrelations(
+        articles,
+        cachedEntities,
+        cachedPages,
+        state.entityCategoryMap,
+      ),
+    );
   } else {
     console.log('[media] No Discover data cached yet, skipping correlation');
   }
@@ -57,8 +63,7 @@ export async function runMediaPoll(): Promise<void> {
   const filtered = dedup(alerts);
   if (filtered.length > 0) {
     console.log(`[media] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
-    const messages = formatAlerts(filtered);
-    await sendBatch(messages);
+    await dispatchAlerts(filtered, 'media');
   } else {
     console.log(`[media] No new alerts (${alerts.length} suppressed by dedup)`);
   }

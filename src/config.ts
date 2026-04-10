@@ -26,6 +26,7 @@ export function getConfig() {
       lines: envInt('DISCOVER_LINES', 100),
     },
     slack: {
+      // Default webhook - used as fallback when no route matches in routing.json
       webhookUrl: env('SLACK_WEBHOOK_URL'),
     },
     thresholds: {

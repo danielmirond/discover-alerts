@@ -147,22 +147,21 @@ function formatNewTrend(a: Extract<Alert, { type: 'trends_new_topic' }>): SlackB
   ];
 }
 
-function formatMediaCorrelation(a: Extract<Alert, { type: 'media_discover_correlation' }>): SlackBlock[] {
-  const parts: string[] = [];
-  parts.push(`*Articulo:* <${a.articleLink}|${a.articleTitle}>`);
-  parts.push(`*Medio:* ${a.feedName} (${a.feedCategory})`);
-
-  if (a.matchingEntities.length > 0) {
-    parts.push(`*Entidades Discover:* ${a.matchingEntities.join(', ')}`);
-  }
-  if (a.matchingPageTitles.length > 0) {
-    parts.push(`*Paginas Discover:*\n${a.matchingPageTitles.map(t => `• ${t}`).join('\n')}`);
-  }
+function formatEntityCoverage(a: Extract<Alert, { type: 'entity_coverage' }>): SlackBlock[] {
+  const outletList = a.mediaOutlets.join(' • ');
+  const articleLines = a.articles
+    .map(art => `• <${art.link}|${art.title}> _(${art.feedName})_`)
+    .join('\n');
 
   return [
-    header(`:satellite: Medio <-> Discover: ${a.feedName}`),
-    section(parts.join('\n')),
-    context(`Similitud: ${(a.similarityScore * 100).toFixed(0)}% | ${a.feedCategory} + DiscoverSnoop ES`),
+    header(`:satellite: ${a.entityName}: publicada ${a.coverageCount} veces`),
+    fields(
+      `*Entidad:* ${a.entityName}`,
+      `*Publicaciones:* ${a.coverageCount}`,
+      `*Medios (${a.mediaOutlets.length}):* ${outletList}`,
+    ),
+    section(`*Titulares:*\n${articleLines}`),
+    context(`Cobertura mediatica | DiscoverSnoop + RSS medios ES`),
   ];
 }
 
@@ -173,7 +172,7 @@ function formatSingleAlert(alert: Alert): SlackBlock[] {
     case 'headline_pattern': return formatHeadline(alert);
     case 'trends_correlation': return formatCorrelation(alert);
     case 'trends_new_topic': return formatNewTrend(alert);
-    case 'media_discover_correlation': return formatMediaCorrelation(alert);
+    case 'entity_coverage': return formatEntityCoverage(alert);
   }
 }
 

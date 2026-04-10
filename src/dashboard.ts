@@ -6,11 +6,21 @@ import type { MediaFeed } from './types.js';
 const PORT = 3333;
 const HTML_PATH = new URL('../public/index.html', import.meta.url).pathname;
 const FEEDS_PATH = new URL('../feeds.json', import.meta.url).pathname;
+const ROUTING_PATH = new URL('../routing.json', import.meta.url).pathname;
 
 async function loadFeeds(): Promise<MediaFeed[]> {
   try {
     const raw = await readFile(FEEDS_PATH, 'utf-8');
     return JSON.parse(raw).feeds;
+  } catch {
+    return [];
+  }
+}
+
+async function loadRouting(): Promise<any[]> {
+  try {
+    const raw = await readFile(ROUTING_PATH, 'utf-8');
+    return JSON.parse(raw).routes || [];
   } catch {
     return [];
   }
@@ -24,6 +34,10 @@ async function handleApi(path: string): Promise<object> {
   if (path === '/api/feeds') {
     const feeds = await loadFeeds();
     return { feeds };
+  }
+  if (path === '/api/routing') {
+    const routes = await loadRouting();
+    return { routes };
   }
   return { error: 'not found' };
 }
