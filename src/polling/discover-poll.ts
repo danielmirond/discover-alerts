@@ -37,62 +37,88 @@ async function getCategoryNames(): Promise<Record<number, string>> {
 export async function runDiscoverPoll(): Promise<void> {
   console.log('[discover] Starting poll...');
 
-  const [entities, categories, pages, domains, social] = await Promise.allSettled([
-    fetchLiveEntities(),
-    fetchLiveCategories(),
-    fetchLivePages(),
-    fetchLiveDomains(),
-    fetchLiveSocial(),
-  ]);
+  try {
+    console.time('[discover] fetch');
 
-  const ent = entities.status === 'fulfilled' ? entities.value : [];
-  const cat = categories.status === 'fulfilled' ? categories.value : [];
-  const pag = pages.status === 'fulfilled' ? pages.value : [];
-  const dom = domains.status === 'fulfilled' ? domains.value : [];
-  const soc = social.status === 'fulfilled' ? social.value : [];
+    const [entities, categories, pages, domains, social] = await Promise.allSettled([
+      fetchLiveEntities(),
+      fetchLiveCategories(),
+      fetchLivePages(),
+      fetchLiveDomains(),
+      fetchLiveSocial(),
+    ]);
 
-  if (entities.status === 'rejected') console.error('[discover] entities error:', entities.reason);
-  if (categories.status === 'rejected') console.error('[discover] categories error:', categories.reason);
-  if (pages.status === 'rejected') console.error('[discover] pages error:', pages.reason);
-  if (domains.status === 'rejected') console.error('[discover] domains error:', domains.reason);
-  if (social.status === 'rejected') console.error('[discover] social error:', social.reason);
+    console.timeEnd('[discover] fetch');
 
-  console.log(`[discover] Fetched: ${ent.length} entities, ${cat.length} categories, ${pag.length} pages, ${dom.length} domains, ${soc.length} social`);
+    const ent = entities.status === 'fulfilled' ? entities.value : [];
+    const cat = categories.status === 'fulfilled' ? categories.value : [];
+    const pag = pages.status === 'fulfilled' ? pages.value : [];
+    const dom = domains.status === 'fulfilled' ? domains.value : [];
+    const soc = social.status === 'fulfilled' ? social.value : [];
 
-  // Run detectors
-  const categoryNames = await getCategoryNames();
-  const alerts: Alert[] = [];
-  alerts.push(...detectEntityAlerts(ent, pag, categoryNames));
-  alerts.push(...detectCategoryAlerts(cat, categoryNames, pag));
-  alerts.push(...detectHeadlinePatterns(pag));
+    if (entities.status === 'rejected') console.error('[discover] entities error:', entities.reason);
+    if (categories.status === 'rejected') console.error('[discover] categories error:', categories.reason);
+    if (pages.status === 'rejected') console.error('[discover] pages error:', pages.reason);
+    if (domains.status === 'rejected') console.error('[discover] domains error:', domains.reason);
+    if (social.status === 'rejected') console.error('[discover] social error:', social.reason);
 
-  // Cross-source concordance alerts (after entity detector so categoryMap is fresh)
-  const state2 = getState();
-  alerts.push(...detectConcordanceAlerts(ent, state2.entityCategoryMap));
+    console.log(`[discover] Fetched: ${ent.length} entities, ${cat.length} categories, ${pag.length} pages, ${dom.length} domains, ${soc.length} social`);
 
-  // Cross-reference with cached trends data
-  const state = getState();
-  const cachedTrends = Object.entries(state.trends).map(([title, snap]) => ({
-    title,
-    approxTraffic: snap.approxTraffic,
-    pubDate: '',
-    link: '',
-    newsItems: [],
-  }));
-  if (cachedTrends.length > 0) {
-    alerts.push(...detectTrendsCorrelations(cachedTrends, ent, pag));
+    console.time('[discover] detectors');
+
+    const categoryNames = await getCategoryNames();
+    const alerts: Alert[] = [];
+
+    alerts.push(...detectEntityAlerts(ent, pag, categoryNames));
+    alerts.push(...detectCategoryAlerts(cat, categoryNames, pag));
+    alerts.push(...detectHeadlinePatterns(pag));
+
+    const state2 = getState();
+    alerts.push(...detectConcordanceAlerts(ent, state2.entityCategoryMap));
+
+    const state = getState();
+    const cachedTrends = Object.entries(state.trends).map(([title, snap]) => ({
+      title,
+      approxTraffic: snap.approxTraffic,
+      pubDate: '',
+      link: '',
+      newsItems: [],
+    }));
+
+    if (cachedTrends.length > 0) {
+      alerts.push(...detectTrendsCorrelations(cachedTrends, ent, pag));
+    }
+
+    console.timeEnd('[discover] detectors');
+
+    console.time('[discover] dispatch');
+
+    const filtered = dedup(alerts);
+
+    if (filtered.length > 0) {
+      console.log(`[discover] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
+      try {
+        await dispatchAlerts(filtered, 'discover');
+      } catch (err) {
+        console.error('[discover] dispatch error:', err);
+      }
+    } else {
+      console.log(`[discover] No new alerts (${alerts.length} suppressed by dedup)`);
+    }
+
+    console.timeEnd('[discover] dispatch');
+
+    updateState({ lastPollDiscover: new Date().toISOString() });
+
+    try {
+      await saveState();
+    } catch (err) {
+      console.error('[discover] saveState error:', err);
+    }
+
+    console.log('[discover] Poll complete');
+
+  } catch (err) {
+    console.error('[discover] fatal error inside poll:', err);
   }
-
-  // Dedup, route, and send
-  const filtered = dedup(alerts);
-  if (filtered.length > 0) {
-    console.log(`[discover] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
-    await dispatchAlerts(filtered, 'discover');
-  } else {
-    console.log(`[discover] No new alerts (${alerts.length} suppressed by dedup)`);
-  }
-
-  updateState({ lastPollDiscover: new Date().toISOString() });
-  await saveState();
-  console.log('[discover] Poll complete');
 }
