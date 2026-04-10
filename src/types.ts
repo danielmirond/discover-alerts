@@ -104,6 +104,7 @@ export interface EntitySnapshot {
   publications: number;
   firstSeen: string;
   lastUpdated: string;
+  appearances: string[]; // ISO timestamps of each time this entity was seen in a poll
 }
 
 export interface CategorySnapshot {
@@ -152,7 +153,7 @@ export interface AppState {
 // Alert types
 export interface EntityAlert {
   type: 'entity';
-  subtype: 'new' | 'rising';
+  subtype: 'new' | 'rising' | 'ascending';
   name: string;
   score: number;
   prevScore: number;
@@ -161,6 +162,8 @@ export interface EntityAlert {
   prevPosition: number;
   publications: number;
   firstviewed: string;
+  appearanceCount?: number; // only for 'ascending' subtype
+  windowHours?: number;     // only for 'ascending' subtype
 }
 
 export interface CategoryAlert {

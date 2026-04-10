@@ -31,19 +31,33 @@ function divider(): SlackBlock {
 }
 
 function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
-  const emoji = a.subtype === 'new' ? ':new:' : ':chart_with_upwards_trend:';
-  const label = a.subtype === 'new' ? 'Nueva entidad' : 'Entidad en subida';
+  const emoji =
+    a.subtype === 'new' ? ':new:' :
+    a.subtype === 'ascending' ? ':rocket:' :
+    ':chart_with_upwards_trend:';
+  const label =
+    a.subtype === 'new' ? 'Nueva entidad' :
+    a.subtype === 'ascending' ? 'Entidad en ascenso' :
+    'Entidad en subida';
   const scoreDiff = a.score - a.prevScore;
   const posDiff = a.prevPosition > 0 ? a.prevPosition - a.position : 0;
 
+  const baseFields = [
+    `*Score:* ${a.score}${a.prevScore ? ` (+${scoreDiff})` : ''}`,
+    `*Posicion:* #${a.position}${posDiff > 0 ? ` (:arrow_up: ${posDiff})` : ''}`,
+    `*Publicaciones:* ${a.publications}`,
+    `*Visto:* ${a.firstviewed}`,
+  ];
+
+  if (a.subtype === 'ascending' && a.appearanceCount != null) {
+    baseFields.push(
+      `*Apariciones:* ${a.appearanceCount} en ${a.windowHours}h`,
+    );
+  }
+
   return [
     header(`${emoji} ${label}: ${a.name}`),
-    fields(
-      `*Score:* ${a.score}${a.prevScore ? ` (+${scoreDiff})` : ''}`,
-      `*Posicion:* #${a.position}${posDiff > 0 ? ` (:arrow_up: ${posDiff})` : ''}`,
-      `*Publicaciones:* ${a.publications}`,
-      `*Visto:* ${a.firstviewed}`,
-    ),
+    fields(...baseFields),
     context('DiscoverSnoop LiveEntities | ES'),
   ];
 }

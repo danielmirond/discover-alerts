@@ -7,19 +7,31 @@ export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
   const prev = state.entities;
   const alerts: EntityAlert[] = [];
   const now = new Date().toISOString();
+  const nowMs = Date.now();
   const next: Record<string, EntitySnapshot> = {};
 
+  const ascendingMin = config.thresholds.entityAscendingMinAppearances;
+  const ascendingWindowMs = config.thresholds.entityAscendingWindowHours * 3600_000;
+
   for (const e of entities) {
+    const old = prev[e.entity];
+
+    // Build appearances array: previous ones (pruned) + current poll timestamp
+    const prevAppearances = old?.appearances ?? [];
+    const appearances = [
+      ...prevAppearances.filter(ts => nowMs - new Date(ts).getTime() <= ascendingWindowMs),
+      now,
+    ];
+
     next[e.entity] = {
       score: e.score,
       scoreDecimal: e.score_decimal,
       position: e.position,
       publications: e.publications,
-      firstSeen: prev[e.entity]?.firstSeen ?? now,
+      firstSeen: old?.firstSeen ?? now,
       lastUpdated: now,
+      appearances,
     };
-
-    const old = prev[e.entity];
 
     if (!old) {
       // New entity
@@ -38,7 +50,7 @@ export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
         });
       }
     } else {
-      // Rising entity
+      // Rising entity (score jump)
       const scoreDelta = e.score - old.score;
       if (scoreDelta >= config.thresholds.entityScoreJump) {
         alerts.push({
@@ -52,6 +64,34 @@ export function detectEntityAlerts(entities: DiscoverEntity[]): EntityAlert[] {
           prevPosition: old.position,
           publications: e.publications,
           firstviewed: old.firstSeen,
+        });
+      }
+
+      // Ascending entity: fires when the entity crosses the appearances threshold
+      // in the current polling window. Only triggers on the crossing poll to avoid
+      // repeating the same alert on every subsequent poll.
+      const prevAppearancesInWindow = prevAppearances.filter(
+        ts => nowMs - new Date(ts).getTime() <= ascendingWindowMs,
+      ).length;
+      const currentAppearancesInWindow = appearances.length;
+
+      if (
+        prevAppearancesInWindow < ascendingMin &&
+        currentAppearancesInWindow >= ascendingMin
+      ) {
+        alerts.push({
+          type: 'entity',
+          subtype: 'ascending',
+          name: e.entity,
+          score: e.score,
+          prevScore: old.score,
+          scoreDecimal: e.score_decimal,
+          position: e.position,
+          prevPosition: old.position,
+          publications: e.publications,
+          firstviewed: old.firstSeen,
+          appearanceCount: currentAppearancesInWindow,
+          windowHours: config.thresholds.entityAscendingWindowHours,
         });
       }
     }
