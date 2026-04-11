@@ -50,6 +50,8 @@ function getCategoryForAlert(alert: Alert): string | undefined {
       return alert.category;
     case 'own_media_absent':
       return alert.category;
+    case 'multi_entity_article':
+      return alert.category;
     case 'trends_without_discover':
     case 'headline_cluster':
     case 'stale_data':

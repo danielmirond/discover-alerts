@@ -40,6 +40,14 @@ export function getConfig() {
       // flash: "pico rapido" (1h window, 3 apariciones)
       entityFlashMinAppearances: envInt('THRESHOLD_ENTITY_FLASH_MIN_APPEARANCES', 3),
       entityFlashWindowHours: envFloat('THRESHOLD_ENTITY_FLASH_WINDOW_HOURS', 1),
+      // discover_1h: 3+ apariciones en 1h (paralelo a flash)
+      entityDiscover1hMinAppearances: envInt('THRESHOLD_ENTITY_DISCOVER_1H_MIN', 3),
+      // discover_3h: 5+ apariciones en 3h
+      entityDiscover3hMinAppearances: envInt('THRESHOLD_ENTITY_DISCOVER_3H_MIN', 5),
+      // discover_12h: 7+ apariciones en 12h
+      entityDiscover12hMinAppearances: envInt('THRESHOLD_ENTITY_DISCOVER_12H_MIN', 7),
+      // Min entities per article for multi_entity_article alert
+      multiEntityArticleMin: envInt('THRESHOLD_MULTI_ENTITY_ARTICLE_MIN', 2),
       categoryDayScoreJump: envInt('THRESHOLD_CATEGORY_DAY_SCORE_JUMP', 30),
       categoryScoreJump: envInt('THRESHOLD_CATEGORY_SCORE_JUMP', 15),
       categoryPublicationsJumpPct: envFloat('THRESHOLD_CATEGORY_PUB_JUMP_PCT', 0.5),

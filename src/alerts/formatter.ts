@@ -34,6 +34,9 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
   const emoji =
     a.subtype === 'new' ? ':new:' :
     a.subtype === 'flash' ? ':zap:' :
+    a.subtype === 'discover_1h' ? ':zap:' :
+    a.subtype === 'discover_3h' ? ':fire:' :
+    a.subtype === 'discover_12h' ? ':rocket:' :
     a.subtype === 'longtail' ? ':fire:' :
     a.subtype === 'spike' ? ':fire:' :
     a.subtype === 'ascending' ? ':rocket:' :
@@ -41,6 +44,9 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
   const label =
     a.subtype === 'new' ? 'Nueva entidad' :
     a.subtype === 'flash' ? 'Entidad FLASH (1h)' :
+    a.subtype === 'discover_1h' ? 'Discover 3+/1h' :
+    a.subtype === 'discover_3h' ? 'Discover 5+/3h' :
+    a.subtype === 'discover_12h' ? 'Discover 7+/12h' :
     a.subtype === 'longtail' ? 'Entidad LONGTAIL (2h)' :
     a.subtype === 'spike' ? 'Entidad en SPIKE' :
     a.subtype === 'ascending' ? 'Entidad en ascenso' :
@@ -56,7 +62,13 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
   ];
 
   if (
-    (a.subtype === 'ascending' || a.subtype === 'longtail' || a.subtype === 'spike' || a.subtype === 'flash') &&
+    (a.subtype === 'ascending' ||
+     a.subtype === 'longtail' ||
+     a.subtype === 'spike' ||
+     a.subtype === 'flash' ||
+     a.subtype === 'discover_1h' ||
+     a.subtype === 'discover_3h' ||
+     a.subtype === 'discover_12h') &&
     a.appearanceCount != null
   ) {
     baseFields.push(
@@ -323,6 +335,20 @@ function formatHeadlineCluster(a: Extract<Alert, { type: 'headline_cluster' }>):
   ];
 }
 
+function formatMultiEntityArticle(a: Extract<Alert, { type: 'multi_entity_article' }>): SlackBlock[] {
+  return [
+    header(`:card_index_dividers: Multi-entidad: ${a.entities.length} entidades en 1 articulo`),
+    section(
+      `*<${a.articleLink}|${a.articleTitle}>* _(${a.feedName})_`,
+    ),
+    section(
+      `*Entidades detectadas:* ${a.entities.join(', ')}` +
+      (a.category ? `\n*Categoria DS:* ${a.category}` : ''),
+    ),
+    context(`Multi-entity article | ${a.feedCategory || 'media'}`),
+  ];
+}
+
 function formatStaleData(a: Extract<Alert, { type: 'stale_data' }>): SlackBlock[] {
   return [
     header(`:warning: Pipeline sin actividad: ${a.source}`),
@@ -348,6 +374,7 @@ function formatSingleAlert(alert: Alert): SlackBlock[] {
     case 'trends_without_discover': return formatTrendsWithoutDiscover(alert);
     case 'headline_cluster': return formatHeadlineCluster(alert);
     case 'stale_data': return formatStaleData(alert);
+    case 'multi_entity_article': return formatMultiEntityArticle(alert);
   }
 }
 

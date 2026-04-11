@@ -198,7 +198,16 @@ export interface MatchedXTrend {
 
 export interface EntityAlert {
   type: 'entity';
-  subtype: 'new' | 'rising' | 'ascending' | 'longtail' | 'flash' | 'spike';
+  subtype:
+    | 'new'
+    | 'rising'
+    | 'ascending'
+    | 'longtail'
+    | 'flash'
+    | 'spike'
+    | 'discover_1h'
+    | 'discover_3h'
+    | 'discover_12h';
   name: string;
   score: number;
   prevScore: number;
@@ -273,7 +282,8 @@ export type Alert =
   | OwnMediaAbsentAlert
   | TrendsWithoutDiscoverAlert
   | HeadlineClusterAlert
-  | StaleDataAlert;
+  | StaleDataAlert
+  | MultiEntityArticleAlert;
 
 // Media RSS types
 export interface MediaFeed {
@@ -321,6 +331,17 @@ export interface StaleDataAlert {
   type: 'stale_data';
   source: 'discover' | 'trends' | 'media' | 'x';
   lastPollAgoMinutes: number;
+}
+
+export interface MultiEntityArticleAlert {
+  type: 'multi_entity_article';
+  articleTitle: string;
+  articleLink: string;
+  feedName: string;
+  feedCategory: string;
+  entities: string[];
+  /** Derived DS category (majority vote across entities) */
+  category?: string;
 }
 
 export interface OwnMediaAlert {

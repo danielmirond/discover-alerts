@@ -1,3 +1,4 @@
+import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
 import { aggregateWeekly } from './weekly-aggregator.js';
 import type {
@@ -5,6 +6,7 @@ import type {
   DiscoverEntity,
   DiscoverPage,
   EntityCoverageAlert,
+  MultiEntityArticleAlert,
 } from '../types.js';
 
 function normalize(s: string): string {
@@ -20,7 +22,7 @@ export function detectMediaDiscoverCorrelations(
   entities: DiscoverEntity[],
   _pages: DiscoverPage[],
   entityCategoryMap: Record<string, string> = {},
-): EntityCoverageAlert[] {
+): Array<EntityCoverageAlert | MultiEntityArticleAlert> {
   const state = getState();
   const now = new Date().toISOString();
   const nowMs = Date.now();
@@ -45,6 +47,8 @@ export function detectMediaDiscoverCorrelations(
   type ArticleHit = { title: string; link: string; feedName: string; feedCategory: string };
   const entityArticles = new Map<string, ArticleHit[]>();
   const newArticlesForWeekly: MediaArticle[] = [];
+  const multiEntityAlerts: MultiEntityArticleAlert[] = [];
+  const multiEntityMin = config.thresholds.multiEntityArticleMin;
 
   for (const article of articles) {
     if (!article.title) continue;
@@ -65,12 +69,14 @@ export function detectMediaDiscoverCorrelations(
     newArticlesForWeekly.push(article);
 
     const articleTitleNorm = normalize(article.title);
+    const entitiesInArticle: string[] = [];
 
     for (const entity of entities) {
       const entityNorm = normalize(entity.entity);
       if (entityNorm.length <= 3) continue;
 
       if (articleTitleNorm.includes(entityNorm)) {
+        entitiesInArticle.push(entity.entity);
         if (!entityArticles.has(entity.entity)) {
           entityArticles.set(entity.entity, []);
         }
@@ -82,10 +88,34 @@ export function detectMediaDiscoverCorrelations(
         });
       }
     }
+
+    // Multi-entity article detection
+    if (entitiesInArticle.length >= multiEntityMin) {
+      // Derive majority category across entities
+      const catCounts: Record<string, number> = {};
+      for (const ent of entitiesInArticle) {
+        const cat = entityCategoryMap[ent];
+        if (cat) catCounts[cat] = (catCounts[cat] || 0) + 1;
+      }
+      let majorityCat: string | undefined;
+      let best = 0;
+      for (const [c, n] of Object.entries(catCounts)) {
+        if (n > best) { majorityCat = c; best = n; }
+      }
+      multiEntityAlerts.push({
+        type: 'multi_entity_article',
+        articleTitle: article.title,
+        articleLink: article.link,
+        feedName: article.feedName,
+        feedCategory: article.feedCategory,
+        entities: entitiesInArticle.slice(0, 10),
+        category: majorityCat,
+      });
+    }
   }
 
   // Build one alert per entity with matches
-  const alerts: EntityCoverageAlert[] = [];
+  const alerts: Array<EntityCoverageAlert | MultiEntityArticleAlert> = [...multiEntityAlerts];
   for (const [entityName, hits] of entityArticles) {
     if (hits.length === 0) continue;
 

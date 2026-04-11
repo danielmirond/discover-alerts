@@ -474,6 +474,11 @@ export function buildLiveView(): LiveViewResponse {
         title = `Pipeline inactivo: ${a.source}`;
         detail = `Sin actividad desde hace ${a.lastPollAgoMinutes} minutos`;
         break;
+      case 'multi_entity_article':
+        title = a.articleTitle;
+        detail = `${a.entities.length} entidades: ${a.entities.slice(0, 5).join(', ')}${a.entities.length > 5 ? '...' : ''} | ${a.feedName}`;
+        examples = [{ title: a.articleTitle, url: a.articleLink, source: a.feedName }];
+        break;
     }
     // Derive category for filtering:
     // - entity/concordance/coverage alerts have their own derived category
@@ -485,7 +490,8 @@ export function buildLiveView(): LiveViewResponse {
       a.type === 'entity_concordance' ||
       a.type === 'entity_coverage' ||
       a.type === 'own_media' ||
-      a.type === 'own_media_absent'
+      a.type === 'own_media_absent' ||
+      a.type === 'multi_entity_article'
     ) {
       alertCategory = a.category;
     } else if (a.type === 'category') {

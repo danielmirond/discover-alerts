@@ -28,8 +28,11 @@ function alertPriority(alert: Alert): number {
     case 'entity':
       switch (alert.subtype) {
         case 'flash': return 100;
+        case 'discover_1h': return 98;
+        case 'discover_3h': return 82;
         case 'longtail': return 80;
-        case 'spike': return 80; // deprecated, same as longtail
+        case 'spike': return 80;
+        case 'discover_12h': return 55;
         case 'ascending': return 50;
         case 'rising': return 40;
         case 'new': return 10;
@@ -48,6 +51,7 @@ function alertPriority(alert: Alert): number {
     case 'headline_cluster': return 90; // Big event signal
     case 'stale_data': return 85; // Health
     case 'trends_without_discover': return 72; // SEO opportunity
+    case 'multi_entity_article': return 68; // Content mentioning 2+ entities
     case 'entity_coverage': return 75;
     case 'category':
       return alert.subtype === 'day_spike' ? 65 : 45;

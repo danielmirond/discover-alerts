@@ -28,6 +28,8 @@ function alertKey(alert: Alert): string {
       return `cluster:${alert.entitiesInCluster.slice(0, 3).sort().join(',')}`;
     case 'stale_data':
       return `stale:${alert.source}`;
+    case 'multi_entity_article':
+      return `multi_entity:${alert.articleLink || alert.articleTitle}`;
   }
 }
 

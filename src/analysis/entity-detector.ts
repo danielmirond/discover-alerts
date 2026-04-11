@@ -172,6 +172,17 @@ export function detectEntityAlerts(
   const flashWindowMs = config.thresholds.entityFlashWindowHours * 3600_000;
   const fuzzyThreshold = config.thresholds.trendCorrelationMin;
 
+  // New discover_Xh window thresholds
+  const disc1hWindowMs = 1 * 3600_000;
+  const disc3hWindowMs = 3 * 3600_000;
+  const disc12hWindowMs = 12 * 3600_000;
+  const disc1hMin = config.thresholds.entityDiscover1hMinAppearances;
+  const disc3hMin = config.thresholds.entityDiscover3hMinAppearances;
+  const disc12hMin = config.thresholds.entityDiscover12hMinAppearances;
+
+  // We need the LONGEST window for appearance retention. discover_12h forces it.
+  const maxRetentionMs = Math.max(ascendingWindowMs, disc12hWindowMs);
+
   const countInWindow = (timestamps: string[], windowMs: number): number =>
     timestamps.filter(ts => nowMs - new Date(ts).getTime() <= windowMs).length;
 
@@ -182,7 +193,7 @@ export function detectEntityAlerts(
   for (const [name, oldSnap] of Object.entries(prev)) {
     if (currentEntitySet.has(name)) continue;
     const prunedAppearances = (oldSnap.appearances ?? []).filter(
-      ts => nowMs - new Date(ts).getTime() <= ascendingWindowMs,
+      ts => nowMs - new Date(ts).getTime() <= maxRetentionMs,
     );
     // Drop entities whose appearances all expired
     if (prunedAppearances.length === 0) continue;
@@ -194,9 +205,9 @@ export function detectEntityAlerts(
     const prevAppearances = old?.appearances ?? [];
     const entityCategory = entityCategoryMap[e.entity];
 
-    // Prune appearances outside the longest window we care about (ascending)
+    // Prune appearances outside the longest window we care about (12h)
     const appearances = [
-      ...prevAppearances.filter(ts => nowMs - new Date(ts).getTime() <= ascendingWindowMs),
+      ...prevAppearances.filter(ts => nowMs - new Date(ts).getTime() <= maxRetentionMs),
       now,
     ];
 
@@ -304,6 +315,74 @@ export function detectEntityAlerts(
         firstviewed: old.firstSeen,
         appearanceCount: currAscCount,
         windowHours: config.thresholds.entityAscendingWindowHours,
+        category: entityCategory,
+        ...enrichment,
+      });
+    }
+
+    // Parallel custom windows: discover_1h / discover_3h / discover_12h
+    // Fire once on crossing threshold. Independent of flash/longtail/ascending.
+    const prevD1 = countInWindow(prevAppearances, disc1hWindowMs);
+    const currD1 = countInWindow(appearances, disc1hWindowMs);
+    if (prevD1 < disc1hMin && currD1 >= disc1hMin) {
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      alerts.push({
+        type: 'entity',
+        subtype: 'discover_1h',
+        name: e.entity,
+        score: e.score,
+        prevScore: old.score,
+        scoreDecimal: e.score_decimal,
+        position: e.position,
+        prevPosition: old.position,
+        publications: e.publications,
+        firstviewed: old.firstSeen,
+        appearanceCount: currD1,
+        windowHours: 1,
+        category: entityCategory,
+        ...enrichment,
+      });
+    }
+
+    const prevD3 = countInWindow(prevAppearances, disc3hWindowMs);
+    const currD3 = countInWindow(appearances, disc3hWindowMs);
+    if (prevD3 < disc3hMin && currD3 >= disc3hMin) {
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      alerts.push({
+        type: 'entity',
+        subtype: 'discover_3h',
+        name: e.entity,
+        score: e.score,
+        prevScore: old.score,
+        scoreDecimal: e.score_decimal,
+        position: e.position,
+        prevPosition: old.position,
+        publications: e.publications,
+        firstviewed: old.firstSeen,
+        appearanceCount: currD3,
+        windowHours: 3,
+        category: entityCategory,
+        ...enrichment,
+      });
+    }
+
+    const prevD12 = countInWindow(prevAppearances, disc12hWindowMs);
+    const currD12 = countInWindow(appearances, disc12hWindowMs);
+    if (prevD12 < disc12hMin && currD12 >= disc12hMin) {
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      alerts.push({
+        type: 'entity',
+        subtype: 'discover_12h',
+        name: e.entity,
+        score: e.score,
+        prevScore: old.score,
+        scoreDecimal: e.score_decimal,
+        position: e.position,
+        prevPosition: old.position,
+        publications: e.publications,
+        firstviewed: old.firstSeen,
+        appearanceCount: currD12,
+        windowHours: 12,
         category: entityCategory,
         ...enrichment,
       });
