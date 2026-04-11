@@ -99,16 +99,23 @@ export function detectCategoryAlerts(
     const old = prev[c.id];
     if (!old) continue;
 
-    // --- Poll-over-poll spike (original behavior) ---
+    // --- Poll-over-poll spike ---
+    // Must have BOTH:
+    //   1. A real positive score delta (at least +5) to avoid flat/noisy categories
+    //   2. EITHER the score jump threshold OR a publications surge
     const scoreDelta = c.score - old.score;
     const pubIncrease = old.publications > 0
       ? (c.publications - old.publications) / old.publications
       : 0;
 
     let firedShort = false;
+    const MIN_DELTA = 5;
     if (
-      scoreDelta >= config.thresholds.categoryScoreJump ||
-      pubIncrease >= config.thresholds.categoryPublicationsJumpPct
+      scoreDelta >= MIN_DELTA &&
+      (
+        scoreDelta >= config.thresholds.categoryScoreJump ||
+        pubIncrease >= config.thresholds.categoryPublicationsJumpPct
+      )
     ) {
       alerts.push({
         type: 'category',

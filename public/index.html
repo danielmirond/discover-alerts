@@ -337,6 +337,19 @@
             var c = typeColors[r.type] || typeColors['entity'];
             var label = (r.subtype ? subtypeLabels[r.subtype] || r.subtype : r.type).toUpperCase();
             var routeBadge = r.routeName !== 'default' ? ' <span class="badge badge-green" style="font-size:9px">→ ' + escapeHtml(r.routeName) + '</span>' : '';
+            var examplesHtml = '';
+            if (r.examples && r.examples.length > 0) {
+              examplesHtml = '<div class="alert-enrich"><div class="alert-enrich-title">&#128240; Ejemplos</div><ul>';
+              r.examples.forEach(function(ex) {
+                var srcTxt = ex.source ? ' <em>(' + escapeHtml(ex.source) + ')</em>' : '';
+                if (ex.url) {
+                  examplesHtml += '<li>&bull; <a href="' + escapeHtml(ex.url) + '" target="_blank">' + escapeHtml(ex.title) + '</a>' + srcTxt + '</li>';
+                } else {
+                  examplesHtml += '<li>&bull; ' + escapeHtml(ex.title) + srcTxt + '</li>';
+                }
+              });
+              examplesHtml += '</ul></div>';
+            }
             return '<div class="alert-item" style="background:' + c.bg + ';border-color:' + c.border + '">' +
               '<div class="alert-type" style="color:' + c.border + ';display:flex;justify-content:space-between">' +
                 '<span>' + c.icon + ' ' + escapeHtml(label) + routeBadge + '</span>' +
@@ -344,6 +357,7 @@
               '</div>' +
               '<div class="alert-title">' + escapeHtml(r.title) + '</div>' +
               '<div class="alert-detail">' + escapeHtml(r.detail) + '</div>' +
+              examplesHtml +
             '</div>';
           }).join('');
           document.getElementById('recent-alerts').innerHTML = html;

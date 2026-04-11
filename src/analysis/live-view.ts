@@ -73,6 +73,7 @@ interface LiveRecentAlert {
   detail: string;
   timestamp: string;
   routeName: string;
+  examples?: Array<{ title: string; url?: string; source?: string }>;
 }
 
 interface LiveViewResponse {
@@ -332,34 +333,77 @@ export function buildLiveView(): LiveViewResponse {
     const a = r.alert as any;
     let title = '';
     let detail = '';
+    let examples: LiveRecentAlert['examples'];
+
     switch (a.type) {
       case 'entity':
         title = a.name;
         detail = `score=${a.score} | pos=#${a.position}${a.appearanceCount != null ? ` | ${a.appearanceCount} en ${a.windowHours}h` : ''}`;
+        if (a.matchingArticles && a.matchingArticles.length > 0) {
+          examples = a.matchingArticles.slice(0, 3).map((m: any) => ({
+            title: m.title,
+            url: m.link,
+            source: m.feedName,
+          }));
+        }
         break;
       case 'entity_concordance':
         title = a.entityName;
         detail = `score=${a.score} | pos=#${a.position}`;
+        if (a.matchingArticles && a.matchingArticles.length > 0) {
+          examples = a.matchingArticles.slice(0, 3).map((m: any) => ({
+            title: m.title,
+            url: m.link,
+            source: m.feedName,
+          }));
+        }
         break;
       case 'entity_coverage':
         title = a.entityName;
         detail = `${a.coverageCount} publicaciones en ${a.mediaOutlets.length} medios`;
+        if (a.articles && a.articles.length > 0) {
+          examples = a.articles.slice(0, 3).map((m: any) => ({
+            title: m.title,
+            url: m.link,
+            source: m.feedName,
+          }));
+        }
         break;
       case 'category':
         title = a.name;
         detail = `score ${a.prevScore} → ${a.score}${a.windowHours ? ` (${a.windowHours}h)` : ''}`;
+        if (a.examplePages && a.examplePages.length > 0) {
+          examples = a.examplePages.slice(0, 3).map((p: any) => ({
+            title: p.title,
+            url: p.url,
+            source: p.publisher,
+          }));
+        }
         break;
       case 'headline_pattern':
         title = `"${a.ngram}"`;
         detail = `${a.count} titulares`;
+        if (a.matchingTitles && a.matchingTitles.length > 0) {
+          examples = a.matchingTitles.slice(0, 3).map((t: string) => ({ title: t }));
+        }
         break;
       case 'trends_correlation':
         title = a.trendTitle;
         detail = `${a.matchingEntities.length} entidades | trafico ~${a.approxTraffic}`;
+        if (a.matchingPageTitles && a.matchingPageTitles.length > 0) {
+          examples = a.matchingPageTitles.slice(0, 3).map((t: string) => ({ title: t }));
+        }
         break;
       case 'trends_new_topic':
         title = a.title;
         detail = `nuevo trending | trafico ~${a.approxTraffic}`;
+        if (a.newsItems && a.newsItems.length > 0) {
+          examples = a.newsItems.slice(0, 3).map((n: any) => ({
+            title: n.title,
+            url: n.url,
+            source: n.source,
+          }));
+        }
         break;
     }
     return {
@@ -369,6 +413,7 @@ export function buildLiveView(): LiveViewResponse {
       detail,
       timestamp: r.timestamp,
       routeName: r.routeName,
+      examples,
     };
   });
 
