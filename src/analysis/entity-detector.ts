@@ -166,8 +166,8 @@ export function detectEntityAlerts(
 
   const ascendingMin = config.thresholds.entityAscendingMinAppearances;
   const ascendingWindowMs = config.thresholds.entityAscendingWindowHours * 3600_000;
-  const spikeMin = config.thresholds.entitySpikeMinAppearances;
-  const spikeWindowMs = config.thresholds.entitySpikeWindowHours * 3600_000;
+  const longtailMin = config.thresholds.entityLongtailMinAppearances;
+  const longtailWindowMs = config.thresholds.entityLongtailWindowHours * 3600_000;
   const flashMin = config.thresholds.entityFlashMinAppearances;
   const flashWindowMs = config.thresholds.entityFlashWindowHours * 3600_000;
   const fuzzyThreshold = config.thresholds.trendCorrelationMin;
@@ -236,12 +236,14 @@ export function detectEntityAlerts(
       });
     }
 
-    // Flash check (strictest window = highest priority)
+    // The three window checks fire INDEPENDENTLY when each crosses its threshold.
+    // A single entity can fire flash + longtail + ascending in the same poll.
+    // Dedup uses (subtype, entity) so they don't collapse.
+
+    // Flash: 3+ apariciones en 1h (pico rapido)
     const prevFlashCount = countInWindow(prevAppearances, flashWindowMs);
     const currFlashCount = countInWindow(appearances, flashWindowMs);
-    const flashJustCrossed = prevFlashCount < flashMin && currFlashCount >= flashMin;
-
-    if (flashJustCrossed) {
+    if (prevFlashCount < flashMin && currFlashCount >= flashMin) {
       const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
       alerts.push({
         type: 'entity',
@@ -259,19 +261,16 @@ export function detectEntityAlerts(
         category: entityCategory,
         ...enrichment,
       });
-      continue; // flash takes precedence — don't also fire spike or ascending
     }
 
-    // Spike check (priority over ascending)
-    const prevSpikeCount = countInWindow(prevAppearances, spikeWindowMs);
-    const currSpikeCount = countInWindow(appearances, spikeWindowMs);
-    const spikeJustCrossed = prevSpikeCount < spikeMin && currSpikeCount >= spikeMin;
-
-    if (spikeJustCrossed) {
+    // Longtail: 5+ apariciones en 2h (persistencia media)
+    const prevLongtailCount = countInWindow(prevAppearances, longtailWindowMs);
+    const currLongtailCount = countInWindow(appearances, longtailWindowMs);
+    if (prevLongtailCount < longtailMin && currLongtailCount >= longtailMin) {
       const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
       alerts.push({
         type: 'entity',
-        subtype: 'spike',
+        subtype: 'longtail',
         name: e.entity,
         score: e.score,
         prevScore: old.score,
@@ -280,15 +279,14 @@ export function detectEntityAlerts(
         prevPosition: old.position,
         publications: e.publications,
         firstviewed: old.firstSeen,
-        appearanceCount: currSpikeCount,
-        windowHours: config.thresholds.entitySpikeWindowHours,
+        appearanceCount: currLongtailCount,
+        windowHours: config.thresholds.entityLongtailWindowHours,
         category: entityCategory,
         ...enrichment,
       });
-      continue; // spike takes precedence — don't also fire ascending
     }
 
-    // Ascending check (wider window)
+    // Ascending: 3+ apariciones en 6h (sostenido largo)
     const prevAscCount = countInWindow(prevAppearances, ascendingWindowMs);
     const currAscCount = countInWindow(appearances, ascendingWindowMs);
     if (prevAscCount < ascendingMin && currAscCount >= ascendingMin) {

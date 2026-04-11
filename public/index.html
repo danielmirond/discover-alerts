@@ -58,6 +58,7 @@
     .alert-item:last-child { margin-bottom: 0; }
     .alert-entity { background: rgba(74,222,128,0.06); border-color: #4ade80; }
     .alert-spike { background: rgba(250,204,21,0.08); border-color: #facc15; }
+    .alert-longtail { background: rgba(250,204,21,0.08); border-color: #facc15; }
     .alert-flash { background: rgba(239,68,68,0.10); border-color: #ef4444; }
     .alert-day-spike { background: rgba(236,72,153,0.08); border-color: #ec4899; }
     .alert-concordance { background: rgba(56,189,248,0.08); border-color: #38bdf8; }
@@ -324,7 +325,7 @@
             'trends_new_topic': { bg: 'rgba(167,139,250,0.06)', border: '#a78bfa', icon: '&#128293;' }
           };
           var subtypeLabels = {
-            flash: 'FLASH (1h)', spike: 'SPIKE (2h)', ascending: 'ASCENDING (6h)',
+            flash: 'FLASH (3+ en 1h)', longtail: 'LONGTAIL (5+ en 2h)', spike: 'SPIKE (legacy)', ascending: 'ASCENDING (3+ en 6h)',
             rising: 'RISING', new: 'NEW',
             discover_trends_x: 'TRIPLE: Discover+Trends+X',
             discover_rss: 'Discover + Medios',
@@ -354,19 +355,25 @@
 
         if (entities.length === 0) {
           document.getElementById('live-alerts').innerHTML =
-            '<div class="loading">Sin entidades en flash/spike/ascending ahora mismo.<br><br>' +
+            '<div class="loading">Sin entidades en flash/longtail/ascending ahora mismo.<br><br>' +
             '<small>Ultimo poll Discover: ' + (data.lastPollDiscover || 'nunca') + '</small></div>';
         } else {
           var html = entities.map(function(e) {
             var statusMap = {
-              flash: { cls: 'alert-flash', icon: '&#9889;', label: 'FLASH (1h)', color: '#ef4444' },
-              spike: { cls: 'alert-spike', icon: '&#128293;', label: 'SPIKE (2h)', color: '#facc15' },
-              ascending: { cls: 'alert-entity', icon: '&#128640;', label: 'ASCENSO (6h)', color: '#4ade80' }
+              flash: { cls: 'alert-flash', icon: '&#9889;', label: 'FLASH 1h', color: '#ef4444' },
+              longtail: { cls: 'alert-longtail', icon: '&#128293;', label: 'LONGTAIL 2h', color: '#facc15' },
+              ascending: { cls: 'alert-entity', icon: '&#128640;', label: 'ASCENSO 6h', color: '#4ade80' }
             };
+            // Primary status is the highest severity, but show all matched statuses as badges
             var st = statusMap[e.status] || statusMap.ascending;
-            var appearanceInfo = e.status === 'flash' ? (e.appearancesLastHour + ' en 1h') :
-                                 e.status === 'spike' ? (e.appearancesLast2h + ' en 2h') :
-                                 (e.appearancesLast6h + ' en 6h');
+            var allStatuses = (e.statuses || [e.status]).map(function(s) {
+              var m = statusMap[s] || statusMap.ascending;
+              var count = s === 'flash' ? e.appearancesLastHour :
+                          s === 'longtail' ? e.appearancesLast2h :
+                          e.appearancesLast6h;
+              var win = s === 'flash' ? '1h' : s === 'longtail' ? '2h' : '6h';
+              return '<span class="badge" style="background:' + m.cls.replace('alert-','') + ';color:' + m.color + ';background:rgba(' + (m.color === '#ef4444' ? '239,68,68' : m.color === '#facc15' ? '250,204,21' : '74,222,128') + ',0.15);margin-right:4px">' + m.icon + ' ' + count + ' en ' + win + '</span>';
+            }).join('');
 
             var enrichHtml = '';
             var hasEnrich = (e.matchingGoogleTrends.length + e.matchingXTrends.length + e.matchingArticles.length) > 0;
@@ -398,9 +405,9 @@
             }
 
             return '<div class="alert-item ' + st.cls + '">' +
-              '<div class="alert-type" style="color:' + st.color + '">' + st.icon + ' ' + st.label + (e.category ? ' &mdash; ' + escapeHtml(e.category) : '') + '</div>' +
+              '<div class="alert-type" style="color:' + st.color + '">' + allStatuses + (e.category ? '<span style="margin-left:8px;color:#888">&mdash; ' + escapeHtml(e.category) + '</span>' : '') + '</div>' +
               '<div class="alert-title">' + escapeHtml(e.name) + '</div>' +
-              '<div class="alert-detail">Apariciones: ' + appearanceInfo + ' | Score: ' + e.score + ' | Posicion: #' + e.position + ' | Publicaciones: ' + e.publications + '</div>' +
+              '<div class="alert-detail">Score: ' + e.score + ' | Posicion: #' + e.position + ' | Publicaciones: ' + e.publications + '</div>' +
               enrichHtml +
             '</div>';
           }).join('');

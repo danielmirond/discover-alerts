@@ -5,7 +5,7 @@ import type { Alert } from '../types.js';
 function alertKey(alert: Alert): string {
   switch (alert.type) {
     case 'entity':
-      return `entity:${alert.name}`;
+      return `entity:${alert.subtype}:${alert.name}`;
     case 'category':
       return `category:${alert.id}`;
     case 'headline_pattern':

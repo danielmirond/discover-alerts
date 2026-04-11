@@ -28,7 +28,8 @@ function alertPriority(alert: Alert): number {
     case 'entity':
       switch (alert.subtype) {
         case 'flash': return 100;
-        case 'spike': return 80;
+        case 'longtail': return 80;
+        case 'spike': return 80; // deprecated, same as longtail
         case 'ascending': return 50;
         case 'rising': return 40;
         case 'new': return 10;

@@ -13,10 +13,10 @@ function envFloat(key: string, fallback: number): number {
 
 const thresholds = {
   entityFlashWindowHours: envFloat('THRESHOLD_ENTITY_FLASH_WINDOW_HOURS', 1),
-  entitySpikeWindowHours: envInt('THRESHOLD_ENTITY_SPIKE_WINDOW_HOURS', 2),
+  entityLongtailWindowHours: envInt('THRESHOLD_ENTITY_LONGTAIL_WINDOW_HOURS', 2),
   entityAscendingWindowHours: envInt('THRESHOLD_ENTITY_ASCENDING_WINDOW_HOURS', 6),
   entityFlashMinAppearances: envInt('THRESHOLD_ENTITY_FLASH_MIN_APPEARANCES', 3),
-  entitySpikeMinAppearances: envInt('THRESHOLD_ENTITY_SPIKE_MIN_APPEARANCES', 3),
+  entityLongtailMinAppearances: envInt('THRESHOLD_ENTITY_LONGTAIL_MIN_APPEARANCES', 5),
   entityAscendingMinAppearances: envInt('THRESHOLD_ENTITY_ASCENDING_MIN_APPEARANCES', 3),
   trendCorrelationMin: envFloat('THRESHOLD_TREND_CORRELATION_MIN', 0.6),
 };
@@ -30,7 +30,8 @@ interface LiveEntity {
   appearancesLastHour: number;
   appearancesLast2h: number;
   appearancesLast6h: number;
-  status: 'flash' | 'spike' | 'ascending' | 'normal';
+  status: 'flash' | 'longtail' | 'ascending' | 'normal';
+  statuses: Array<'flash' | 'longtail' | 'ascending'>;
   matchingGoogleTrends: Array<{ title: string; approxTraffic: number }>;
   matchingXTrends: Array<{ topic: string; rank: number }>;
   matchingArticles: Array<{ title: string; link: string; feedName: string }>;
@@ -117,10 +118,10 @@ export function buildLiveView(): LiveViewResponse {
   const hour = 3600_000;
 
   const flashWindowMs = thresholds.entityFlashWindowHours * hour;
-  const spikeWindowMs = thresholds.entitySpikeWindowHours * hour;
+  const longtailWindowMs = thresholds.entityLongtailWindowHours * hour;
   const ascendingWindowMs = thresholds.entityAscendingWindowHours * hour;
   const flashMin = thresholds.entityFlashMinAppearances;
-  const spikeMin = thresholds.entitySpikeMinAppearances;
+  const longtailMin = thresholds.entityLongtailMinAppearances;
   const ascendingMin = thresholds.entityAscendingMinAppearances;
   const fuzzy = thresholds.trendCorrelationMin;
 
@@ -132,15 +133,19 @@ export function buildLiveView(): LiveViewResponse {
   for (const [name, snap] of Object.entries(state.entities)) {
     const apps = snap.appearances ?? [];
     const c1 = countInWindow(apps, flashWindowMs);
-    const c2 = countInWindow(apps, spikeWindowMs);
+    const c2 = countInWindow(apps, longtailWindowMs);
     const c6 = countInWindow(apps, ascendingWindowMs);
 
-    let status: LiveEntity['status'] = 'normal';
-    if (c1 >= flashMin) status = 'flash';
-    else if (c2 >= spikeMin) status = 'spike';
-    else if (c6 >= ascendingMin) status = 'ascending';
+    // An entity can have MULTIPLE statuses simultaneously
+    const statuses: Array<'flash' | 'longtail' | 'ascending'> = [];
+    if (c1 >= flashMin) statuses.push('flash');
+    if (c2 >= longtailMin) statuses.push('longtail');
+    if (c6 >= ascendingMin) statuses.push('ascending');
 
-    if (status === 'normal') continue;
+    if (statuses.length === 0) continue;
+
+    // Primary status = highest severity (flash > longtail > ascending)
+    const status: LiveEntity['status'] = statuses[0];
 
     // Compute enrichment matches
     const nameNorm = normalize(name);
@@ -194,15 +199,16 @@ export function buildLiveView(): LiveViewResponse {
       appearancesLast2h: c2,
       appearancesLast6h: c6,
       status,
+      statuses,
       matchingGoogleTrends: matchingGoogleTrends.slice(0, 3),
       matchingXTrends: matchingXTrends.slice(0, 3),
       matchingArticles,
     });
   }
 
-  // Sort by severity: flash > spike > ascending, then by score
+  // Sort by severity: flash > longtail > ascending, then by score
   const statusRank: Record<LiveEntity['status'], number> = {
-    flash: 3, spike: 2, ascending: 1, normal: 0,
+    flash: 3, longtail: 2, ascending: 1, normal: 0,
   };
   entities.sort((a, b) => {
     const sr = statusRank[b.status] - statusRank[a.status];

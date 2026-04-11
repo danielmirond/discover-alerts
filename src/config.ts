@@ -34,8 +34,10 @@ export function getConfig() {
       entityNewMinScore: envInt('THRESHOLD_ENTITY_NEW_MIN_SCORE', 10),
       entityAscendingMinAppearances: envInt('THRESHOLD_ENTITY_ASCENDING_MIN_APPEARANCES', 3),
       entityAscendingWindowHours: envInt('THRESHOLD_ENTITY_ASCENDING_WINDOW_HOURS', 6),
-      entitySpikeMinAppearances: envInt('THRESHOLD_ENTITY_SPIKE_MIN_APPEARANCES', 3),
-      entitySpikeWindowHours: envInt('THRESHOLD_ENTITY_SPIKE_WINDOW_HOURS', 2),
+      // longtail: "se repite a lo largo del dia" (2h window, 5 apariciones)
+      entityLongtailMinAppearances: envInt('THRESHOLD_ENTITY_LONGTAIL_MIN_APPEARANCES', 5),
+      entityLongtailWindowHours: envInt('THRESHOLD_ENTITY_LONGTAIL_WINDOW_HOURS', 2),
+      // flash: "pico rapido" (1h window, 3 apariciones)
       entityFlashMinAppearances: envInt('THRESHOLD_ENTITY_FLASH_MIN_APPEARANCES', 3),
       entityFlashWindowHours: envFloat('THRESHOLD_ENTITY_FLASH_WINDOW_HOURS', 1),
       categoryDayScoreJump: envInt('THRESHOLD_CATEGORY_DAY_SCORE_JUMP', 30),

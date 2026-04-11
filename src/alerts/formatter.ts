@@ -34,12 +34,14 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
   const emoji =
     a.subtype === 'new' ? ':new:' :
     a.subtype === 'flash' ? ':zap:' :
+    a.subtype === 'longtail' ? ':fire:' :
     a.subtype === 'spike' ? ':fire:' :
     a.subtype === 'ascending' ? ':rocket:' :
     ':chart_with_upwards_trend:';
   const label =
     a.subtype === 'new' ? 'Nueva entidad' :
     a.subtype === 'flash' ? 'Entidad FLASH (1h)' :
+    a.subtype === 'longtail' ? 'Entidad LONGTAIL (2h)' :
     a.subtype === 'spike' ? 'Entidad en SPIKE' :
     a.subtype === 'ascending' ? 'Entidad en ascenso' :
     'Entidad en subida';
@@ -54,7 +56,7 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
   ];
 
   if (
-    (a.subtype === 'ascending' || a.subtype === 'spike' || a.subtype === 'flash') &&
+    (a.subtype === 'ascending' || a.subtype === 'longtail' || a.subtype === 'spike' || a.subtype === 'flash') &&
     a.appearanceCount != null
   ) {
     baseFields.push(

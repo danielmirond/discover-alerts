@@ -196,7 +196,7 @@ export interface MatchedXTrend {
 
 export interface EntityAlert {
   type: 'entity';
-  subtype: 'new' | 'rising' | 'ascending' | 'spike' | 'flash';
+  subtype: 'new' | 'rising' | 'ascending' | 'longtail' | 'flash' | 'spike';
   name: string;
   score: number;
   prevScore: number;
