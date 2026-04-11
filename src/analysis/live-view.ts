@@ -431,13 +431,30 @@ export function buildLiveView(): LiveViewResponse {
           }));
         }
         break;
+      case 'own_media':
+        title = a.title;
+        detail = `${a.ownDomain}${a.score != null ? ` | score=${a.score}` : ''}${a.trendTopic ? ` | Trends: "${a.trendTopic}"` : ''}${a.otherOutlets && a.otherOutlets.length > 0 ? ` | +${a.otherOutlets.length} medios` : ''}`;
+        if (a.url) {
+          examples = [{ title: a.title, url: a.url, source: a.ownDomain }];
+        }
+        if (a.otherOutlets && a.otherOutlets.length > 0) {
+          examples = (examples || []).concat(
+            a.otherOutlets.slice(0, 4).map((o: string) => ({ title: o }))
+          );
+        }
+        break;
     }
     // Derive category for filtering:
     // - entity/concordance/coverage alerts have their own derived category
     // - category-type alerts use their own name
     // - other types leave undefined
     let alertCategory: string | undefined;
-    if (a.type === 'entity' || a.type === 'entity_concordance' || a.type === 'entity_coverage') {
+    if (
+      a.type === 'entity' ||
+      a.type === 'entity_concordance' ||
+      a.type === 'entity_coverage' ||
+      a.type === 'own_media'
+    ) {
       alertCategory = a.category;
     } else if (a.type === 'category') {
       alertCategory = a.name;

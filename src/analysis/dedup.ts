@@ -18,6 +18,8 @@ function alertKey(alert: Alert): string {
       return `entity_coverage:${alert.entityName}`;
     case 'entity_concordance':
       return `concordance:${alert.subtype}:${alert.entityName}`;
+    case 'own_media':
+      return `own_media:${alert.subtype}:${alert.url || alert.title}`;
   }
 }
 

@@ -1,20 +1,31 @@
 {
   "feeds": [
-    { "name": "El País", "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada", "category": "generalista" },
-    { "name": "El Mundo", "url": "https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml", "category": "generalista" },
-    { "name": "La Vanguardia", "url": "https://www.lavanguardia.com/rss/home.xml", "category": "generalista" },
-    { "name": "20 Minutos", "url": "https://www.20minutos.es/rss/", "category": "generalista" },
-    { "name": "ABC", "url": "https://www.abc.es/rss/2.0/portada/", "category": "generalista" },
-    { "name": "El Confidencial", "url": "https://rss.elconfidencial.com/espana/", "category": "generalista" },
+    { "name": "El País", "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada", "category": "generalista", "domain": "elpais.com" },
+    { "name": "El Mundo", "url": "https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml", "category": "generalista", "domain": "elmundo.es" },
+    { "name": "La Vanguardia", "url": "https://www.lavanguardia.com/rss/home.xml", "category": "generalista", "domain": "lavanguardia.com" },
+    { "name": "20 Minutos", "url": "https://www.20minutos.es/rss/", "category": "generalista", "domain": "20minutos.es" },
+    { "name": "ABC", "url": "https://www.abc.es/rss/2.0/portada/", "category": "generalista", "domain": "abc.es" },
+    { "name": "El Confidencial", "url": "https://rss.elconfidencial.com/espana/", "category": "generalista", "domain": "elconfidencial.com" },
+    { "name": "RTVE", "url": "https://www.rtve.es/rss/temas_noticias.xml", "category": "generalista", "domain": "rtve.es" },
+    { "name": "OKdiario", "url": "https://okdiario.com/rss", "category": "generalista", "domain": "okdiario.com" },
+    { "name": "El Español", "url": "https://www.elespanol.com/rss/", "category": "generalista", "domain": "elespanol.com" },
+    { "name": "eldiario.es", "url": "https://www.eldiario.es/rss/", "category": "generalista", "domain": "eldiario.es" },
+    { "name": "Huffington Post ES", "url": "https://www.huffingtonpost.es/feeds/index.xml", "category": "generalista", "domain": "huffingtonpost.es" },
+    { "name": "Europa Press", "url": "https://www.europapress.es/rss/rss.aspx", "category": "generalista", "domain": "europapress.es" },
+    { "name": "InfoLibre", "url": "https://www.infolibre.es/rss/", "category": "generalista", "domain": "infolibre.es" },
 
-    { "name": "Marca", "url": "https://e00-marca.uecdn.es/rss/portada.xml", "category": "deportivo" },
-    { "name": "AS", "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/portada", "category": "deportivo" },
-    { "name": "Sport", "url": "https://www.sport.es/es/rss/rss.xml", "category": "deportivo" },
-    { "name": "Mundo Deportivo", "url": "https://www.mundodeportivo.com/rss/home.xml", "category": "deportivo" },
+    { "name": "Marca", "url": "https://e00-marca.uecdn.es/rss/portada.xml", "category": "deportivo", "domain": "marca.com" },
+    { "name": "AS", "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/portada", "category": "deportivo", "domain": "as.com" },
+    { "name": "Sport", "url": "https://www.sport.es/es/rss/rss.xml", "category": "deportivo", "domain": "sport.es" },
+    { "name": "Mundo Deportivo", "url": "https://www.mundodeportivo.com/rss/home.xml", "category": "deportivo", "domain": "mundodeportivo.com" },
+    { "name": "AS Fútbol", "url": "https://as.com/rss/futbol/portada.xml", "category": "deportivo", "domain": "as.com" },
 
-    { "name": "Search Engine Journal", "url": "https://www.searchenginejournal.com/feed/", "category": "tech-marketing" },
-    { "name": "Search Engine Land", "url": "https://searchengineland.com/feed", "category": "tech-marketing" },
-    { "name": "Moz Blog", "url": "https://moz.com/devblog/feed", "category": "tech-marketing" },
-    { "name": "Ahrefs Blog", "url": "https://ahrefs.com/blog/feed/", "category": "tech-marketing" }
+    { "name": "Search Engine Journal", "url": "https://www.searchenginejournal.com/feed/", "category": "tech-marketing", "domain": "searchenginejournal.com" },
+    { "name": "Search Engine Land", "url": "https://searchengineland.com/feed", "category": "tech-marketing", "domain": "searchengineland.com" },
+    { "name": "Moz Blog", "url": "https://moz.com/devblog/feed", "category": "tech-marketing", "domain": "moz.com" },
+    { "name": "Ahrefs Blog", "url": "https://ahrefs.com/blog/feed/", "category": "tech-marketing", "domain": "ahrefs.com" },
+    { "name": "Xataka", "url": "https://www.xataka.com/feedburner.xml", "category": "tech-marketing", "domain": "xataka.com" },
+    { "name": "Genbeta", "url": "https://www.genbeta.com/feedburner.xml", "category": "tech-marketing", "domain": "genbeta.com" },
+    { "name": "TreceBits", "url": "https://www.trecebits.com/feed/", "category": "tech-marketing", "domain": "trecebits.com" }
   ]
 }

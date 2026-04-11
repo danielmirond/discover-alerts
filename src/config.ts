@@ -49,6 +49,17 @@ export function getConfig() {
     dedup: {
       windowHours: envInt('DEDUP_WINDOW_HOURS', 6),
     },
+    ownMedia: {
+      // Comma-separated list of domains that belong to us.
+      // Used to fire own_media_detected alerts when they show up in
+      // DiscoverSnoop, trends or multi-outlet coverage.
+      domains: env('OWN_MEDIA_DOMAINS', '')
+        .split(',')
+        .map(d => d.trim().toLowerCase())
+        .filter(d => d.length > 0),
+      // Minimum OTHER outlets required to trigger 'coverage' own-media alert
+      coverageMinOtherOutlets: envInt('OWN_MEDIA_COVERAGE_MIN_OTHERS', 1),
+    },
     // Only used in local mode (npm run dev), not in Vercel
     polling: {
       discoverIntervalMs: envInt('POLL_INTERVAL_DISCOVER_MS', 300_000),

@@ -267,13 +267,34 @@ export type Alert =
   | TrendsCorrelationAlert
   | TrendsNewTopicAlert
   | EntityCoverageAlert
-  | EntityConcordanceAlert;
+  | EntityConcordanceAlert
+  | OwnMediaAlert;
 
 // Media RSS types
 export interface MediaFeed {
   name: string;
   url: string;
   category: string;
+  domain?: string;
+}
+
+export interface OwnMediaAlert {
+  type: 'own_media';
+  subtype: 'discover_page' | 'trends_news' | 'coverage_join';
+  /** Our domain that matched */
+  ownDomain: string;
+  /** Title or topic that triggered */
+  title: string;
+  url?: string;
+  /** For coverage_join: names of other outlets also covering */
+  otherOutlets?: string[];
+  /** For discover_page: the score/position of the page in Discover */
+  score?: number;
+  position?: number;
+  /** For trends_news: the Google Trends topic this was tied to */
+  trendTopic?: string;
+  /** Derived category if available */
+  category?: string;
 }
 
 export interface MediaArticle {

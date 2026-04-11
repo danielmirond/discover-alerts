@@ -11,6 +11,7 @@ import { detectCategoryAlerts } from '../analysis/category-detector.js';
 import { detectHeadlinePatterns } from '../analysis/headline-patterns.js';
 import { detectTrendsCorrelations } from '../analysis/trends-correlator.js';
 import { detectConcordanceAlerts } from '../analysis/concordance-detector.js';
+import { detectOwnMediaInDiscover, detectOwnMediaCoverage } from '../analysis/own-media-detector.js';
 import { dedup } from '../analysis/dedup.js';
 import { dispatchAlerts } from '../alerts/dispatch.js';
 import { getState, updateState, saveState } from '../state/store.js';
@@ -83,6 +84,10 @@ export async function runDiscoverPoll(): Promise<void> {
 
     const state2 = getState();
     alerts.push(...detectConcordanceAlerts(ent, state2.entityCategoryMap));
+
+    // Own-media: nuestro dominio apareciendo en Discover + cobertura joint
+    alerts.push(...detectOwnMediaInDiscover(pag, categoryNames));
+    alerts.push(...detectOwnMediaCoverage());
 
     const state = getState();
     const cachedTrends = Object.entries(state.trends).map(([title, snap]) => ({

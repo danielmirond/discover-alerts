@@ -43,6 +43,7 @@ function alertPriority(alert: Alert): number {
         case 'discover_x': return 55;
       }
       return 0;
+    case 'own_media': return 92; // Own media highly important
     case 'entity_coverage': return 75;
     case 'category':
       return alert.subtype === 'day_spike' ? 65 : 45;

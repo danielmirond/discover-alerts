@@ -242,6 +242,41 @@ function formatEntityCoverage(a: Extract<Alert, { type: 'entity_coverage' }>): S
   ];
 }
 
+function formatOwnMedia(a: Extract<Alert, { type: 'own_media' }>): SlackBlock[] {
+  const labels: Record<typeof a.subtype, { icon: string; label: string }> = {
+    discover_page: { icon: ':star2:', label: 'NUESTRO medio en Google Discover' },
+    trends_news:   { icon: ':star2:', label: 'NUESTRO medio en Google Trends' },
+    coverage_join: { icon: ':satellite:', label: 'NUESTRO medio en cobertura conjunta' },
+  };
+  const { icon, label } = labels[a.subtype];
+
+  const blocks: SlackBlock[] = [
+    header(`${icon} ${label}`),
+  ];
+
+  if (a.url) {
+    blocks.push(section(`*<${a.url}|${a.title}>* _(${a.ownDomain})_`));
+  } else {
+    blocks.push(section(`*${a.title}* _(${a.ownDomain})_`));
+  }
+
+  const extras: string[] = [];
+  if (a.score != null) extras.push(`*Score Discover:* ${a.score}`);
+  if (a.position != null) extras.push(`*Posicion:* #${a.position}`);
+  if (a.trendTopic) extras.push(`*Topic Trends:* ${a.trendTopic}`);
+  if (a.category) extras.push(`*Categoria:* ${a.category}`);
+  if (extras.length > 0) blocks.push(fields(...extras));
+
+  if (a.otherOutlets && a.otherOutlets.length > 0) {
+    blocks.push(section(
+      `:newspaper: *Tambien cubierto por:* ${a.otherOutlets.join(', ')}`,
+    ));
+  }
+
+  blocks.push(context('Own media tracking | Discover Alerts'));
+  return blocks;
+}
+
 function formatSingleAlert(alert: Alert): SlackBlock[] {
   switch (alert.type) {
     case 'entity': return formatEntity(alert);
@@ -251,6 +286,7 @@ function formatSingleAlert(alert: Alert): SlackBlock[] {
     case 'trends_new_topic': return formatNewTrend(alert);
     case 'entity_coverage': return formatEntityCoverage(alert);
     case 'entity_concordance': return formatConcordance(alert);
+    case 'own_media': return formatOwnMedia(alert);
   }
 }
 

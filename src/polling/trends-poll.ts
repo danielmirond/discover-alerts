@@ -1,5 +1,6 @@
 import { fetchGoogleTrends } from '../sources/google-trends.js';
 import { detectNewTrends, detectTrendsCorrelations } from '../analysis/trends-correlator.js';
+import { detectOwnMediaInTrends } from '../analysis/own-media-detector.js';
 import { dedup } from '../analysis/dedup.js';
 import { dispatchAlerts } from '../alerts/dispatch.js';
 import { getState, updateState, saveState } from '../state/store.js';
@@ -20,6 +21,9 @@ export async function runTrendsPoll(): Promise<void> {
 
   // Detect new topics
   alerts.push(...detectNewTrends(trends));
+
+  // Own-media in Google Trends news items
+  alerts.push(...detectOwnMediaInTrends(trends));
 
   // Cross-reference with cached Discover data
   const state = getState();

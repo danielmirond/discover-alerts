@@ -423,7 +423,8 @@
         'category': { bg: 'rgba(96,165,250,0.06)', border: '#60a5fa', icon: '&#128202;' },
         'headline_pattern': { bg: 'rgba(251,146,60,0.06)', border: '#fb923c', icon: '&#128221;' },
         'trends_correlation': { bg: 'rgba(167,139,250,0.06)', border: '#a78bfa', icon: '&#128279;' },
-        'trends_new_topic': { bg: 'rgba(167,139,250,0.06)', border: '#a78bfa', icon: '&#128293;' }
+        'trends_new_topic': { bg: 'rgba(167,139,250,0.06)', border: '#a78bfa', icon: '&#128293;' },
+      'own_media': { bg: 'rgba(250,204,21,0.10)', border: '#facc15', icon: '&#11088;' }
       };
       var subtypeLabels = {
         flash: 'FLASH (3+ en 1h)', longtail: 'LONGTAIL (5+ en 2h)', spike: 'SPIKE (legacy)', ascending: 'ASCENDING (3+ en 6h)',
@@ -432,7 +433,10 @@
         discover_rss: 'Discover + Medios',
         discover_trends: 'Discover + Trends',
         discover_x: 'Discover + X',
-        day_spike: 'SPIKE 24h'
+        day_spike: 'SPIKE 24h',
+        discover_page: 'NUESTRO en Discover',
+        trends_news: 'NUESTRO en Trends',
+        coverage_join: 'NUESTRO en cobertura conjunta'
       };
       var html = filtered.map(function(r) {
         var c = typeColors[r.type] || typeColors['entity'];
@@ -481,6 +485,9 @@
       'headline_pattern': 'Un n-grama de <strong>3+ palabras</strong> aparece en al menos <strong>3 titulares distintos</strong> de Discover en el mismo poll. Detecta patrones editoriales (ej: "fichaje sorpresa").',
       'trends_correlation': 'Un topic de Google Trends RSS matchea con una entidad o pagina cacheada de Discover. Cruce entre lo que la gente busca y lo que Discover esta amplificando.',
       'trends_new_topic': 'Nuevo topic detectado en el feed RSS de Google Trends ES que no habiamos visto antes.',
+      'own_media/discover_page': '<strong>Nuestro dominio</strong> aparece como pagina en Google Discover ES. Senal de que estamos logrando colocar contenido propio.<span class="tt-formula">page.domain ∈ OWN_MEDIA_DOMAINS</span>',
+      'own_media/trends_news': '<strong>Nuestro dominio</strong> figura como fuente en las news items del RSS de Google Trends ES.',
+      'own_media/coverage_join': '<strong>Nuestro medio</strong> cubre una entidad que tambien publican N+ medios distintos (cobertura editorial conjunta). Por defecto N=1 (configurable via OWN_MEDIA_COVERAGE_MIN_OTHERS).',
     };
 
     function getTooltipFor(type, subtype) {
