@@ -3,6 +3,7 @@ import { loadFeeds, fetchAllFeeds } from '../sources/media-rss.js';
 import { detectMediaDiscoverCorrelations } from '../analysis/media-correlator.js';
 import { dedup } from '../analysis/dedup.js';
 import { dispatchAlerts } from '../alerts/dispatch.js';
+import { detectStaleData } from '../analysis/insights-detector.js';
 import { getState, updateState, saveState } from '../state/store.js';
 import type { Alert } from '../types.js';
 
@@ -64,6 +65,9 @@ export async function runMediaPoll(): Promise<void> {
   } else {
     console.log('[media] No Discover data cached yet, skipping correlation');
   }
+
+  // Health-check
+  alerts.push(...detectStaleData('media'));
 
   if (isColdStart) {
     console.log(`[media] Cold start: generated ${alerts.length} alerts but suppressing them`);

@@ -44,6 +44,10 @@ function alertPriority(alert: Alert): number {
       }
       return 0;
     case 'own_media': return 92; // Own media highly important
+    case 'own_media_absent': return 88; // You're missing the story
+    case 'headline_cluster': return 90; // Big event signal
+    case 'stale_data': return 85; // Health
+    case 'trends_without_discover': return 72; // SEO opportunity
     case 'entity_coverage': return 75;
     case 'category':
       return alert.subtype === 'day_spike' ? 65 : 45;

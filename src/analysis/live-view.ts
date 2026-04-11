@@ -447,6 +447,33 @@ export function buildLiveView(): LiveViewResponse {
           );
         }
         break;
+      case 'own_media_absent':
+        title = a.entityName;
+        detail = `Cubierto por ${a.otherOutlets.length} medios | Categoria: ${a.category || 'sin categoria'}`;
+        if (a.otherTitles && a.otherTitles.length > 0) {
+          examples = a.otherTitles.slice(0, 3).map((t: string) => ({ title: t }));
+        }
+        break;
+      case 'trends_without_discover':
+        title = a.trendTitle;
+        detail = `~${a.approxTraffic.toLocaleString()}+ busquedas sin cobertura en Discover`;
+        if (a.newsItems && a.newsItems.length > 0) {
+          examples = a.newsItems.slice(0, 3).map((n: any) => ({
+            title: n.title,
+            url: n.url,
+            source: n.source,
+          }));
+        }
+        break;
+      case 'headline_cluster':
+        title = `${a.entitiesInCluster.length} entidades activas (cluster)`;
+        detail = `Ventana: ${a.windowHours}h`;
+        examples = a.entitiesInCluster.slice(0, 5).map((e: string) => ({ title: e }));
+        break;
+      case 'stale_data':
+        title = `Pipeline inactivo: ${a.source}`;
+        detail = `Sin actividad desde hace ${a.lastPollAgoMinutes} minutos`;
+        break;
     }
     // Derive category for filtering:
     // - entity/concordance/coverage alerts have their own derived category
@@ -457,7 +484,8 @@ export function buildLiveView(): LiveViewResponse {
       a.type === 'entity' ||
       a.type === 'entity_concordance' ||
       a.type === 'entity_coverage' ||
-      a.type === 'own_media'
+      a.type === 'own_media' ||
+      a.type === 'own_media_absent'
     ) {
       alertCategory = a.category;
     } else if (a.type === 'category') {

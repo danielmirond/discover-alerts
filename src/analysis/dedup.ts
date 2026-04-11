@@ -20,6 +20,14 @@ function alertKey(alert: Alert): string {
       return `concordance:${alert.subtype}:${alert.entityName}`;
     case 'own_media':
       return `own_media:${alert.subtype}:${alert.url || alert.title}`;
+    case 'own_media_absent':
+      return `own_media_absent:${alert.entityName}`;
+    case 'trends_without_discover':
+      return `trends_gap:${alert.trendTitle}`;
+    case 'headline_cluster':
+      return `cluster:${alert.entitiesInCluster.slice(0, 3).sort().join(',')}`;
+    case 'stale_data':
+      return `stale:${alert.source}`;
   }
 }
 

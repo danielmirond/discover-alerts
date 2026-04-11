@@ -59,6 +59,28 @@ export function getConfig() {
         .filter(d => d.length > 0),
       // Minimum OTHER outlets required to trigger 'coverage' own-media alert
       coverageMinOtherOutlets: envInt('OWN_MEDIA_COVERAGE_MIN_OTHERS', 1),
+      // For own_media_absent: minimum competitors that cover an entity before
+      // we alert that "they're covering, we're not"
+      absentMinOthers: envInt('OWN_MEDIA_ABSENT_MIN_OTHERS', 3),
+      // Restricts absent alerts to entities in these DS categories (substring)
+      // Empty = all categories. For sports-focused media like Mundo Deportivo
+      // default to Sports.
+      absentCategoryFilter: env('OWN_MEDIA_ABSENT_CATEGORY_FILTER', 'Sport')
+        .toLowerCase(),
+    },
+    cluster: {
+      // headline_cluster: min number of distinct entities firing flash/spike
+      // within the cluster window for us to consider "big event"
+      minEntities: envInt('THRESHOLD_CLUSTER_MIN_ENTITIES', 4),
+      windowHours: envFloat('THRESHOLD_CLUSTER_WINDOW_HOURS', 1),
+    },
+    staleData: {
+      // Alert if any poll hasn't run in this many minutes
+      maxMinutesStale: envInt('THRESHOLD_STALE_MINUTES', 45),
+    },
+    trendsWithoutDiscover: {
+      // Only alert on trends with at least this traffic
+      minApproxTraffic: envInt('THRESHOLD_TRENDS_WITHOUT_DISCOVER_MIN_TRAFFIC', 10_000),
     },
     // Only used in local mode (npm run dev), not in Vercel
     polling: {

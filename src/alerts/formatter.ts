@@ -277,6 +277,63 @@ function formatOwnMedia(a: Extract<Alert, { type: 'own_media' }>): SlackBlock[] 
   return blocks;
 }
 
+function formatOwnMediaAbsent(a: Extract<Alert, { type: 'own_media_absent' }>): SlackBlock[] {
+  const blocks: SlackBlock[] = [
+    header(`:warning: NO cubrimos: ${a.entityName}`),
+    fields(
+      `*Entidad:* ${a.entityName}`,
+      `*Categoria:* ${a.category || 'sin categoria'}`,
+      `*Medios que SI cubren:* ${a.otherOutlets.length}`,
+    ),
+  ];
+  if (a.otherOutlets.length > 0) {
+    blocks.push(section(`:newspaper: *Cubierto por:* ${a.otherOutlets.join(', ')}`));
+  }
+  if (a.otherTitles.length > 0) {
+    blocks.push(section(
+      `*Titulares de la competencia:*\n` + a.otherTitles.map(t => `• ${t}`).join('\n'),
+    ));
+  }
+  blocks.push(context('Own media absent | Oportunidad editorial'));
+  return blocks;
+}
+
+function formatTrendsWithoutDiscover(a: Extract<Alert, { type: 'trends_without_discover' }>): SlackBlock[] {
+  const newsLines = a.newsItems
+    .map(n => `• <${n.url}|${n.title}> _(${n.source})_`)
+    .join('\n');
+  return [
+    header(`:mag: Hueco SEO: ${a.trendTitle}`),
+    section(
+      `La gente busca *${a.trendTitle}* (~${a.approxTraffic.toLocaleString()}+ busquedas) pero ningun articulo en Discover ES ni entidad DiscoverSnoop lo cubre.`,
+    ),
+    ...(newsLines ? [section(`*Articulos en Google Trends:*\n${newsLines}`)] : []),
+    context('Trends without Discover | SEO opportunity'),
+  ];
+}
+
+function formatHeadlineCluster(a: Extract<Alert, { type: 'headline_cluster' }>): SlackBlock[] {
+  return [
+    header(`:rotating_light: EVENTO GRANDE: ${a.entitiesInCluster.length} entidades activas`),
+    section(
+      `${a.entitiesInCluster.length} entidades distintas han disparado actividad en la ultima ${a.windowHours}h. Posible evento noticia grande en curso.`,
+    ),
+    section(`*Entidades en el cluster:*\n${a.entitiesInCluster.map(e => `• ${e}`).join('\n')}`),
+    context('Headline cluster | Big-event signal'),
+  ];
+}
+
+function formatStaleData(a: Extract<Alert, { type: 'stale_data' }>): SlackBlock[] {
+  return [
+    header(`:warning: Pipeline sin actividad: ${a.source}`),
+    section(
+      `El poll *${a.source}* no ha corrido en los ultimos *${a.lastPollAgoMinutes} minutos*.\n` +
+      `Revisa GitHub Actions, Upstash Redis y las credenciales del source.`,
+    ),
+    context('Stale data | Health check'),
+  ];
+}
+
 function formatSingleAlert(alert: Alert): SlackBlock[] {
   switch (alert.type) {
     case 'entity': return formatEntity(alert);
@@ -287,6 +344,10 @@ function formatSingleAlert(alert: Alert): SlackBlock[] {
     case 'entity_coverage': return formatEntityCoverage(alert);
     case 'entity_concordance': return formatConcordance(alert);
     case 'own_media': return formatOwnMedia(alert);
+    case 'own_media_absent': return formatOwnMediaAbsent(alert);
+    case 'trends_without_discover': return formatTrendsWithoutDiscover(alert);
+    case 'headline_cluster': return formatHeadlineCluster(alert);
+    case 'stale_data': return formatStaleData(alert);
   }
 }
 

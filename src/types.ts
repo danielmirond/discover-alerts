@@ -269,7 +269,11 @@ export type Alert =
   | TrendsNewTopicAlert
   | EntityCoverageAlert
   | EntityConcordanceAlert
-  | OwnMediaAlert;
+  | OwnMediaAlert
+  | OwnMediaAbsentAlert
+  | TrendsWithoutDiscoverAlert
+  | HeadlineClusterAlert
+  | StaleDataAlert;
 
 // Media RSS types
 export interface MediaFeed {
@@ -289,6 +293,34 @@ export interface WeeklyMediaStats {
   patterns: Record<string, number>;
   /** Static category of the feed itself (generalista/deportivo/tech) */
   feedCategory?: string;
+}
+
+export interface OwnMediaAbsentAlert {
+  type: 'own_media_absent';
+  entityName: string;
+  category?: string;
+  otherOutlets: string[];
+  otherTitles: string[];
+}
+
+export interface TrendsWithoutDiscoverAlert {
+  type: 'trends_without_discover';
+  trendTitle: string;
+  approxTraffic: number;
+  newsItems: Array<{ title: string; url: string; source: string }>;
+}
+
+export interface HeadlineClusterAlert {
+  type: 'headline_cluster';
+  entitiesInCluster: string[];
+  windowHours: number;
+  timestamp: string;
+}
+
+export interface StaleDataAlert {
+  type: 'stale_data';
+  source: 'discover' | 'trends' | 'media' | 'x';
+  lastPollAgoMinutes: number;
 }
 
 export interface OwnMediaAlert {

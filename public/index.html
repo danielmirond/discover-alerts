@@ -505,7 +505,11 @@
         'headline_pattern': { bg: 'rgba(251,146,60,0.06)', border: '#fb923c', icon: '&#128221;' },
         'trends_correlation': { bg: 'rgba(167,139,250,0.06)', border: '#a78bfa', icon: '&#128279;' },
         'trends_new_topic': { bg: 'rgba(167,139,250,0.06)', border: '#a78bfa', icon: '&#128293;' },
-      'own_media': { bg: 'rgba(250,204,21,0.10)', border: '#facc15', icon: '&#11088;' }
+      'own_media': { bg: 'rgba(250,204,21,0.10)', border: '#facc15', icon: '&#11088;' },
+      'own_media_absent': { bg: 'rgba(249,115,22,0.10)', border: '#f97316', icon: '&#9888;&#65039;' },
+      'trends_without_discover': { bg: 'rgba(16,185,129,0.08)', border: '#10b981', icon: '&#128269;' },
+      'headline_cluster': { bg: 'rgba(236,72,153,0.10)', border: '#ec4899', icon: '&#128680;' },
+      'stale_data': { bg: 'rgba(120,113,108,0.10)', border: '#78716c', icon: '&#9888;&#65039;' }
       };
       var subtypeLabels = {
         flash: 'FLASH (3+ en 1h)', longtail: 'LONGTAIL (5+ en 2h)', spike: 'SPIKE (legacy)', ascending: 'ASCENDING (3+ en 6h)',
@@ -569,6 +573,10 @@
       'own_media/discover_page': '<strong>Nuestro dominio</strong> aparece como pagina en Google Discover ES. Senal de que estamos logrando colocar contenido propio.<span class="tt-formula">page.domain ∈ OWN_MEDIA_DOMAINS</span>',
       'own_media/trends_news': '<strong>Nuestro dominio</strong> figura como fuente en las news items del RSS de Google Trends ES.',
       'own_media/coverage_join': '<strong>Nuestro medio</strong> cubre una entidad que tambien publican N+ medios distintos (cobertura editorial conjunta). Por defecto N=1 (configurable via OWN_MEDIA_COVERAGE_MIN_OTHERS).',
+      'own_media_absent': '<strong>NO estamos cubriendo</strong> una entidad que N+ medios (por defecto 3) SI publican. Filtrado por categoria DS (por defecto Sport para Mundo Deportivo). Oportunidad editorial perdida.<span class="tt-formula">others >= 3 AND own == 0 AND cat matches</span>',
+      'trends_without_discover': 'Topic de <strong>Google Trends con >10k busquedas</strong> que NO matchea con ninguna entidad ni pagina de DiscoverSnoop. <strong>Hueco SEO puro</strong>: la gente lo busca pero nadie lo cubre.<span class="tt-formula">traffic >= 10000 AND not in entities AND not in pages</span>',
+      'headline_cluster': '<strong>N+ entidades distintas</strong> (por defecto 4) han disparado actividad en la ultima hora. Senal de <strong>evento grande</strong> en curso (elecciones, desastre, escandalo).<span class="tt-formula">distinct_entities_in_1h >= 4</span>',
+      'stale_data': 'Un poll (discover/trends/media/x) no ha corrido en los ultimos <strong>45 minutos</strong>. Health-check del pipeline. Revisa GitHub Actions, Upstash o las credenciales del source.<span class="tt-formula">now - lastPoll > 45 min</span>',
     };
 
     function getTooltipFor(type, subtype) {

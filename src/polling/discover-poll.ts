@@ -12,6 +12,12 @@ import { detectHeadlinePatterns } from '../analysis/headline-patterns.js';
 import { detectTrendsCorrelations } from '../analysis/trends-correlator.js';
 import { detectConcordanceAlerts } from '../analysis/concordance-detector.js';
 import { detectOwnMediaInDiscover, detectOwnMediaCoverage } from '../analysis/own-media-detector.js';
+import {
+  detectOwnMediaAbsent,
+  detectTrendsWithoutDiscover,
+  detectHeadlineCluster,
+  detectStaleData,
+} from '../analysis/insights-detector.js';
 import { dedup } from '../analysis/dedup.js';
 import { dispatchAlerts } from '../alerts/dispatch.js';
 import { getState, updateState, saveState } from '../state/store.js';
@@ -88,6 +94,22 @@ export async function runDiscoverPoll(): Promise<void> {
     // Own-media: nuestro dominio apareciendo en Discover + cobertura joint
     alerts.push(...detectOwnMediaInDiscover(pag, categoryNames));
     alerts.push(...detectOwnMediaCoverage());
+
+    // New insight alerts
+    alerts.push(...detectOwnMediaAbsent());
+    const state3 = getState();
+    const cachedTrendsForGap = Object.entries(state3.trends).map(([title, snap]) => ({
+      title,
+      approxTraffic: snap.approxTraffic,
+      pubDate: '',
+      link: '',
+      newsItems: [],
+    }));
+    if (cachedTrendsForGap.length > 0) {
+      alerts.push(...detectTrendsWithoutDiscover(cachedTrendsForGap, pag, ent));
+    }
+    alerts.push(...detectHeadlineCluster(ent));
+    alerts.push(...detectStaleData('discover'));
 
     const state = getState();
     const cachedTrends = Object.entries(state.trends).map(([title, snap]) => ({
