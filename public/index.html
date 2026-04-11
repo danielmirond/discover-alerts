@@ -98,6 +98,33 @@
     .filter-select:focus { border-color: #60a5fa; color: #fff; }
     .filter-select option { background: #1a1a1a; color: #ccc; }
     .filter-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; align-self: center; }
+    .tooltip { position: relative; display: inline-flex; align-items: center; margin-left: 6px; }
+    .tooltip-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.1); color: #888; font-size: 10px; font-weight: 700; cursor: help; border: 1px solid #333; }
+    .tooltip-icon:hover { background: rgba(96,165,250,0.2); color: #60a5fa; border-color: #60a5fa; }
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      top: 20px;
+      left: 0;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 10px 12px;
+      width: 320px;
+      font-size: 12px;
+      color: #ccc;
+      font-weight: 400;
+      line-height: 1.5;
+      z-index: 1000;
+      transition: opacity 0.15s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      text-transform: none;
+      letter-spacing: normal;
+    }
+    .tooltip .tooltip-text strong { color: #60a5fa; }
+    .tooltip .tooltip-text .tt-formula { color: #facc15; font-family: 'SF Mono', monospace; font-size: 11px; display: block; margin-top: 4px; padding: 4px 8px; background: rgba(250,204,21,0.08); border-radius: 4px; }
+    .tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
     .media-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid #222; }
     .media-row:last-child { border-bottom: none; }
     .media-rank { font-size: 12px; font-weight: 700; color: #555; width: 28px; text-align: center; flex-shrink: 0; padding-top: 2px; }
@@ -129,7 +156,7 @@
   <div class="container">
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
-        <h2>&#128276; Alertas enviadas a Slack (ultimas 6h)</h2>
+        <h2>&#128276; Alertas enviadas a Slack (ultimas 6h)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Historial completo de las alertas que salen a Slack. Persistidas en Redis (max 200, retencion 6h). Puedes filtrar por <strong>ruta Slack</strong> (canal destino), <strong>tipo de alerta</strong> (flash, longtail, concordance, etc.) y <strong>categoria DiscoverSnoop</strong>.</span></span></h2>
         <span class="badge badge-red" id="recent-count">Cargando...</span>
       </div>
       <div style="padding: 12px 20px; border-bottom: 1px solid #2a2a2a;">
@@ -154,7 +181,7 @@
 
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
-        <h2>&#128293; Entidades en vivo</h2>
+        <h2>&#128293; Entidades en vivo<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Entidades que en este instante cruzan los umbrales de <strong>flash</strong> (3+ en 1h), <strong>longtail</strong> (5+ en 2h) o <strong>ascending</strong> (3+ en 6h). Las 3 ventanas se calculan independientes: una misma entidad puede tener varios statuses simultaneamente.</span></span></h2>
         <span class="badge badge-purple" id="live-count">Cargando...</span>
       </div>
       <div class="card-body" id="live-alerts" style="max-height: none;">
@@ -164,7 +191,7 @@
 
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
-        <h2>&#128279; Concordancias cross-source</h2>
+        <h2>&#128279; Concordancias cross-source<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Entidades del top-100 que aparecen <strong>en al menos 2 fuentes</strong> distintas (Discover + Google Trends/X Trends/Medios RSS). Prioriza <strong>triple match</strong> (Discover + Trends + X) como senal mas fuerte.</span></span></h2>
         <span class="badge badge-purple" id="live-conc-count">Cargando...</span>
       </div>
       <div class="card-body" id="live-concordances" style="max-height: none;">
@@ -174,7 +201,7 @@
 
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
-        <h2>&#128241; Top 10 medios (ultimas 24h)</h2>
+        <h2>&#128241; Top 10 medios (ultimas 24h)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Medios RSS con mas articulos cacheados en las ultimas 24h. Para cada medio, se muestran las entidades Discover mencionadas en sus titulares con <strong>marcas cross-source</strong>: <strong>GT</strong> = tambien en Google Trends, <strong>X</strong> = tambien en X/Twitter Trends, <strong>RSS</strong> = en medios (siempre true aqui).</span></span></h2>
         <span class="badge badge-red" id="top-media-count">Cargando...</span>
       </div>
       <div class="card-body" id="top-media" style="max-height: none;">
@@ -184,7 +211,7 @@
 
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
-        <h2>&#128202; Categorias (spike 24h)</h2>
+        <h2>&#128202; Categorias (spike 24h)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Top 15 categorias DiscoverSnoop ordenadas por <strong>delta de score respecto a 24h atras</strong> (baseline rolling). Se muestra el historial acumulado en el state (al menos 2 muestras por categoria). Incluye ejemplos de paginas Discover pertenecientes a esa categoria.</span></span></h2>
         <span class="badge badge-blue" id="live-cat-count">Cargando...</span>
       </div>
       <div class="card-body" id="live-categories" style="max-height: none;">
@@ -194,7 +221,7 @@
 
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
-        <h2>&#128221; Patrones de titular (poll actual)</h2>
+        <h2>&#128221; Patrones de titular (poll actual)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">N-gramas de <strong>3+ palabras</strong> que aparecen en <strong>3+ titulares distintos</strong> de Discover en el poll actual. Stopwords castellanas filtradas. Detecta patrones editoriales repetidos (ej: "fichaje sorpresa", "alerta roja").</span></span></h2>
         <span class="badge badge-orange" id="live-hl-count">Cargando...</span>
       </div>
       <div class="card-body" id="live-headlines" style="max-height: none;">
@@ -204,7 +231,7 @@
 
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
-        <h2>&#128221; Patrones de titular (ultimos 4 dias)</h2>
+        <h2>&#128221; Patrones de titular (ultimos 4 dias)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Agregado de patrones detectados en todos los polls de los ultimos 4 dias. Se filtra a los que aparecieron en <strong>2+ polls distintos</strong> (evita flash-in-the-pan). Ordenados por total de apariciones acumuladas.</span></span></h2>
         <span class="badge badge-orange" id="live-hl4d-count">Cargando...</span>
       </div>
       <div class="card-body" id="live-headlines-4d" style="max-height: none;">
@@ -426,7 +453,7 @@
         }
         return '<div class="alert-item" style="background:' + c.bg + ';border-color:' + c.border + '">' +
           '<div class="alert-type" style="color:' + c.border + ';display:flex;justify-content:space-between">' +
-            '<span>' + c.icon + ' ' + escapeHtml(label) + routeBadge + '</span>' +
+            '<span>' + c.icon + ' ' + escapeHtml(label) + tooltipHtml(r.type, r.subtype) + routeBadge + '</span>' +
             '<span style="color:#666;font-weight:400;font-size:10px">' + timeAgo(r.timestamp) + '</span>' +
           '</div>' +
           '<div class="alert-title">' + escapeHtml(r.title) + '</div>' +
@@ -435,6 +462,36 @@
         '</div>';
       }).join('');
       document.getElementById('recent-alerts').innerHTML = html;
+    }
+
+    var alertTooltips = {
+      'entity/flash': 'La misma entidad ha aparecido <strong>3 o mas veces en la ultima hora</strong> en Discover ES. Senal de breaking news o pico muy rapido.<span class="tt-formula">appearances(1h) >= 3</span>',
+      'entity/longtail': 'Entidad con <strong>5+ apariciones en las ultimas 2 horas</strong>. Senal de persistencia media: el tema se mantiene caliente.<span class="tt-formula">appearances(2h) >= 5</span>',
+      'entity/ascending': 'Entidad con <strong>3+ apariciones en las ultimas 6 horas</strong>. Tema sostenido, ya no es flash pero sigue activo.<span class="tt-formula">appearances(6h) >= 3</span>',
+      'entity/rising': 'El score de la entidad ha <strong>subido mas de 20 puntos</strong> entre el poll anterior y el actual.<span class="tt-formula">score_now - score_prev >= 20</span>',
+      'entity/spike': 'Alerta legacy (antes de longtail). Deprecated.',
+      'entity/new': 'Entidad nueva que no existia en el state. Deshabilitada por defecto para evitar ruido.',
+      'entity_concordance/discover_trends_x': '<strong>Triple match:</strong> la entidad aparece simultaneamente en Discover + Google Trends + X/Twitter. Senal exceptional de convergencia cross-source.',
+      'entity_concordance/discover_rss': 'La entidad aparece en Discover + al menos un articulo RSS de medios. La cobertura mediatica confirma Discover.',
+      'entity_concordance/discover_trends': 'La entidad aparece en Discover + Google Trends. La gente lo esta buscando.',
+      'entity_concordance/discover_x': 'La entidad aparece en Discover + X/Twitter trends. Conversacion viral en redes.',
+      'entity_coverage': 'Los feeds RSS de medios han publicado <strong>multiples articulos</strong> mencionando esta entidad en el titular.',
+      'category/day_spike': 'El score de esta categoria DiscoverSnoop ha subido <strong>+30 o mas en las ultimas 24h</strong> comparado con la baseline rolling.<span class="tt-formula">score_now - score_24h_ago >= 30</span>',
+      'category/spike': 'La categoria ha tenido un salto poll-over-poll de <strong>score +15 o publicaciones +50%</strong>, con un delta real (>=5) para evitar falsos positivos.<span class="tt-formula">delta >= 5 AND (score_jump >= 15 OR pub_jump >= 50%)</span>',
+      'headline_pattern': 'Un n-grama de <strong>3+ palabras</strong> aparece en al menos <strong>3 titulares distintos</strong> de Discover en el mismo poll. Detecta patrones editoriales (ej: "fichaje sorpresa").',
+      'trends_correlation': 'Un topic de Google Trends RSS matchea con una entidad o pagina cacheada de Discover. Cruce entre lo que la gente busca y lo que Discover esta amplificando.',
+      'trends_new_topic': 'Nuevo topic detectado en el feed RSS de Google Trends ES que no habiamos visto antes.',
+    };
+
+    function getTooltipFor(type, subtype) {
+      var key = subtype ? type + '/' + subtype : type;
+      return alertTooltips[key] || alertTooltips[type] || null;
+    }
+
+    function tooltipHtml(type, subtype) {
+      var txt = getTooltipFor(type, subtype);
+      if (!txt) return '';
+      return '<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">' + txt + '</span></span>';
     }
 
     var subtypeLabelsGlobal = {
@@ -553,7 +610,7 @@
                           s === 'longtail' ? e.appearancesLast2h :
                           e.appearancesLast6h;
               var win = s === 'flash' ? '1h' : s === 'longtail' ? '2h' : '6h';
-              return '<span class="badge" style="background:' + m.cls.replace('alert-','') + ';color:' + m.color + ';background:rgba(' + (m.color === '#ef4444' ? '239,68,68' : m.color === '#facc15' ? '250,204,21' : '74,222,128') + ',0.15);margin-right:4px">' + m.icon + ' ' + count + ' en ' + win + '</span>';
+              return '<span class="badge" style="background:' + m.cls.replace('alert-','') + ';color:' + m.color + ';background:rgba(' + (m.color === '#ef4444' ? '239,68,68' : m.color === '#facc15' ? '250,204,21' : '74,222,128') + ',0.15);margin-right:4px">' + m.icon + ' ' + count + ' en ' + win + '</span>' + tooltipHtml('entity', s);
             }).join('');
 
             var enrichHtml = '';
@@ -634,7 +691,7 @@
             enrich += '</div>';
             var cat = c.category ? ' &mdash; ' + escapeHtml(c.category) : '';
             return '<div class="alert-item ' + m.cls + '">' +
-              '<div class="alert-type" style="color:#38bdf8">' + m.icon + ' ' + m.label + cat + '</div>' +
+              '<div class="alert-type" style="color:#38bdf8">' + m.icon + ' ' + m.label + tooltipHtml('entity_concordance', c.subtype) + cat + '</div>' +
               '<div class="alert-title">' + escapeHtml(c.entityName) + '</div>' +
               '<div class="alert-detail">Score: ' + c.score + ' | Posicion: #' + c.position + '</div>' +
               enrich +
