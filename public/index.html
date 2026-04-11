@@ -94,6 +94,10 @@
     .filter-btn:hover { background: rgba(255,255,255,0.08); color: #ccc; border-color: #444; }
     .filter-btn.active { background: rgba(96,165,250,0.15); color: #60a5fa; border-color: #60a5fa; }
     .filter-btn .count { opacity: 0.7; margin-left: 4px; font-weight: 400; }
+    .filter-select { background: rgba(255,255,255,0.04); color: #ccc; border: 1px solid #2a2a2a; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; min-width: 160px; outline: none; }
+    .filter-select:focus { border-color: #60a5fa; color: #fff; }
+    .filter-select option { background: #1a1a1a; color: #ccc; }
+    .filter-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; align-self: center; }
     .media-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid #222; }
     .media-row:last-child { border-bottom: none; }
     .media-rank { font-size: 12px; font-weight: 700; color: #555; width: 28px; text-align: center; flex-shrink: 0; padding-top: 2px; }
@@ -128,8 +132,20 @@
         <h2>&#128276; Alertas enviadas a Slack (ultimas 6h)</h2>
         <span class="badge badge-red" id="recent-count">Cargando...</span>
       </div>
-      <div id="recent-filters" style="padding: 12px 20px; border-bottom: 1px solid #2a2a2a; display: flex; flex-wrap: wrap; gap: 8px;">
-        <button class="filter-btn active" data-route="__all__">Todas</button>
+      <div style="padding: 12px 20px; border-bottom: 1px solid #2a2a2a;">
+        <div id="recent-filters" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+          <button class="filter-btn active" data-route="__all__">Todas</button>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <span class="filter-label">Tipo:</span>
+          <select class="filter-select" id="filter-type">
+            <option value="__all__">Todos los tipos</option>
+          </select>
+          <span class="filter-label">Categoria DS:</span>
+          <select class="filter-select" id="filter-category">
+            <option value="__all__">Todas las categorias</option>
+          </select>
+        </div>
       </div>
       <div class="card-body" id="recent-alerts" style="max-height: none;">
         <div class="loading"><div class="spinner"></div><br>Cargando alertas recientes...</div>
@@ -344,13 +360,32 @@
     }
 
     var currentRouteFilter = '__all__';
+    var currentTypeFilter = '__all__';
+    var currentCategoryFilter = '__all__';
+
+    function applyAllFilters(recent) {
+      return recent.filter(function(r) {
+        if (currentRouteFilter !== '__all__' && r.routeName !== currentRouteFilter) return false;
+        if (currentTypeFilter !== '__all__') {
+          var key = r.subtype ? r.type + '/' + r.subtype : r.type;
+          if (key !== currentTypeFilter) return false;
+        }
+        if (currentCategoryFilter === '__none__') {
+          if (r.category) return false;
+        } else if (currentCategoryFilter !== '__all__' && r.category !== currentCategoryFilter) {
+          return false;
+        }
+        return true;
+      });
+    }
 
     function renderRecentAlerts(recent) {
-      var filtered = currentRouteFilter === '__all__' ? recent : recent.filter(function(r) { return r.routeName === currentRouteFilter; });
-      document.getElementById('recent-count').textContent = filtered.length + (currentRouteFilter === '__all__' ? ' alertas' : ' / ' + recent.length + ' alertas');
+      var filtered = applyAllFilters(recent);
+      var anyFilter = currentRouteFilter !== '__all__' || currentTypeFilter !== '__all__' || currentCategoryFilter !== '__all__';
+      document.getElementById('recent-count').textContent = filtered.length + (anyFilter ? ' / ' + recent.length + ' alertas' : ' alertas');
 
       if (filtered.length === 0) {
-        document.getElementById('recent-alerts').innerHTML = '<div class="loading">Sin alertas ' + (currentRouteFilter === '__all__' ? 'enviadas a Slack en las ultimas 6h' : 'en el filtro "' + escapeHtml(currentRouteFilter) + '"') + '</div>';
+        document.getElementById('recent-alerts').innerHTML = '<div class="loading">Sin alertas que coincidan con los filtros actuales</div>';
         return;
       }
 
@@ -402,18 +437,29 @@
       document.getElementById('recent-alerts').innerHTML = html;
     }
 
+    var subtypeLabelsGlobal = {
+      flash: 'FLASH (3+ en 1h)', longtail: 'LONGTAIL (5+ en 2h)', spike: 'SPIKE (legacy)', ascending: 'ASCENDING (3+ en 6h)',
+      rising: 'RISING', new: 'NEW',
+      discover_trends_x: 'TRIPLE: Discover+Trends+X',
+      discover_rss: 'Discover + Medios',
+      discover_trends: 'Discover + Trends',
+      discover_x: 'Discover + X',
+      day_spike: 'SPIKE 24h'
+    };
+
     function renderFilterButtons(recent) {
-      var counts = { __all__: recent.length };
+      // Route buttons
+      var routeCounts = { __all__: recent.length };
       recent.forEach(function(r) {
-        counts[r.routeName] = (counts[r.routeName] || 0) + 1;
+        routeCounts[r.routeName] = (routeCounts[r.routeName] || 0) + 1;
       });
-      var routes = Object.keys(counts).filter(function(k) { return k !== '__all__'; }).sort();
+      var routes = Object.keys(routeCounts).filter(function(k) { return k !== '__all__'; }).sort();
       var order = ['__all__'].concat(routes);
       var html = order.map(function(route) {
         var label = route === '__all__' ? 'Todas' : route;
         var activeCls = route === currentRouteFilter ? ' active' : '';
         return '<button class="filter-btn' + activeCls + '" data-route="' + escapeHtml(route) + '">' +
-          escapeHtml(label) + '<span class="count">' + counts[route] + '</span>' +
+          escapeHtml(label) + '<span class="count">' + routeCounts[route] + '</span>' +
         '</button>';
       }).join('');
       var container = document.getElementById('recent-filters');
@@ -426,6 +472,51 @@
           renderRecentAlerts(recent);
         });
       });
+
+      // Type selector
+      var typeCounts = {};
+      recent.forEach(function(r) {
+        var key = r.subtype ? r.type + '/' + r.subtype : r.type;
+        typeCounts[key] = (typeCounts[key] || 0) + 1;
+      });
+      var typeOptions = ['<option value="__all__">Todos los tipos (' + recent.length + ')</option>'];
+      Object.keys(typeCounts).sort().forEach(function(key) {
+        var parts = key.split('/');
+        var label = parts[1] ? (subtypeLabelsGlobal[parts[1]] || parts[1]) : parts[0];
+        var selected = key === currentTypeFilter ? ' selected' : '';
+        typeOptions.push('<option value="' + escapeHtml(key) + '"' + selected + '>' + escapeHtml(label) + ' (' + typeCounts[key] + ')</option>');
+      });
+      var typeSelect = document.getElementById('filter-type');
+      typeSelect.innerHTML = typeOptions.join('');
+      typeSelect.onchange = function() {
+        currentTypeFilter = typeSelect.value;
+        renderRecentAlerts(recent);
+      };
+
+      // Category selector (DiscoverSnoop derived category)
+      var catCounts = {};
+      var withoutCat = 0;
+      recent.forEach(function(r) {
+        if (r.category) {
+          catCounts[r.category] = (catCounts[r.category] || 0) + 1;
+        } else {
+          withoutCat++;
+        }
+      });
+      var catOptions = ['<option value="__all__">Todas las categorias (' + recent.length + ')</option>'];
+      if (withoutCat > 0) {
+        catOptions.push('<option value="__none__">Sin categoria (' + withoutCat + ')</option>');
+      }
+      Object.keys(catCounts).sort().forEach(function(cat) {
+        var selected = cat === currentCategoryFilter ? ' selected' : '';
+        catOptions.push('<option value="' + escapeHtml(cat) + '"' + selected + '>' + escapeHtml(cat) + ' (' + catCounts[cat] + ')</option>');
+      });
+      var catSelect = document.getElementById('filter-category');
+      catSelect.innerHTML = catOptions.join('');
+      catSelect.onchange = function() {
+        currentCategoryFilter = catSelect.value;
+        renderRecentAlerts(recent);
+      };
     }
 
     async function loadLiveAlerts() {

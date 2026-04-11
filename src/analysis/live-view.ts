@@ -82,6 +82,7 @@ interface LiveRecentAlert {
   detail: string;
   timestamp: string;
   routeName: string;
+  category?: string; // DiscoverSnoop category (derived from pages)
   examples?: Array<{ title: string; url?: string; source?: string }>;
 }
 
@@ -431,6 +432,17 @@ export function buildLiveView(): LiveViewResponse {
         }
         break;
     }
+    // Derive category for filtering:
+    // - entity/concordance/coverage alerts have their own derived category
+    // - category-type alerts use their own name
+    // - other types leave undefined
+    let alertCategory: string | undefined;
+    if (a.type === 'entity' || a.type === 'entity_concordance' || a.type === 'entity_coverage') {
+      alertCategory = a.category;
+    } else if (a.type === 'category') {
+      alertCategory = a.name;
+    }
+
     return {
       type: a.type,
       subtype: a.subtype,
@@ -438,6 +450,7 @@ export function buildLiveView(): LiveViewResponse {
       detail,
       timestamp: r.timestamp,
       routeName: r.routeName,
+      category: alertCategory,
       examples,
     };
   });
