@@ -178,11 +178,21 @@
 
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
-        <h2>&#128221; Patrones de titular (3+ palabras)</h2>
+        <h2>&#128221; Patrones de titular (poll actual)</h2>
         <span class="badge badge-orange" id="live-hl-count">Cargando...</span>
       </div>
       <div class="card-body" id="live-headlines" style="max-height: none;">
         <div class="loading"><div class="spinner"></div><br>Cargando patrones...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128221; Patrones de titular (ultimos 4 dias)</h2>
+        <span class="badge badge-orange" id="live-hl4d-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="live-headlines-4d" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando historial de patrones...</div>
       </div>
     </div>
 
@@ -584,6 +594,22 @@
             '</div>';
           }).join('');
           document.getElementById('live-headlines').innerHTML = hlHtml;
+        }
+
+        // Headline patterns 4 dias
+        var hl4d = data.headlinePatterns4d || [];
+        document.getElementById('live-hl4d-count').textContent = hl4d.length + ' patrones';
+        if (hl4d.length === 0) {
+          document.getElementById('live-headlines-4d').innerHTML = '<div class="loading">Sin historial aun (necesita 2+ polls con el mismo patron)</div>';
+        } else {
+          var hl4dHtml = hl4d.map(function(h) {
+            var days = Math.max(1, Math.round((new Date(h.lastSeen) - new Date(h.firstSeen)) / 86400000));
+            return '<div class="alert-item alert-headline">' +
+              '<div class="alert-title">"' + escapeHtml(h.ngram) + '"</div>' +
+              '<div class="alert-detail">Total: ' + h.totalCount + ' apariciones en ' + h.polls + ' polls | span: ' + days + 'd | ' + h.words + ' palabras</div>' +
+            '</div>';
+          }).join('');
+          document.getElementById('live-headlines-4d').innerHTML = hl4dHtml;
         }
 
         // Top 10 medios

@@ -165,6 +165,7 @@ export interface AppState {
   trends: Record<string, TrendSnapshot>;
   xTrends: Record<string, XTrendSnapshot>; // Twitter/X trends
   headlinePatterns: Record<string, number>;
+  headlinePatternsHistory: Array<{ ngram: string; count: number; timestamp: string }>;
   dedupHashes: Record<string, number>;
   mediaArticles: Record<string, { feedName: string; feedCategory: string; title: string; link: string; firstSeen: string }>;
   entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)

@@ -66,6 +66,15 @@ interface LiveHeadlinePattern {
   words: number;
 }
 
+interface LiveHeadlinePattern4d {
+  ngram: string;
+  totalCount: number;
+  polls: number;
+  words: number;
+  firstSeen: string;
+  lastSeen: string;
+}
+
 interface LiveRecentAlert {
   type: string;
   subtype?: string;
@@ -99,6 +108,7 @@ interface LiveViewResponse {
   categories: LiveCategory[];
   concordances: LiveConcordance[];
   headlinePatterns: LiveHeadlinePattern[];
+  headlinePatterns4d: LiveHeadlinePattern4d[];
   recentAlerts: LiveRecentAlert[];
   topMedia: LiveTopMedia[];
   totals: {
@@ -439,6 +449,38 @@ export function buildLiveView(): LiveViewResponse {
     .sort((a, b) => b.count - a.count)
     .slice(0, 20);
 
+  // Headline patterns aggregated across the last 4 days from history
+  const history4d = (state.headlinePatternsHistory ?? []);
+  const aggMap = new Map<string, { totalCount: number; polls: number; first: string; last: string }>();
+  for (const h of history4d) {
+    const existing = aggMap.get(h.ngram);
+    if (existing) {
+      existing.totalCount += h.count;
+      existing.polls += 1;
+      if (h.timestamp < existing.first) existing.first = h.timestamp;
+      if (h.timestamp > existing.last) existing.last = h.timestamp;
+    } else {
+      aggMap.set(h.ngram, {
+        totalCount: h.count,
+        polls: 1,
+        first: h.timestamp,
+        last: h.timestamp,
+      });
+    }
+  }
+  const headlinePatterns4d: LiveHeadlinePattern4d[] = Array.from(aggMap.entries())
+    .map(([ngram, v]) => ({
+      ngram,
+      totalCount: v.totalCount,
+      polls: v.polls,
+      words: ngram.split(' ').length,
+      firstSeen: v.first,
+      lastSeen: v.last,
+    }))
+    .filter(p => p.words >= 3 && p.polls >= 2) // at least in 2 different polls
+    .sort((a, b) => b.totalCount - a.totalCount)
+    .slice(0, 30);
+
   // Top 10 media: aggregate mediaArticles by feedName over the last 24h
   // and compute which Discover entities they mention, with cross-source marks.
   const mediaArticlesArr = Object.values(state.mediaArticles);
@@ -502,6 +544,7 @@ export function buildLiveView(): LiveViewResponse {
     categories: categories.slice(0, 15),
     concordances: concordances.slice(0, 20),
     headlinePatterns,
+    headlinePatterns4d,
     recentAlerts,
     topMedia,
     totals: {

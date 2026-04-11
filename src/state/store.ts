@@ -13,6 +13,7 @@ function emptyState(): AppState {
     trends: {},
     xTrends: {},
     headlinePatterns: {},
+    headlinePatternsHistory: [],
     dedupHashes: {},
     mediaArticles: {},
     entityCategoryMap: {},

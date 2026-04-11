@@ -94,6 +94,25 @@ export function detectHeadlinePatterns(pages: DiscoverPage[]): HeadlinePatternAl
     }
   }
 
-  updateState({ headlinePatterns: nextPatterns });
+  // Append current poll patterns to the rolling history (4-day window)
+  const now = new Date().toISOString();
+  const nowMs = Date.now();
+  const historyWindowMs = 4 * 24 * 3600_000;
+  const prevHistory = state.headlinePatternsHistory ?? [];
+  const prunedHistory = prevHistory.filter(
+    h => nowMs - new Date(h.timestamp).getTime() <= historyWindowMs,
+  );
+  const newEntries = Object.entries(nextPatterns).map(([ngram, count]) => ({
+    ngram,
+    count,
+    timestamp: now,
+  }));
+  // Cap total history at 10k entries to avoid unbounded Redis growth
+  const combinedHistory = [...prunedHistory, ...newEntries].slice(-10_000);
+
+  updateState({
+    headlinePatterns: nextPatterns,
+    headlinePatternsHistory: combinedHistory,
+  });
   return alerts;
 }
