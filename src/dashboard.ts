@@ -2,6 +2,13 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { fetchGoogleTrends } from './sources/google-trends.js';
 import { fetchXTrends } from './sources/x-trends.js';
+import {
+  fetchHistoricalEntities,
+  fetchHistoricalCategories,
+  fetchHistoricalPages,
+  fetchHistoricalDomains,
+  fetchCategoriesList,
+} from './sources/discoversnoop.js';
 import { loadState } from './state/store.js';
 import { buildLiveView } from './analysis/live-view.js';
 import type { MediaFeed } from './types.js';
@@ -41,6 +48,38 @@ async function handleApi(path: string): Promise<object> {
   if (path === '/api/live-alerts') {
     await loadState();
     return buildLiveView();
+  }
+  if (path.startsWith('/api/historical-discover')) {
+    const url = new URL('http://x' + path);
+    const from = url.searchParams.get('from') || '';
+    const to = url.searchParams.get('to') || '';
+    const lines = parseInt(url.searchParams.get('lines') || '500', 10);
+    const dateRe = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRe.test(from) || !dateRe.test(to)) {
+      return { error: 'from and to are required as YYYY-MM-DD' };
+    }
+    const [ents, cats, pgs, doms, catList] = await Promise.allSettled([
+      fetchHistoricalEntities({ from_date: from, to_date: to, lines }),
+      fetchHistoricalCategories({ from_date: from, to_date: to, lines }),
+      fetchHistoricalPages({ from_date: from, to_date: to, lines: Math.min(lines, 1000) }),
+      fetchHistoricalDomains({ from_date: from, to_date: to, lines: Math.min(lines, 500) }),
+      fetchCategoriesList(),
+    ]);
+    const catNameMap: Record<number, string> = {};
+    if (catList.status === 'fulfilled') {
+      for (const c of catList.value as any[]) {
+        if (c?.id != null && c?.name) catNameMap[c.id] = c.name;
+      }
+    }
+    const catData = cats.status === 'fulfilled' ? cats.value : [];
+    return {
+      from,
+      to,
+      entities: ents.status === 'fulfilled' ? ents.value : [],
+      categories: catData.map((c: any) => ({ ...c, name: catNameMap[c.id] || `Category ${c.id}` })),
+      pages: pgs.status === 'fulfilled' ? pgs.value : [],
+      domains: doms.status === 'fulfilled' ? doms.value : [],
+    };
   }
   if (path.startsWith('/api/weekly-history')) {
     await loadState();

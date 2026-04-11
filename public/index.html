@@ -325,9 +325,42 @@
 
   <div id="tab-historico" class="tab-panel">
     <div class="container">
+
+      <!-- Historico DiscoverSnoop con rango de fechas (fetch on-demand) -->
       <div class="card full-width" style="margin-bottom: 20px;">
         <div class="card-header">
-          <h2>&#128197; Historico semanal<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Agregado semanal de <strong>articulos, entidades, categorias DiscoverSnoop y patrones</strong> para cada medio RSS. Los datos se construyen incrementalmente con cada poll de media (cada 15 min). Retencion: <strong>8 semanas</strong>. Los conteos son "articulos en los que se ha mencionado" para entidades/categorias, y "trigramas detectados" para patrones.</span></span></h2>
+          <h2>&#128269; Historico DiscoverSnoop (2025+)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Consulta directa a los endpoints historicos de <strong>DiscoverSnoop</strong> (<code>/entities</code>, <code>/categories</code>, <code>/pages</code>, <code>/domains</code>) con rango de fechas arbitrario. <strong>NO incluye datos de medios RSS</strong> (solo lo que DiscoverSnoop tiene cacheado). Util para comparar semanas de 2025 con las actuales. La respuesta se cachea 5 min.</span></span></h2>
+          <span class="badge badge-blue" id="hist-ds-count">Listo</span>
+        </div>
+        <div style="padding: 16px 20px; border-bottom: 1px solid #2a2a2a; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <span class="filter-label">Desde:</span>
+          <input type="date" id="hist-ds-from" class="filter-select" style="min-width: 140px;" />
+          <span class="filter-label">Hasta:</span>
+          <input type="date" id="hist-ds-to" class="filter-select" style="min-width: 140px;" />
+          <span class="filter-label">Lines:</span>
+          <select class="filter-select" id="hist-ds-lines" style="min-width: 100px;">
+            <option value="200">200</option>
+            <option value="500" selected>500</option>
+            <option value="1000">1000</option>
+            <option value="2500">2500</option>
+            <option value="5000">5000</option>
+          </select>
+          <button class="filter-btn active" id="hist-ds-submit">Consultar</button>
+          <div style="display: flex; gap: 4px; margin-left: 8px;">
+            <button class="filter-btn" data-shortcut="7d">Ultima semana</button>
+            <button class="filter-btn" data-shortcut="30d">Ultimos 30d</button>
+            <button class="filter-btn" data-shortcut="w2025-01">Semana 1 2025</button>
+            <button class="filter-btn" data-shortcut="w2025-q1">Q1 2025</button>
+          </div>
+        </div>
+        <div class="card-body" id="hist-ds-content" style="max-height: none;">
+          <div class="loading">Selecciona un rango de fechas y pulsa Consultar</div>
+        </div>
+      </div>
+
+      <div class="card full-width" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <h2>&#128197; Historico semanal (medios RSS)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Agregado semanal de <strong>articulos, entidades, categorias DiscoverSnoop y patrones</strong> para cada medio RSS. Los datos se construyen incrementalmente con cada poll de media (cada 15 min). Retencion: <strong>8 semanas</strong>. Los conteos son "articulos en los que se ha mencionado" para entidades/categorias, y "trigramas detectados" para patrones.</span></span></h2>
           <span class="badge badge-purple" id="hist-total-count">Cargando...</span>
         </div>
         <div style="padding: 16px 20px; border-bottom: 1px solid #2a2a2a; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
@@ -889,12 +922,121 @@
         document.getElementById('tab-' + tab).classList.add('active');
         if (tab === 'historico' && !historicoLoadedOnce) {
           historicoLoadedOnce = true;
+          initHistDsShortcuts();
           initHistorico();
         }
       });
     });
 
-    // ============== HISTORICO ==============
+    // ============== HISTORICO DISCOVERSNOOP (date range) ==============
+    function pad2(n) { return n < 10 ? '0' + n : String(n); }
+    function fmtDate(d) { return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()); }
+
+    function initHistDsShortcuts() {
+      Array.from(document.querySelectorAll('#tab-historico [data-shortcut]')).forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var sc = btn.getAttribute('data-shortcut');
+          var now = new Date();
+          var from, to;
+          if (sc === '7d') {
+            to = now; from = new Date(now.getTime() - 7*86400000);
+          } else if (sc === '30d') {
+            to = now; from = new Date(now.getTime() - 30*86400000);
+          } else if (sc === 'w2025-01') {
+            from = new Date(2025, 0, 1); to = new Date(2025, 0, 7);
+          } else if (sc === 'w2025-q1') {
+            from = new Date(2025, 0, 1); to = new Date(2025, 2, 31);
+          }
+          if (from && to) {
+            document.getElementById('hist-ds-from').value = fmtDate(from);
+            document.getElementById('hist-ds-to').value = fmtDate(to);
+            queryHistDs();
+          }
+        });
+      });
+      document.getElementById('hist-ds-submit').addEventListener('click', queryHistDs);
+
+      // Default: last 7 days
+      var now = new Date();
+      document.getElementById('hist-ds-from').value = fmtDate(new Date(now.getTime() - 7*86400000));
+      document.getElementById('hist-ds-to').value = fmtDate(now);
+    }
+
+    async function queryHistDs() {
+      var from = document.getElementById('hist-ds-from').value;
+      var to = document.getElementById('hist-ds-to').value;
+      var lines = document.getElementById('hist-ds-lines').value || '500';
+      if (!from || !to) {
+        alert('Por favor selecciona ambas fechas');
+        return;
+      }
+      document.getElementById('hist-ds-content').innerHTML = '<div class="loading"><div class="spinner"></div><br>Consultando DiscoverSnoop de ' + from + ' a ' + to + '...</div>';
+      document.getElementById('hist-ds-count').textContent = 'Cargando...';
+      try {
+        var url = '/api/historical-discover?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&lines=' + lines;
+        var res = await fetch(url);
+        var data = await res.json();
+        if (data.error) {
+          document.getElementById('hist-ds-content').innerHTML = '<div class="loading">Error: ' + escapeHtml(data.error) + '</div>';
+          return;
+        }
+        renderHistDs(data);
+      } catch (e) {
+        document.getElementById('hist-ds-content').innerHTML = '<div class="loading">Error: ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    function renderHistDs(data) {
+      var ents = data.entities || [];
+      var cats = data.categories || [];
+      var pages = data.pages || [];
+      var doms = data.domains || [];
+
+      document.getElementById('hist-ds-count').textContent =
+        ents.length + ' entities · ' + cats.length + ' cats · ' + pages.length + ' pages · ' + doms.length + ' domains';
+
+      var summary = '<div class="hist-summary">' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Rango</span><span class="hist-summary-value" style="font-size:14px">' + data.from + ' → ' + data.to + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Entidades</span><span class="hist-summary-value">' + ents.length + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Categorias</span><span class="hist-summary-value">' + cats.length + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Paginas</span><span class="hist-summary-value">' + pages.length + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Dominios</span><span class="hist-summary-value">' + doms.length + '</span></div>' +
+      '</div>';
+
+      function rankedList(items, maxItems, renderName) {
+        var limited = items.slice(0, maxItems);
+        if (limited.length === 0) return '<div style="color:#555;font-size:12px;padding:6px 0">Sin datos</div>';
+        return limited.map(function(item, i) {
+          return '<div class="hist-item"><span class="hist-item-name">#' + (i+1) + ' ' + renderName(item) + '</span><span class="hist-item-count">' + (item.score || 0) + '</span></div>';
+        }).join('');
+      }
+
+      var entsHtml = rankedList(ents, 30, function(e) { return escapeHtml(e.entity || e.name || '?'); });
+      var catsHtml = rankedList(cats, 25, function(c) { return escapeHtml(c.name || ('cat ' + c.id)); });
+      var domsHtml = rankedList(doms, 25, function(d) { return escapeHtml(d.publisher || d.publisher_url || '?'); });
+
+      var pagesHtml = pages.slice(0, 30).map(function(p, i) {
+        var title = p.title || p.title_original || '(sin titulo)';
+        var source = p.publisher || '';
+        return '<div class="hist-item">' +
+          '<span class="hist-item-name">#' + (i+1) + ' ' +
+            (p.url ? '<a href="' + escapeHtml(p.url) + '" target="_blank" style="color:#60a5fa;text-decoration:none">' + escapeHtml(title) + '</a>' : escapeHtml(title)) +
+            (source ? ' <em style="color:#666">(' + escapeHtml(source) + ')</em>' : '') +
+          '</span>' +
+          '<span class="hist-item-count">' + (p.score || 0) + '</span>' +
+        '</div>';
+      }).join('') || '<div style="color:#555;font-size:12px;padding:6px 0">Sin datos</div>';
+
+      document.getElementById('hist-ds-content').innerHTML = summary +
+        '<div class="hist-grid">' +
+          '<div class="hist-col"><h3>&#128293; Top entidades</h3>' + entsHtml + '</div>' +
+          '<div class="hist-col"><h3>&#128202; Top categorias</h3>' + catsHtml + '</div>' +
+          '<div class="hist-col"><h3>&#127760; Top dominios</h3>' + domsHtml + '</div>' +
+        '</div>' +
+        '<div style="margin-top:20px"><h3 style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #222">&#128240; Top paginas</h3>' + pagesHtml + '</div>';
+    }
+
+    // ============== HISTORICO (medios RSS) ==============
     var histAvailableWeeks = [];
     var histCurrentWeek = null;
     var histCurrentFeed = '__all__';
