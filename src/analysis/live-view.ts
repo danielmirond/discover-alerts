@@ -76,6 +76,20 @@ interface LiveRecentAlert {
   examples?: Array<{ title: string; url?: string; source?: string }>;
 }
 
+interface LiveTopMediaEntity {
+  name: string;
+  count: number;
+  inGoogleTrends: boolean;
+  inXTrends: boolean;
+  inRss: boolean; // always true because it comes from RSS, but kept for symmetry
+}
+
+interface LiveTopMedia {
+  feedName: string;
+  articleCount: number;
+  entities: LiveTopMediaEntity[];
+}
+
 interface LiveViewResponse {
   lastPollDiscover: string | null;
   lastPollTrends: string | null;
@@ -86,6 +100,7 @@ interface LiveViewResponse {
   concordances: LiveConcordance[];
   headlinePatterns: LiveHeadlinePattern[];
   recentAlerts: LiveRecentAlert[];
+  topMedia: LiveTopMedia[];
   totals: {
     entitiesTracked: number;
     categoriesTracked: number;
@@ -424,6 +439,60 @@ export function buildLiveView(): LiveViewResponse {
     .sort((a, b) => b.count - a.count)
     .slice(0, 20);
 
+  // Top 10 media: aggregate mediaArticles by feedName over the last 24h
+  // and compute which Discover entities they mention, with cross-source marks.
+  const mediaArticlesArr = Object.values(state.mediaArticles);
+  const perFeed: Record<string, {
+    articleCount: number;
+    entityCounts: Map<string, number>;
+  }> = {};
+
+  // Pre-normalize Discover entities for substring matching
+  const normalizedEntities = Object.keys(state.entities).map(name => ({
+    name,
+    norm: normalize(name),
+  })).filter(e => e.norm.length > 3);
+
+  // Pre-compute sets of normalized Google Trends + X Trends topics
+  const gtNorms = Object.keys(state.trends).map(t => normalize(t));
+  const xNorms = Object.keys(state.xTrends).map(t => normalize(t.replace(/^#/, ''))).filter(t => t.length > 2);
+
+  for (const art of mediaArticlesArr) {
+    if (!art.feedName || !art.title) continue;
+    if (!perFeed[art.feedName]) {
+      perFeed[art.feedName] = { articleCount: 0, entityCounts: new Map() };
+    }
+    perFeed[art.feedName].articleCount++;
+
+    const titleNorm = normalize(art.title);
+    for (const e of normalizedEntities) {
+      if (titleNorm.includes(e.norm)) {
+        const cur = perFeed[art.feedName].entityCounts.get(e.name) ?? 0;
+        perFeed[art.feedName].entityCounts.set(e.name, cur + 1);
+      }
+    }
+  }
+
+  const topMedia: LiveTopMedia[] = Object.entries(perFeed)
+    .map(([feedName, info]) => {
+      const entities: LiveTopMediaEntity[] = Array.from(info.entityCounts.entries())
+        .map(([name, count]) => {
+          const nameNorm = normalize(name);
+          const inGoogleTrends = gtNorms.some(gt =>
+            gt.includes(nameNorm) || nameNorm.includes(gt) || diceCoefficient(name, gt) >= fuzzy,
+          );
+          const inXTrends = xNorms.some(xt =>
+            xt.includes(nameNorm) || nameNorm.includes(xt) || diceCoefficient(name, xt) >= fuzzy,
+          );
+          return { name, count, inGoogleTrends, inXTrends, inRss: true };
+        })
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 15);
+      return { feedName, articleCount: info.articleCount, entities };
+    })
+    .sort((a, b) => b.articleCount - a.articleCount)
+    .slice(0, 10);
+
   return {
     lastPollDiscover: state.lastPollDiscover,
     lastPollTrends: state.lastPollTrends,
@@ -434,6 +503,7 @@ export function buildLiveView(): LiveViewResponse {
     concordances: concordances.slice(0, 20),
     headlinePatterns,
     recentAlerts,
+    topMedia,
     totals: {
       entitiesTracked: Object.keys(state.entities).length,
       categoriesTracked: Object.keys(state.categories).length,
