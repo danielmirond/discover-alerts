@@ -112,6 +112,10 @@ interface LiveViewResponse {
   headlinePatterns4d: LiveHeadlinePattern4d[];
   recentAlerts: LiveRecentAlert[];
   topMedia: LiveTopMedia[];
+  weeklyHistorySummary: {
+    availableWeeks: string[];
+    feedNames: string[];
+  };
   totals: {
     entitiesTracked: number;
     categoriesTracked: number;
@@ -577,6 +581,16 @@ export function buildLiveView(): LiveViewResponse {
     headlinePatterns4d,
     recentAlerts,
     topMedia,
+    weeklyHistorySummary: {
+      availableWeeks: Object.keys(state.weeklyHistory || {}).sort().reverse(),
+      feedNames: (() => {
+        const s = new Set<string>();
+        for (const wk of Object.values(state.weeklyHistory || {})) {
+          for (const feedName of Object.keys(wk)) s.add(feedName);
+        }
+        return Array.from(s).sort();
+      })(),
+    },
     totals: {
       entitiesTracked: Object.keys(state.entities).length,
       categoriesTracked: Object.keys(state.categories).length,

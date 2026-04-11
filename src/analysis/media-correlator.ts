@@ -1,4 +1,5 @@
 import { getState, updateState } from '../state/store.js';
+import { aggregateWeekly } from './weekly-aggregator.js';
 import type {
   MediaArticle,
   DiscoverEntity,
@@ -43,6 +44,7 @@ export function detectMediaDiscoverCorrelations(
   // Build entity-to-articles map (only new articles, based on entity substring match)
   type ArticleHit = { title: string; link: string; feedName: string; feedCategory: string };
   const entityArticles = new Map<string, ArticleHit[]>();
+  const newArticlesForWeekly: MediaArticle[] = [];
 
   for (const article of articles) {
     if (!article.title) continue;
@@ -59,6 +61,8 @@ export function detectMediaDiscoverCorrelations(
 
     // Only process new articles (not seen before)
     if (prevArticles[articleKey]) continue;
+
+    newArticlesForWeekly.push(article);
 
     const articleTitleNorm = normalize(article.title);
 
@@ -99,5 +103,12 @@ export function detectMediaDiscoverCorrelations(
   }
 
   updateState({ mediaArticles: nextArticles });
+
+  // Aggregate NEW articles into the current week's bucket for the historical view
+  // We pass a fresh state snapshot so aggregateWeekly sees up-to-date entities + map
+  if (newArticlesForWeekly.length > 0) {
+    aggregateWeekly(newArticlesForWeekly, getState());
+  }
+
   return alerts;
 }

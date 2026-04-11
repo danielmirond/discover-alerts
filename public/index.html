@@ -98,6 +98,23 @@
     .filter-select:focus { border-color: #60a5fa; color: #fff; }
     .filter-select option { background: #1a1a1a; color: #ccc; }
     .filter-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; align-self: center; }
+    .tabs-nav { display: flex; gap: 4px; padding: 16px 24px 0; max-width: 1400px; margin: 0 auto; border-bottom: 1px solid #2a2a2a; }
+    .tab-btn-main { background: transparent; border: none; color: #666; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; font-family: inherit; transition: all 0.15s; }
+    .tab-btn-main:hover { color: #ccc; }
+    .tab-btn-main.active { color: #60a5fa; border-bottom-color: #60a5fa; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .hist-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    @media (max-width: 1000px) { .hist-grid { grid-template-columns: 1fr; } }
+    .hist-col h3 { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #222; }
+    .hist-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #1a1a1a; }
+    .hist-item:last-child { border-bottom: none; }
+    .hist-item-name { color: #ccc; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 8px; }
+    .hist-item-count { color: #60a5fa; font-weight: 700; font-family: 'SF Mono', monospace; }
+    .hist-summary { display: flex; gap: 24px; padding: 16px 20px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 16px; }
+    .hist-summary-item { display: flex; flex-direction: column; }
+    .hist-summary-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    .hist-summary-value { font-size: 20px; color: #fff; font-weight: 700; font-family: 'SF Mono', monospace; }
     .tooltip { position: relative; display: inline-flex; align-items: center; margin-left: 6px; }
     .tooltip-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.1); color: #888; font-size: 10px; font-weight: 700; cursor: help; border: 1px solid #333; }
     .tooltip-icon:hover { background: rgba(96,165,250,0.2); color: #60a5fa; border-color: #60a5fa; }
@@ -153,6 +170,12 @@
     </div>
   </div>
 
+  <div class="tabs-nav">
+    <button class="tab-btn-main active" data-tab="live">Live</button>
+    <button class="tab-btn-main" data-tab="historico">&#128197; Historico semanal</button>
+  </div>
+
+  <div id="tab-live" class="tab-panel active">
   <div class="container">
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
@@ -296,6 +319,31 @@
         </div>
       </div>
 
+    </div>
+  </div>
+  </div>
+
+  <div id="tab-historico" class="tab-panel">
+    <div class="container">
+      <div class="card full-width" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <h2>&#128197; Historico semanal<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Agregado semanal de <strong>articulos, entidades, categorias DiscoverSnoop y patrones</strong> para cada medio RSS. Los datos se construyen incrementalmente con cada poll de media (cada 15 min). Retencion: <strong>8 semanas</strong>. Los conteos son "articulos en los que se ha mencionado" para entidades/categorias, y "trigramas detectados" para patrones.</span></span></h2>
+          <span class="badge badge-purple" id="hist-total-count">Cargando...</span>
+        </div>
+        <div style="padding: 16px 20px; border-bottom: 1px solid #2a2a2a; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <span class="filter-label">Semana:</span>
+          <select class="filter-select" id="hist-week-select">
+            <option value="">Cargando...</option>
+          </select>
+          <span class="filter-label">Medio:</span>
+          <select class="filter-select" id="hist-feed-select">
+            <option value="__all__">Todos los medios</option>
+          </select>
+        </div>
+        <div class="card-body" id="hist-content" style="max-height: none;">
+          <div class="loading"><div class="spinner"></div><br>Cargando historico...</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -826,6 +874,153 @@
       } catch(e) {
         document.getElementById('routes-list').innerHTML = '<div class="loading">Error cargando rutas</div>';
       }
+    }
+
+    // Tab switching
+    var currentTab = 'live';
+    var historicoLoadedOnce = false;
+    Array.from(document.querySelectorAll('.tab-btn-main')).forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var tab = btn.getAttribute('data-tab');
+        currentTab = tab;
+        Array.from(document.querySelectorAll('.tab-btn-main')).forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        Array.from(document.querySelectorAll('.tab-panel')).forEach(function(p) { p.classList.remove('active'); });
+        document.getElementById('tab-' + tab).classList.add('active');
+        if (tab === 'historico' && !historicoLoadedOnce) {
+          historicoLoadedOnce = true;
+          initHistorico();
+        }
+      });
+    });
+
+    // ============== HISTORICO ==============
+    var histAvailableWeeks = [];
+    var histCurrentWeek = null;
+    var histCurrentFeed = '__all__';
+    var histCurrentData = null;
+
+    async function initHistorico() {
+      try {
+        var liveRes = await fetch('/api/live-alerts');
+        var liveData = await liveRes.json();
+        var summary = liveData.weeklyHistorySummary || { availableWeeks: [], feedNames: [] };
+        histAvailableWeeks = summary.availableWeeks || [];
+        var allFeeds = summary.feedNames || [];
+
+        // Week selector
+        var weekSelect = document.getElementById('hist-week-select');
+        if (histAvailableWeeks.length === 0) {
+          weekSelect.innerHTML = '<option value="">Sin datos aun</option>';
+          document.getElementById('hist-content').innerHTML =
+            '<div class="loading">Aun no hay historial semanal.<br><br>' +
+            '<small>Se construye con cada poll de media (cada 15 min). Espera unas horas para ver datos agregados.</small></div>';
+          return;
+        }
+        weekSelect.innerHTML = histAvailableWeeks.map(function(w, i) {
+          return '<option value="' + w + '"' + (i === 0 ? ' selected' : '') + '>' + w + '</option>';
+        }).join('');
+        histCurrentWeek = histAvailableWeeks[0];
+
+        // Feed selector
+        var feedSelect = document.getElementById('hist-feed-select');
+        feedSelect.innerHTML = '<option value="__all__">Todos los medios</option>' +
+          allFeeds.map(function(f) { return '<option value="' + escapeHtml(f) + '">' + escapeHtml(f) + '</option>'; }).join('');
+
+        // Wire up change handlers
+        weekSelect.onchange = function() {
+          histCurrentWeek = weekSelect.value;
+          loadHistWeek();
+        };
+        feedSelect.onchange = function() {
+          histCurrentFeed = feedSelect.value;
+          renderHistContent();
+        };
+
+        await loadHistWeek();
+      } catch (e) {
+        document.getElementById('hist-content').innerHTML = '<div class="loading">Error: ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    async function loadHistWeek() {
+      if (!histCurrentWeek) return;
+      document.getElementById('hist-content').innerHTML = '<div class="loading"><div class="spinner"></div><br>Cargando ' + escapeHtml(histCurrentWeek) + '...</div>';
+      try {
+        var res = await fetch('/api/weekly-history?week=' + encodeURIComponent(histCurrentWeek));
+        var data = await res.json();
+        histCurrentData = data;
+        renderHistContent();
+      } catch (e) {
+        document.getElementById('hist-content').innerHTML = '<div class="loading">Error: ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    function aggregateAcrossFeeds(feedsObj) {
+      var result = { articleCount: 0, entities: {}, categories: {}, patterns: {} };
+      Object.values(feedsObj).forEach(function(s) {
+        result.articleCount += s.articleCount || 0;
+        Object.entries(s.entities || {}).forEach(function(kv) {
+          result.entities[kv[0]] = (result.entities[kv[0]] || 0) + kv[1];
+        });
+        Object.entries(s.categories || {}).forEach(function(kv) {
+          result.categories[kv[0]] = (result.categories[kv[0]] || 0) + kv[1];
+        });
+        Object.entries(s.patterns || {}).forEach(function(kv) {
+          result.patterns[kv[0]] = (result.patterns[kv[0]] || 0) + kv[1];
+        });
+      });
+      return result;
+    }
+
+    function renderTopDict(obj, limit) {
+      var entries = Object.entries(obj).sort(function(a, b) { return b[1] - a[1]; }).slice(0, limit || 20);
+      if (entries.length === 0) return '<div style="color:#555;font-size:12px;padding:6px 0">Sin datos</div>';
+      return entries.map(function(kv) {
+        return '<div class="hist-item"><span class="hist-item-name">' + escapeHtml(kv[0]) + '</span><span class="hist-item-count">' + kv[1] + '</span></div>';
+      }).join('');
+    }
+
+    function renderHistContent() {
+      if (!histCurrentData) return;
+      var feeds = histCurrentData.feeds || {};
+      var feedNames = Object.keys(feeds);
+
+      if (feedNames.length === 0) {
+        document.getElementById('hist-content').innerHTML = '<div class="loading">Sin datos para ' + escapeHtml(histCurrentWeek) + '</div>';
+        document.getElementById('hist-total-count').textContent = '0 medios';
+        return;
+      }
+
+      var stats;
+      var titlePrefix;
+      if (histCurrentFeed === '__all__') {
+        stats = aggregateAcrossFeeds(feeds);
+        titlePrefix = feedNames.length + ' medios';
+      } else {
+        stats = feeds[histCurrentFeed];
+        if (!stats) {
+          document.getElementById('hist-content').innerHTML = '<div class="loading">El medio "' + escapeHtml(histCurrentFeed) + '" no tiene datos en ' + escapeHtml(histCurrentWeek) + '</div>';
+          return;
+        }
+        titlePrefix = histCurrentFeed;
+      }
+      document.getElementById('hist-total-count').textContent = titlePrefix;
+
+      var summary = '<div class="hist-summary">' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Articulos</span><span class="hist-summary-value">' + stats.articleCount + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Entidades unicas</span><span class="hist-summary-value">' + Object.keys(stats.entities).length + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Categorias DS</span><span class="hist-summary-value">' + Object.keys(stats.categories).length + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Patrones</span><span class="hist-summary-value">' + Object.keys(stats.patterns).length + '</span></div>' +
+      '</div>';
+
+      var html = summary + '<div class="hist-grid">' +
+        '<div class="hist-col"><h3>&#128293; Top entidades</h3>' + renderTopDict(stats.entities, 25) + '</div>' +
+        '<div class="hist-col"><h3>&#128202; Top categorias</h3>' + renderTopDict(stats.categories, 25) + '</div>' +
+        '<div class="hist-col"><h3>&#128221; Top patrones</h3>' + renderTopDict(stats.patterns, 25) + '</div>' +
+      '</div>';
+
+      document.getElementById('hist-content').innerHTML = html;
     }
 
     loadTrends();

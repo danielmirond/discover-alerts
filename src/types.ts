@@ -170,6 +170,7 @@ export interface AppState {
   mediaArticles: Record<string, { feedName: string; feedCategory: string; title: string; link: string; firstSeen: string }>;
   entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)
   recentAlerts: Array<{ alert: Alert; timestamp: string; routeName: string }>; // last 6h of alerts sent to Slack
+  weeklyHistory: Record<string, Record<string, WeeklyMediaStats>>; // weekKey -> feedName -> stats
   lastPollDiscover: string | null;
   lastPollTrends: string | null;
   lastPollMedia: string | null;
@@ -276,6 +277,18 @@ export interface MediaFeed {
   url: string;
   category: string;
   domain?: string;
+}
+
+export interface WeeklyMediaStats {
+  articleCount: number;
+  /** Entity name -> times mentioned in titles this week */
+  entities: Record<string, number>;
+  /** DiscoverSnoop category -> count (derived from entities via entityCategoryMap) */
+  categories: Record<string, number>;
+  /** 3-gram patterns -> occurrences */
+  patterns: Record<string, number>;
+  /** Static category of the feed itself (generalista/deportivo/tech) */
+  feedCategory?: string;
 }
 
 export interface OwnMediaAlert {

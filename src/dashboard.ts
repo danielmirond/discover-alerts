@@ -42,6 +42,19 @@ async function handleApi(path: string): Promise<object> {
     await loadState();
     return buildLiveView();
   }
+  if (path.startsWith('/api/weekly-history')) {
+    await loadState();
+    const state = (await import('./state/store.js')).getState();
+    const history = state.weeklyHistory || {};
+    const availableWeeks = Object.keys(history).sort().reverse();
+    const url = new URL('http://x' + path);
+    const week = url.searchParams.get('week') || availableWeeks[0];
+    return {
+      week: week || null,
+      feeds: week ? (history[week] || {}) : {},
+      availableWeeks,
+    };
+  }
   if (path === '/api/feeds') {
     const feeds = await loadFeeds();
     return { feeds };

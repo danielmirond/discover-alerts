@@ -18,6 +18,7 @@ function emptyState(): AppState {
     mediaArticles: {},
     entityCategoryMap: {},
     recentAlerts: [],
+    weeklyHistory: {},
     lastPollDiscover: null,
     lastPollTrends: null,
     lastPollMedia: null,
