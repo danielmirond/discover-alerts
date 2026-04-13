@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    const raw = await readFile(join(process.cwd(), 'feeds.json'), 'utf-8');
+    const raw = await readFile(join(process.cwd(), process.env.FEEDS_PATH || 'feeds.json'), 'utf-8');
     const { feeds } = JSON.parse(raw);
     res.setHeader('Cache-Control', 's-maxage=3600');
     res.json({ feeds });

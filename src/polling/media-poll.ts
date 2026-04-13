@@ -21,7 +21,7 @@ export async function runMediaPoll(): Promise<void> {
   // Load feeds config
   if (!feedsLoaded) {
     try {
-      const feedsPath = join(process.cwd(), 'feeds.json');
+      const feedsPath = join(process.cwd(), process.env.FEEDS_PATH || 'feeds.json');
       feeds = await loadFeeds(feedsPath);
       feedsLoaded = true;
       console.log(`[media] Loaded ${feeds.length} feeds`);
