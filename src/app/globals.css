@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,400;0,9..144,600;1,9..144,300&display=swap');
+
+@layer base {
+  body {
+    @apply bg-bg text-text font-mono text-[12.5px] leading-relaxed;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(77,168,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(77,168,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  ::selection {
+    background: rgba(77,168,255,0.2);
+    color: #eaf2f8;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-s1 border border-border p-5 px-6;
+  }
+
+  .label-tag {
+    @apply inline-block text-[9px] tracking-[0.2em] uppercase text-accent-blue border border-accent-blue/30 px-2 py-0.5;
+  }
+
+  .accent-left-green {
+    @apply border-l-[3px] border-l-accent-green;
+  }
+  .accent-left-blue {
+    @apply border-l-[3px] border-l-accent-blue;
+  }
+  .accent-left-orange {
+    @apply border-l-[3px] border-l-accent-orange;
+  }
+  .accent-left-purple {
+    @apply border-l-[3px] border-l-accent-purple;
+  }
+}
+
+/* MDX prose styling */
+.prose-biohack {
+  @apply text-text leading-relaxed;
+}
+.prose-biohack h1 {
+  @apply font-serif text-4xl font-extralight text-white tracking-tight mb-4;
+}
+.prose-biohack h2 {
+  @apply font-serif text-xl font-light text-white tracking-tight mt-10 mb-4;
+}
+.prose-biohack h3 {
+  @apply font-serif text-base font-normal text-white mt-8 mb-3;
+}
+.prose-biohack p {
+  @apply mb-4 text-[13px] leading-[1.8];
+}
+.prose-biohack a {
+  @apply text-accent-blue underline underline-offset-2 hover:text-accent-green transition-colors;
+}
+.prose-biohack ul, .prose-biohack ol {
+  @apply mb-4 pl-5 text-[13px];
+}
+.prose-biohack li {
+  @apply mb-2;
+}
+.prose-biohack blockquote {
+  @apply border-l-[3px] border-l-accent-blue bg-s1 px-5 py-3 my-6 text-[12.5px] italic text-muted;
+}
+.prose-biohack code {
+  @apply bg-s1 text-accent-blue px-1.5 py-0.5 text-[11.5px] font-mono;
+}
+.prose-biohack pre {
+  @apply bg-[#050709] border border-accent-blue/15 p-4 font-mono text-[11px] leading-relaxed overflow-x-auto mb-4;
+}
+.prose-biohack table {
+  @apply w-full border-collapse mb-6;
+}
+.prose-biohack th {
+  @apply text-[9px] tracking-[0.18em] uppercase text-muted p-2 text-left border-b border-border;
+}
+.prose-biohack td {
+  @apply p-2 text-[12px] border-b border-border/30;
+}
+.prose-biohack img {
+  @apply w-full my-6;
+}
+.prose-biohack hr {
+  @apply border-border my-10;
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeUp 0.6s ease both;
+}

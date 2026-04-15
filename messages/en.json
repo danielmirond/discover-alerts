@@ -1,0 +1,65 @@
+{
+  "site": {
+    "name": "BiohackLab",
+    "tagline": "Evidence-based biohacking",
+    "description": "Your personal biohacking, longevity and human optimization lab. Reviews, protocols and supplements analyzed with scientific rigor."
+  },
+  "nav": {
+    "home": "Home",
+    "wearables": "Wearables",
+    "supplements": "Supplements",
+    "protocols": "Protocols",
+    "newsletter": "Newsletter"
+  },
+  "home": {
+    "hero": "Optimize your biology with science",
+    "heroSub": "Wearable reviews, longevity protocols and supplements analyzed with scientific evidence. In 4 languages.",
+    "latestArticles": "Latest articles",
+    "categories": "Explore by category",
+    "newsletterCta": "Get protocols and analyses every week",
+    "readMore": "Read more",
+    "minRead": "min read"
+  },
+  "article": {
+    "published": "Published",
+    "updated": "Updated",
+    "readTime": "min read",
+    "tableOfContents": "Table of contents",
+    "relatedArticles": "Related articles",
+    "affiliateDisclosure": "This article contains affiliate links. If you purchase through them, we earn a commission at no extra cost to you.",
+    "buyOn": "Buy on",
+    "checkPrice": "Check price"
+  },
+  "newsletter": {
+    "title": "Biohacking Newsletter",
+    "description": "Protocols, supplement analysis and the latest in longevity. Free every week.",
+    "placeholder": "you@email.com",
+    "subscribe": "Subscribe free",
+    "premiumTitle": "Premium",
+    "premiumDesc": "Complete monthly protocols, curated stacks and deep analyses.",
+    "premiumPrice": "€7/mo"
+  },
+  "footer": {
+    "about": "BiohackLab is your personal human optimization lab. Content based on scientific evidence.",
+    "categories": "Categories",
+    "legal": "Legal",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "affiliate": "Affiliate",
+    "allRights": "All rights reserved."
+  },
+  "categories": {
+    "wearables": {
+      "title": "Wearables & Tracking",
+      "description": "Smart ring reviews, HRV monitors, CGMs and personal quantification devices analyzed."
+    },
+    "supplements": {
+      "title": "Longevity Supplements",
+      "description": "NMN, NR, resveratrol, magnesium and more. We analyze the scientific evidence behind each supplement."
+    },
+    "protocols": {
+      "title": "Protocols & Guides",
+      "description": "Step-by-step guides to optimize sleep, intermittent fasting, cold exposure and more."
+    }
+  }
+}

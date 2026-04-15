@@ -1,0 +1,65 @@
+{
+  "site": {
+    "name": "BiohackLab",
+    "tagline": "Biohacking basado en evidencia",
+    "description": "Tu laboratorio personal de biohacking, longevidad y optimización humana. Reviews, protocolos y suplementos analizados con rigor científico."
+  },
+  "nav": {
+    "home": "Inicio",
+    "wearables": "Wearables",
+    "supplements": "Suplementos",
+    "protocols": "Protocolos",
+    "newsletter": "Newsletter"
+  },
+  "home": {
+    "hero": "Optimiza tu biología con ciencia",
+    "heroSub": "Reviews de wearables, protocolos de longevidad y suplementos analizados con evidencia científica. En 4 idiomas.",
+    "latestArticles": "Últimos artículos",
+    "categories": "Explora por categoría",
+    "newsletterCta": "Recibe protocolos y análisis cada semana",
+    "readMore": "Leer más",
+    "minRead": "min de lectura"
+  },
+  "article": {
+    "published": "Publicado",
+    "updated": "Actualizado",
+    "readTime": "min de lectura",
+    "tableOfContents": "Índice",
+    "relatedArticles": "Artículos relacionados",
+    "affiliateDisclosure": "Este artículo contiene enlaces de afiliado. Si compras a través de ellos, ganamos una comisión sin coste adicional para ti.",
+    "buyOn": "Comprar en",
+    "checkPrice": "Ver precio"
+  },
+  "newsletter": {
+    "title": "Newsletter de Biohacking",
+    "description": "Protocolos, análisis de suplementos y las últimas novedades en longevidad. Gratis cada semana.",
+    "placeholder": "tu@email.com",
+    "subscribe": "Suscríbete gratis",
+    "premiumTitle": "Premium",
+    "premiumDesc": "Protocolos mensuales completos, stacks curados y análisis profundos.",
+    "premiumPrice": "€7/mes"
+  },
+  "footer": {
+    "about": "BiohackLab es tu laboratorio personal de optimización humana. Contenido basado en evidencia científica.",
+    "categories": "Categorías",
+    "legal": "Legal",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "affiliate": "Afiliación",
+    "allRights": "Todos los derechos reservados."
+  },
+  "categories": {
+    "wearables": {
+      "title": "Wearables & Tracking",
+      "description": "Análisis de anillos inteligentes, monitores de HRV, CGMs y dispositivos de cuantificación personal."
+    },
+    "supplements": {
+      "title": "Suplementos de Longevidad",
+      "description": "NMN, NR, resveratrol, magnesio y más. Analizamos la evidencia científica de cada suplemento."
+    },
+    "protocols": {
+      "title": "Protocolos & Guías",
+      "description": "Guías paso a paso para optimizar sueño, ayuno intermitente, exposición al frío y más."
+    }
+  }
+}

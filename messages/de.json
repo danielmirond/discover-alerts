@@ -1,0 +1,65 @@
+{
+  "site": {
+    "name": "BiohackLab",
+    "tagline": "Evidenzbasiertes Biohacking",
+    "description": "Dein persönliches Labor für Biohacking, Langlebigkeit und menschliche Optimierung. Reviews, Protokolle und Nahrungsergänzungsmittel wissenschaftlich analysiert."
+  },
+  "nav": {
+    "home": "Startseite",
+    "wearables": "Wearables",
+    "supplements": "Supplements",
+    "protocols": "Protokolle",
+    "newsletter": "Newsletter"
+  },
+  "home": {
+    "hero": "Optimiere deine Biologie mit Wissenschaft",
+    "heroSub": "Wearable-Tests, Langlebigkeitsprotokolle und Supplements mit wissenschaftlicher Evidenz analysiert. In 4 Sprachen.",
+    "latestArticles": "Neueste Artikel",
+    "categories": "Nach Kategorie entdecken",
+    "newsletterCta": "Erhalte Protokolle und Analysen jede Woche",
+    "readMore": "Weiterlesen",
+    "minRead": "Min. Lesezeit"
+  },
+  "article": {
+    "published": "Veröffentlicht",
+    "updated": "Aktualisiert",
+    "readTime": "Min. Lesezeit",
+    "tableOfContents": "Inhaltsverzeichnis",
+    "relatedArticles": "Verwandte Artikel",
+    "affiliateDisclosure": "Dieser Artikel enthält Affiliate-Links. Wenn du über diese Links kaufst, erhalten wir eine Provision ohne zusätzliche Kosten für dich.",
+    "buyOn": "Kaufen auf",
+    "checkPrice": "Preis prüfen"
+  },
+  "newsletter": {
+    "title": "Biohacking Newsletter",
+    "description": "Protokolle, Supplement-Analysen und die neuesten Erkenntnisse zur Langlebigkeit. Jede Woche kostenlos.",
+    "placeholder": "du@email.com",
+    "subscribe": "Kostenlos abonnieren",
+    "premiumTitle": "Premium",
+    "premiumDesc": "Vollständige monatliche Protokolle, kuratierte Stacks und tiefgehende Analysen.",
+    "premiumPrice": "7 €/Monat"
+  },
+  "footer": {
+    "about": "BiohackLab ist dein persönliches Labor für menschliche Optimierung. Inhalte basierend auf wissenschaftlicher Evidenz.",
+    "categories": "Kategorien",
+    "legal": "Rechtliches",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "affiliate": "Affiliate",
+    "allRights": "Alle Rechte vorbehalten."
+  },
+  "categories": {
+    "wearables": {
+      "title": "Wearables & Tracking",
+      "description": "Tests von Smart Rings, HRV-Monitoren, CGMs und Geräten zur persönlichen Quantifizierung."
+    },
+    "supplements": {
+      "title": "Langlebigkeits-Supplements",
+      "description": "NMN, NR, Resveratrol, Magnesium und mehr. Wir analysieren die wissenschaftliche Evidenz jedes Supplements."
+    },
+    "protocols": {
+      "title": "Protokolle & Guides",
+      "description": "Schritt-für-Schritt-Anleitungen zur Optimierung von Schlaf, intermittierendem Fasten, Kälteexposition und mehr."
+    }
+  }
+}
