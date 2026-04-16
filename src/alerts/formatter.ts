@@ -1,5 +1,6 @@
 import type { Alert } from '../types.js';
 import { buildFormulasContextText } from './headline-formulas.js';
+import { momentumIcon, momentumLabel } from '../analysis/velocity.js';
 
 interface SlackBlock {
   type: string;
@@ -81,6 +82,16 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
     header(`${emoji} ${label}: ${a.name}`),
     fields(...baseFields),
   ];
+
+  // Velocity / momentum indicator
+  if (a.velocity) {
+    const v = a.velocity;
+    blocks.push(context(
+      `${momentumIcon(v.momentum)} *${momentumLabel(v.momentum)}* — ` +
+      `v1h=${v.v1h} · v3h=${v.v3hRate.toFixed(1)}/h · v12h=${v.v12hRate.toFixed(1)}/h · ` +
+      `acc=${v.acceleration.toFixed(2)}×`,
+    ));
+  }
 
   // Enrichment: matching Google Trends
   if (a.matchingTrends && a.matchingTrends.length > 0) {

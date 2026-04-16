@@ -1,5 +1,6 @@
 import { getState } from '../state/store.js';
 import { loadTopicsDictionary, classifyText, pickBestTopic } from './topic-classifier.js';
+import { computeVelocity, type VelocityMetrics } from './velocity.js';
 
 // Read thresholds directly from env to avoid requiring DISCOVERSNOOP_TOKEN
 // when the dashboard runs in read-only mode.
@@ -37,6 +38,7 @@ interface LiveEntity {
   matchingGoogleTrends: Array<{ title: string; approxTraffic: number }>;
   matchingXTrends: Array<{ topic: string; rank: number }>;
   matchingArticles: Array<{ title: string; link: string; feedName: string }>;
+  velocity?: VelocityMetrics;
 }
 
 interface LiveCategory {
@@ -265,6 +267,7 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       matchingGoogleTrends: matchingGoogleTrends.slice(0, 3),
       matchingXTrends: matchingXTrends.slice(0, 3),
       matchingArticles,
+      velocity: computeVelocity(apps, nowMs),
     });
   }
 

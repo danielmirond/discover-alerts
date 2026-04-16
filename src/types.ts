@@ -228,6 +228,14 @@ export interface EntityAlert {
   firstviewed: string;
   category?: string;               // derived from pages (for routing)
   topic?: string;                  // derived topic (sucesos/legal/...) from topics.json
+  /** Velocity/momentum snapshot at emission time (for forecasting). */
+  velocity?: {
+    v1h: number;
+    v3hRate: number;
+    v12hRate: number;
+    acceleration: number;
+    momentum: 'rising' | 'peaking' | 'fading' | 'steady' | 'new';
+  };
   appearanceCount?: number;        // only for 'ascending' subtype
   windowHours?: number;            // only for 'ascending' subtype
   matchingTrends?: MatchedTrend[];  // Google Trends enrichment

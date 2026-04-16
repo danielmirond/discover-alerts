@@ -879,8 +879,24 @@
               enrichHtml += '</div>';
             }
 
+            var momentumMap = {
+              rising:  { icon: '&#128640;', label: 'Rising', color: '#22c55e' },
+              peaking: { icon: '&#128293;', label: 'Peaking', color: '#ef4444' },
+              fading:  { icon: '&#128201;', label: 'Fading', color: '#78716c' },
+              steady:  { icon: '&#10134;', label: 'Steady', color: '#a3a3a3' },
+              'new':   { icon: '&#10024;', label: 'New burst', color: '#38bdf8' }
+            };
+            var momBadge = '';
+            if (e.velocity && e.velocity.momentum) {
+              var mm = momentumMap[e.velocity.momentum] || momentumMap.steady;
+              var accTxt = typeof e.velocity.acceleration === 'number'
+                ? ' &middot; acc ' + e.velocity.acceleration.toFixed(2) + '&times;'
+                : '';
+              momBadge = '<span class="badge" style="background:rgba(255,255,255,0.06);color:' + mm.color + ';margin-left:6px">' + mm.icon + ' ' + mm.label + accTxt + '</span>';
+            }
+
             return '<div class="alert-item ' + st.cls + '">' +
-              '<div class="alert-type" style="color:' + st.color + '">' + allStatuses + (e.category ? '<span style="margin-left:8px;color:#888">&mdash; ' + escapeHtml(e.category) + '</span>' : '') + '</div>' +
+              '<div class="alert-type" style="color:' + st.color + '">' + allStatuses + momBadge + (e.category ? '<span style="margin-left:8px;color:#888">&mdash; ' + escapeHtml(e.category) + '</span>' : '') + '</div>' +
               '<div class="alert-title">' + escapeHtml(e.name) + '</div>' +
               '<div class="alert-detail">Score: ' + e.score + ' | Posicion: #' + e.position + ' | Publicaciones: ' + e.publications + '</div>' +
               enrichHtml +

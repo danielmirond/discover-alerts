@@ -1,6 +1,7 @@
 import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
 import { buildEntityTopicMap, loadTopicsDictionary } from './topic-classifier.js';
+import { computeVelocity } from './velocity.js';
 import type {
   DiscoverEntity,
   DiscoverPage,
@@ -209,6 +210,8 @@ export async function detectEntityAlerts(
     const prevAppearances = old?.appearances ?? [];
     const entityCategory = entityCategoryMap[e.entity];
     const entityTopic = entityTopicMap[e.entity];
+    // Velocity snapshot computed from the forthcoming appearances (incl. `now`)
+    // — we defer this until after we build `appearances` a few lines below.
 
     // Prune appearances outside the longest window we care about (12h)
     const appearances = [
@@ -225,6 +228,9 @@ export async function detectEntityAlerts(
       lastUpdated: now,
       appearances,
     };
+
+    // Velocity / momentum snapshot for this entity at this poll.
+    const velocity = computeVelocity(appearances, nowMs);
 
     if (!old) {
       // New entity: just seed state, do NOT emit an alert.
@@ -250,6 +256,7 @@ export async function detectEntityAlerts(
         firstviewed: old.firstSeen,
         category: entityCategory,
         topic: entityTopic,
+        velocity,
       });
     }
 
@@ -277,6 +284,7 @@ export async function detectEntityAlerts(
         windowHours: config.thresholds.entityFlashWindowHours,
         category: entityCategory,
         topic: entityTopic,
+        velocity,
         ...enrichment,
       });
     }
@@ -301,6 +309,7 @@ export async function detectEntityAlerts(
         windowHours: config.thresholds.entityLongtailWindowHours,
         category: entityCategory,
         topic: entityTopic,
+        velocity,
         ...enrichment,
       });
     }
@@ -325,6 +334,7 @@ export async function detectEntityAlerts(
         windowHours: config.thresholds.entityAscendingWindowHours,
         category: entityCategory,
         topic: entityTopic,
+        velocity,
         ...enrichment,
       });
     }
@@ -350,6 +360,7 @@ export async function detectEntityAlerts(
         windowHours: 1,
         category: entityCategory,
         topic: entityTopic,
+        velocity,
         ...enrichment,
       });
     }
@@ -373,6 +384,7 @@ export async function detectEntityAlerts(
         windowHours: 3,
         category: entityCategory,
         topic: entityTopic,
+        velocity,
         ...enrichment,
       });
     }
@@ -396,6 +408,7 @@ export async function detectEntityAlerts(
         windowHours: 12,
         category: entityCategory,
         topic: entityTopic,
+        velocity,
         ...enrichment,
       });
     }
