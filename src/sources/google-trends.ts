@@ -6,6 +6,7 @@ const RSS_URL = 'https://trends.google.com/trending/rss?geo=ES';
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '@_',
+  processEntities: false,
 });
 
 function parseTraffic(raw: string): number {

@@ -5,6 +5,10 @@ import type { MediaFeed, MediaArticle } from '../types.js';
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '@_',
+  // Disable entity processing to bypass fast-xml-parser's 1000-entity limit
+  // that rejects large RSS feeds (some AS/Mundo Deportivo feeds have >1000
+  // HTML entity references per document)
+  processEntities: false,
 });
 
 function toArray<T>(val: T | T[] | undefined): T[] {
