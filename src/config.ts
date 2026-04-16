@@ -48,6 +48,8 @@ export function getConfig() {
       entityDiscover12hMinAppearances: envInt('THRESHOLD_ENTITY_DISCOVER_12H_MIN', 7),
       // Min entities per article for multi_entity_article alert
       multiEntityArticleMin: envInt('THRESHOLD_MULTI_ENTITY_ARTICLE_MIN', 2),
+      // Max age of an RSS article (in hours) for it to count towards coverage/multi-entity alerts
+      mediaMaxAgeHours: envInt('THRESHOLD_MEDIA_MAX_AGE_HOURS', 48),
       categoryDayScoreJump: envInt('THRESHOLD_CATEGORY_DAY_SCORE_JUMP', 30),
       categoryScoreJump: envInt('THRESHOLD_CATEGORY_SCORE_JUMP', 15),
       categoryPublicationsJumpPct: envFloat('THRESHOLD_CATEGORY_PUB_JUMP_PCT', 0.5),

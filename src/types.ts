@@ -167,7 +167,7 @@ export interface AppState {
   headlinePatterns: Record<string, number>;
   headlinePatternsHistory: Array<{ ngram: string; count: number; timestamp: string }>;
   dedupHashes: Record<string, number>;
-  mediaArticles: Record<string, { feedName: string; feedCategory: string; feedScope?: 'nacional' | 'internacional'; title: string; link: string; firstSeen: string }>;
+  mediaArticles: Record<string, { feedName: string; feedCategory: string; feedScope?: 'nacional' | 'internacional'; title: string; link: string; firstSeen: string; pubDate?: string }>;
   entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)
   recentAlerts: Array<{ alert: Alert; timestamp: string; routeName: string }>; // last 6h of alerts sent to Slack
   weeklyHistory: Record<string, Record<string, WeeklyMediaStats>>; // weekKey -> feedName -> stats

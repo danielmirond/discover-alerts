@@ -103,12 +103,20 @@ export function detectOwnMediaCoverage(): OwnMediaAlert[] {
 
   const state = getState();
   const minOthers = config.ownMedia.coverageMinOtherOutlets;
+  const maxAgeMs = config.thresholds.mediaMaxAgeHours * 3600_000;
+  const nowMs = Date.now();
   const alerts: OwnMediaAlert[] = [];
 
   // For each entity in state, check if it's covered by our domain + others
   // Entity-to-article hits: scan state.mediaArticles titles
   function normalize(s: string): string {
     return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function isRecentArticle(meta: any): boolean {
+    const pubTs = meta.pubDate ? new Date(meta.pubDate).getTime() : NaN;
+    const refTs = !isNaN(pubTs) ? pubTs : new Date(meta.firstSeen).getTime();
+    return (nowMs - refTs) <= maxAgeMs;
   }
 
   const entityNames = Object.keys(state.entities).filter(n => n.length > 3);
@@ -122,6 +130,7 @@ export function detectOwnMediaCoverage(): OwnMediaAlert[] {
 
     for (const meta of Object.values(state.mediaArticles)) {
       if (!meta.title) continue;
+      if (!isRecentArticle(meta)) continue;
       const titleNorm = normalize(meta.title);
       if (!titleNorm.includes(entityNorm)) continue;
 

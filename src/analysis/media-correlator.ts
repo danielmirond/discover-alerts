@@ -14,6 +14,17 @@ function normalize(s: string): string {
 }
 
 /**
+ * Returns how old (in ms) an article is, using pubDate if parseable,
+ * otherwise falling back to `now` (i.e. treat it as fresh).
+ */
+function articleAgeMs(pubDate: string | undefined, now: string): number {
+  if (!pubDate) return 0;
+  const ts = new Date(pubDate).getTime();
+  if (isNaN(ts)) return 0;
+  return new Date(now).getTime() - ts;
+}
+
+/**
  * Groups all matching articles by entity. Produces ONE alert per entity
  * (not per article) listing all outlets and titles covering it.
  */
@@ -37,6 +48,7 @@ export function detectMediaDiscoverCorrelations(
     title: string;
     link: string;
     firstSeen: string;
+    pubDate?: string;
   }> = {};
   for (const [key, meta] of Object.entries(prevArticles)) {
     if (nowMs - new Date(meta.firstSeen).getTime() <= retentionMs) {
@@ -50,6 +62,7 @@ export function detectMediaDiscoverCorrelations(
   const newArticlesForWeekly: MediaArticle[] = [];
   const multiEntityAlerts: MultiEntityArticleAlert[] = [];
   const multiEntityMin = config.thresholds.multiEntityArticleMin;
+  const maxAgeMs = config.thresholds.mediaMaxAgeHours * 3600_000;
 
   for (const article of articles) {
     if (!article.title) continue;
@@ -63,10 +76,15 @@ export function detectMediaDiscoverCorrelations(
       title: article.title,
       link: article.link,
       firstSeen: prevArticles[articleKey]?.firstSeen ?? now,
+      pubDate: article.pubDate || prevArticles[articleKey]?.pubDate,
     };
 
     // Only process new articles (not seen before)
     if (prevArticles[articleKey]) continue;
+
+    // Skip articles older than the max age window (uses pubDate if valid, else firstSeen)
+    const articleTime = articleAgeMs(article.pubDate, now);
+    if (articleTime > maxAgeMs) continue;
 
     newArticlesForWeekly.push(article);
 

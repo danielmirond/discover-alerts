@@ -550,9 +550,15 @@ export function buildLiveView(): LiveViewResponse {
     .sort((a, b) => b.totalCount - a.totalCount)
     .slice(0, 30);
 
-  // Top 10 media: aggregate mediaArticles by feedName over the last 24h
+  // Top 10 media: aggregate mediaArticles by feedName over the last 48h
   // and compute which Discover entities they mention, with cross-source marks.
-  const mediaArticlesArr = Object.values(state.mediaArticles);
+  // Uses pubDate when available, falling back to firstSeen.
+  const topMediaMaxAgeMs = 48 * 3600_000;
+  const mediaArticlesArr = Object.values(state.mediaArticles).filter(a => {
+    const pubTs = (a as any).pubDate ? new Date((a as any).pubDate).getTime() : NaN;
+    const refTs = !isNaN(pubTs) ? pubTs : new Date(a.firstSeen).getTime();
+    return (nowMs - refTs) <= topMediaMaxAgeMs;
+  });
   const perFeed: Record<string, {
     articleCount: number;
     entityCounts: Map<string, number>;

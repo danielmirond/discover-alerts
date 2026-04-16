@@ -43,6 +43,8 @@ export function detectOwnMediaAbsent(): OwnMediaAbsentAlert[] {
   const alerts: OwnMediaAbsentAlert[] = [];
   const minOthers = config.ownMedia.absentMinOthers;
   const catFilter = config.ownMedia.absentCategoryFilter; // normalized lowercase
+  const maxAgeMs = config.thresholds.mediaMaxAgeHours * 3600_000;
+  const nowMs = Date.now();
 
   // Pre-normalize entities for substring matching
   const entityList: Array<[string, string]> = Object.keys(state.entities)
@@ -60,6 +62,10 @@ export function detectOwnMediaAbsent(): OwnMediaAbsentAlert[] {
 
     for (const meta of Object.values(state.mediaArticles)) {
       if (!meta.title) continue;
+      // Only recent articles (within 48h by default)
+      const pubTs = meta.pubDate ? new Date(meta.pubDate).getTime() : NaN;
+      const refTs = !isNaN(pubTs) ? pubTs : new Date(meta.firstSeen).getTime();
+      if ((nowMs - refTs) > maxAgeMs) continue;
       const titleNorm = normalize(meta.title);
       if (!titleNorm.includes(entityNorm)) continue;
 
