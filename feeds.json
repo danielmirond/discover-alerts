@@ -1,13 +1,6 @@
 {
   "feeds": [
     {
-      "name": "Mundo Deportivo",
-      "url": "https://www.mundodeportivo.com/rss/home.xml",
-      "category": "deportivo",
-      "domain": "mundodeportivo.com",
-      "scope": "nacional"
-    },
-    {
       "name": "El País",
       "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada",
       "category": "generalista",
@@ -84,6 +77,258 @@
       "url": "https://www.infolibre.es/rss/",
       "category": "generalista",
       "domain": "infolibre.es"
+    },
+    {
+      "name": "Mundo Deportivo Home",
+      "url": "https://www.mundodeportivo.com/rss/home.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Portada",
+      "url": "https://www.mundodeportivo.com/rss/portada.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Lo Ultimo",
+      "url": "https://www.mundodeportivo.com/rss/loultimo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Futbol",
+      "url": "https://www.mundodeportivo.com/rss/futbol.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo FC Barcelona",
+      "url": "https://www.mundodeportivo.com/rss/futbol/fc-barcelona.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Real Madrid",
+      "url": "https://www.mundodeportivo.com/rss/futbol/real-madrid.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Atletico",
+      "url": "https://www.mundodeportivo.com/rss/futbol/atletico-madrid.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo LaLiga",
+      "url": "https://www.mundodeportivo.com/rss/futbol/laliga.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Champions",
+      "url": "https://www.mundodeportivo.com/rss/futbol/champions-league.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Europa League",
+      "url": "https://www.mundodeportivo.com/rss/futbol/europa-league.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Premier",
+      "url": "https://www.mundodeportivo.com/rss/futbol/premier-league.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Bundesliga",
+      "url": "https://www.mundodeportivo.com/rss/futbol/bundesliga.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Serie A",
+      "url": "https://www.mundodeportivo.com/rss/futbol/serie-a.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Ligue 1",
+      "url": "https://www.mundodeportivo.com/rss/futbol/ligue-1.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Futbol Internacional",
+      "url": "https://www.mundodeportivo.com/rss/futbol/internacional.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Copa del Rey",
+      "url": "https://www.mundodeportivo.com/rss/futbol/copa-del-rey.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Baloncesto",
+      "url": "https://www.mundodeportivo.com/rss/baloncesto.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo NBA",
+      "url": "https://www.mundodeportivo.com/rss/baloncesto/nba.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo ACB",
+      "url": "https://www.mundodeportivo.com/rss/baloncesto/acb.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Euroliga",
+      "url": "https://www.mundodeportivo.com/rss/baloncesto/euroliga.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Tenis",
+      "url": "https://www.mundodeportivo.com/rss/tenis.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Motor",
+      "url": "https://www.mundodeportivo.com/rss/motor.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo F1",
+      "url": "https://www.mundodeportivo.com/rss/motor/f1.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo MotoGP",
+      "url": "https://www.mundodeportivo.com/rss/motor/motogp.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Motociclismo",
+      "url": "https://www.mundodeportivo.com/rss/motor/motociclismo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Ciclismo",
+      "url": "https://www.mundodeportivo.com/rss/ciclismo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Atletismo",
+      "url": "https://www.mundodeportivo.com/rss/atletismo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Balonmano",
+      "url": "https://www.mundodeportivo.com/rss/balonmano.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Golf",
+      "url": "https://www.mundodeportivo.com/rss/golf.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Rugby",
+      "url": "https://www.mundodeportivo.com/rss/rugby.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Boxeo",
+      "url": "https://www.mundodeportivo.com/rss/boxeo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo UFC",
+      "url": "https://www.mundodeportivo.com/rss/ufc.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Padel",
+      "url": "https://www.mundodeportivo.com/rss/padel.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo El Otro Mundo",
+      "url": "https://www.mundodeportivo.com/rss/elotromundo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Opinion",
+      "url": "https://www.mundodeportivo.com/rss/opinion.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Mas Deporte",
+      "url": "https://www.mundodeportivo.com/rss/mas-deporte.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
     },
     {
       "name": "Marca Portada",
