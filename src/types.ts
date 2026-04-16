@@ -156,6 +156,14 @@ export interface TrendSnapshot {
   lastUpdated: string;
 }
 
+/** Extended trend snapshot with news examples. Used for US trends so we can
+ * render headlines/sources in the dashboard without re-fetching. */
+export interface TrendSnapshotWithNews extends TrendSnapshot {
+  newsItems?: Array<{ title: string; url: string; source: string }>;
+  /** Geo code (e.g. 'US'). Defaults to 'ES' implicitly on state.trends. */
+  geo?: string;
+}
+
 export interface AppState {
   entities: Record<string, EntitySnapshot>;
   categories: Record<number, CategorySnapshot>;
@@ -163,6 +171,7 @@ export interface AppState {
   pages: Record<string, PageSnapshot>;
   domains: Record<string, DomainSnapshot>;
   trends: Record<string, TrendSnapshot>;
+  trendsUS?: Record<string, TrendSnapshotWithNews>; // Google Trends US con cabida editorial
   xTrends: Record<string, XTrendSnapshot>; // Twitter/X trends
   headlinePatterns: Record<string, number>;
   headlinePatternsHistory: Array<{ ngram: string; count: number; timestamp: string }>;

@@ -98,7 +98,7 @@ interface LiveRecentAlert {
  * Ordenado por `priorityScore` descendente.
  */
 interface LiveOpportunity {
-  kind: 'hueco_seo' | 'not_covering' | 'triple_match_fresh';
+  kind: 'hueco_seo' | 'not_covering' | 'triple_match_fresh' | 'us_relevant';
   title: string;                 // entidad / topic principal
   detail: string;                // metrica de urgencia
   priorityScore: number;         // para ordenar el panel
@@ -110,6 +110,10 @@ interface LiveOpportunity {
   discoverPosition?: number;
   otherOutlets?: string[];
   examples?: Array<{ title: string; url?: string; source?: string }>;
+  /** Geo tag — solo presente en kind='us_relevant' para badgear 🇺🇸 en UI. */
+  geo?: 'US';
+  /** Por qué tiene cabida editorial (entity_es, media_es, topic_match). */
+  cabidaReason?: Array<'entity_es' | 'media_es' | 'topic'>;
 }
 
 interface LiveTopMediaEntity {
@@ -838,6 +842,89 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       discoverPosition: snap.position,
       outletCount: outletsCoveringEntity.size,
       examples: sampleExamples,
+    });
+  }
+
+  // 4) US RELEVANT: trends US con cabida editorial en Espana.
+  // Solo se anade si al menos UNA de estas senales es cierta:
+  //   a) coincide con una entidad Discover ES cacheada (substring)
+  //   b) coincide con un titular de medio ES en las ultimas 12h
+  //   c) clasifica como un topic del diccionario (sucesos/legal/...)
+  // Evita trends US puramente locales (deportes NFL, Taylor Swift gira, etc.)
+  // que no tienen angulo espanol.
+  const minUSTraffic = envInt('THRESHOLD_US_RELEVANT_MIN_TRAFFIC', 50_000);
+  const trendsUS = state.trendsUS || {};
+  for (const [title, snap] of Object.entries(trendsUS)) {
+    if (snap.approxTraffic < minUSTraffic) continue;
+    const tNorm = normalize(title);
+    if (tNorm.length < 3) continue;
+
+    // Signal A: entity Discover ES overlap
+    let matchEntity: string | undefined;
+    for (const entName of Object.keys(state.entities)) {
+      const eNorm = normalize(entName);
+      if (eNorm.length < 4) continue;
+      if (tNorm.includes(eNorm) || eNorm.includes(tNorm)) { matchEntity = entName; break; }
+    }
+    // Signal B: ES media article title overlap (last 12h)
+    let matchArticle: { title: string; url?: string; source?: string } | undefined;
+    for (const meta of Object.values(state.mediaArticles)) {
+      if (!meta.title) continue;
+      const pubTs = (meta as any).pubDate ? new Date((meta as any).pubDate).getTime() : NaN;
+      const refTs = !isNaN(pubTs) ? pubTs : new Date(meta.firstSeen).getTime();
+      if (nowMs - refTs > mediaMaxAgeMs) continue;
+      const mNorm = normalize(meta.title);
+      if (mNorm.includes(tNorm)) {
+        matchArticle = { title: meta.title, url: meta.link, source: meta.feedName };
+        break;
+      }
+    }
+    // Signal C: topic classifier
+    const topicHits = classifyText(tNorm, topicsDict);
+    const matchTopic = pickBestTopic(topicHits, topicsDict);
+    // Also classify newsItems for richer signal
+    if (!matchTopic && snap.newsItems) {
+      for (const n of snap.newsItems) {
+        const h = classifyText(normalize(n.title), topicsDict);
+        const pt = pickBestTopic(h, topicsDict);
+        if (pt) { /* if any news classifies, the trend has cabida via topic */
+          (topicHits as any)[pt] = (topicHits[pt] || 0) + 1;
+        }
+      }
+    }
+    const finalTopic = matchTopic || pickBestTopic(topicHits, topicsDict);
+
+    const cabidaReason: LiveOpportunity['cabidaReason'] = [];
+    if (matchEntity) cabidaReason!.push('entity_es');
+    if (matchArticle) cabidaReason!.push('media_es');
+    if (finalTopic) cabidaReason!.push('topic');
+    if (cabidaReason!.length === 0) continue; // pure US-local, no cabida
+
+    // Detail text describes WHY it has cabida
+    const reasonTxt: string[] = [];
+    if (matchEntity) reasonTxt.push(`cruza con entidad ES "${matchEntity}"`);
+    if (matchArticle) reasonTxt.push(`medio ES ya cubre`);
+    if (finalTopic) reasonTxt.push(`topic ${finalTopic}`);
+    const detail = `🇺🇸 ~${snap.approxTraffic.toLocaleString()}+ busquedas US — ${reasonTxt.join(' · ')}`;
+
+    const examples: Array<{ title: string; url?: string; source?: string }> =
+      (snap.newsItems || []).slice(0, 3).map(n => ({
+        title: n.title, url: n.url, source: n.source,
+      }));
+    // If we matched an ES article, add it as an example too (precedencia al ES)
+    if (matchArticle) examples.unshift(matchArticle);
+
+    opportunities.push({
+      kind: 'us_relevant',
+      title,
+      detail,
+      // Priority: US signal + cabida boost. Entity+media+topic = very strong.
+      priorityScore: Math.round(snap.approxTraffic * 0.2) + cabidaReason!.length * 5000,
+      geo: 'US',
+      topic: finalTopic,
+      trafficEstimate: snap.approxTraffic,
+      cabidaReason,
+      examples: examples.slice(0, 4),
     });
   }
 

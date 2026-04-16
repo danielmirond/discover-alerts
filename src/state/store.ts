@@ -11,6 +11,7 @@ function emptyState(): AppState {
     pages: {},
     domains: {},
     trends: {},
+    trendsUS: {},
     xTrends: {},
     headlinePatterns: {},
     headlinePatternsHistory: [],

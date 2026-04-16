@@ -204,7 +204,7 @@
 
     <div class="card full-width" style="margin-bottom: 20px; border-color: #f97316;">
       <div class="card-header">
-        <h2>&#128293; Huecos activos AHORA<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Oportunidades editoriales en este instante, calculadas sobre el cache actual (no sobre alertas ya emitidas). Incluye: <strong>Hueco SEO</strong> (trends +10k sin cobertura Discover), <strong>No cubrimos</strong> (entidad con cobertura externa, nuestro dominio ausente), <strong>Triple Match fresco</strong> (Discover + Trends + X con thresholds endurecidos). Ordenado por tráfico estimado y urgencia.</span></span></h2>
+        <h2>&#128293; Huecos activos AHORA<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Oportunidades editoriales en este instante, calculadas sobre el cache actual (no sobre alertas ya emitidas). Incluye: <strong>Hueco SEO</strong> (trends ES +10k sin cobertura Discover), <strong>No cubrimos</strong> (entidad con cobertura externa, nuestro dominio ausente), <strong>Triple Match fresco</strong> (Discover + Trends + X con thresholds endurecidos), <strong>USA con cabida</strong> (trend US +50k que cruza con una entidad de Discover ES, con un titular de medio ES de las ultimas 12h, o clasifica como topic sucesos/legal). Los trends US puramente locales quedan excluidos. Ordenado por prioridad.</span></span></h2>
         <span class="badge badge-orange" id="opportunities-count">Cargando...</span>
       </div>
       <div style="padding: 12px 20px; border-bottom: 1px solid #2a2a2a;">
@@ -214,6 +214,7 @@
           <button class="filter-btn" data-opp-kind="hueco_seo">&#128269; Hueco SEO</button>
           <button class="filter-btn" data-opp-kind="not_covering">&#9888;&#65039; No cubrimos</button>
           <button class="filter-btn" data-opp-kind="triple_match_fresh">&#128165; Triple Match</button>
+          <button class="filter-btn" data-opp-kind="us_relevant">&#127482;&#127480; USA con cabida</button>
           <span class="filter-label" style="margin-left: 12px;">Topic:</span>
           <button class="filter-btn active" data-opp-topic="__all__">Todos</button>
           <button class="filter-btn" data-opp-topic="sucesos">Sucesos</button>
@@ -657,7 +658,8 @@
       var kindMap = {
         hueco_seo: { icon: '&#128269;', label: 'HUECO SEO', color: '#10b981' },
         not_covering: { icon: '&#9888;&#65039;', label: 'NO CUBRIMOS', color: '#f97316' },
-        triple_match_fresh: { icon: '&#128165;', label: 'TRIPLE MATCH FRESCO', color: '#f43f5e' }
+        triple_match_fresh: { icon: '&#128165;', label: 'TRIPLE MATCH FRESCO', color: '#f43f5e' },
+        us_relevant: { icon: '&#127482;&#127480;', label: 'USA CON CABIDA', color: '#6366f1' }
       };
 
       var html = filtered.map(function(o) {
@@ -668,6 +670,14 @@
         var catText = o.category
           ? '<span style="margin-left:8px;color:#888">&mdash; ' + escapeHtml(o.category) + '</span>'
           : '';
+        // Cabida reason badges (only on us_relevant)
+        var cabidaBadges = '';
+        if (o.cabidaReason && o.cabidaReason.length > 0) {
+          var cabidaMap = { entity_es: 'Discover ES', media_es: 'medio ES', topic: 'topic' };
+          cabidaBadges = o.cabidaReason.map(function(r) {
+            return '<span class="badge" style="background:rgba(99,102,241,0.15);color:#a5b4fc;margin-left:4px;font-size:9px">&#10003; ' + (cabidaMap[r] || r) + '</span>';
+          }).join('');
+        }
         var metaParts = [];
         if (o.trafficEstimate) metaParts.push('Trafico: ~' + o.trafficEstimate.toLocaleString() + '+');
         if (o.outletCount) metaParts.push(o.outletCount + ' medios');
@@ -695,7 +705,7 @@
         }
 
         return '<div class="alert-item" style="border-left-color:' + km.color + '">' +
-          '<div class="alert-type" style="color:' + km.color + '">' + km.icon + ' ' + km.label + topicBadge + catText + '</div>' +
+          '<div class="alert-type" style="color:' + km.color + '">' + km.icon + ' ' + km.label + topicBadge + cabidaBadges + catText + '</div>' +
           '<div class="alert-title">' + escapeHtml(o.title) + '</div>' +
           '<div class="alert-detail">' + escapeHtml(o.detail) + '</div>' +
           metaLine +
