@@ -24,8 +24,31 @@ function isGzip(buf: Uint8Array): boolean {
 }
 
 /**
+ * Downloads a URL, decompressing gzip (from .gz extension or magic bytes),
+ * and returns the decoded XML string.
+ */
+async function fetchXml(url: string): Promise<string> {
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'DiscoverAlerts/1.0' },
+    signal: AbortSignal.timeout(20_000),
+  });
+  if (!res.ok) throw new Error(`News sitemap ${res.status} for ${url}`);
+
+  const arrayBuf = await res.arrayBuffer();
+  let buf = Buffer.from(arrayBuf);
+  if (url.endsWith('.gz') || isGzip(buf)) {
+    try { buf = gunzipSync(buf); } catch { /* already decompressed */ }
+  }
+  return buf.toString('utf-8');
+}
+
+/**
  * Fetches a Google News-format sitemap and returns MediaArticles compatible
- * with the existing correlator. Handles `.gz` files automatically.
+ * with the existing correlator. Handles:
+ *   - `.gz` files (auto-decompress)
+ *   - `<sitemapindex>` entries: follows the latest `<sitemap>` recursively
+ *     (by `lastmod` descending), so URLs like NYT `espanol.xml.gz` that
+ *     change every month don't need manual rotation.
  *
  * Standard fields extracted per <url> entry:
  *   - news:title        → article.title
@@ -33,29 +56,35 @@ function isGzip(buf: Uint8Array): boolean {
  *   - loc               → article.link
  */
 export async function fetchNewsSitemap(feed: MediaFeed): Promise<MediaArticle[]> {
-  const res = await fetch(feed.url, {
-    headers: { 'User-Agent': 'DiscoverAlerts/1.0' },
-    signal: AbortSignal.timeout(20_000),
-  });
+  return fetchAndParse(feed, feed.url, 0);
+}
 
-  if (!res.ok) {
-    throw new Error(`News sitemap ${feed.name} ${res.status}`);
+async function fetchAndParse(feed: MediaFeed, url: string, depth: number): Promise<MediaArticle[]> {
+  if (depth > 2) {
+    // Guard against infinite recursion in broken sitemap indexes
+    throw new Error(`News sitemap ${feed.name}: recursion too deep`);
   }
 
-  const arrayBuf = await res.arrayBuffer();
-  let buf = Buffer.from(arrayBuf);
-
-  // Handle gzip (whether from .gz URL or Content-Encoding that fetch didn't decompress)
-  if (feed.url.endsWith('.gz') || isGzip(buf)) {
-    try {
-      buf = gunzipSync(buf);
-    } catch {
-      // Already decompressed — some servers auto-decompress
-    }
-  }
-
-  const xml = buf.toString('utf-8');
+  const xml = await fetchXml(url);
   const parsed = parser.parse(xml);
+
+  // If this is a sitemap index (list of sitemaps), follow the most recent one.
+  const indexEntries = toArray<any>(parsed?.sitemapindex?.sitemap);
+  if (indexEntries.length > 0) {
+    // Sort by lastmod descending, pick the freshest
+    const entries = indexEntries
+      .map(s => ({
+        loc: typeof s.loc === 'string' ? s.loc : s.loc?.['#text'] ?? '',
+        lastmod: s.lastmod || '',
+      }))
+      .filter(e => e.loc)
+      // Prefer loc URLs that look like monthly archives (e.g. 'espanol-2026-04.xml.gz')
+      // over aggregate ones like 'espanol-collects.xml.gz'
+      .sort((a, b) => (b.lastmod || '').localeCompare(a.lastmod || ''));
+
+    if (entries.length === 0) return [];
+    return fetchAndParse(feed, entries[0].loc, depth + 1);
+  }
 
   const urls = toArray<any>(parsed?.urlset?.url);
   if (urls.length === 0) return [];
@@ -65,7 +94,6 @@ export async function fetchNewsSitemap(feed: MediaFeed): Promise<MediaArticle[]>
     const loc = typeof entry.loc === 'string' ? entry.loc : entry.loc?.['#text'] ?? '';
     if (!loc) continue;
 
-    // news:news may be present as 'news:news' or 'news' depending on parser behavior
     const newsNode = entry['news:news'] || entry.news;
     const title =
       newsNode?.['news:title'] ||
@@ -78,7 +106,7 @@ export async function fetchNewsSitemap(feed: MediaFeed): Promise<MediaArticle[]>
       entry.lastmod ||
       '';
 
-    if (!title) continue; // skip entries with no title (can't detect entities)
+    if (!title) continue;
 
     articles.push({
       feedName: feed.name,
