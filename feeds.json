@@ -1920,6 +1920,244 @@
       "domain": "nytimes.com",
       "scope": "internacional",
       "type": "news-sitemap"
+    },
+    {
+      "name": "Nació Digital",
+      "url": "https://www.naciodigital.cat/rss/pagina/ultimes-noticies",
+      "category": "generalista",
+      "domain": "naciodigital.cat",
+      "scope": "nacional"
+    },
+    {
+      "name": "Betevé",
+      "url": "https://beteve.cat/feed/",
+      "category": "generalista",
+      "domain": "beteve.cat",
+      "scope": "nacional"
+    },
+    {
+      "name": "Diari de Tarragona",
+      "url": "https://www.diaridetarragona.com/rss",
+      "category": "generalista",
+      "domain": "diaridetarragona.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "elDiario.es Catalunya",
+      "url": "https://www.eldiario.es/rss/catalunya",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "elDiario.es Madrid",
+      "url": "https://www.eldiario.es/rss/madrid",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Diario Sur (Málaga)",
+      "url": "https://www.diariosur.es/rss/atom/?section=malaga",
+      "category": "generalista",
+      "domain": "diariosur.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Ideal Granada",
+      "url": "https://www.ideal.es/rss/atom/?section=granada",
+      "category": "generalista",
+      "domain": "ideal.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "elDiario.es Andalucía",
+      "url": "https://www.eldiario.es/rss/andalucia",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Las Provincias",
+      "url": "https://www.lasprovincias.es/rss/atom/?section=valencia",
+      "category": "generalista",
+      "domain": "lasprovincias.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Valencia Plaza",
+      "url": "https://valenciaplaza.com/rss",
+      "category": "generalista",
+      "domain": "valenciaplaza.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Correo (Álava)",
+      "url": "https://www.elcorreo.com/rss/atom/?section=alava",
+      "category": "generalista",
+      "domain": "elcorreo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Diario Vasco (San Sebastián)",
+      "url": "https://www.diariovasco.com/rss/atom/?section=sansebastian",
+      "category": "generalista",
+      "domain": "diariovasco.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Deia",
+      "url": "https://www.deia.eus/rss",
+      "category": "generalista",
+      "domain": "deia.eus",
+      "scope": "nacional"
+    },
+    {
+      "name": "elDiario.es Euskadi",
+      "url": "https://www.eldiario.es/rss/euskadi",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Diario de Avisos",
+      "url": "https://www.diariodeavisos.com/feed/",
+      "category": "generalista",
+      "domain": "diariodeavisos.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Canarias7",
+      "url": "https://www.canarias7.es/rss/portada.xml",
+      "category": "generalista",
+      "domain": "canarias7.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Comercio (Asturias)",
+      "url": "https://www.elcomercio.es/rss/atom/?section=asturias",
+      "category": "generalista",
+      "domain": "elcomercio.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Norte de Castilla (Valladolid)",
+      "url": "https://www.elnortedecastilla.es/rss/atom/?section=valladolid",
+      "category": "generalista",
+      "domain": "elnortedecastilla.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Burgos Conecta",
+      "url": "https://www.burgosconecta.es/rss/atom/?section=burgos",
+      "category": "generalista",
+      "domain": "burgosconecta.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "elDiario.es Castilla-La Mancha",
+      "url": "https://www.eldiario.es/rss/castilla-la-mancha",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Heraldo de Aragón",
+      "url": "https://www.heraldo.es/rss",
+      "category": "generalista",
+      "domain": "heraldo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Diario del Altoaragón",
+      "url": "https://www.diariodelaltoaragon.es/rss",
+      "category": "generalista",
+      "domain": "diariodelaltoaragon.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Aragón Digital",
+      "url": "https://www.aragondigital.es/feed/",
+      "category": "generalista",
+      "domain": "aragondigital.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "elDiario.es Aragón",
+      "url": "https://www.eldiario.es/rss/aragon",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Verdad (Murcia)",
+      "url": "https://www.laverdad.es/rss/atom/?section=murcia",
+      "category": "generalista",
+      "domain": "laverdad.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "elDiario.es Murcia",
+      "url": "https://www.eldiario.es/rss/murcia",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Noticias de Navarra",
+      "url": "https://www.noticiasdenavarra.com/rss",
+      "category": "generalista",
+      "domain": "noticiasdenavarra.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "HOY Extremadura",
+      "url": "https://www.hoy.es/rss/atom/?section=extremadura",
+      "category": "generalista",
+      "domain": "hoy.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "elDiario.es Extremadura",
+      "url": "https://www.eldiario.es/rss/extremadura",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Diario Montañés",
+      "url": "https://www.eldiariomontanes.es/rss/atom/?section=cantabria",
+      "category": "generalista",
+      "domain": "eldiariomontanes.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Rioja",
+      "url": "https://www.larioja.com/rss/atom/?section=larioja",
+      "category": "generalista",
+      "domain": "larioja.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "elDiario.es Galicia",
+      "url": "https://www.eldiario.es/rss/galicia",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Faro de Ceuta",
+      "url": "https://www.elfarodeceuta.es/feed/",
+      "category": "generalista",
+      "domain": "elfarodeceuta.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Faro de Melilla",
+      "url": "https://www.elfarodemelilla.es/feed/",
+      "category": "generalista",
+      "domain": "elfarodemelilla.es",
+      "scope": "nacional"
     }
   ]
 }
