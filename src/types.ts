@@ -293,6 +293,11 @@ export interface MediaFeed {
   domain?: string;
   /** 'nacional' (default) | 'internacional' — affects alert labeling */
   scope?: 'nacional' | 'internacional';
+  /**
+   * 'rss' (default) for standard RSS/Atom feeds
+   * 'news-sitemap' for Google News-format sitemaps (<news:news> schema)
+   */
+  type?: 'rss' | 'news-sitemap';
 }
 
 export interface WeeklyMediaStats {

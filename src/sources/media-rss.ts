@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { XMLParser } from 'fast-xml-parser';
+import { fetchNewsSitemap } from './news-sitemap.js';
 import type { MediaFeed, MediaArticle } from '../types.js';
 
 const parser = new XMLParser({
@@ -23,6 +24,11 @@ export async function loadFeeds(path: string): Promise<MediaFeed[]> {
 }
 
 export async function fetchFeed(feed: MediaFeed): Promise<MediaArticle[]> {
+  // Dispatch to specialized parsers by feed type
+  if (feed.type === 'news-sitemap') {
+    return fetchNewsSitemap(feed);
+  }
+
   const res = await fetch(feed.url, {
     headers: { 'User-Agent': 'DiscoverAlerts/1.0' },
     signal: AbortSignal.timeout(15_000),

@@ -1904,6 +1904,22 @@
       "category": "deportivo",
       "domain": "lemonde.fr",
       "scope": "internacional"
+    },
+    {
+      "name": "NYT News (sitemap)",
+      "url": "https://www.nytimes.com/sitemaps/new/news.xml.gz",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "NYT Espanol (sitemap)",
+      "url": "https://www.nytimes.com/sitemaps/new/espanol-2026-04.xml.gz",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional",
+      "type": "news-sitemap"
     }
   ]
 }
