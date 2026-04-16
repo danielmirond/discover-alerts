@@ -19,6 +19,7 @@ const thresholds = {
   entityLongtailMinAppearances: envInt('THRESHOLD_ENTITY_LONGTAIL_MIN_APPEARANCES', 5),
   entityAscendingMinAppearances: envInt('THRESHOLD_ENTITY_ASCENDING_MIN_APPEARANCES', 3),
   trendCorrelationMin: envFloat('THRESHOLD_TREND_CORRELATION_MIN', 0.6),
+  mediaMaxAgeHours: envInt('THRESHOLD_MEDIA_MAX_AGE_HOURS', 12),
 };
 
 interface LiveEntity {
@@ -550,10 +551,10 @@ export function buildLiveView(): LiveViewResponse {
     .sort((a, b) => b.totalCount - a.totalCount)
     .slice(0, 30);
 
-  // Top 10 media: aggregate mediaArticles by feedName over the last 48h
-  // and compute which Discover entities they mention, with cross-source marks.
+  // Top 10 media: aggregate mediaArticles by feedName over the last 12h
+  // (configurable via THRESHOLD_MEDIA_MAX_AGE_HOURS).
   // Uses pubDate when available, falling back to firstSeen.
-  const topMediaMaxAgeMs = 48 * 3600_000;
+  const topMediaMaxAgeMs = thresholds.mediaMaxAgeHours * 3600_000;
   const mediaArticlesArr = Object.values(state.mediaArticles).filter(a => {
     const pubTs = (a as any).pubDate ? new Date((a as any).pubDate).getTime() : NaN;
     const refTs = !isNaN(pubTs) ? pubTs : new Date(a.firstSeen).getTime();

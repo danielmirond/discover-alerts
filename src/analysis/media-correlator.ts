@@ -37,7 +37,9 @@ export function detectMediaDiscoverCorrelations(
   const state = getState();
   const now = new Date().toISOString();
   const nowMs = Date.now();
-  const retentionMs = 24 * 3600_000;
+  // Cache retention matches the alert age window — no sense keeping articles
+  // older than what we'd ever surface.
+  const retentionMs = config.thresholds.mediaMaxAgeHours * 3600_000;
 
   // Start with pruned previous articles (older than 24h are dropped)
   const prevArticles = state.mediaArticles;
