@@ -202,6 +202,29 @@
       </div>
     </div>
 
+    <div class="card full-width" style="margin-bottom: 20px; border-color: #f97316;">
+      <div class="card-header">
+        <h2>&#128293; Huecos activos AHORA<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Oportunidades editoriales en este instante, calculadas sobre el cache actual (no sobre alertas ya emitidas). Incluye: <strong>Hueco SEO</strong> (trends +10k sin cobertura Discover), <strong>No cubrimos</strong> (entidad con cobertura externa, nuestro dominio ausente), <strong>Triple Match fresco</strong> (Discover + Trends + X con thresholds endurecidos). Ordenado por tráfico estimado y urgencia.</span></span></h2>
+        <span class="badge badge-orange" id="opportunities-count">Cargando...</span>
+      </div>
+      <div style="padding: 12px 20px; border-bottom: 1px solid #2a2a2a;">
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+          <span class="filter-label">Tipo:</span>
+          <button class="filter-btn active" data-opp-kind="__all__">Todos</button>
+          <button class="filter-btn" data-opp-kind="hueco_seo">&#128269; Hueco SEO</button>
+          <button class="filter-btn" data-opp-kind="not_covering">&#9888;&#65039; No cubrimos</button>
+          <button class="filter-btn" data-opp-kind="triple_match_fresh">&#128165; Triple Match</button>
+          <span class="filter-label" style="margin-left: 12px;">Topic:</span>
+          <button class="filter-btn active" data-opp-topic="__all__">Todos</button>
+          <button class="filter-btn" data-opp-topic="sucesos">Sucesos</button>
+          <button class="filter-btn" data-opp-topic="legal">Legal</button>
+        </div>
+      </div>
+      <div class="card-body" id="opportunities" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Calculando huecos...</div>
+      </div>
+    </div>
+
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
         <h2>&#128293; Entidades en vivo<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Entidades que en este instante cruzan los umbrales de <strong>flash</strong> (3+ en 1h), <strong>longtail</strong> (5+ en 2h) o <strong>ascending</strong> (3+ en 6h). Las 3 ventanas se calculan independientes: una misma entidad puede tener varios statuses simultaneamente.</span></span></h2>
@@ -613,6 +636,96 @@
       day_spike: 'SPIKE 24h'
     };
 
+    var currentOppKind = '__all__';
+    var currentOppTopic = '__all__';
+
+    function renderOpportunities() {
+      var all = window.__opportunitiesData || [];
+      var filtered = all.filter(function(o) {
+        if (currentOppKind !== '__all__' && o.kind !== currentOppKind) return false;
+        if (currentOppTopic !== '__all__' && o.topic !== currentOppTopic) return false;
+        return true;
+      });
+      document.getElementById('opportunities-count').textContent = filtered.length + ' de ' + all.length;
+
+      if (filtered.length === 0) {
+        document.getElementById('opportunities').innerHTML =
+          '<div class="loading">Sin huecos editoriales activos con esos filtros.</div>';
+        return;
+      }
+
+      var kindMap = {
+        hueco_seo: { icon: '&#128269;', label: 'HUECO SEO', color: '#10b981' },
+        not_covering: { icon: '&#9888;&#65039;', label: 'NO CUBRIMOS', color: '#f97316' },
+        triple_match_fresh: { icon: '&#128165;', label: 'TRIPLE MATCH FRESCO', color: '#f43f5e' }
+      };
+
+      var html = filtered.map(function(o) {
+        var km = kindMap[o.kind] || kindMap.hueco_seo;
+        var topicBadge = o.topic
+          ? '<span class="badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;margin-left:8px">' + escapeHtml(o.topic) + '</span>'
+          : '';
+        var catText = o.category
+          ? '<span style="margin-left:8px;color:#888">&mdash; ' + escapeHtml(o.category) + '</span>'
+          : '';
+        var metaParts = [];
+        if (o.trafficEstimate) metaParts.push('Trafico: ~' + o.trafficEstimate.toLocaleString() + '+');
+        if (o.outletCount) metaParts.push(o.outletCount + ' medios');
+        if (o.xRank) metaParts.push('X #' + o.xRank);
+        if (o.discoverPosition) metaParts.push('Discover #' + o.discoverPosition);
+        var metaLine = metaParts.length > 0 ? '<div class="alert-detail">' + metaParts.join(' | ') + '</div>' : '';
+
+        var examplesHtml = '';
+        if (o.examples && o.examples.length > 0) {
+          examplesHtml = '<div class="alert-enrich"><div class="alert-enrich-title">&#128240; Cobertura de la competencia</div><ul>';
+          o.examples.forEach(function(ex) {
+            var srcTxt = ex.source ? ' <em>(' + escapeHtml(ex.source) + ')</em>' : '';
+            if (ex.url) {
+              examplesHtml += '<li>&bull; <a href="' + escapeHtml(ex.url) + '" target="_blank">' + escapeHtml(ex.title) + '</a>' + srcTxt + '</li>';
+            } else {
+              examplesHtml += '<li>&bull; ' + escapeHtml(ex.title) + srcTxt + '</li>';
+            }
+          });
+          examplesHtml += '</ul></div>';
+        }
+
+        var outletsList = '';
+        if (o.otherOutlets && o.otherOutlets.length > 0) {
+          outletsList = '<div class="alert-detail" style="margin-top:4px;color:#aaa">Cubren: ' + o.otherOutlets.map(escapeHtml).join(', ') + '</div>';
+        }
+
+        return '<div class="alert-item" style="border-left-color:' + km.color + '">' +
+          '<div class="alert-type" style="color:' + km.color + '">' + km.icon + ' ' + km.label + topicBadge + catText + '</div>' +
+          '<div class="alert-title">' + escapeHtml(o.title) + '</div>' +
+          '<div class="alert-detail">' + escapeHtml(o.detail) + '</div>' +
+          metaLine +
+          outletsList +
+          examplesHtml +
+        '</div>';
+      }).join('');
+      document.getElementById('opportunities').innerHTML = html;
+    }
+
+    // Wire filter buttons for opportunities
+    document.addEventListener('click', function(ev) {
+      var t = ev.target;
+      if (!t || !t.classList || !t.classList.contains('filter-btn')) return;
+      var oppKind = t.getAttribute('data-opp-kind');
+      var oppTopic = t.getAttribute('data-opp-topic');
+      if (oppKind) {
+        currentOppKind = oppKind;
+        Array.from(document.querySelectorAll('[data-opp-kind]')).forEach(function(b) { b.classList.remove('active'); });
+        t.classList.add('active');
+        renderOpportunities();
+      }
+      if (oppTopic) {
+        currentOppTopic = oppTopic;
+        Array.from(document.querySelectorAll('[data-opp-topic]')).forEach(function(b) { b.classList.remove('active'); });
+        t.classList.add('active');
+        renderOpportunities();
+      }
+    });
+
     function renderFilterButtons(recent) {
       // Route buttons
       var routeCounts = { __all__: recent.length };
@@ -695,6 +808,11 @@
         var recent = data.recentAlerts || [];
         renderFilterButtons(recent);
         renderRecentAlerts(recent);
+
+        // Opportunities (Huecos activos)
+        var opportunities = data.opportunities || [];
+        window.__opportunitiesData = opportunities;
+        renderOpportunities();
 
         // Entities
         var entities = data.entities || [];

@@ -5,7 +5,7 @@ import { buildLiveView } from '../src/analysis/live-view.js';
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
     await loadState();
-    const view = buildLiveView();
+    const view = await buildLiveView();
     res.setHeader('Cache-Control', 's-maxage=30');
     res.json(view);
   } catch (err: any) {

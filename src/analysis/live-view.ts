@@ -1,4 +1,5 @@
 import { getState } from '../state/store.js';
+import { loadTopicsDictionary, classifyText, pickBestTopic } from './topic-classifier.js';
 
 // Read thresholds directly from env to avoid requiring DISCOVERSNOOP_TOKEN
 // when the dashboard runs in read-only mode.
@@ -87,6 +88,30 @@ interface LiveRecentAlert {
   examples?: Array<{ title: string; url?: string; source?: string }>;
 }
 
+/**
+ * Opportunity: huecos editoriales urgentes (activos AHORA mismo, no desde
+ * el stream de alertas ya emitido/dedupado). Consolida:
+ *   - hueco_seo: trends +10k sin match en Discover ni en nuestro RSS cache
+ *   - not_covering: entidad con cobertura externa fuerte y nosotros sin publicar
+ *   - triple_match_fresh: entidad en Discover+Trends+X con los thresholds
+ *     endurecidos, con cobertura nuestra ausente (oportunidad de entrar)
+ * Ordenado por `priorityScore` descendente.
+ */
+interface LiveOpportunity {
+  kind: 'hueco_seo' | 'not_covering' | 'triple_match_fresh';
+  title: string;                 // entidad / topic principal
+  detail: string;                // metrica de urgencia
+  priorityScore: number;         // para ordenar el panel
+  category?: string;
+  topic?: string;                // sucesos/legal/...
+  trafficEstimate?: number;      // trends approxTraffic
+  outletCount?: number;          // otros medios cubriendo
+  xRank?: number;
+  discoverPosition?: number;
+  otherOutlets?: string[];
+  examples?: Array<{ title: string; url?: string; source?: string }>;
+}
+
 interface LiveTopMediaEntity {
   name: string;
   count: number;
@@ -109,6 +134,7 @@ interface LiveViewResponse {
   entities: LiveEntity[];
   categories: LiveCategory[];
   concordances: LiveConcordance[];
+  opportunities: LiveOpportunity[];
   headlinePatterns: LiveHeadlinePattern[];
   headlinePatterns4d: LiveHeadlinePattern4d[];
   recentAlerts: LiveRecentAlert[];
@@ -144,7 +170,7 @@ function diceCoefficient(a: string, b: string): number {
   return (2 * intersection) / (bigramsA.size + (bN.length - 1));
 }
 
-export function buildLiveView(): LiveViewResponse {
+export async function buildLiveView(): Promise<LiveViewResponse> {
   const state = getState();
   const nowMs = Date.now();
   const hour = 3600_000;
@@ -623,6 +649,209 @@ export function buildLiveView(): LiveViewResponse {
     .sort((a, b) => b.articleCount - a.articleCount)
     .slice(0, 10);
 
+  // === OPPORTUNITIES ("Huecos activos") =======================================
+  // Computed directly from cached state, independent of the dedup window.
+  // Surfaces what should be covered NOW, not what was alerted in the last 6h.
+  const opportunities: LiveOpportunity[] = [];
+  const topicsDict = await loadTopicsDictionary();
+
+  // Read own-media config from env directly (live-view avoids requiring the
+  // full config singleton so the dashboard can run without DS token).
+  const ownDomainsCsv = process.env.OWN_MEDIA_DOMAINS || '';
+  const ownDomains = ownDomainsCsv.split(',').map(d => d.trim().toLowerCase()).filter(Boolean);
+  const absentMinOthers = envInt('OWN_MEDIA_ABSENT_MIN_OTHERS', 3);
+  const absentCategoryFilter = (process.env.OWN_MEDIA_ABSENT_CATEGORY_FILTER || 'Sport').toLowerCase();
+  const minTrafficGap = envInt('THRESHOLD_TRENDS_WITHOUT_DISCOVER_MIN_TRAFFIC', 10_000);
+  const tmMaxPos = envInt('THRESHOLD_TRIPLE_MATCH_MAX_POS', 50);
+  const tmMinTraffic = envInt('THRESHOLD_TRIPLE_MATCH_MIN_TRAFFIC', 2000);
+  const tmMaxXRank = envInt('THRESHOLD_TRIPLE_MATCH_MAX_X_RANK', 30);
+
+  function extractDomain(url: string): string {
+    try { return new URL(url).hostname.replace(/^www\./, '').toLowerCase(); } catch { return ''; }
+  }
+  function matchesOwnDomain(domain: string): string | null {
+    for (const own of ownDomains) {
+      if (domain === own || domain.endsWith('.' + own)) return own;
+    }
+    return null;
+  }
+
+  const mediaMaxAgeMs = thresholds.mediaMaxAgeHours * 3600_000;
+
+  // 1) HUECO SEO: Trends con >minTrafficGap búsquedas sin match en entidades ni páginas
+  const entityNormsAll = Object.keys(state.entities).map(normalize).filter(s => s.length >= 3);
+  const pageTitleNormsAll = Object.values(state.pages).map(p => normalize(p.title || ''));
+  for (const [title, snap] of Object.entries(state.trends)) {
+    if (snap.approxTraffic < minTrafficGap) continue;
+    const tNorm = normalize(title);
+    if (tNorm.length < 3) continue;
+    const inEntities = entityNormsAll.some(en => en.includes(tNorm) || tNorm.includes(en));
+    if (inEntities) continue;
+    const inPages = pageTitleNormsAll.some(pt => pt.includes(tNorm));
+    if (inPages) continue;
+
+    const topicHits = classifyText(tNorm, topicsDict);
+    const topic = pickBestTopic(topicHits, topicsDict);
+    opportunities.push({
+      kind: 'hueco_seo',
+      title,
+      detail: `~${snap.approxTraffic.toLocaleString()}+ busquedas sin cobertura en Discover`,
+      priorityScore: snap.approxTraffic + 50_000, // baseline boost for pure hole
+      topic,
+      trafficEstimate: snap.approxTraffic,
+    });
+  }
+
+  // 2) NO CUBRIMOS: entidades con cobertura de competencia >= absentMinOthers
+  //    y nuestro dominio ausente. Solo si tenemos ownDomains configurados.
+  if (ownDomains.length > 0) {
+    const entityList = Object.keys(state.entities).filter(n => n.length > 3);
+    for (const entityName of entityList) {
+      const cat = state.entityCategoryMap[entityName];
+      if (absentCategoryFilter && (!cat || !cat.toLowerCase().includes(absentCategoryFilter))) continue;
+
+      const entityNorm = normalize(entityName);
+      const otherOutlets = new Set<string>();
+      const otherTitles: Array<{ title: string; url?: string; source?: string }> = [];
+      let ownPresent = false;
+      let maxTrafficMatch = 0;
+      let bestXRankForEnt = Infinity;
+
+      for (const meta of Object.values(state.mediaArticles)) {
+        if (!meta.title) continue;
+        const pubTs = (meta as any).pubDate ? new Date((meta as any).pubDate).getTime() : NaN;
+        const refTs = !isNaN(pubTs) ? pubTs : new Date(meta.firstSeen).getTime();
+        if (nowMs - refTs > mediaMaxAgeMs) continue;
+        const titleNorm = normalize(meta.title);
+        if (!titleNorm.includes(entityNorm)) continue;
+
+        const articleDomain = extractDomain(meta.link);
+        if (matchesOwnDomain(articleDomain)) { ownPresent = true; break; }
+        otherOutlets.add(meta.feedName);
+        if (otherTitles.length < 3) {
+          otherTitles.push({ title: meta.title, url: meta.link, source: meta.feedName });
+        }
+      }
+      if (ownPresent) continue;
+      if (otherOutlets.size < absentMinOthers) continue;
+
+      // Enrichment: cross-source to amplify priority
+      for (const [trendTitle, snap] of Object.entries(state.trends)) {
+        const tNorm = normalize(trendTitle);
+        if (tNorm.includes(entityNorm) || entityNorm.includes(tNorm)) {
+          maxTrafficMatch = Math.max(maxTrafficMatch, snap.approxTraffic);
+        }
+      }
+      for (const [topic, snap] of Object.entries(state.xTrends)) {
+        const tNorm = normalize(topic.replace(/^#/, ''));
+        if (tNorm.length < 3) continue;
+        if (tNorm.includes(entityNorm) || entityNorm.includes(tNorm)) {
+          bestXRankForEnt = Math.min(bestXRankForEnt, snap.rank);
+        }
+      }
+
+      const topic = state.entityTopicMap?.[entityName];
+      const base = otherOutlets.size * 3000;
+      const xBoost = bestXRankForEnt <= 30 ? (31 - bestXRankForEnt) * 500 : 0;
+      const opp: LiveOpportunity = {
+        kind: 'not_covering',
+        title: entityName,
+        detail: `${otherOutlets.size} medios cubren, nosotros no`,
+        priorityScore: base + maxTrafficMatch + xBoost,
+        category: cat,
+        topic,
+        outletCount: otherOutlets.size,
+        otherOutlets: Array.from(otherOutlets).slice(0, 8),
+        trafficEstimate: maxTrafficMatch || undefined,
+        xRank: bestXRankForEnt !== Infinity ? bestXRankForEnt : undefined,
+        examples: otherTitles,
+      };
+      opportunities.push(opp);
+    }
+  }
+
+  // 3) TRIPLE MATCH FRESCO: entidad con Discover+Trends+X y thresholds
+  //    endurecidos. Se añade incluso si nuestro dominio SI cubre (es tema caliente
+  //    igual) pero priorityScore es menor cuando propio presente.
+  const entitiesSortedByScore = Object.entries(state.entities)
+    .sort((a, b) => b[1].score - a[1].score)
+    .slice(0, 100);
+
+  for (const [name, snap] of entitiesSortedByScore) {
+    if (snap.position > tmMaxPos) continue;
+    const nameNorm = normalize(name);
+
+    let totalTraffic = 0;
+    const matchedTrends: string[] = [];
+    for (const [title, s] of Object.entries(state.trends)) {
+      const tNorm = normalize(title);
+      if (tNorm.includes(nameNorm) || nameNorm.includes(tNorm) || diceCoefficient(name, title) >= fuzzy) {
+        totalTraffic += s.approxTraffic || 0;
+        matchedTrends.push(title);
+      }
+    }
+    if (totalTraffic < tmMinTraffic) continue;
+
+    let bestXRank = Infinity;
+    for (const [topic, s] of Object.entries(state.xTrends)) {
+      const tNorm = normalize(topic.replace(/^#/, ''));
+      if (tNorm.length < 3) continue;
+      if (tNorm.includes(nameNorm) || nameNorm.includes(tNorm) || diceCoefficient(name, topic) >= fuzzy) {
+        if (s.rank < bestXRank) bestXRank = s.rank;
+      }
+    }
+    if (bestXRank > tmMaxXRank) continue;
+
+    // Own domain presence for scoring (absent = higher priority)
+    let ownPresent = false;
+    const outletsCoveringEntity = new Set<string>();
+    const sampleExamples: Array<{ title: string; url?: string; source?: string }> = [];
+    for (const meta of Object.values(state.mediaArticles)) {
+      if (!meta.title) continue;
+      const pubTs = (meta as any).pubDate ? new Date((meta as any).pubDate).getTime() : NaN;
+      const refTs = !isNaN(pubTs) ? pubTs : new Date(meta.firstSeen).getTime();
+      if (nowMs - refTs > mediaMaxAgeMs) continue;
+      const titleNorm = normalize(meta.title);
+      if (!titleNorm.includes(nameNorm)) continue;
+      const dom = extractDomain(meta.link);
+      if (matchesOwnDomain(dom)) ownPresent = true;
+      outletsCoveringEntity.add(meta.feedName);
+      if (sampleExamples.length < 3) {
+        sampleExamples.push({ title: meta.title, url: meta.link, source: meta.feedName });
+      }
+    }
+
+    const topic = state.entityTopicMap?.[name];
+    const base = 30_000 + totalTraffic + (31 - bestXRank) * 1000;
+    const priorityScore = ownPresent ? Math.round(base * 0.4) : base;
+    opportunities.push({
+      kind: 'triple_match_fresh',
+      title: name,
+      detail: ownPresent
+        ? `Tema caliente (nuestro medio YA cubre)`
+        : `Discover#${snap.position} + Trends ~${totalTraffic.toLocaleString()}+ + X#${bestXRank}`,
+      priorityScore,
+      category: state.entityCategoryMap[name],
+      topic,
+      trafficEstimate: totalTraffic,
+      xRank: bestXRank,
+      discoverPosition: snap.position,
+      outletCount: outletsCoveringEntity.size,
+      examples: sampleExamples,
+    });
+  }
+
+  // Dedup by title (prefer highest priorityScore) and sort
+  const byTitle = new Map<string, LiveOpportunity>();
+  for (const o of opportunities) {
+    const key = `${o.kind}:${o.title}`;
+    const prev = byTitle.get(key);
+    if (!prev || o.priorityScore > prev.priorityScore) byTitle.set(key, o);
+  }
+  const opportunitiesSorted = Array.from(byTitle.values())
+    .sort((a, b) => b.priorityScore - a.priorityScore)
+    .slice(0, 30);
+
   return {
     lastPollDiscover: state.lastPollDiscover,
     lastPollTrends: state.lastPollTrends,
@@ -631,6 +860,7 @@ export function buildLiveView(): LiveViewResponse {
     entities: entities.slice(0, 20),
     categories: categories.slice(0, 15),
     concordances: concordances.slice(0, 20),
+    opportunities: opportunitiesSorted,
     headlinePatterns,
     headlinePatterns4d,
     recentAlerts,

@@ -47,7 +47,7 @@ async function handleApi(path: string): Promise<object> {
   }
   if (path === '/api/live-alerts') {
     await loadState();
-    return buildLiveView();
+    return await buildLiveView();
   }
   if (path.startsWith('/api/historical-discover')) {
     const url = new URL('http://x' + path);
