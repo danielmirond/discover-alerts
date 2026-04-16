@@ -1,205 +1,227 @@
 {
-  "//": "Fórmulas derivadas de un análisis de 9.979 titulares ganadores de DiscoverSnoop ES (2024-04 → 2026-04). Ver docs/formulas-report.md y docs/analyze_headlines.py para la metodología. Matching jerárquico: regla más específica gana (type + subtype + topic > type + subtype > type + topic > type). Placeholders: {entity}, {category}, {topic}, {ngram}, {trend}, {count}, {outlets}, {traffic}.",
-  "//patterns": "Patrones universales detectados en el dataset: (a) colon-split {X}:{Y} domina 38-78% en todos los verticales; (b) leading tokens 'Confirmado:', 'Ya es oficial:', 'Aviso:', 'Oficial:' son los openers ganadores; (c) verbo declarativo en posición 1-3 (confirma, sentencia, detiene, halla, revela, anuncia, dispara); (d) subpatrón entity_action_target {E1} verbo a {E2} 9-43%; (e) quoted statement {E}, desde {lugar}: '{cita}' aparece en top-5 de legal y celebs.",
+  "//": "Fórmulas derivadas del análisis de 9.979 titulares DiscoverSnoop ES (2024-04→2026-04). Ver docs/formulas-report.md.",
+  "//politicas_google_discover": "Revisado contra https://developers.google.com/search/docs/appearance/google-discover. PROHIBIDO en TODAS las reglas (no solo YMYL): clickbait, curiosity-gap ('lo que nadie cuenta', 'el dato que se les escapa'), sensacionalismo ('arrasa', 'explota', 'boom', 'bomba'), exageración ('el tema definitivo', 'como nunca antes'), formulas de enfado ('insólito', 'impactante'). Los titulares deben reflejar la esencia del contenido con precisión.",
+  "//decisiones_editoriales": "(1) Matching jerárquico: regla más específica gana (type+subtype+topic > type+subtype > type+topic > type). (2) 'Confirmado:' y 'Ya es oficial:' degradados a última posición de cada regla (saturados en el mercado). (3) YMYL (legal, sucesos, salud, economía, política): atribución explícita ('según la sentencia', 'la fiscalía comunica'), precisión (cantidad/fecha/lugar), sin hipérbole. (4) No-YMYL (entretenimiento, gastro, hobbies, generic entity/flash sin topic): tono editorial con contexto, service o explainer. Sin clickbait. (5) Placeholders: {entity}, {category}, {topic}, {ngram}, {trend}, {count}, {outlets}, {traffic}.",
   "rules": [
 
     {"match": {"type": "trends_without_discover", "topic": "legal"},
      "lines": [
-       "Confirmado: {entity}, la sentencia que domina el dia",
-       "{entity}: asi queda tras el fallo (lo que nadie te cuenta)",
-       "Ya es oficial: {entity}, la resolucion judicial"
+       "{entity}: qué dice la resolución y a quién afecta",
+       "Las claves del fallo sobre {entity} explicadas paso a paso",
+       "{entity}: contexto editorial y precedentes del caso",
+       "Confirmado: {entity}, la resolución judicial"
      ]},
     {"match": {"type": "trends_without_discover", "topic": "sucesos"},
      "lines": [
-       "Aviso: {entity}, lo que esta pasando al minuto",
-       "{entity}: asi han ocurrido los hechos",
-       "Ni detenido ni hallado: la realidad sobre {entity}"
+       "{entity}: hechos confirmados por fuentes oficiales",
+       "Qué se sabe de {entity}, según la investigación",
+       "{entity}: cronología y datos verificados al minuto",
+       "Aviso oficial sobre {entity}: los detalles"
      ]},
     {"match": {"type": "trends_without_discover"},
      "lines": [
-       "Confirmado: {entity}, la respuesta que todos buscan",
-       "{entity}: por que es tendencia hoy en Google",
-       "Ya es oficial: {entity} domina las busquedas"
+       "{entity}: por qué es tendencia hoy en Google",
+       "Las claves de {entity}, explicadas con contexto",
+       "{entity}: qué está pasando y por qué interesa",
+       "Confirmado: {entity} domina las búsquedas"
      ]},
 
     {"match": {"type": "entity", "subtype": "flash", "topic": "legal"},
      "lines": [
-       "Confirmado: {entity} ante el tribunal",
-       "Ya es oficial: la sentencia sobre {entity}",
-       "{entity}: asi lo dictamina el juez (al minuto)"
+       "{entity}: así lo resuelve el juzgado (con fuentes)",
+       "El fallo sobre {entity}, según la sentencia",
+       "Qué implica el auto sobre {entity} para las partes",
+       "Confirmado: {entity} ante el tribunal"
      ]},
     {"match": {"type": "entity", "subtype": "flash", "topic": "sucesos"},
      "lines": [
-       "Ultima hora: detenido {entity} / hallan a {entity}",
-       "Aviso urgente: {entity}, lo que se sabe",
-       "{entity}: asi han sido las primeras horas del caso"
+       "{entity}: hechos confirmados por la investigación",
+       "Qué dice la Guardia Civil / Policía Nacional sobre {entity}",
+       "{entity}: datos verificados de las primeras horas",
+       "Última hora: detenido {entity} / hallan a {entity}"
      ]},
     {"match": {"type": "entity", "subtype": "flash"},
      "lines": [
-       "Confirmado: {entity}, el giro inesperado del dia",
-       "Ya es oficial: lo de {entity}",
-       "{entity}: explota la noticia en 1h"
+       "{entity}: qué ha ocurrido en la última hora",
+       "Última hora de {entity}, con contexto y datos",
+       "Por qué {entity} es noticia ahora mismo",
+       "Confirmado: {entity}, los detalles del caso"
      ]},
 
     {"match": {"type": "entity", "subtype": "discover_1h", "topic": "legal"},
      "lines": [
-       "{entity}: la sentencia que todos los medios cubren",
-       "Confirmado: {entity} y el fallo en directo",
-       "Ya es oficial: {entity}, claves de la decision"
+       "{entity}: qué dice la resolución y cómo afecta a las partes",
+       "El juzgado se pronuncia sobre {entity}: precedente y contexto",
+       "Las claves del auto sobre {entity}, paso a paso",
+       "Confirmado: {entity} y el fallo en directo"
      ]},
     {"match": {"type": "entity", "subtype": "discover_1h", "topic": "sucesos"},
      "lines": [
-       "Ultima hora: {entity}, todos los detalles",
-       "Aviso: {entity}, lo que se sabe ahora mismo",
-       "{entity}: asi ha evolucionado el caso"
+       "{entity}: última hora con fuentes oficiales",
+       "Qué ha confirmado la investigación sobre {entity}",
+       "{entity}: cronología verificada al minuto",
+       "Aviso oficial sobre {entity}: cómo está la situación"
      ]},
     {"match": {"type": "entity", "subtype": "discover_1h"},
      "lines": [
-       "{entity}: el tema del dia en Discover",
-       "Confirmado: {entity} arrasa en la ultima hora",
-       "Ya es oficial: {entity}, ¿por que explota ahora?"
+       "{entity}: el tema del día en Discover, qué está pasando",
+       "Por qué {entity} es noticia en la última hora",
+       "Las claves de {entity}, el tema que domina Discover",
+       "Confirmado: {entity} lidera Discover ahora mismo"
      ]},
 
     {"match": {"type": "entity", "subtype": "discover_3h"},
      "lines": [
-       "{entity}: 3 horas dominando Discover Espana",
-       "Asi crece {entity}: las claves del momento",
-       "{entity}: el tema que marcara la tarde"
+       "{entity}: 3 horas en el foco de Discover España",
+       "Cronología de {entity}: las claves de la tarde",
+       "Contexto de {entity}, el tema que ha dominado la tarde"
      ]},
     {"match": {"type": "entity", "subtype": "discover_12h"},
      "lines": [
-       "{entity}: el tema del dia en Espana",
-       "Asi ha sido un dia completo de {entity}",
-       "{entity}: las claves de la jornada en Discover"
+       "{entity}: el tema del día en España, las claves",
+       "Cronología de un día completo sobre {entity}",
+       "Un día de {entity} en Discover: contexto y datos"
      ]},
 
     {"match": {"type": "entity", "subtype": "ascending", "topic": "legal"},
      "lines": [
-       "{entity}: asi avanza el proceso judicial",
-       "Confirmado: {entity} suma horas en Discover",
-       "Ni recurso ni apelacion: la realidad sobre {entity}"
+       "{entity}: así avanza el proceso judicial (fuentes y fechas)",
+       "El expediente {entity} paso a paso: qué queda por resolver",
+       "Claves del proceso sobre {entity} y posibles escenarios",
+       "Confirmado: {entity} suma horas en el foco judicial"
      ]},
     {"match": {"type": "entity", "subtype": "ascending", "topic": "sucesos"},
      "lines": [
-       "{entity}: ultimas novedades de la investigacion",
-       "Asi sigue el caso {entity} hora a hora",
-       "{entity}: el caso que no para"
+       "{entity}: novedades de la investigación según fuentes oficiales",
+       "Cronología del caso {entity}: lo confirmado hora a hora",
+       "{entity}: qué ha aportado la investigación en las últimas horas"
      ]},
     {"match": {"type": "entity", "subtype": "ascending"},
      "lines": [
-       "{entity}: la tendencia que no deja de crecer",
-       "Confirmado: {entity} sigue subiendo",
-       "Asi ha evolucionado {entity} en 6 horas"
+       "{entity}: la tendencia que se mantiene, contexto y datos",
+       "Cronología de {entity} en las últimas 6 horas",
+       "Las claves de {entity}: una subida sostenida",
+       "Confirmado: {entity} sigue subiendo"
      ]},
 
     {"match": {"type": "entity", "subtype": "longtail"},
      "lines": [
-       "{entity}: claves de una noticia que dura",
-       "Asi se mantiene {entity} en el foco",
-       "{entity}: por que sigue siendo tendencia"
+       "{entity}: claves de una noticia que se mantiene",
+       "Contexto de {entity}, el tema que sigue en el foco",
+       "Por qué {entity} continúa siendo tendencia"
      ]},
     {"match": {"type": "entity", "subtype": "rising"},
      "lines": [
-       "{entity} se dispara: +{count} puntos en minutos",
-       "Confirmado: {entity} escala en Discover",
-       "{entity}: el boom del momento"
+       "{entity} sube +{count} puntos en el último sondeo",
+       "El interés por {entity} crece: contexto del momento",
+       "{entity} escala en Discover: las claves"
      ]},
 
     {"match": {"type": "own_media_absent", "topic": "legal"},
      "lines": [
-       "Falta nuestra firma en {entity}: {outlets} medios ya cubren la sentencia",
-       "{entity}: lo que publican los demas y nosotros aun no",
-       "Confirmado: {entity} es tema juridico del dia, toca entrar"
+       "{entity}: {outlets} medios ya cubren la resolución, falta nuestra firma",
+       "Ángulo jurídico de {entity}: hueco disponible con atribución",
+       "La sentencia de {entity} publicada en {outlets} cabeceras",
+       "Confirmado: {entity} es tema jurídico del día"
      ]},
     {"match": {"type": "own_media_absent", "topic": "sucesos"},
      "lines": [
-       "Aviso: {entity} ya lo cubren {outlets} medios, nos lo estamos perdiendo",
-       "{entity}: hora de entrar con nuestro angulo",
-       "Ultima hora sin nuestra firma: {entity}"
+       "{entity}: {outlets} medios cubren con fuentes, entrar con ángulo factual",
+       "Última hora sin nuestra firma: {entity}",
+       "{entity}: {outlets} cabeceras ya publican con fuentes oficiales",
+       "Aviso oficial sobre {entity}: {outlets} cabeceras por delante"
      ]},
     {"match": {"type": "own_media_absent"},
      "lines": [
-       "{entity}: {outlets}+ medios cubren, nosotros aun no",
-       "Falta nuestro angulo sobre {entity}",
+       "{entity}: {outlets}+ medios cubren, nosotros aún no",
+       "Falta nuestro ángulo sobre {entity} (hueco editorial)",
+       "{entity}: cobertura ausente, {outlets} cabeceras dentro",
        "Confirmado: {entity}, hueco editorial disponible"
      ]},
 
     {"match": {"type": "entity_coverage", "topic": "legal"},
      "lines": [
-       "{entity}: asi lo cuentan {outlets}+ medios, el matiz diferencial",
-       "Ni sorpresa ni fallo previsible: la realidad sobre {entity}",
-       "{entity}: mas alla del titular que todos usan"
+       "{entity}: la clave jurídica que {outlets}+ medios no han destacado",
+       "Contexto y precedentes sobre {entity} que añaden valor al lector",
+       "{entity}: así lo cuentan {outlets}+ medios, nuestro ángulo factual",
+       "Qué aporta la sentencia de {entity}: lectura de fuentes y expertos"
      ]},
     {"match": {"type": "entity_coverage", "topic": "sucesos"},
      "lines": [
-       "{entity}: {outlets}+ cabeceras ya publican, nuestro angulo",
-       "Aviso: {entity}, mas alla del titular compartido",
-       "{entity}: el dato que se les escapa a los demas"
+       "{entity}: {outlets}+ cabeceras publican, nuestro ángulo con fuentes propias",
+       "Qué añade la investigación sobre {entity} a lo ya publicado",
+       "Contexto verificado del suceso {entity}",
+       "Aviso oficial sobre {entity}: contenido saturado, aporta fuentes propias"
      ]},
     {"match": {"type": "entity_coverage"},
      "lines": [
-       "{entity}: {outlets}+ medios cubren, diferenciate con tu angulo",
-       "Mas alla de {entity}: el matiz que nadie cuenta",
-       "{entity}: por que es tendencia en {outlets} medios ahora mismo"
+       "{entity}: {outlets}+ medios cubren, nuestro ángulo con contexto",
+       "Contexto y datos sobre {entity} que complementan el titular",
+       "Por qué {entity} es tendencia en {outlets} medios ahora mismo",
+       "Confirmado: {entity} cubierto por {outlets}, aporta fuentes"
      ]},
 
     {"match": {"type": "entity_concordance", "subtype": "discover_trends_x"},
      "lines": [
-       "Confirmado: {entity} domina Discover, Trends y X a la vez",
-       "{entity}: triple tendencia (aprovecha el pico)",
-       "Ya es oficial: {entity}, el tema del momento"
+       "{entity}: tendencia en Discover, Google Trends y X al mismo tiempo",
+       "Qué está pasando con {entity} para convertirse en tendencia multicanal",
+       "Las claves de {entity}, el tema cross-canal del momento",
+       "Confirmado: {entity} domina las tres fuentes"
      ]},
     {"match": {"type": "entity_concordance"},
      "lines": [
        "{entity}: tendencia multicanal ahora mismo",
-       "Confirmado: Google + medios + X hablan de {entity}",
-       "{entity}: las claves de por que es tendencia"
+       "Google, medios y X hablan de {entity}: el contexto",
+       "Las claves de por qué {entity} es tendencia en varios frentes"
      ]},
 
     {"match": {"type": "triple_match", "topic": "legal"},
      "lines": [
-       "Confirmado: {entity}, el fallo que domina Google y redes",
-       "Ya es oficial: {entity}, la sentencia del dia (~{traffic} busquedas)",
-       "Triple confirmacion: {entity}, tendencia legal absoluta"
+       "{entity}: qué dice la resolución que ~{traffic} españoles están buscando",
+       "Claves del fallo sobre {entity}, tendencia total en España",
+       "{entity}: contexto y precedentes del expediente del momento",
+       "Confirmado: {entity}, tendencia legal absoluta"
      ]},
     {"match": {"type": "triple_match", "topic": "sucesos"},
      "lines": [
-       "Aviso: {entity}, tema del momento en Espana (~{traffic} busquedas)",
-       "Ultima hora confirmada: {entity} domina Discover, Trends y X",
-       "{entity}: asi ha explotado en las tres fuentes a la vez"
+       "{entity}: hechos verificados del suceso del momento",
+       "Qué dicen las fuentes oficiales sobre {entity}",
+       "{entity}: cronología confirmada del caso que domina España",
+       "Aviso oficial sobre {entity}: ~{traffic} búsquedas en curso"
      ]},
     {"match": {"type": "triple_match"},
      "lines": [
-       "Confirmado: {entity} domina Discover, Trends y X (~{traffic} busquedas)",
-       "{entity}: el tema del momento (triple match)",
-       "Ya es oficial: {entity} arrasa en Google y redes al mismo tiempo"
+       "{entity}: el tema del momento (triple tendencia, ~{traffic} búsquedas)",
+       "Por qué {entity} es tendencia en Google y redes a la vez",
+       "Las claves de {entity}, tendencia cross-canal del día",
+       "Confirmado: {entity} domina Discover, Trends y X"
      ]},
 
     {"match": {"type": "multi_entity_article", "topic": "legal"},
      "lines": [
-       "{entity}: el cruce juridico que explica el caso",
-       "Confirmado: {entity} conectan en la noticia del dia",
-       "{entity}: asi se relacionan en el expediente"
+       "{entity}: cómo se relacionan en el expediente (con fuentes)",
+       "Contexto del cruce entre {entity}, según documentación judicial",
+       "Claves del vínculo jurídico entre {entity}"
      ]},
     {"match": {"type": "multi_entity_article"},
      "lines": [
-       "{entity}: el cruce que explica la noticia del dia",
-       "Confirmado: {entity} aparecen juntos en un mismo articulo",
-       "Asi conectan {entity}: las claves"
+       "{entity}: el cruce que explica la noticia del día",
+       "Cómo conectan {entity}: las claves del artículo",
+       "Por qué {entity} aparecen juntos en el mismo titular"
      ]},
 
     {"match": {"type": "headline_pattern"},
      "lines": [
-       "Ni \"{ngram}\": el matiz que cambia la noticia",
-       "Mas alla de \"{ngram}\": el angulo diferente",
-       "Confirmado: todos repiten \"{ngram}\", nosotros te lo explicamos"
+       "{ngram}: el matiz y el contexto que añadimos",
+       "Más allá de \"{ngram}\": contexto y datos verificados",
+       "Todos hablan de \"{ngram}\": qué aporta nuestro ángulo"
      ]},
 
     {"match": {"type": "headline_cluster"},
      "lines": [
-       "Evento grande: {count} frentes abiertos al minuto",
-       "Aviso: {count} entidades disparadas, cobertura en directo",
-       "Confirmado: jornada de evento grande en marcha"
+       "Cobertura en directo: {count} frentes abiertos",
+       "Aviso informativo: {count} entidades en el foco al mismo tiempo",
+       "Jornada de evento grande: las claves de una cobertura múltiple"
      ]}
   ]
 }
