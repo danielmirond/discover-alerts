@@ -1,31 +1,19 @@
 import { config } from '../config.js';
 
-// Per-webhook rate limit: 1 message per second per webhook
-const RATE_LIMIT_MS = 1000;
-const lastSentByWebhook = new Map<string, number>();
-
-async function waitForRateLimit(webhookUrl: string): Promise<void> {
-  const lastSent = lastSentByWebhook.get(webhookUrl) ?? 0;
-  const elapsed = Date.now() - lastSent;
-  if (elapsed < RATE_LIMIT_MS) {
-    await new Promise(r => setTimeout(r, RATE_LIMIT_MS - elapsed));
-  }
-}
+// Rate limiting disabled: messages are sent as fast as Slack accepts them.
+// Slack webhooks tolerate short bursts; if we hit 429 we'll see it in logs.
 
 export async function sendToSlack(
   payload: object,
   webhookUrl?: string,
 ): Promise<void> {
   const url = webhookUrl ?? config.slack.webhookUrl;
-  await waitForRateLimit(url);
 
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
-
-  lastSentByWebhook.set(url, Date.now());
 
   if (!res.ok) {
     const text = await res.text().catch(() => '');
@@ -39,15 +27,18 @@ export interface WebhookMessage {
 }
 
 export async function sendBatch(messages: (object | WebhookMessage)[]): Promise<void> {
-  for (const msg of messages) {
-    try {
-      if ('payload' in msg && 'webhookUrl' in msg) {
-        await sendToSlack(msg.payload, msg.webhookUrl);
-      } else {
-        await sendToSlack(msg);
+  // Fire all requests in parallel — no rate limit between them
+  await Promise.allSettled(
+    messages.map(msg =>
+      ('payload' in msg && 'webhookUrl' in msg)
+        ? sendToSlack(msg.payload, msg.webhookUrl)
+        : sendToSlack(msg),
+    ),
+  ).then(results => {
+    for (const r of results) {
+      if (r.status === 'rejected') {
+        console.error('[slack] Error sending message:', r.reason);
       }
-    } catch (err) {
-      console.error('[slack] Error sending message:', err);
     }
-  }
+  });
 }
