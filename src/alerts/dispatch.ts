@@ -131,7 +131,8 @@ export async function dispatchAlerts(
 
   // Send per webhook
   for (const [webhookUrl, webhookAlerts] of byWebhook) {
-    const messages = formatAlerts(webhookAlerts).map(payload => ({ payload, webhookUrl }));
+    const formatted = await formatAlerts(webhookAlerts);
+    const messages = formatted.map(payload => ({ payload, webhookUrl }));
     await sendBatch(messages);
   }
 }

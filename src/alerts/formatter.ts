@@ -1,4 +1,5 @@
 import type { Alert } from '../types.js';
+import { buildFormulasContextText } from './headline-formulas.js';
 
 interface SlackBlock {
   type: string;
@@ -385,7 +386,18 @@ function formatSingleAlert(alert: Alert): SlackBlock[] {
   }
 }
 
-export function formatAlerts(alerts: Alert[]): { blocks: SlackBlock[] }[] {
+/**
+ * Append a declarative "fórmulas sugeridas" context block at the end of the
+ * alert's blocks if the headline-formulas.json has a matching rule. Keeps
+ * the existing per-alert formatters simple and synchronous.
+ */
+async function withFormulas(alert: Alert, blocks: SlackBlock[]): Promise<SlackBlock[]> {
+  const txt = await buildFormulasContextText(alert);
+  if (!txt) return blocks;
+  return [...blocks, context(txt)];
+}
+
+export async function formatAlerts(alerts: Alert[]): Promise<{ blocks: SlackBlock[] }[]> {
   // Batch up to 5 alerts per message (Slack has 50 block limit)
   const messages: { blocks: SlackBlock[] }[] = [];
   const batchSize = 5;
@@ -396,7 +408,8 @@ export function formatAlerts(alerts: Alert[]): { blocks: SlackBlock[] }[] {
 
     for (let j = 0; j < batch.length; j++) {
       if (j > 0) blocks.push(divider());
-      blocks.push(...formatSingleAlert(batch[j]));
+      const singleBlocks = await withFormulas(batch[j], formatSingleAlert(batch[j]));
+      blocks.push(...singleBlocks);
     }
 
     messages.push({ blocks });

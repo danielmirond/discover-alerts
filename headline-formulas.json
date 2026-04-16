@@ -1,0 +1,239 @@
+{
+  "//": "Fórmulas declarativas sugeridas para cada alerta. Se muestran como bloque 'context' al final del mensaje Slack. Matching jerárquico: la regla más específica gana. Placeholders soportados: {entity}, {category}, {topic}, {ngram}, {trend}, {count}, {outlets}, {traffic}. Editables sin redeploy.",
+  "rules": [
+    {
+      "match": { "type": "trends_without_discover", "topic": "legal" },
+      "lines": [
+        "{entity}: la clave juridica que nadie te esta explicando",
+        "Sentencia / auto / fallo sobre {entity}: lo que significa",
+        "Asi queda {entity} tras la decision judicial"
+      ]
+    },
+    {
+      "match": { "type": "trends_without_discover", "topic": "sucesos" },
+      "lines": [
+        "Ultima hora: {entity} - todo lo que sabemos",
+        "{entity}: como ha ocurrido minuto a minuto",
+        "Claves del suceso: {entity}"
+      ]
+    },
+    {
+      "match": { "type": "trends_without_discover" },
+      "lines": [
+        "{entity}: la respuesta a lo que todos buscan",
+        "Por que {entity} es tendencia hoy",
+        "Todo sobre {entity}: claves y ultima hora"
+      ]
+    },
+
+    {
+      "match": { "type": "entity", "subtype": "flash", "topic": "legal" },
+      "lines": [
+        "Ultima hora: {entity} ante el tribunal",
+        "El Supremo / juez sentencia {entity}",
+        "{entity}: el fallo judicial al minuto"
+      ]
+    },
+    {
+      "match": { "type": "entity", "subtype": "flash", "topic": "sucesos" },
+      "lines": [
+        "Ultima hora: detenido / hallado {entity}",
+        "{entity}: asi ha ocurrido el suceso",
+        "Conmociona el caso de {entity}: primeros detalles"
+      ]
+    },
+    {
+      "match": { "type": "entity", "subtype": "flash" },
+      "lines": [
+        "Ultima hora: se dispara {entity}",
+        "{entity}: explota la noticia del dia",
+        "Por que {entity} es tendencia en este instante"
+      ]
+    },
+
+    {
+      "match": { "type": "entity", "subtype": "discover_1h", "topic": "legal" },
+      "lines": [
+        "{entity}: el fallo que todos los medios cubren",
+        "Sentencia en directo: {entity}",
+        "Claves legales de {entity}"
+      ]
+    },
+    {
+      "match": { "type": "entity", "subtype": "discover_1h", "topic": "sucesos" },
+      "lines": [
+        "Ultima hora: {entity}",
+        "{entity}: todas las claves",
+        "Detalle a detalle del caso {entity}"
+      ]
+    },
+    {
+      "match": { "type": "entity", "subtype": "discover_1h" },
+      "lines": [
+        "{entity}: la noticia del dia en Discover",
+        "Ultima hora: {entity}",
+        "Por que {entity} explota ahora mismo"
+      ]
+    },
+
+    {
+      "match": { "type": "entity", "subtype": "ascending", "topic": "legal" },
+      "lines": [
+        "{entity} marca jurisprudencia: claves del caso",
+        "Asi avanza el proceso judicial de {entity}",
+        "{entity}: la sentencia que puede cambiar todo"
+      ]
+    },
+    {
+      "match": { "type": "entity", "subtype": "ascending", "topic": "sucesos" },
+      "lines": [
+        "{entity}: ultimas novedades de la investigacion",
+        "Sigue la busqueda / investigacion de {entity}",
+        "{entity}: el caso que no para"
+      ]
+    },
+    {
+      "match": { "type": "entity", "subtype": "ascending" },
+      "lines": [
+        "{entity}: la tendencia que no deja de crecer",
+        "Por que {entity} se mantiene en Discover",
+        "{entity}: todas las claves de una subida sostenida"
+      ]
+    },
+
+    {
+      "match": { "type": "entity", "subtype": "longtail" },
+      "lines": [
+        "{entity}: como ha evolucionado el caso en 2 horas",
+        "{entity}: las claves que mantienen viva la noticia",
+        "Por que {entity} sigue siendo tendencia"
+      ]
+    },
+    {
+      "match": { "type": "entity", "subtype": "rising" },
+      "lines": [
+        "{entity} se dispara: +{count} puntos en minutos",
+        "El boom de {entity}: que ha pasado",
+        "{entity}: por que crece tan rapido"
+      ]
+    },
+    {
+      "match": { "type": "entity", "subtype": "discover_3h" },
+      "lines": [
+        "{entity}: 3 horas de cobertura masiva",
+        "{entity}: el tema que dominara la tarde",
+        "Asi sigue creciendo {entity}"
+      ]
+    },
+    {
+      "match": { "type": "entity", "subtype": "discover_12h" },
+      "lines": [
+        "{entity}: el tema del dia en Espana",
+        "{entity}: un dia entero en Discover",
+        "Asi ha sido el dia de {entity}"
+      ]
+    },
+
+    {
+      "match": { "type": "own_media_absent", "topic": "legal" },
+      "lines": [
+        "No cubrimos {entity}: oportunidad juridica perdida",
+        "{entity}: lo que la competencia publica y nosotros no",
+        "Falta nuestra firma en {entity}: angulo legal disponible"
+      ]
+    },
+    {
+      "match": { "type": "own_media_absent", "topic": "sucesos" },
+      "lines": [
+        "No cubrimos {entity}: hay {outlets} medios con ello",
+        "Falta nuestro enfoque en {entity}",
+        "{entity}: oportunidad de servicio al lector"
+      ]
+    },
+    {
+      "match": { "type": "own_media_absent" },
+      "lines": [
+        "{entity}: cubren {outlets} medios, nosotros aun no",
+        "Falta nuestro angulo sobre {entity}",
+        "{entity}: hueco editorial disponible"
+      ]
+    },
+
+    {
+      "match": { "type": "entity_coverage", "topic": "legal" },
+      "lines": [
+        "{entity}: el fallo que {outlets} medios ya cubren",
+        "Ni sorpresa ni fallo previsible: la realidad sobre {entity}",
+        "Claves juridicas de {entity}: diferenciate"
+      ]
+    },
+    {
+      "match": { "type": "entity_coverage", "topic": "sucesos" },
+      "lines": [
+        "{entity}: cobertura masiva, busca el matiz",
+        "Ultima hora {entity}: que se nos escapa",
+        "{entity}: el dato que todos repiten"
+      ]
+    },
+    {
+      "match": { "type": "entity_coverage" },
+      "lines": [
+        "{entity}: diferenciate del resto de medios",
+        "{entity}: el matiz que nadie cuenta",
+        "Por que {entity} es tendencia en {outlets}+ medios"
+      ]
+    },
+
+    {
+      "match": { "type": "entity_concordance", "subtype": "discover_trends_x" },
+      "lines": [
+        "{entity}: triple match Discover + Trends + X",
+        "{entity} domina Google y redes: aprovecha el pico",
+        "Por que {entity} es el tema del momento"
+      ]
+    },
+    {
+      "match": { "type": "entity_concordance" },
+      "lines": [
+        "{entity}: tendencia multicanal",
+        "Google + Medios + X: {entity} esta en todas",
+        "Claves de por que {entity} es tendencia"
+      ]
+    },
+
+    {
+      "match": { "type": "multi_entity_article", "topic": "legal" },
+      "lines": [
+        "{entity}: el cruce juridico que explica el caso",
+        "Asi conectan {entity} en una misma noticia",
+        "Claves de la conexion entre {entity}"
+      ]
+    },
+    {
+      "match": { "type": "multi_entity_article" },
+      "lines": [
+        "{entity}: el cruce que explica la noticia",
+        "Asi conectan {entity}: claves del articulo",
+        "Por que {entity} aparecen juntos hoy"
+      ]
+    },
+
+    {
+      "match": { "type": "headline_pattern" },
+      "lines": [
+        "Ni {ngram}: la realidad sobre el tema",
+        "Mas alla de \"{ngram}\": el angulo diferente",
+        "Todos hablan de \"{ngram}\": nosotros te lo explicamos"
+      ]
+    },
+
+    {
+      "match": { "type": "headline_cluster" },
+      "lines": [
+        "Evento en curso: {count} frentes abiertos",
+        "Cobertura en directo del evento",
+        "Minuto a minuto de un evento grande"
+      ]
+    }
+  ]
+}
