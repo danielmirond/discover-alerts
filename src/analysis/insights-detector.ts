@@ -1,5 +1,6 @@
 import { config } from '../config.js';
 import { getState } from '../state/store.js';
+import { loadTopicsDictionary, classifyText, pickBestTopic } from './topic-classifier.js';
 import type {
   DiscoverEntity,
   DiscoverPage,
@@ -85,6 +86,7 @@ export function detectOwnMediaAbsent(): OwnMediaAbsentAlert[] {
       type: 'own_media_absent',
       entityName,
       category: cat,
+      topic: state.entityTopicMap?.[entityName],
       otherOutlets: Array.from(otherOutlets).slice(0, 8),
       otherTitles,
     });
@@ -97,13 +99,14 @@ export function detectOwnMediaAbsent(): OwnMediaAbsentAlert[] {
  * trends_without_discover: Google Trends topics with high traffic that are NOT
  * reflected in any DiscoverSnoop entity or page. SEO opportunity gap.
  */
-export function detectTrendsWithoutDiscover(
+export async function detectTrendsWithoutDiscover(
   trends: TrendsItem[],
   pages: DiscoverPage[],
   entities: DiscoverEntity[],
-): TrendsWithoutDiscoverAlert[] {
+): Promise<TrendsWithoutDiscoverAlert[]> {
   const minTraffic = config.trendsWithoutDiscover.minApproxTraffic;
   const alerts: TrendsWithoutDiscoverAlert[] = [];
+  const topicsDict = await loadTopicsDictionary();
 
   // Pre-normalize everything we're comparing against
   const entityNorms = entities.map(e => normalize(e.entity));
@@ -121,10 +124,20 @@ export function detectTrendsWithoutDiscover(
     const inPages = pageTitleNorms.some(pt => pt.includes(trendNorm));
     if (inPages) continue;
 
+    // Classify: trend title + accompanying newsItems titles. If any of these
+    // matches a topic in topics.json we tag the alert for routing (Sucesos/Legal).
+    const classificationBlob = [
+      trendNorm,
+      ...trend.newsItems.map(n => normalize(n.title)),
+    ].join(' | ');
+    const topicHits = classifyText(classificationBlob, topicsDict);
+    const topic = pickBestTopic(topicHits, topicsDict);
+
     alerts.push({
       type: 'trends_without_discover',
       trendTitle: trend.title,
       approxTraffic: trend.approxTraffic,
+      topic,
       newsItems: trend.newsItems.slice(0, 3).map(n => ({
         title: n.title,
         url: n.url,

@@ -5,6 +5,8 @@ import type { Alert } from '../types.js';
 interface Route {
   name: string;
   categories: string[];
+  /** Optional: match by topic (sucesos, legal, ...). Takes precedence over categories. */
+  topics?: string[];
   webhookEnv: string;
 }
 
@@ -61,6 +63,43 @@ function getCategoryForAlert(alert: Alert): string | undefined {
   }
 }
 
+/**
+ * Extracts the topic tag (sucesos, legal, ...) from an alert if present.
+ * Topics take precedence over categories in routing.
+ */
+function getTopicForAlert(alert: Alert): string | undefined {
+  switch (alert.type) {
+    case 'entity':
+    case 'entity_coverage':
+    case 'entity_concordance':
+    case 'own_media':
+    case 'own_media_absent':
+    case 'multi_entity_article':
+    case 'headline_pattern':
+    case 'trends_without_discover':
+      return (alert as any).topic;
+    case 'category':
+    case 'headline_cluster':
+    case 'stale_data':
+    case 'trends_correlation':
+    case 'trends_new_topic':
+      return undefined;
+  }
+}
+
+function findRouteForTopic(topic: string | undefined): Route | null {
+  if (!topic) return null;
+  const topicNorm = normalize(topic);
+  for (const route of routes) {
+    if (!route.topics || route.topics.length === 0) continue;
+    for (const rTopic of route.topics) {
+      const rNorm = normalize(rTopic);
+      if (topicNorm === rNorm) return route;
+    }
+  }
+  return null;
+}
+
 function findRouteForCategory(category: string | undefined): Route | null {
   if (!category) return null;
   const catNorm = normalize(category);
@@ -91,8 +130,11 @@ export async function routeAlerts(alerts: Alert[]): Promise<RoutedAlert[]> {
 
   const result: RoutedAlert[] = [];
   for (const alert of alerts) {
+    // Topic takes precedence over category: an entity tagged "legal" goes to
+    // the Legal webhook even if DS categorised it as Sports/Entertainment.
+    const topic = getTopicForAlert(alert);
     const category = getCategoryForAlert(alert);
-    const route = findRouteForCategory(category);
+    const route = findRouteForTopic(topic) || findRouteForCategory(category);
 
     if (route) {
       const url = process.env[route.webhookEnv];

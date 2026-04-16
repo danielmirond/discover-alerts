@@ -1,6 +1,18 @@
 {
-  "//": "Mapea categorias de DiscoverSnoop a canales Slack. Cada ruta apunta a una env var que contiene el webhook URL. El matching de categorias es case-insensitive. Si una alerta no matchea ninguna ruta, va al webhook por defecto (SLACK_WEBHOOK_URL).",
+  "//": "Mapea categorias DS y topics (sucesos/legal/...) a canales Slack. Cada ruta apunta a una env var que contiene el webhook URL. 'topics' (de topics.json) tiene precedencia sobre 'categories'. Si una alerta no matchea ninguna ruta, va al webhook por defecto (SLACK_WEBHOOK_URL).",
   "routes": [
+    {
+      "name": "Sucesos",
+      "topics": ["sucesos"],
+      "categories": [],
+      "webhookEnv": "SLACK_WEBHOOK_SUCESOS"
+    },
+    {
+      "name": "Legal",
+      "topics": ["legal"],
+      "categories": [],
+      "webhookEnv": "SLACK_WEBHOOK_LEGAL"
+    },
     {
       "name": "Deportes",
       "categories": ["Sports", "Sport", "Deportes", "Football", "Soccer", "Futbol", "Tennis", "Basketball"],

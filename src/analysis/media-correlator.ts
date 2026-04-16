@@ -33,6 +33,7 @@ export function detectMediaDiscoverCorrelations(
   entities: DiscoverEntity[],
   _pages: DiscoverPage[],
   entityCategoryMap: Record<string, string> = {},
+  entityTopicMap: Record<string, string> = {},
 ): Array<EntityCoverageAlert | MultiEntityArticleAlert> {
   const state = getState();
   const now = new Date().toISOString();
@@ -114,16 +115,24 @@ export function detectMediaDiscoverCorrelations(
 
     // Multi-entity article detection
     if (entitiesInArticle.length >= multiEntityMin) {
-      // Derive majority category across entities
+      // Derive majority category AND topic across entities
       const catCounts: Record<string, number> = {};
+      const topicCounts: Record<string, number> = {};
       for (const ent of entitiesInArticle) {
         const cat = entityCategoryMap[ent];
         if (cat) catCounts[cat] = (catCounts[cat] || 0) + 1;
+        const top = entityTopicMap[ent];
+        if (top) topicCounts[top] = (topicCounts[top] || 0) + 1;
       }
       let majorityCat: string | undefined;
-      let best = 0;
+      let bestCat = 0;
       for (const [c, n] of Object.entries(catCounts)) {
-        if (n > best) { majorityCat = c; best = n; }
+        if (n > bestCat) { majorityCat = c; bestCat = n; }
+      }
+      let majorityTopic: string | undefined;
+      let bestTopic = 0;
+      for (const [t, n] of Object.entries(topicCounts)) {
+        if (n > bestTopic) { majorityTopic = t; bestTopic = n; }
       }
       multiEntityAlerts.push({
         type: 'multi_entity_article',
@@ -134,6 +143,7 @@ export function detectMediaDiscoverCorrelations(
         feedScope: article.feedScope,
         entities: entitiesInArticle.slice(0, 10),
         category: majorityCat,
+        topic: majorityTopic,
       });
     }
   }
@@ -153,6 +163,7 @@ export function detectMediaDiscoverCorrelations(
       mediaOutlets: outlets,
       articles: hits.slice(0, 10),
       category: entityCategoryMap[entityName],
+      topic: entityTopicMap[entityName],
     });
   }
 

@@ -169,6 +169,7 @@ export interface AppState {
   dedupHashes: Record<string, number>;
   mediaArticles: Record<string, { feedName: string; feedCategory: string; feedScope?: 'nacional' | 'internacional'; title: string; link: string; firstSeen: string; pubDate?: string }>;
   entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)
+  entityTopicMap: Record<string, string>; // entity name -> derived topic (sucesos/legal/...) from topics.json
   recentAlerts: Array<{ alert: Alert; timestamp: string; routeName: string }>; // last 6h of alerts sent to Slack
   weeklyHistory: Record<string, Record<string, WeeklyMediaStats>>; // weekKey -> feedName -> stats
   lastPollDiscover: string | null;
@@ -217,6 +218,7 @@ export interface EntityAlert {
   publications: number;
   firstviewed: string;
   category?: string;               // derived from pages (for routing)
+  topic?: string;                  // derived topic (sucesos/legal/...) from topics.json
   appearanceCount?: number;        // only for 'ascending' subtype
   windowHours?: number;            // only for 'ascending' subtype
   matchingTrends?: MatchedTrend[];  // Google Trends enrichment
@@ -252,6 +254,7 @@ export interface HeadlinePatternAlert {
   prevCount: number;
   matchingTitles: string[];
   category?: string; // derived from matching pages
+  topic?: string;    // derived topic from topics.json
 }
 
 export interface TrendsCorrelationAlert {
@@ -316,6 +319,7 @@ export interface OwnMediaAbsentAlert {
   type: 'own_media_absent';
   entityName: string;
   category?: string;
+  topic?: string;
   otherOutlets: string[];
   otherTitles: string[];
 }
@@ -324,6 +328,7 @@ export interface TrendsWithoutDiscoverAlert {
   type: 'trends_without_discover';
   trendTitle: string;
   approxTraffic: number;
+  topic?: string; // derived from trend title (classified via topics.json)
   newsItems: Array<{ title: string; url: string; source: string }>;
 }
 
@@ -350,6 +355,8 @@ export interface MultiEntityArticleAlert {
   entities: string[];
   /** Derived DS category (majority vote across entities) */
   category?: string;
+  /** Derived topic (sucesos/legal/...) majority vote across entities */
+  topic?: string;
 }
 
 export interface OwnMediaAlert {
@@ -369,6 +376,8 @@ export interface OwnMediaAlert {
   trendTopic?: string;
   /** Derived category if available */
   category?: string;
+  /** Derived topic (sucesos/legal/...) if available */
+  topic?: string;
 }
 
 export interface MediaArticle {
@@ -394,6 +403,7 @@ export interface EntityCoverageAlert {
     feedScope?: 'nacional' | 'internacional';
   }>;
   category?: string; // derived entity category (for routing)
+  topic?: string;    // derived topic (sucesos/legal/...)
 }
 
 export interface EntityConcordanceAlert {
@@ -404,6 +414,7 @@ export interface EntityConcordanceAlert {
   position: number;
   publications: number;
   category?: string;
+  topic?: string;
   matchingTrends: MatchedTrend[];
   matchingXTrends: MatchedXTrend[];
   matchingArticles: MatchedMediaArticle[];

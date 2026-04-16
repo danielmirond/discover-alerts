@@ -17,6 +17,7 @@ function emptyState(): AppState {
     dedupHashes: {},
     mediaArticles: {},
     entityCategoryMap: {},
+    entityTopicMap: {},
     recentAlerts: [],
     weeklyHistory: {},
     lastPollDiscover: null,

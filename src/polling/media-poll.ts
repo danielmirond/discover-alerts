@@ -60,6 +60,7 @@ export async function runMediaPoll(): Promise<void> {
         cachedEntities,
         cachedPages,
         state.entityCategoryMap,
+        state.entityTopicMap,
       ),
     );
   } else {

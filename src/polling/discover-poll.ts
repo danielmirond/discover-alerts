@@ -84,12 +84,12 @@ export async function runDiscoverPoll(): Promise<void> {
     const categoryNames = await getCategoryNames();
     const alerts: Alert[] = [];
 
-    alerts.push(...detectEntityAlerts(ent, pag, categoryNames));
+    alerts.push(...(await detectEntityAlerts(ent, pag, categoryNames)));
     alerts.push(...detectCategoryAlerts(cat, categoryNames, pag));
     alerts.push(...detectHeadlinePatterns(pag));
 
     const state2 = getState();
-    alerts.push(...detectConcordanceAlerts(ent, state2.entityCategoryMap));
+    alerts.push(...detectConcordanceAlerts(ent, state2.entityCategoryMap, state2.entityTopicMap));
 
     // Own-media: nuestro dominio apareciendo en Discover + cobertura joint
     alerts.push(...detectOwnMediaInDiscover(pag, categoryNames));
@@ -106,7 +106,7 @@ export async function runDiscoverPoll(): Promise<void> {
       newsItems: [],
     }));
     if (cachedTrendsForGap.length > 0) {
-      alerts.push(...detectTrendsWithoutDiscover(cachedTrendsForGap, pag, ent));
+      alerts.push(...(await detectTrendsWithoutDiscover(cachedTrendsForGap, pag, ent)));
     }
     alerts.push(...detectHeadlineCluster(ent));
     alerts.push(...detectStaleData('discover'));

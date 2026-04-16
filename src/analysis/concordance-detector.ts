@@ -98,6 +98,7 @@ function findMatches(entityName: string, state: ReturnType<typeof getState>, fuz
 export function detectConcordanceAlerts(
   entities: DiscoverEntity[],
   entityCategoryMap: Record<string, string> = {},
+  entityTopicMap: Record<string, string> = {},
 ): EntityConcordanceAlert[] {
   const state = getState();
   const fuzzy = config.thresholds.trendCorrelationMin;
@@ -141,6 +142,7 @@ export function detectConcordanceAlerts(
       position: e.position,
       publications: e.publications,
       category: entityCategoryMap[e.entity],
+      topic: entityTopicMap[e.entity],
       matchingTrends: matches.trends,
       matchingXTrends: matches.xTrends,
       matchingArticles: matches.articles,

@@ -156,6 +156,7 @@ export function detectOwnMediaCoverage(): OwnMediaAlert[] {
         url: sampleOwnUrl || undefined,
         otherOutlets: Array.from(otherOutlets).slice(0, 10),
         category: state.entityCategoryMap[entityName],
+        topic: state.entityTopicMap?.[entityName],
       });
     }
   }

@@ -1,5 +1,6 @@
 import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
+import { buildEntityTopicMap, loadTopicsDictionary } from './topic-classifier.js';
 import type {
   DiscoverEntity,
   DiscoverPage,
@@ -149,11 +150,11 @@ function enrichAscending(
   };
 }
 
-export function detectEntityAlerts(
+export async function detectEntityAlerts(
   entities: DiscoverEntity[],
   pages: DiscoverPage[] = [],
   categoryNames: Record<number, string> = {},
-): EntityAlert[] {
+): Promise<EntityAlert[]> {
   const state = getState();
   const prev = state.entities;
   const alerts: EntityAlert[] = [];
@@ -163,6 +164,9 @@ export function detectEntityAlerts(
 
   // Derive category for each entity from pages that mention it
   const entityCategoryMap = buildEntityCategoryMap(pages, categoryNames);
+  // Derive keyword-based topic (sucesos/legal/...) — ortogonal a la categoria DS
+  const topicsDict = await loadTopicsDictionary();
+  const entityTopicMap = buildEntityTopicMap(pages, topicsDict);
 
   const ascendingMin = config.thresholds.entityAscendingMinAppearances;
   const ascendingWindowMs = config.thresholds.entityAscendingWindowHours * 3600_000;
@@ -204,6 +208,7 @@ export function detectEntityAlerts(
     const old = prev[e.entity];
     const prevAppearances = old?.appearances ?? [];
     const entityCategory = entityCategoryMap[e.entity];
+    const entityTopic = entityTopicMap[e.entity];
 
     // Prune appearances outside the longest window we care about (12h)
     const appearances = [
@@ -244,6 +249,7 @@ export function detectEntityAlerts(
         publications: e.publications,
         firstviewed: old.firstSeen,
         category: entityCategory,
+        topic: entityTopic,
       });
     }
 
@@ -270,6 +276,7 @@ export function detectEntityAlerts(
         appearanceCount: currFlashCount,
         windowHours: config.thresholds.entityFlashWindowHours,
         category: entityCategory,
+        topic: entityTopic,
         ...enrichment,
       });
     }
@@ -293,6 +300,7 @@ export function detectEntityAlerts(
         appearanceCount: currLongtailCount,
         windowHours: config.thresholds.entityLongtailWindowHours,
         category: entityCategory,
+        topic: entityTopic,
         ...enrichment,
       });
     }
@@ -316,6 +324,7 @@ export function detectEntityAlerts(
         appearanceCount: currAscCount,
         windowHours: config.thresholds.entityAscendingWindowHours,
         category: entityCategory,
+        topic: entityTopic,
         ...enrichment,
       });
     }
@@ -340,6 +349,7 @@ export function detectEntityAlerts(
         appearanceCount: currD1,
         windowHours: 1,
         category: entityCategory,
+        topic: entityTopic,
         ...enrichment,
       });
     }
@@ -362,6 +372,7 @@ export function detectEntityAlerts(
         appearanceCount: currD3,
         windowHours: 3,
         category: entityCategory,
+        topic: entityTopic,
         ...enrichment,
       });
     }
@@ -384,15 +395,18 @@ export function detectEntityAlerts(
         appearanceCount: currD12,
         windowHours: 12,
         category: entityCategory,
+        topic: entityTopic,
         ...enrichment,
       });
     }
   }
 
-  // Persist the entity→category mapping so other polls (media) can route correctly
+  // Persist the entity→category and entity→topic maps so other polls (media)
+  // can route correctly
   updateState({
     entities: next,
     entityCategoryMap: { ...getState().entityCategoryMap, ...entityCategoryMap },
+    entityTopicMap: { ...getState().entityTopicMap, ...entityTopicMap },
   });
   return alerts;
 }

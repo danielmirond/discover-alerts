@@ -2158,6 +2158,55 @@
       "category": "generalista",
       "domain": "elfarodemelilla.es",
       "scope": "nacional"
+    },
+    {
+      "name": "Confilegal",
+      "url": "https://confilegal.com/feed/",
+      "category": "generalista",
+      "domain": "confilegal.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Economist & Jurist",
+      "url": "https://www.economistjurist.es/feed/",
+      "category": "generalista",
+      "domain": "economistjurist.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Derecho",
+      "url": "https://elderecho.com/feed/",
+      "category": "generalista",
+      "domain": "elderecho.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Lawyerpress",
+      "url": "https://www.lawyerpress.com/feed/",
+      "category": "generalista",
+      "domain": "lawyerpress.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Legal Today",
+      "url": "https://www.legaltoday.com/feed/",
+      "category": "generalista",
+      "domain": "legaltoday.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Juridico",
+      "url": "https://www.mundojuridico.info/feed/",
+      "category": "generalista",
+      "domain": "mundojuridico.info",
+      "scope": "nacional"
+    },
+    {
+      "name": "OKdiario Sucesos",
+      "url": "https://okdiario.com/sucesos/feed",
+      "category": "generalista",
+      "domain": "okdiario.com",
+      "scope": "nacional"
     }
   ]
 }
