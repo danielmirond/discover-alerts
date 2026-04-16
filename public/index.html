@@ -510,7 +510,8 @@
       'trends_without_discover': { bg: 'rgba(16,185,129,0.08)', border: '#10b981', icon: '&#128269;' },
       'headline_cluster': { bg: 'rgba(236,72,153,0.10)', border: '#ec4899', icon: '&#128680;' },
       'stale_data': { bg: 'rgba(120,113,108,0.10)', border: '#78716c', icon: '&#9888;&#65039;' },
-      'multi_entity_article': { bg: 'rgba(139,92,246,0.10)', border: '#8b5cf6', icon: '&#128209;' }
+      'multi_entity_article': { bg: 'rgba(139,92,246,0.10)', border: '#8b5cf6', icon: '&#128209;' },
+      'triple_match': { bg: 'rgba(244,63,94,0.15)', border: '#f43f5e', icon: '&#128165;' }
       };
       var subtypeLabels = {
         flash: 'FLASH (3+ en 1h)', longtail: 'LONGTAIL (5+ en 2h)', spike: 'SPIKE (legacy)', ascending: 'ASCENDING (3+ en 6h)',
@@ -527,9 +528,12 @@
         trends_news: 'NUESTRO en Trends',
         coverage_join: 'NUESTRO en cobertura conjunta'
       };
+      var typeLabels = {
+        'triple_match': 'TRIPLE MATCH',
+      };
       var html = filtered.map(function(r) {
         var c = typeColors[r.type] || typeColors['entity'];
-        var label = (r.subtype ? subtypeLabels[r.subtype] || r.subtype : r.type).toUpperCase();
+        var label = (r.subtype ? subtypeLabels[r.subtype] || r.subtype : (typeLabels[r.type] || r.type)).toUpperCase();
         var routeBadge = r.routeName !== 'default' ? ' <span class="badge badge-green" style="font-size:9px">→ ' + escapeHtml(r.routeName) + '</span>' : '';
         var examplesHtml = '';
         if (r.examples && r.examples.length > 0) {
@@ -565,6 +569,7 @@
       'entity/spike': 'Alerta legacy (antes de longtail). Deprecated.',
       'entity/new': 'Entidad nueva que no existia en el state. Deshabilitada por defecto para evitar ruido.',
       'entity_concordance/discover_trends_x': '<strong>Triple match:</strong> la entidad aparece simultaneamente en Discover + Google Trends + X/Twitter. Senal exceptional de convergencia cross-source.',
+      'triple_match': '<strong>TRIPLE MATCH (alta prioridad):</strong> version endurecida de la concordance Discover+Trends+X. Exige posicion Discover <=50, trafico Trends sumado >=2000 busquedas y rank X <=30. Cuando dispara, es el tema del momento con maxima certeza.<span class="tt-formula">pos<=50 AND traffic_sum>=2000 AND x_rank<=30</span>',
       'entity_concordance/discover_rss': 'La entidad aparece en Discover + al menos un articulo RSS de medios. La cobertura mediatica confirma Discover.',
       'entity_concordance/discover_trends': 'La entidad aparece en Discover + Google Trends. La gente lo esta buscando.',
       'entity_concordance/discover_x': 'La entidad aparece en Discover + X/Twitter trends. Conversacion viral en redes.',

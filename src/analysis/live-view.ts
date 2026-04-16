@@ -389,6 +389,17 @@ export function buildLiveView(): LiveViewResponse {
           }));
         }
         break;
+      case 'triple_match':
+        title = a.entityName;
+        detail = `score=${a.score} | pos=#${a.position} | ~${a.totalTrafficEstimate.toLocaleString()}+ | X#${a.bestXRank}`;
+        if (a.matchingArticles && a.matchingArticles.length > 0) {
+          examples = a.matchingArticles.slice(0, 3).map((m: any) => ({
+            title: m.title,
+            url: m.link,
+            source: m.feedName,
+          }));
+        }
+        break;
       case 'entity_coverage':
         title = a.entityName;
         detail = `${a.coverageCount} publicaciones en ${a.mediaOutlets.length} medios`;
@@ -490,6 +501,7 @@ export function buildLiveView(): LiveViewResponse {
     if (
       a.type === 'entity' ||
       a.type === 'entity_concordance' ||
+      a.type === 'triple_match' ||
       a.type === 'entity_coverage' ||
       a.type === 'own_media' ||
       a.type === 'own_media_absent' ||

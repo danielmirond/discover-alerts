@@ -281,6 +281,7 @@ export type Alert =
   | TrendsNewTopicAlert
   | EntityCoverageAlert
   | EntityConcordanceAlert
+  | TripleMatchAlert
   | OwnMediaAlert
   | OwnMediaAbsentAlert
   | TrendsWithoutDiscoverAlert
@@ -415,6 +416,31 @@ export interface EntityConcordanceAlert {
   publications: number;
   category?: string;
   topic?: string;
+  matchingTrends: MatchedTrend[];
+  matchingXTrends: MatchedXTrend[];
+  matchingArticles: MatchedMediaArticle[];
+}
+
+/**
+ * Triple Match: Discover + Google Trends + X/Twitter (+ optionally RSS) align
+ * for the same entity with strong momentum signals. Escalation of
+ * entity_concordance/discover_trends_x: same conditions plus hard thresholds
+ * (position, trend traffic, X rank) to guarantee editorial relevance.
+ */
+export interface TripleMatchAlert {
+  type: 'triple_match';
+  entityName: string;
+  category?: string;
+  topic?: string;
+  score: number;
+  position: number;
+  publications: number;
+  /** Sum of approxTraffic across matching Google Trends topics. */
+  totalTrafficEstimate: number;
+  /** Best (lowest) rank across matching X/Twitter trends (1 = top). */
+  bestXRank: number;
+  /** Count of distinct media outlets covering (0 means RSS missed). */
+  outletCount: number;
   matchingTrends: MatchedTrend[];
   matchingXTrends: MatchedXTrend[];
   matchingArticles: MatchedMediaArticle[];

@@ -3,6 +3,7 @@ import { getState } from '../state/store.js';
 import type {
   DiscoverEntity,
   EntityConcordanceAlert,
+  TripleMatchAlert,
   MatchedTrend,
   MatchedXTrend,
   MatchedMediaArticle,
@@ -99,20 +100,53 @@ export function detectConcordanceAlerts(
   entities: DiscoverEntity[],
   entityCategoryMap: Record<string, string> = {},
   entityTopicMap: Record<string, string> = {},
-): EntityConcordanceAlert[] {
+): Array<EntityConcordanceAlert | TripleMatchAlert> {
   const state = getState();
   const fuzzy = config.thresholds.trendCorrelationMin;
-  const alerts: EntityConcordanceAlert[] = [];
+  const alerts: Array<EntityConcordanceAlert | TripleMatchAlert> = [];
 
   // Limit to top N entities by score to reduce noise
   const topN = 100;
   const sortedEntities = [...entities].sort((a, b) => b.score - a.score).slice(0, topN);
+
+  const tm = config.tripleMatch;
 
   for (const e of sortedEntities) {
     const matches = findMatches(e.entity, state, fuzzy);
     const hasTrends = matches.trends.length > 0;
     const hasX = matches.xTrends.length > 0;
     const hasRss = matches.articles.length > 0;
+
+    // Triple Match check: Discover + Trends + X with hard thresholds.
+    // When it fires, we skip the equivalent concordance alert to avoid duplicates.
+    if (hasTrends && hasX) {
+      const totalTraffic = matches.trends.reduce((sum, t) => sum + (t.approxTraffic || 0), 0);
+      const bestXRank = Math.min(...matches.xTrends.map(t => t.rank));
+      const passesTriple =
+        e.position <= tm.maxDiscoverPosition &&
+        totalTraffic >= tm.minTotalTraffic &&
+        bestXRank <= tm.maxXRank;
+
+      if (passesTriple) {
+        alerts.push({
+          type: 'triple_match',
+          entityName: e.entity,
+          category: entityCategoryMap[e.entity],
+          topic: entityTopicMap[e.entity],
+          score: e.score,
+          position: e.position,
+          publications: e.publications,
+          totalTrafficEstimate: totalTraffic,
+          bestXRank,
+          outletCount: hasRss ? matches.articles.length : 0,
+          matchingTrends: matches.trends,
+          matchingXTrends: matches.xTrends,
+          matchingArticles: matches.articles,
+        });
+        // Suppress the discover_trends_x concordance emission for this entity.
+        continue;
+      }
+    }
 
     // Determine highest-priority subtype
     let subtype: EntityConcordanceAlert['subtype'] | null = null;

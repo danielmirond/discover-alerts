@@ -46,6 +46,7 @@ function alertPriority(alert: Alert): number {
         case 'discover_x': return 55;
       }
       return 0;
+    case 'triple_match': return 99; // Highest priority: Discover+Trends+X with thresholds met
     case 'own_media': return 92; // Own media highly important
     case 'own_media_absent': return 88; // You're missing the story
     case 'headline_cluster': return 90; // Big event signal
@@ -65,6 +66,7 @@ function alertScore(alert: Alert): number {
   switch (alert.type) {
     case 'entity':
     case 'entity_concordance':
+    case 'triple_match':
     case 'entity_coverage':
       return (alert as any).score ?? (alert as any).coverageCount ?? 0;
     case 'category':

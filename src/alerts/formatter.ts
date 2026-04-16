@@ -342,6 +342,49 @@ function formatHeadlineCluster(a: Extract<Alert, { type: 'headline_cluster' }>):
   ];
 }
 
+function formatTripleMatch(a: Extract<Alert, { type: 'triple_match' }>): SlackBlock[] {
+  const blocks: SlackBlock[] = [
+    header(`:boom: TRIPLE MATCH: ${a.entityName}`),
+    section(
+      `*${a.entityName}* domina las 3 fuentes simultaneamente — tema de maximo impacto editorial AHORA MISMO.`,
+    ),
+    fields(
+      `*Score Discover:* ${a.score} (#${a.position})`,
+      `*Trafico Trends:* ~${a.totalTrafficEstimate.toLocaleString()}+ busquedas`,
+      `*Mejor rank X:* #${a.bestXRank}`,
+      `*Medios cubriendo:* ${a.outletCount}`,
+    ),
+  ];
+
+  if (a.matchingTrends.length > 0) {
+    const lines = a.matchingTrends
+      .map(t => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
+      .join('\n');
+    blocks.push(section(`:mag: *Google Trends:*\n${lines}`));
+  }
+
+  if (a.matchingXTrends.length > 0) {
+    const lines = a.matchingXTrends
+      .map(t => `• <${t.url}|${t.topic}> — #${t.rank} en X`)
+      .join('\n');
+    blocks.push(section(`:bird: *X/Twitter:*\n${lines}`));
+  }
+
+  if (a.matchingArticles.length > 0) {
+    const lines = a.matchingArticles
+      .slice(0, 5)
+      .map(m => `• <${m.link}|${m.title}> _(${m.feedName})_`)
+      .join('\n');
+    blocks.push(section(`:newspaper: *Medios:*\n${lines}`));
+  }
+
+  const ctx: string[] = ['Triple Match | Discover + Trends + X'];
+  if (a.category) ctx.push(`Cat: ${a.category}`);
+  if (a.topic) ctx.push(`Topic: ${a.topic}`);
+  blocks.push(context(ctx.join(' | ')));
+  return blocks;
+}
+
 function formatMultiEntityArticle(a: Extract<Alert, { type: 'multi_entity_article' }>): SlackBlock[] {
   const scopeTag = a.feedScope === 'internacional' ? ' :globe_with_meridians: *INTERNACIONAL*' : '';
   return [
@@ -377,6 +420,7 @@ function formatSingleAlert(alert: Alert): SlackBlock[] {
     case 'trends_new_topic': return formatNewTrend(alert);
     case 'entity_coverage': return formatEntityCoverage(alert);
     case 'entity_concordance': return formatConcordance(alert);
+    case 'triple_match': return formatTripleMatch(alert);
     case 'own_media': return formatOwnMedia(alert);
     case 'own_media_absent': return formatOwnMediaAbsent(alert);
     case 'trends_without_discover': return formatTrendsWithoutDiscover(alert);

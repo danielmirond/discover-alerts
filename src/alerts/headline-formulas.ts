@@ -120,6 +120,14 @@ function renderTemplate(line: string, a: Alert): string {
       values.category = a.category || '';
       values.topic = a.topic || '';
       break;
+    case 'triple_match':
+      values.entity = a.entityName;
+      values.category = a.category || '';
+      values.topic = a.topic || '';
+      values.count = String(a.outletCount);
+      values.outlets = String(a.outletCount);
+      values.traffic = a.totalTrafficEstimate.toLocaleString();
+      break;
     case 'multi_entity_article':
       values.entity = a.entities.slice(0, 2).join(' y ');
       values.category = a.category || '';

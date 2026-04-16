@@ -84,6 +84,14 @@ export function getConfig() {
       minEntities: envInt('THRESHOLD_CLUSTER_MIN_ENTITIES', 4),
       windowHours: envFloat('THRESHOLD_CLUSTER_WINDOW_HOURS', 1),
     },
+    tripleMatch: {
+      // Max Discover position (1 = top). Lower = stricter.
+      maxDiscoverPosition: envInt('THRESHOLD_TRIPLE_MATCH_MAX_POS', 50),
+      // Min total approxTraffic summed across matching Trends topics.
+      minTotalTraffic: envInt('THRESHOLD_TRIPLE_MATCH_MIN_TRAFFIC', 2000),
+      // Max X/Twitter rank (1 = top). Lower = stricter.
+      maxXRank: envInt('THRESHOLD_TRIPLE_MATCH_MAX_X_RANK', 30),
+    },
     staleData: {
       // Alert if any poll hasn't run in this many minutes
       maxMinutesStale: envInt('THRESHOLD_STALE_MINUTES', 45),

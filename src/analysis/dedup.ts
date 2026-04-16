@@ -18,6 +18,8 @@ function alertKey(alert: Alert): string {
       return `entity_coverage:${alert.entityName}`;
     case 'entity_concordance':
       return `concordance:${alert.subtype}:${alert.entityName}`;
+    case 'triple_match':
+      return `triple_match:${alert.entityName}`;
     case 'own_media':
       return `own_media:${alert.subtype}:${alert.url || alert.title}`;
     case 'own_media_absent':

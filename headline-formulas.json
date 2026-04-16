@@ -185,6 +185,30 @@
     },
 
     {
+      "match": { "type": "triple_match", "topic": "legal" },
+      "lines": [
+        "Confirmado: {entity}, el fallo que domina Google y redes",
+        "{entity}: la sentencia que marca el dia",
+        "Triple confirmacion: por que {entity} es tendencia legal ahora"
+      ]
+    },
+    {
+      "match": { "type": "triple_match", "topic": "sucesos" },
+      "lines": [
+        "Ultima hora confirmada: {entity}, tema del momento en Espana",
+        "{entity}: como ha explotado en las 3 fuentes a la vez",
+        "Triple alarma: {entity} domina Discover, Trends y X"
+      ]
+    },
+    {
+      "match": { "type": "triple_match" },
+      "lines": [
+        "Confirmado: {entity} domina Discover, Trends y X",
+        "{entity}: por que es el tema del momento (~{traffic} busquedas)",
+        "Asi arrasa {entity} en Google y redes al mismo tiempo"
+      ]
+    },
+    {
       "match": { "type": "entity_concordance", "subtype": "discover_trends_x" },
       "lines": [
         "{entity}: triple match Discover + Trends + X",
