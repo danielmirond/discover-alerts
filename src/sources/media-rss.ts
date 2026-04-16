@@ -49,6 +49,7 @@ export async function fetchFeed(feed: MediaFeed): Promise<MediaArticle[]> {
     return {
       feedName: feed.name,
       feedCategory: feed.category,
+      feedScope: feed.scope || 'nacional',
       title: title.trim(),
       link: typeof link === 'string' ? link.trim() : '',
       pubDate,

@@ -33,6 +33,7 @@ export function detectMediaDiscoverCorrelations(
   const nextArticles: Record<string, {
     feedName: string;
     feedCategory: string;
+    feedScope?: 'nacional' | 'internacional';
     title: string;
     link: string;
     firstSeen: string;
@@ -44,7 +45,7 @@ export function detectMediaDiscoverCorrelations(
   }
 
   // Build entity-to-articles map (only new articles, based on entity substring match)
-  type ArticleHit = { title: string; link: string; feedName: string; feedCategory: string };
+  type ArticleHit = { title: string; link: string; feedName: string; feedCategory: string; feedScope?: 'nacional' | 'internacional' };
   const entityArticles = new Map<string, ArticleHit[]>();
   const newArticlesForWeekly: MediaArticle[] = [];
   const multiEntityAlerts: MultiEntityArticleAlert[] = [];
@@ -58,6 +59,7 @@ export function detectMediaDiscoverCorrelations(
     nextArticles[articleKey] = {
       feedName: article.feedName,
       feedCategory: article.feedCategory,
+      feedScope: article.feedScope,
       title: article.title,
       link: article.link,
       firstSeen: prevArticles[articleKey]?.firstSeen ?? now,
@@ -85,6 +87,7 @@ export function detectMediaDiscoverCorrelations(
           link: article.link,
           feedName: article.feedName,
           feedCategory: article.feedCategory,
+          feedScope: article.feedScope,
         });
       }
     }
@@ -108,6 +111,7 @@ export function detectMediaDiscoverCorrelations(
         articleLink: article.link,
         feedName: article.feedName,
         feedCategory: article.feedCategory,
+        feedScope: article.feedScope,
         entities: entitiesInArticle.slice(0, 10),
         category: majorityCat,
       });

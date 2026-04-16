@@ -476,7 +476,8 @@ export function buildLiveView(): LiveViewResponse {
         break;
       case 'multi_entity_article':
         title = a.articleTitle;
-        detail = `${a.entities.length} entidades: ${a.entities.slice(0, 5).join(', ')}${a.entities.length > 5 ? '...' : ''} | ${a.feedName}`;
+        var scopeTag = a.feedScope === 'internacional' ? ' 🌍 INTERNACIONAL' : '';
+        detail = `${a.entities.length} entidades: ${a.entities.slice(0, 5).join(', ')}${a.entities.length > 5 ? '...' : ''} | ${a.feedName}${scopeTag}`;
         examples = [{ title: a.articleTitle, url: a.articleLink, source: a.feedName }];
         break;
     }

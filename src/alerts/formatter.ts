@@ -239,18 +239,24 @@ function formatConcordance(a: Extract<Alert, { type: 'entity_concordance' }>): S
 function formatEntityCoverage(a: Extract<Alert, { type: 'entity_coverage' }>): SlackBlock[] {
   const outletList = a.mediaOutlets.join(' • ');
   const articleLines = a.articles
-    .map(art => `• <${art.link}|${art.title}> _(${art.feedName})_`)
+    .map(art => {
+      const tag = art.feedScope === 'internacional' ? ' :globe_with_meridians:' : '';
+      return `• <${art.link}|${art.title}> _(${art.feedName})_${tag}`;
+    })
     .join('\n');
+
+  const hasInternational = a.articles.some(art => art.feedScope === 'internacional');
+  const scopeNote = hasInternational ? ' (incluye medios internacionales)' : '';
 
   return [
     header(`:satellite: ${a.entityName}: publicada ${a.coverageCount} veces`),
     fields(
       `*Entidad:* ${a.entityName}`,
-      `*Publicaciones:* ${a.coverageCount}`,
+      `*Publicaciones:* ${a.coverageCount}${scopeNote}`,
       `*Medios (${a.mediaOutlets.length}):* ${outletList}`,
     ),
     section(`*Titulares:*\n${articleLines}`),
-    context(`Cobertura mediatica | DiscoverSnoop + RSS medios ES`),
+    context(`Cobertura mediatica | DiscoverSnoop + RSS medios`),
   ];
 }
 
@@ -336,16 +342,17 @@ function formatHeadlineCluster(a: Extract<Alert, { type: 'headline_cluster' }>):
 }
 
 function formatMultiEntityArticle(a: Extract<Alert, { type: 'multi_entity_article' }>): SlackBlock[] {
+  const scopeTag = a.feedScope === 'internacional' ? ' :globe_with_meridians: *INTERNACIONAL*' : '';
   return [
     header(`:card_index_dividers: Multi-entidad: ${a.entities.length} entidades en 1 articulo`),
     section(
-      `*<${a.articleLink}|${a.articleTitle}>* _(${a.feedName})_`,
+      `*<${a.articleLink}|${a.articleTitle}>* _(${a.feedName})_${scopeTag}`,
     ),
     section(
       `*Entidades detectadas:* ${a.entities.join(', ')}` +
       (a.category ? `\n*Categoria DS:* ${a.category}` : ''),
     ),
-    context(`Multi-entity article | ${a.feedCategory || 'media'}`),
+    context(`Multi-entity article | ${a.feedCategory || 'media'} | ${a.feedScope || 'nacional'}`),
   ];
 }
 

@@ -167,7 +167,7 @@ export interface AppState {
   headlinePatterns: Record<string, number>;
   headlinePatternsHistory: Array<{ ngram: string; count: number; timestamp: string }>;
   dedupHashes: Record<string, number>;
-  mediaArticles: Record<string, { feedName: string; feedCategory: string; title: string; link: string; firstSeen: string }>;
+  mediaArticles: Record<string, { feedName: string; feedCategory: string; feedScope?: 'nacional' | 'internacional'; title: string; link: string; firstSeen: string }>;
   entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)
   recentAlerts: Array<{ alert: Alert; timestamp: string; routeName: string }>; // last 6h of alerts sent to Slack
   weeklyHistory: Record<string, Record<string, WeeklyMediaStats>>; // weekKey -> feedName -> stats
@@ -291,6 +291,8 @@ export interface MediaFeed {
   url: string;
   category: string;
   domain?: string;
+  /** 'nacional' (default) | 'internacional' — affects alert labeling */
+  scope?: 'nacional' | 'internacional';
 }
 
 export interface WeeklyMediaStats {
@@ -339,6 +341,7 @@ export interface MultiEntityArticleAlert {
   articleLink: string;
   feedName: string;
   feedCategory: string;
+  feedScope?: 'nacional' | 'internacional';
   entities: string[];
   /** Derived DS category (majority vote across entities) */
   category?: string;
@@ -366,6 +369,7 @@ export interface OwnMediaAlert {
 export interface MediaArticle {
   feedName: string;
   feedCategory: string;
+  feedScope?: 'nacional' | 'internacional';
   title: string;
   link: string;
   pubDate: string;
@@ -382,6 +386,7 @@ export interface EntityCoverageAlert {
     link: string;
     feedName: string;
     feedCategory: string;
+    feedScope?: 'nacional' | 'internacional';
   }>;
   category?: string; // derived entity category (for routing)
 }
