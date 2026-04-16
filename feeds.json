@@ -1561,6 +1561,349 @@
       "url": "https://www.trecebits.com/feed/",
       "category": "tech-marketing",
       "domain": "trecebits.com"
+    },
+    {
+      "name": "La Vanguardia Politica",
+      "url": "https://www.lavanguardia.com/rss/politica.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Internacional",
+      "url": "https://www.lavanguardia.com/rss/internacional.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Economia",
+      "url": "https://www.lavanguardia.com/rss/economia.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Cultura",
+      "url": "https://www.lavanguardia.com/rss/cultura.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Tecnologia",
+      "url": "https://www.lavanguardia.com/rss/tecnologia.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Vida",
+      "url": "https://www.lavanguardia.com/rss/vida.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Opinion",
+      "url": "https://www.lavanguardia.com/rss/opinion.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Sucesos",
+      "url": "https://www.lavanguardia.com/rss/sucesos.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Internacional",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/internacional/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Espana",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/espana/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Economia",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/economia/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Opinion",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/opinion/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Cultura",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/cultura/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Tecnologia",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/tecnologia/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Espana",
+      "url": "https://e00-elmundo.uecdn.es/elmundo/rss/espana.xml",
+      "category": "generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Internacional",
+      "url": "https://e00-elmundo.uecdn.es/elmundo/rss/internacional.xml",
+      "category": "generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Cultura",
+      "url": "https://e00-elmundo.uecdn.es/elmundo/rss/cultura.xml",
+      "category": "generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Opinion",
+      "url": "https://e00-elmundo.uecdn.es/elmundo/rss/opinion.xml",
+      "category": "generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Nacional",
+      "url": "https://www.abc.es/rss/feeds/abc_EspanaEspana.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Internacional",
+      "url": "https://www.abc.es/rss/feeds/abc_Internacional.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Economia",
+      "url": "https://www.abc.es/rss/feeds/abc_Economia.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Politica",
+      "url": "https://www.abc.es/rss/feeds/abc_Politica.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Opinion",
+      "url": "https://www.abc.es/rss/feeds/abc_Opinion.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Cultura",
+      "url": "https://www.abc.es/rss/feeds/abc_Cultura.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Confidencial Mundo",
+      "url": "https://rss.elconfidencial.com/mundo/",
+      "category": "generalista",
+      "domain": "elconfidencial.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Confidencial Economia",
+      "url": "https://rss.elconfidencial.com/economia/",
+      "category": "generalista",
+      "domain": "elconfidencial.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Confidencial Tecnologia",
+      "url": "https://rss.elconfidencial.com/tecnologia/",
+      "category": "generalista",
+      "domain": "elconfidencial.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "eldiario Politica",
+      "url": "https://www.eldiario.es/rss/politica/",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "eldiario Economia",
+      "url": "https://www.eldiario.es/rss/economia/",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "eldiario Internacional",
+      "url": "https://www.eldiario.es/rss/internacional/",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "eldiario Cultura",
+      "url": "https://www.eldiario.es/rss/cultura/",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "NYT HomePage",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT World",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT US",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/US.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT Politics",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT Technology",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT Business",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian World",
+      "url": "https://www.theguardian.com/world/rss",
+      "category": "generalista",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Politics",
+      "url": "https://www.theguardian.com/politics/rss",
+      "category": "generalista",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Business",
+      "url": "https://www.theguardian.com/business/rss",
+      "category": "generalista",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Technology",
+      "url": "https://www.theguardian.com/technology/rss",
+      "category": "generalista",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Opinion",
+      "url": "https://www.theguardian.com/commentisfree/rss",
+      "category": "generalista",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Football",
+      "url": "https://www.theguardian.com/football/rss",
+      "category": "deportivo",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Une",
+      "url": "https://www.lemonde.fr/rss/une.xml",
+      "category": "generalista",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Intl",
+      "url": "https://www.lemonde.fr/international/rss_full.xml",
+      "category": "generalista",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Politique",
+      "url": "https://www.lemonde.fr/politique/rss_full.xml",
+      "category": "generalista",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Economie",
+      "url": "https://www.lemonde.fr/economie/rss_full.xml",
+      "category": "generalista",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Culture",
+      "url": "https://www.lemonde.fr/culture/rss_full.xml",
+      "category": "generalista",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Sport",
+      "url": "https://www.lemonde.fr/sport/rss_full.xml",
+      "category": "deportivo",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
     }
   ]
 }
