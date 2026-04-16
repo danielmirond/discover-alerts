@@ -1,6 +1,7 @@
 import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
 import { buildEntityTopicMap, loadTopicsDictionary } from './topic-classifier.js';
+import { classifyEntitiesBatch, type ClassifyRequest } from './llm-classifier.js';
 import { computeVelocity } from './velocity.js';
 import type {
   DiscoverEntity,
@@ -168,6 +169,37 @@ export async function detectEntityAlerts(
   // Derive keyword-based topic (sucesos/legal/...) — ortogonal a la categoria DS
   const topicsDict = await loadTopicsDictionary();
   const entityTopicMap = buildEntityTopicMap(pages, topicsDict);
+
+  // LLM fallback: para entidades que el keyword-matcher no clasifico pero
+  // aparecen en >=1 pagina (señal de relevancia), pedimos a Claude Haiku
+  // que clasifique. Resultados cacheados 7 dias; fail-open ante errores.
+  if (topicsDict.topics.length > 0 && pages.length > 0) {
+    // Build entity -> sample titles map from pages
+    const entitySamples = new Map<string, string[]>();
+    for (const page of pages) {
+      if (!page.entities || page.entities.length === 0) continue;
+      const title = (page.title || page.title_original || '').trim();
+      if (!title) continue;
+      for (const entName of page.entities) {
+        if (!entitySamples.has(entName)) entitySamples.set(entName, []);
+        const arr = entitySamples.get(entName)!;
+        if (arr.length < 3) arr.push(title);
+      }
+    }
+    // Only classify entities still unclassified after keyword step
+    const requests: ClassifyRequest[] = [];
+    for (const [entName, titles] of entitySamples) {
+      if (entityTopicMap[entName]) continue; // already classified by keywords
+      requests.push({ entityName: entName, sampleTitles: titles });
+    }
+    if (requests.length > 0) {
+      const llmResults = await classifyEntitiesBatch(requests, topicsDict);
+      // Merge LLM results into entityTopicMap (only positive hits)
+      for (const [entName, topic] of Object.entries(llmResults)) {
+        entityTopicMap[entName] = topic;
+      }
+    }
+  }
 
   const ascendingMin = config.thresholds.entityAscendingMinAppearances;
   const ascendingWindowMs = config.thresholds.entityAscendingWindowHours * 3600_000;

@@ -19,6 +19,7 @@ function emptyState(): AppState {
     mediaArticles: {},
     entityCategoryMap: {},
     entityTopicMap: {},
+    llmTopicCache: {},
     recentAlerts: [],
     weeklyHistory: {},
     lastPollDiscover: null,

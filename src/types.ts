@@ -179,6 +179,11 @@ export interface AppState {
   mediaArticles: Record<string, { feedName: string; feedCategory: string; feedScope?: 'nacional' | 'internacional'; title: string; link: string; firstSeen: string; pubDate?: string }>;
   entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)
   entityTopicMap: Record<string, string>; // entity name -> derived topic (sucesos/legal/...) from topics.json
+  /**
+   * Cache de clasificaciones LLM: entity -> { topic | "none", timestampMs }
+   * Retencion 7 dias para ahorrar coste. Se consulta ANTES de llamar al LLM.
+   */
+  llmTopicCache?: Record<string, { topic: string; ts: number }>;
   recentAlerts: Array<{ alert: Alert; timestamp: string; routeName: string }>; // last 6h of alerts sent to Slack
   weeklyHistory: Record<string, Record<string, WeeklyMediaStats>>; // weekKey -> feedName -> stats
   lastPollDiscover: string | null;
