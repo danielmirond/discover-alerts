@@ -11,6 +11,8 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://biohacklab.com";
+
 export async function generateMetadata({
   params,
 }: {
@@ -21,15 +23,34 @@ export async function generateMetadata({
   const site = messages.site;
 
   return {
+    metadataBase: new URL(SITE_URL),
     title: {
       default: `${site.name} — ${site.tagline}`,
       template: `%s | ${site.name}`,
     },
     description: site.description,
     alternates: {
+      canonical: `/${locale}`,
       languages: Object.fromEntries(
         locales.map((l) => [l, `/${l}`])
       ),
+    },
+    openGraph: {
+      type: "website",
+      locale,
+      url: `${SITE_URL}/${locale}`,
+      title: `${site.name} — ${site.tagline}`,
+      description: site.description,
+      siteName: site.name,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${site.name} — ${site.tagline}`,
+      description: site.description,
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }
