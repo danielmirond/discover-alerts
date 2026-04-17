@@ -88,6 +88,13 @@ function divider(): SlackBlock {
   return { type: 'divider' };
 }
 
+/** Bloque "Así lo cuentan" con hasta 3 snippets reales de contexto. */
+function contextSnippetsBlock(snippets: string[] | undefined): SlackBlock | null {
+  if (!snippets || snippets.length === 0) return null;
+  const lines = snippets.slice(0, 3).map(s => `• ${s}`).join('\n');
+  return section(`:newspaper: *Así lo cuentan (contexto real):*\n${lines}`);
+}
+
 function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
   const emoji =
     a.subtype === 'new' ? ':new:' :
@@ -150,10 +157,8 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
   }
 
   // Contexto real: snippets de Discover + descripciones RSS donde aparece la entidad
-  if (a.contextSnippets && a.contextSnippets.length > 0) {
-    const lines = a.contextSnippets.slice(0, 3).map(s => `• ${s}`).join('\n');
-    blocks.push(section(`:newspaper: *Así lo cuentan (contexto real):*\n${lines}`));
-  }
+  const ctxBlock = contextSnippetsBlock(a.contextSnippets);
+  if (ctxBlock) blocks.push(ctxBlock);
 
   // Enrichment: matching Google Trends
   if (a.matchingTrends && a.matchingTrends.length > 0) {
@@ -285,6 +290,9 @@ function formatConcordance(a: Extract<Alert, { type: 'entity_concordance' }>): S
     ),
   ];
 
+  const ctx0 = contextSnippetsBlock(a.contextSnippets);
+  if (ctx0) blocks.push(ctx0);
+
   if (a.matchingTrends.length > 0) {
     const lines = a.matchingTrends
       .map(t => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
@@ -322,16 +330,19 @@ function formatEntityCoverage(a: Extract<Alert, { type: 'entity_coverage' }>): S
   const hasInternational = a.articles.some(art => art.feedScope === 'internacional');
   const scopeNote = hasInternational ? ' (incluye medios internacionales)' : '';
 
-  return [
+  const ctxEC = contextSnippetsBlock(a.contextSnippets);
+  const blocks: SlackBlock[] = [
     header(`:satellite: ${a.entityName}: publicada ${a.coverageCount} veces`),
     fields(
       `*Entidad:* ${a.entityName}`,
       `*Publicaciones:* ${a.coverageCount}${scopeNote}`,
       `*Medios (${a.mediaOutlets.length}):* ${outletList}`,
     ),
-    section(`*Titulares:*\n${articleLines}`),
-    context(`Cobertura mediatica | DiscoverSnoop + RSS medios`),
   ];
+  if (ctxEC) blocks.push(ctxEC);
+  blocks.push(section(`*Titulares:*\n${articleLines}`));
+  blocks.push(context(`Cobertura mediatica | DiscoverSnoop + RSS medios`));
+  return blocks;
 }
 
 function formatOwnMedia(a: Extract<Alert, { type: 'own_media' }>): SlackBlock[] {
@@ -378,6 +389,8 @@ function formatOwnMediaAbsent(a: Extract<Alert, { type: 'own_media_absent' }>): 
       `*Medios que SI cubren:* ${a.otherOutlets.length}`,
     ),
   ];
+  const ctxOMA = contextSnippetsBlock(a.contextSnippets);
+  if (ctxOMA) blocks.push(ctxOMA);
   if (a.otherOutlets.length > 0) {
     blocks.push(section(`:newspaper: *Cubierto por:* ${a.otherOutlets.join(', ')}`));
   }
@@ -394,14 +407,17 @@ function formatTrendsWithoutDiscover(a: Extract<Alert, { type: 'trends_without_d
   const newsLines = a.newsItems
     .map(n => `• <${n.url}|${n.title}> _(${n.source})_`)
     .join('\n');
-  return [
+  const blocks: SlackBlock[] = [
     header(`:mag: Hueco SEO: ${a.trendTitle}`),
     section(
       `La gente busca *${a.trendTitle}* (~${a.approxTraffic.toLocaleString()}+ busquedas) pero ningun articulo en Discover ES ni entidad DiscoverSnoop lo cubre.`,
     ),
-    ...(newsLines ? [section(`*Articulos en Google Trends:*\n${newsLines}`)] : []),
-    context('Trends without Discover | SEO opportunity'),
   ];
+  const ctxTW = contextSnippetsBlock(a.contextSnippets);
+  if (ctxTW) blocks.push(ctxTW);
+  if (newsLines) blocks.push(section(`*Articulos en Google Trends:*\n${newsLines}`));
+  blocks.push(context('Trends without Discover | SEO opportunity'));
+  return blocks;
 }
 
 function formatHeadlineCluster(a: Extract<Alert, { type: 'headline_cluster' }>): SlackBlock[] {
@@ -428,6 +444,9 @@ function formatTripleMatch(a: Extract<Alert, { type: 'triple_match' }>): SlackBl
       `*Medios cubriendo:* ${a.outletCount}`,
     ),
   ];
+
+  const ctxTM = contextSnippetsBlock(a.contextSnippets);
+  if (ctxTM) blocks.push(ctxTM);
 
   if (a.matchingTrends.length > 0) {
     const lines = a.matchingTrends
@@ -460,17 +479,20 @@ function formatTripleMatch(a: Extract<Alert, { type: 'triple_match' }>): SlackBl
 
 function formatMultiEntityArticle(a: Extract<Alert, { type: 'multi_entity_article' }>): SlackBlock[] {
   const scopeTag = a.feedScope === 'internacional' ? ' :globe_with_meridians: *INTERNACIONAL*' : '';
-  return [
+  const blocks: SlackBlock[] = [
     header(`:card_index_dividers: Multi-entidad: ${a.entities.length} entidades en 1 articulo`),
     section(
       `*<${a.articleLink}|${a.articleTitle}>* _(${a.feedName})_${scopeTag}`,
     ),
-    section(
-      `*Entidades detectadas:* ${a.entities.join(', ')}` +
-      (a.category ? `\n*Categoria DS:* ${a.category}` : ''),
-    ),
-    context(`Multi-entity article | ${a.feedCategory || 'media'} | ${a.feedScope || 'nacional'}`),
   ];
+  const ctxME = contextSnippetsBlock(a.contextSnippets);
+  if (ctxME) blocks.push(ctxME);
+  blocks.push(section(
+    `*Entidades detectadas:* ${a.entities.join(', ')}` +
+    (a.category ? `\n*Categoria DS:* ${a.category}` : ''),
+  ));
+  blocks.push(context(`Multi-entity article | ${a.feedCategory || 'media'} | ${a.feedScope || 'nacional'}`));
+  return blocks;
 }
 
 function formatStaleData(a: Extract<Alert, { type: 'stale_data' }>): SlackBlock[] {

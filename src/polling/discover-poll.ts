@@ -89,7 +89,7 @@ export async function runDiscoverPoll(): Promise<void> {
     alerts.push(...detectHeadlinePatterns(pag));
 
     const state2 = getState();
-    alerts.push(...detectConcordanceAlerts(ent, state2.entityCategoryMap, state2.entityTopicMap));
+    alerts.push(...detectConcordanceAlerts(ent, state2.entityCategoryMap, state2.entityTopicMap, pag));
 
     // Own-media: nuestro dominio apareciendo en Discover + cobertura joint
     alerts.push(...detectOwnMediaInDiscover(pag, categoryNames));

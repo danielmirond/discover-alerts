@@ -1,7 +1,9 @@
 import { config } from '../config.js';
 import { getState } from '../state/store.js';
+import { extractContextSnippets } from './context-snippets.js';
 import type {
   DiscoverEntity,
+  DiscoverPage,
   EntityConcordanceAlert,
   TripleMatchAlert,
   MatchedTrend,
@@ -100,6 +102,7 @@ export function detectConcordanceAlerts(
   entities: DiscoverEntity[],
   entityCategoryMap: Record<string, string> = {},
   entityTopicMap: Record<string, string> = {},
+  pages: DiscoverPage[] = [],
 ): Array<EntityConcordanceAlert | TripleMatchAlert> {
   const state = getState();
   const fuzzy = config.thresholds.trendCorrelationMin;
@@ -142,6 +145,7 @@ export function detectConcordanceAlerts(
           matchingTrends: matches.trends,
           matchingXTrends: matches.xTrends,
           matchingArticles: matches.articles,
+          contextSnippets: extractContextSnippets(e.entity, pages),
         });
         // Suppress the discover_trends_x concordance emission for this entity.
         continue;
@@ -180,6 +184,7 @@ export function detectConcordanceAlerts(
       matchingTrends: matches.trends,
       matchingXTrends: matches.xTrends,
       matchingArticles: matches.articles,
+      contextSnippets: extractContextSnippets(e.entity, pages),
     });
   }
 

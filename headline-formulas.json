@@ -84,6 +84,55 @@
        "Cómo solicitar o acogerse a {entity}, con requisitos y plazos",
        "Las claves laborales de {entity}, según el SEPE y el estatuto"
      ]},
+    {"match": {"type": "trends_without_discover", "topic": "deportes"},
+     "lines": [
+       "Esto es lo que se está hablando de {entity} en vestuarios y redes",
+       "Lo que ha trascendido del club sobre {entity}: cifras, calendarios y nombres",
+       "{entity}: del rumor al dato, lo que sí está confirmado"
+     ]},
+    {"match": {"type": "entity", "subtype": "flash", "topic": "deportes"},
+     "lines": [
+       "Última hora sobre {entity}: lo que ha trascendido al minuto",
+       "Qué ha pasado con {entity} en el césped, en el vestuario o en el despacho",
+       "Aviso deportivo: lo confirmado de {entity} al minuto"
+     ]},
+    {"match": {"type": "entity", "subtype": "discover_1h", "topic": "deportes"},
+     "lines": [
+       "Esto es lo que está pasando con {entity} en Discover deportivo",
+       "Por qué {entity} es la noticia deportiva de la última hora",
+       "Lo que se sabe de {entity}: cifras, rivales y próxima jornada"
+     ]},
+    {"match": {"type": "entity", "subtype": "ascending", "topic": "deportes"},
+     "lines": [
+       "{entity}: cronología deportiva de las últimas horas con fuentes del club",
+       "Qué queda por saberse de {entity} esta semana",
+       "Las claves de {entity} y lo que viene en la próxima jornada"
+     ]},
+    {"match": {"type": "own_media_absent", "topic": "deportes"},
+     "lines": [
+       "{entity}: {outlets} cabeceras deportivas publican, nos falta entrar",
+       "Hueco deportivo en {entity}: el tema del día sin nuestra firma",
+       "Aviso: {entity} circula en {outlets} medios con fuentes sin nosotros"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "deportes"},
+     "lines": [
+       "{entity}: {outlets}+ medios deportivos publican — nuestro ángulo con fuentes del club",
+       "Declaraciones, cifras y próximos partidos sobre {entity}",
+       "Lo que falta al relato común sobre {entity}: el dato exclusivo"
+     ]},
+    {"match": {"type": "triple_match", "topic": "deportes"},
+     "lines": [
+       "{entity}: el tema deportivo del momento, ~{traffic} búsquedas en España",
+       "Por qué {entity} domina la conversación deportiva ahora mismo (Discover, Trends y X)",
+       "Las claves deportivas de {entity} al minuto, con fuentes"
+     ]},
+    {"match": {"type": "multi_entity_article", "topic": "deportes"},
+     "lines": [
+       "{entity}: cómo se cruzan en el partido, el mercado o la clasificación",
+       "El hilo deportivo que une a {entity} en esta noticia",
+       "Qué implica el cruce entre {entity} para la próxima jornada"
+     ]},
+
     {"match": {"type": "trends_without_discover", "topic": "shopping"},
      "lines": [
        "{entity}: fechas, descuentos reales y qué merece la pena",

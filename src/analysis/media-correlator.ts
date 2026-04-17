@@ -1,6 +1,7 @@
 import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
 import { aggregateWeekly } from './weekly-aggregator.js';
+import { extractContextSnippets } from './context-snippets.js';
 import type {
   MediaArticle,
   DiscoverEntity,
@@ -136,6 +137,10 @@ export function detectMediaDiscoverCorrelations(
       for (const [t, n] of Object.entries(topicCounts)) {
         if (n > bestTopic) { majorityTopic = t; bestTopic = n; }
       }
+      // El propio article.description ya es el mejor snippet para multi-entity
+      const articleDesc = (article as any).description
+        ? [ (article as any).description ].filter(Boolean)
+        : undefined;
       multiEntityAlerts.push({
         type: 'multi_entity_article',
         articleTitle: article.title,
@@ -146,6 +151,7 @@ export function detectMediaDiscoverCorrelations(
         entities: entitiesInArticle.slice(0, 10),
         category: majorityCat,
         topic: majorityTopic,
+        contextSnippets: articleDesc,
       });
     }
   }
@@ -166,6 +172,7 @@ export function detectMediaDiscoverCorrelations(
       articles: hits.slice(0, 10),
       category: entityCategoryMap[entityName],
       topic: entityTopicMap[entityName],
+      contextSnippets: extractContextSnippets(entityName),
     });
   }
 

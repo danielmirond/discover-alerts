@@ -1,6 +1,7 @@
 import { config } from '../config.js';
 import { getState } from '../state/store.js';
 import { loadTopicsDictionary, classifyText, pickBestTopic } from './topic-classifier.js';
+import { extractContextSnippets, cleanSnippet } from './context-snippets.js';
 import type {
   DiscoverEntity,
   DiscoverPage,
@@ -89,6 +90,7 @@ export function detectOwnMediaAbsent(): OwnMediaAbsentAlert[] {
       topic: state.entityTopicMap?.[entityName],
       otherOutlets: Array.from(otherOutlets).slice(0, 8),
       otherTitles,
+      contextSnippets: extractContextSnippets(entityName),
     });
   }
 
@@ -133,6 +135,13 @@ export async function detectTrendsWithoutDiscover(
     const topicHits = classifyText(classificationBlob, topicsDict);
     const topic = pickBestTopic(topicHits, topicsDict);
 
+    // Los newsItems ya vienen del trend RSS. Usamos sus titulares (no hay
+    // description clásico) como contextSnippets — es lo que Google muestra
+    // en el carrusel del trend.
+    const contextSnippets = trend.newsItems
+      .slice(0, 3)
+      .map(n => cleanSnippet(n.title))
+      .filter(s => s.length >= 30);
     alerts.push({
       type: 'trends_without_discover',
       trendTitle: trend.title,
@@ -143,6 +152,7 @@ export async function detectTrendsWithoutDiscover(
         url: n.url,
         source: n.source,
       })),
+      contextSnippets: contextSnippets.length > 0 ? contextSnippets : undefined,
     });
   }
 

@@ -361,6 +361,8 @@ export interface OwnMediaAbsentAlert {
   topic?: string;
   otherOutlets: string[];
   otherTitles: string[];
+  /** Snippets reales de Discover/RSS donde aparece la entidad. */
+  contextSnippets?: string[];
 }
 
 export interface TrendsWithoutDiscoverAlert {
@@ -369,6 +371,8 @@ export interface TrendsWithoutDiscoverAlert {
   approxTraffic: number;
   topic?: string; // derived from trend title (classified via topics.json)
   newsItems: Array<{ title: string; url: string; source: string }>;
+  /** Descriptions de los newsItems como context snippets. */
+  contextSnippets?: string[];
 }
 
 export interface HeadlineClusterAlert {
@@ -396,6 +400,8 @@ export interface MultiEntityArticleAlert {
   category?: string;
   /** Derived topic (sucesos/legal/...) majority vote across entities */
   topic?: string;
+  /** Description del artículo cuando el feed la trae. */
+  contextSnippets?: string[];
 }
 
 export interface OwnMediaAlert {
@@ -443,6 +449,8 @@ export interface EntityCoverageAlert {
   }>;
   category?: string; // derived entity category (for routing)
   topic?: string;    // derived topic (sucesos/legal/...)
+  /** Descriptions de los RSS articles como context snippets. */
+  contextSnippets?: string[];
 }
 
 export interface EntityConcordanceAlert {
@@ -457,6 +465,8 @@ export interface EntityConcordanceAlert {
   matchingTrends: MatchedTrend[];
   matchingXTrends: MatchedXTrend[];
   matchingArticles: MatchedMediaArticle[];
+  /** Snippets reales de Discover/RSS donde aparece la entidad. */
+  contextSnippets?: string[];
 }
 
 /**
@@ -482,6 +492,8 @@ export interface TripleMatchAlert {
   matchingTrends: MatchedTrend[];
   matchingXTrends: MatchedXTrend[];
   matchingArticles: MatchedMediaArticle[];
+  /** Snippets reales de Discover/RSS donde aparece la entidad. */
+  contextSnippets?: string[];
 }
 
 // Poll results
