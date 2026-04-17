@@ -93,8 +93,12 @@ export function getConfig() {
       maxXRank: envInt('THRESHOLD_TRIPLE_MATCH_MAX_X_RANK', 30),
     },
     staleData: {
-      // Alert if any poll hasn't run in this many minutes
-      maxMinutesStale: envInt('THRESHOLD_STALE_MINUTES', 45),
+      // Alert if any poll hasn't run in this many minutes.
+      // Default 90 min (3x la cadencia más larga = trends/x cada 30min). Los
+      // scheduled workflows de GitHub Actions se retrasan regularmente 15-30
+      // min en periodos de alta carga, y 45 min producía falsos positivos
+      // semanales. Si necesitas detección más estricta, baja via env var.
+      maxMinutesStale: envInt('THRESHOLD_STALE_MINUTES', 90),
     },
     trendsWithoutDiscover: {
       // Only alert on trends with at least this traffic
