@@ -1,513 +1,382 @@
 {
-  "//": "Fórmulas derivadas del análisis de 9.979 titulares DiscoverSnoop ES (2024-04→2026-04). Ver docs/formulas-report.md (v1) y docs/formulas-report-v2.md (score-weighted).",
-  "//politicas": "Revisado contra https://developers.google.com/search/docs/appearance/google-discover. Prohibido en TODAS las reglas: clickbait, curiosity-gap ('lo que nadie cuenta', 'el dato que se les escapa'), sensacionalismo ('arrasa','explota','boom'), exageración, falso reveal. Los titulares deben reflejar con precisión la esencia del contenido.",
-  "//saturacion": "'Confirmado:' y 'Ya es oficial:' aparecen en TODO el mercado y su análisis v2 muestra 0 apariciones en tier viral (score≥30). Degradados a última posición (máx 1 por regla).",
-  "//mecanicas": "Cada regla diversifica 4-6 líneas con mecánicas editoriales distintas (no son variaciones del mismo molde). Inventario: declarativa pura, quoted-statement, afirmación/negación, paradoja, autoridad atribuida, truco+rutina, antes/después, cantidad específica, lista numerada, servicio, causa-efecto, precedente, impacto, cronología, cita oficial, pregunta-respuesta, contexto territorial, declarativa de autoridad. YMYL (legal/sucesos/salud/economía/política) solo usa mecánicas factuales (atribución, precisión, impacto, cita oficial, antes/después normativo).",
-  "//placeholders": "{entity}, {category}, {topic}, {ngram}, {trend}, {count}, {outlets}, {traffic}. Los slots entre corchetes [cargo], [fuente], [decreto] son para que el editor complete manualmente.",
-  "//matching": "Jerárquico: type+subtype+topic > type+subtype > type+topic > type. Primera línea que matche gana.",
+  "//": "Fórmulas derivadas del análisis de 9.979 titulares DiscoverSnoop ES (2024-04→2026-04). Ver docs/formulas-report.md.",
+  "//politicas": "Respeta políticas Google Discover: no clickbait, no curiosity-gap, no sensacionalismo, no hipérbole.",
+  "//saturacion": "'Confirmado:' y 'Ya es oficial:' degradados a última posición (0× en tier viral según análisis v2).",
+  "//slots": "PROHIBIDO usar placeholders literales entre corchetes [ ] — nunca se sustituyen y salen tal cual en Slack. Cada línea debe funcionar igual de bien si la entidad es persona, organismo, concepto, empresa, equipo o evento. Se permiten solo los placeholders del formatter: {entity}, {category}, {topic}, {ngram}, {trend}, {count}, {outlets}, {traffic}.",
+  "//matching": "Jerárquico: type+subtype+topic > type+subtype > type+topic > type. Primera línea que matche gana. El formatter muestra 3 líneas.",
   "rules": [
 
     {"match": {"type": "trends_without_discover", "topic": "legal"},
      "lines": [
-       "{entity}: qué dice la resolución y a quién afecta (con cantidades y fechas)",
-       "Las {count} claves del fallo sobre {entity}, explicadas paso a paso",
-       "No es anulación, es [precisión]: la realidad jurídica de {entity}",
-       "Hasta ahora [X], desde el fallo sobre {entity} [cambio normativo]",
-       "Según la sentencia sobre {entity}: precedentes y escenarios",
+       "{entity}: qué dice la resolución y a quién afecta",
+       "Las claves del fallo sobre {entity} explicadas paso a paso",
        "Confirmado: {entity}, la resolución judicial"
      ]},
     {"match": {"type": "trends_without_discover", "topic": "sucesos"},
      "lines": [
        "{entity}: hechos confirmados por fuentes oficiales",
-       "Qué se sabe de {entity}: cronología hora a hora con fuentes",
-       "La Guardia Civil / Policía Nacional comunica sobre {entity}: «detalle»",
-       "{entity} en [localización]: contexto territorial y datos verificados",
-       "Qué hacer si {entity}: guía práctica verificada",
-       "Aviso oficial sobre {entity}: los detalles"
+       "Qué se sabe de {entity}, según la investigación",
+       "{entity}: cronología verificada de las últimas horas"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "viajes"},
+     "lines": [
+       "Qué ver en {entity}, cómo llegar y cuándo evitar masificación",
+       "{entity} como destino: claves de la escapada sin tópicos",
+       "Por qué {entity} está en tendencia turística ahora mismo"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "gastro"},
+     "lines": [
+       "{entity}: la receta / propuesta gastronómica que está en tendencia",
+       "Claves de {entity} paso a paso, con tiempos e ingredientes",
+       "Qué aporta {entity} frente a opciones similares"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "motor"},
+     "lines": [
+       "{entity}: qué trae realmente el cambio y a quién afecta",
+       "Las claves técnicas de {entity} antes de decidir",
+       "{entity}: precio real frente a precio de catálogo"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "salud"},
+     "lines": [
+       "{entity}: qué dicen los estudios y qué recomiendan los expertos",
+       "Las claves de {entity} con evidencia científica",
+       "{entity}: síntomas, factores de riesgo y cuándo consultar"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "hogar"},
+     "lines": [
+       "{entity}: truco doméstico probado, cómo aplicarlo y con qué",
+       "Qué dicen los expertos sobre {entity}: evidencia frente a viral",
+       "{entity} en casa: paso a paso sin caer en errores comunes"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "economia"},
+     "lines": [
+       "{entity}: lo que cambia en tu bolsillo y desde cuándo",
+       "Las claves económicas de {entity}: a quién afecta y cómo",
+       "Cómo solicitar o aprovechar {entity}: guía paso a paso"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "sociedad"},
+     "lines": [
+       "Qué dicen los estudios y encuestas sobre {entity}",
+       "{entity} en cifras: lectura sin clichés generacionales",
+       "Claves sociológicas de {entity} con fuentes solventes"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "entretenimiento"},
+     "lines": [
+       "{entity}: qué saber antes del estreno sin destripes",
+       "Las claves de {entity}: cuándo, dónde y por qué verlo",
+       "Valoración de {entity}: contexto sin tópicos"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "politica"},
+     "lines": [
+       "{entity}: qué ha pasado exactamente y con qué fuentes",
+       "Cronología parlamentaria de {entity}: votos, actores, plazos",
+       "Las claves verificables de {entity} sin interpretación partidista"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "tech"},
+     "lines": [
+       "{entity}: qué trae realmente el lanzamiento con cifras",
+       "Las claves técnicas de {entity} y cómo se compara con la competencia",
+       "Precio real frente a precio de lanzamiento de {entity}"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "empleo"},
+     "lines": [
+       "{entity}: qué cambia en tu nómina, paro o permisos y desde cuándo",
+       "Cómo solicitar o acogerse a {entity}: requisitos y plazos",
+       "Las claves laborales de {entity} con fuentes oficiales"
+     ]},
+    {"match": {"type": "trends_without_discover", "topic": "shopping"},
+     "lines": [
+       "{entity}: fechas, descuentos reales y qué merece la pena",
+       "Qué comprar y qué evitar en {entity}: guía con criterio",
+       "Precio real frente a precio habitual en {entity}"
      ]},
     {"match": {"type": "trends_without_discover"},
      "lines": [
-       "{entity}: por qué es tendencia hoy en Google (y desde cuándo)",
-       "{entity}, [cargo o atributo]: «declaración que explica el pico»",
-       "No es [suposición A] ni [suposición B]: qué hay realmente detrás de {entity}",
-       "Las {count} claves de {entity}, con contexto y datos",
-       "Según [fuente autoridad], {entity}: qué significa para ti",
+       "{entity}: por qué es tendencia hoy en Google y qué hay detrás",
+       "Las claves de {entity} con contexto y datos",
        "Confirmado: {entity} domina las búsquedas"
      ]},
 
     {"match": {"type": "entity", "subtype": "flash", "topic": "legal"},
      "lines": [
-       "El juzgado resuelve sobre {entity}: qué dice la sentencia textual",
-       "{entity}: a quién afecta la decisión judicial y desde cuándo",
-       "No es sobreseimiento, es [precisión]: las claves del auto sobre {entity}",
-       "Fuentes judiciales sobre {entity}: «cita directa»",
-       "{entity}: cronología de las primeras horas (con fuentes)",
+       "{entity}: así lo resuelve el juzgado, con fuentes",
+       "Qué implica la decisión judicial sobre {entity} para las partes",
        "Confirmado: {entity} ante el tribunal"
      ]},
     {"match": {"type": "entity", "subtype": "flash", "topic": "sucesos"},
      "lines": [
-       "Última hora: detienen a / hallan a {entity} (con fuentes oficiales)",
-       "{entity}: qué ha ocurrido en las primeras horas (datos verificados)",
-       "La Guardia Civil comunica sobre {entity}: «cita oficial»",
-       "{entity} en [lugar]: contexto territorial y cronología",
-       "Qué hacer si {entity}: guía útil de emergencia",
-       "Aviso oficial sobre {entity}"
+       "{entity}: hechos confirmados de las primeras horas, con fuentes",
+       "Qué dicen la Guardia Civil o la Policía Nacional sobre {entity}",
+       "Cronología verificada del caso {entity}"
+     ]},
+    {"match": {"type": "entity", "subtype": "flash", "topic": "politica"},
+     "lines": [
+       "{entity}: qué ha pasado en el Congreso o Moncloa y con qué votos",
+       "Reacciones de los grupos parlamentarios sobre {entity}",
+       "Cronología verificable de {entity} en la jornada"
      ]},
     {"match": {"type": "entity", "subtype": "flash"},
      "lines": [
-       "{entity}, [cargo o atributo]: «la cita que dio el giro»",
-       "{entity}: qué ha ocurrido en la última hora (cronología con fuentes)",
-       "No es [suposición] ni [rumor]: lo que hay detrás de {entity}",
+       "{entity}: qué ha ocurrido en la última hora con contexto",
        "Por qué {entity} es noticia ahora y no hace una hora",
-       "Según [fuente o autoridad], {entity}: el contexto",
        "Confirmado: {entity}, los detalles del caso"
      ]},
 
     {"match": {"type": "entity", "subtype": "discover_1h", "topic": "legal"},
      "lines": [
-       "El Supremo / Audiencia / TSJ se pronuncia sobre {entity}: precedente",
-       "{entity}: qué cambia con la resolución y quién sale afectado",
-       "Las {count} claves del auto sobre {entity}, explicadas",
-       "Según la sentencia sobre {entity}: implicaciones prácticas",
-       "Hasta ahora [X], desde hoy {entity}: el cambio normativo",
+       "{entity}: qué dice la resolución y cómo afecta a las partes",
+       "Las claves del auto sobre {entity}, con precedentes",
        "Confirmado: {entity} y el fallo en directo"
      ]},
     {"match": {"type": "entity", "subtype": "discover_1h", "topic": "sucesos"},
      "lines": [
-       "{entity}: última hora con fuentes oficiales (al minuto)",
-       "Qué ha confirmado la investigación sobre {entity}: datos y contexto",
-       "Fuentes [judiciales / policiales] sobre {entity}: «cita directa»",
-       "{entity} en [localización]: así está afectando a la zona",
-       "Cronología verificada del caso {entity}",
-       "Aviso oficial sobre {entity}"
+       "{entity}: última hora con fuentes oficiales",
+       "Qué ha confirmado la investigación sobre {entity}",
+       "Cronología verificada del caso {entity}"
      ]},
     {"match": {"type": "entity", "subtype": "discover_1h"},
      "lines": [
-       "{entity}: el tema del día en Discover, qué está pasando",
-       "{entity}, [cargo o atributo]: «declaración que marca la jornada»",
-       "Por qué {entity} es noticia en la última hora (y no antes)",
-       "Las {count} claves de {entity}, desde hace 1 hora",
-       "Según [fuente o estudio], {entity}: el contexto que faltaba",
-       "Confirmado: {entity} lidera Discover ahora mismo"
+       "{entity}: el tema del momento en Discover, qué está pasando",
+       "Por qué {entity} es noticia en la última hora y no antes",
+       "Las claves de {entity}, el tema que domina Discover"
      ]},
 
     {"match": {"type": "entity", "subtype": "discover_3h"},
      "lines": [
-       "{entity}: 3 horas en el foco de Discover España (cronología)",
-       "{entity}, [cargo]: «cita que explica la persistencia»",
-       "No es [explicación obvia]: por qué {entity} lleva 3 horas arriba",
-       "Las {count} claves de {entity} en la tarde",
-       "Según [analista / fuente], {entity} seguirá por [motivo]"
+       "{entity}: 3 horas seguidas en Discover España, cronología del pico",
+       "Qué ha mantenido a {entity} 3 horas arriba: claves del momento",
+       "{entity}: el tema que domina la tarde con contexto y datos"
      ]},
     {"match": {"type": "entity", "subtype": "discover_12h"},
      "lines": [
-       "{entity}: el tema del día en España, cronología completa",
-       "Un día entero de {entity}: antes, durante y después",
-       "Las {count} claves de {entity}, desde el amanecer",
-       "{entity}, [cargo]: «las citas que marcaron la jornada»",
+       "{entity}: un día completo en Discover, cronología y datos",
+       "Las claves de {entity}, el tema del día en España",
        "Por qué {entity} ha dominado Discover durante 12 horas"
      ]},
 
     {"match": {"type": "entity", "subtype": "ascending", "topic": "legal"},
      "lines": [
-       "{entity}: así avanza el proceso judicial (fuentes, fechas y escenarios)",
-       "No es condena firme ni absolución: el estado real del caso {entity}",
-       "El expediente {entity} paso a paso: qué queda por resolver",
-       "Fuentes judiciales sobre {entity}: «posibles escenarios»",
-       "Hasta ahora {entity} [A], a partir de [hito] [B]",
+       "{entity}: así avanza el proceso judicial con fuentes y fechas",
+       "Qué queda por resolver en el expediente {entity}",
        "Confirmado: {entity} suma horas en el foco judicial"
      ]},
     {"match": {"type": "entity", "subtype": "ascending", "topic": "sucesos"},
      "lines": [
-       "{entity}: novedades de la investigación según fuentes oficiales",
-       "Cronología verificada del caso {entity}: hora a hora",
-       "Qué ha aportado la investigación de {entity} en las últimas horas",
-       "La [Guardia Civil / Policía] sobre {entity}: «última comunicación»",
-       "{entity} en [lugar]: contexto territorial y testimonios"
+       "{entity}: novedades de la investigación con fuentes oficiales",
+       "Qué ha aportado el caso {entity} en las últimas horas",
+       "Cronología verificada del caso {entity}"
      ]},
     {"match": {"type": "entity", "subtype": "ascending"},
      "lines": [
-       "{entity}, [cargo o atributo]: «la cita que explica el ascenso»",
        "{entity}: la tendencia que se mantiene, contexto y datos",
-       "No es moda ni rebote: por qué {entity} sigue subiendo",
        "Cronología de {entity} en las últimas 6 horas",
-       "El truco / movimiento de {entity} que nadie vio venir",
-       "Confirmado: {entity} sigue subiendo"
+       "Por qué {entity} sigue subiendo en Discover"
      ]},
 
     {"match": {"type": "entity", "subtype": "longtail"},
      "lines": [
-       "{entity}: claves de una noticia que se mantiene (y no se desinfla)",
-       "Por qué {entity} continúa siendo tendencia tras 2 horas",
-       "{entity}: el dato que explica la persistencia",
-       "No es inercia: la razón real por la que {entity} aguanta"
+       "{entity}: claves de una noticia que se mantiene en el foco",
+       "Por qué {entity} sigue siendo tendencia tras 2 horas",
+       "Contexto de {entity}: qué explica la persistencia"
      ]},
     {"match": {"type": "entity", "subtype": "rising"},
      "lines": [
-       "{entity} sube +{count} puntos en el último sondeo (qué ha cambiado)",
+       "{entity} sube +{count} puntos en el último sondeo: qué ha cambiado",
        "El interés por {entity} crece: contexto del momento",
-       "{entity}, [cargo]: «cita que dio el empujón»",
        "Por qué {entity} escala en Discover ahora y no antes"
      ]},
 
     {"match": {"type": "own_media_absent", "topic": "legal"},
      "lines": [
        "{entity}: {outlets} medios cubren la resolución, falta nuestra firma",
-       "Ángulo jurídico de {entity}: hueco disponible (atribuible)",
-       "No cubrimos {entity}: qué añadir para diferenciarse",
-       "La sentencia de {entity} publicada en {outlets} cabeceras",
-       "Qué aporta {entity} para nuestra redacción legal",
+       "La sentencia sobre {entity} publicada en {outlets} cabeceras",
        "Confirmado: {entity} es tema jurídico del día"
      ]},
     {"match": {"type": "own_media_absent", "topic": "sucesos"},
      "lines": [
-       "{entity}: {outlets} medios cubren con fuentes, entrar con ángulo factual",
+       "{entity}: {outlets} medios cubren con fuentes, hora de entrar con ángulo propio",
        "Última hora sin nuestra firma: {entity}",
-       "No cubrimos {entity} y {outlets} cabeceras ya lo hacen — fuentes propias",
-       "Qué hacer si no hemos cubierto {entity}: plan de entrada",
        "Aviso: {entity}, {outlets} cabeceras por delante"
-     ]},
-    {"match": {"type": "own_media_absent"},
-     "lines": [
-       "{entity}: {outlets}+ medios cubren, nosotros aún no",
-       "Falta nuestro ángulo sobre {entity} — hueco editorial",
-       "{entity}, [cargo]: «cita que podría sostener nuestro enfoque»",
-       "Por qué entrar ahora en {entity} y no esperar",
-       "Confirmado: {entity}, hueco editorial disponible"
-     ]},
-
-    {"match": {"type": "entity_coverage", "topic": "legal"},
-     "lines": [
-       "{entity}: la clave jurídica que {outlets}+ medios no destacan",
-       "No es [enfoque dominante]: el ángulo legal que falta sobre {entity}",
-       "Contexto y precedentes sobre {entity} que añaden valor al lector",
-       "Según fuentes jurídicas sobre {entity}: matices ausentes en otros medios",
-       "Cómo afecta la sentencia de {entity} a [grupo específico]",
-       "Qué aporta {entity}: lectura de expertos y documentación judicial"
-     ]},
-    {"match": {"type": "entity_coverage", "topic": "sucesos"},
-     "lines": [
-       "{entity}: {outlets}+ cabeceras publican, nuestro ángulo con fuentes propias",
-       "Qué añade la investigación sobre {entity} a lo ya publicado",
-       "{entity} en [lugar]: contexto territorial verificado",
-       "No es [versión circulada]: la cronología real de {entity}",
-       "Fuentes [policiales / judiciales] sobre {entity}: matiz propio"
-     ]},
-    {"match": {"type": "entity_coverage"},
-     "lines": [
-       "{entity}, [cargo o atributo]: «cita exclusiva que diferencie»",
-       "No es [ángulo dominante]: el matiz que {outlets}+ medios ignoran sobre {entity}",
-       "{entity}: {outlets}+ medios cubren, contexto y datos que complementan",
-       "Por qué {entity} es tendencia en {outlets} medios ahora mismo",
-       "Según [experto / fuente], {entity}: la lectura que falta",
-       "Confirmado: {entity} cubierto por {outlets}, aporta fuentes propias"
-     ]},
-
-    {"match": {"type": "entity_concordance", "subtype": "discover_trends_x"},
-     "lines": [
-       "{entity}, [cargo o atributo]: «declaración que cruza las 3 fuentes»",
-       "{entity}: tendencia en Discover, Trends y X al mismo tiempo — por qué",
-       "No es moda ni viralización aislada: {entity} es tema cross-canal",
-       "Cronología de cómo {entity} escaló en las 3 fuentes a la vez",
-       "Según [fuente / estudio], {entity}: el porqué del triple match",
-       "Confirmado: {entity} domina las tres fuentes"
-     ]},
-    {"match": {"type": "entity_concordance"},
-     "lines": [
-       "{entity}: tendencia multicanal ahora mismo — contexto",
-       "Google + medios + X hablan de {entity}: el motivo común",
-       "{entity}, [cargo]: «cita que conecta las fuentes»",
-       "Por qué {entity} es tendencia en [N] frentes a la vez"
-     ]},
-
-    {"match": {"type": "triple_match", "topic": "legal"},
-     "lines": [
-       "{entity}: qué dice la resolución que ~{traffic} españoles buscan ahora",
-       "Las claves del fallo sobre {entity}: impacto por grupos afectados",
-       "No es [expectativa del mercado]: el auto sobre {entity} marca precedente",
-       "El Supremo / Audiencia se pronuncia sobre {entity}: desde cuándo y cómo",
-       "Fuentes jurídicas sobre {entity}: «cita que explica la tendencia»",
-       "Confirmado: {entity}, tendencia legal absoluta"
-     ]},
-    {"match": {"type": "triple_match", "topic": "sucesos"},
-     "lines": [
-       "{entity}: hechos verificados del suceso del momento (fuentes + cronología)",
-       "La [Guardia Civil / Policía] comunica sobre {entity}: «cita textual»",
-       "{entity} en [localización]: contexto territorial y datos oficiales",
-       "Qué hacer si {entity}: guía práctica ante la situación",
-       "Aviso oficial sobre {entity}: ~{traffic} búsquedas en curso"
-     ]},
-    {"match": {"type": "triple_match"},
-     "lines": [
-       "{entity}: el tema del momento (triple tendencia, ~{traffic} búsquedas)",
-       "{entity}, [cargo]: «declaración que desencadenó el pico»",
-       "Por qué {entity} es tendencia en Google y redes al mismo tiempo",
-       "No es [pico aislado]: las {count} claves de {entity} como tema cross-canal",
-       "Cronología de cómo {entity} llegó al triple match",
-       "Confirmado: {entity} domina Discover, Trends y X"
-     ]},
-
-    {"match": {"type": "multi_entity_article", "topic": "legal"},
-     "lines": [
-       "{entity}: cómo se relacionan en el expediente (con fuentes)",
-       "Contexto del cruce entre {entity}, según documentación judicial",
-       "No es coincidencia: el vínculo legal real entre {entity}",
-       "Fuentes judiciales sobre {entity}: «qué conecta las partes»",
-       "Claves del vínculo jurídico entre {entity} y sus implicaciones"
-     ]},
-    {"match": {"type": "multi_entity_article"},
-     "lines": [
-       "{entity}: el cruce que explica la noticia del día",
-       "Cómo conectan {entity}: las claves del artículo",
-       "No es casualidad: la relación real entre {entity}",
-       "Por qué {entity} aparecen juntos en el mismo titular hoy",
-       "Según [fuente], {entity}: el hilo que los une"
-     ]},
-
-    {"match": {"type": "headline_pattern"},
-     "lines": [
-       "{ngram}: el matiz y el contexto que añadimos al patrón repetido",
-       "Más allá de \"{ngram}\": contexto y datos verificados",
-       "No todo es \"{ngram}\": el ángulo que falta en los {count} titulares",
-       "Qué aporta nuestro enfoque sobre \"{ngram}\" (y qué descartamos)"
-     ]},
-
-    {"match": {"type": "headline_cluster"},
-     "lines": [
-       "Cobertura en directo: {count} frentes abiertos simultáneamente",
-       "Jornada de evento grande: las claves de una cobertura múltiple",
-       "No es [explicación de un solo foco]: por qué {count} entidades a la vez",
-       "Aviso informativo: {count} entidades en el foco al mismo tiempo",
-       "Cómo seguir {count} frentes sin perder contexto: guía útil"
-     ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "viajes"},
-     "lines": [
-       "{entity}: el pueblo a [X km] de [ciudad grande] que está en tendencia",
-       "A solo [X km] de [ciudad]: qué ver en {entity} y cómo llegar",
-       "{entity}: por [X €] la escapada que nadie ha contado aún",
-       "Según [Conde Nast / National Geographic], {entity}: qué tiene de especial",
-       "Ni sobrevalorado ni secreto: la realidad sobre {entity} como destino",
-       "Qué ver en {entity}, cómo llegar y cuándo evitar masificación"
-     ]},
-    {"match": {"type": "entity_coverage", "topic": "viajes"},
-     "lines": [
-       "{entity}: el pueblo / destino que {outlets}+ medios ya recomiendan",
-       "A solo [X km] de [ciudad], {entity}: nuestro ángulo propio",
-       "{entity}: qué NO cuentan los demás (cómo llegar, dónde comer, cuándo ir)",
-       "Según [experto / ranking], {entity} es [posición]: por qué",
-       "El pueblo de {entity} por menos de [X €]: guía de escapada real"
-     ]},
-    {"match": {"type": "own_media_absent", "topic": "viajes"},
-     "lines": [
-       "{entity}: {outlets} medios ya publican la ruta / destino, nos falta entrar",
-       "El pueblo a [X km] de [ciudad] que todos cubren menos nosotros: {entity}",
-       "Hueco turístico sobre {entity}: plan de escapada propio pendiente",
-       "Confirmado: {entity}, destino en tendencia sin nuestro ángulo"
-     ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "gastro"},
-     "lines": [
-       "{entity}: la receta / truco de cocina que está en tendencia",
-       "Según [chef / nutricionista / estudio], {entity}: los ingredientes clave",
-       "No es [receta estándar]: la vuelta de tuerca de {entity}",
-       "{entity} en [supermercado]: qué mirar y qué evitar",
-       "El plato de {entity} paso a paso y en [tiempo] minutos"
-     ]},
-    {"match": {"type": "entity_coverage", "topic": "gastro"},
-     "lines": [
-       "{entity}: {outlets}+ cabeceras publican, nuestro ángulo con chef / nutricionista",
-       "Ni tradicional ni fusión: cómo interpretar {entity} sin clichés",
-       "El truco para {entity} que no está en las recetas circulantes",
-       "Según [fuente gastronómica], {entity}: la valoración diferente",
-       "{entity}: dónde comerlo, cómo cocinarlo, cuánto cuesta"
-     ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "motor"},
-     "lines": [
-       "{entity}: la DGT / normativa que llega y a quién afecta",
-       "Según [fabricante / DGT], {entity}: desde cuándo y cómo",
-       "{entity}: comparativa de precio y consumo frente a [alternativa]",
-       "No es [rumor]: lo que realmente cambia con {entity}",
-       "Las {count} claves de {entity} para conductores",
-       "Hasta ahora [X], desde el cambio sobre {entity}: qué implica"
-     ]},
-    {"match": {"type": "entity_coverage", "topic": "motor"},
-     "lines": [
-       "{entity}: {outlets}+ medios publican la novedad, nuestro ángulo técnico",
-       "No es [versión dominante]: la realidad de {entity} en ficha técnica",
-       "Según [ingeniería / dealer], {entity}: precio real vs precio de catálogo",
-       "{entity}: a quién compensa y a quién no (con cifras)",
-       "La DGT / fabricante comunica sobre {entity}: «cita textual»"
-     ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "salud"},
-     "lines": [
-       "{entity}: qué dice el último estudio y a quién afecta",
-       "Según [médico / nutricionista / estudio], {entity}: recomendaciones reales",
-       "No es [mito dominante]: la evidencia sobre {entity}",
-       "{entity}: síntomas, factores de riesgo y cuándo consultar",
-       "Minutos / días al día de {entity}: lo que funciona según la ciencia",
-       "Hasta ahora [X], con el nuevo estudio sobre {entity}: el cambio"
-     ]},
-    {"match": {"type": "entity_coverage", "topic": "salud"},
-     "lines": [
-       "{entity}: {outlets}+ medios publican, nuestro ángulo con fuente médica",
-       "No es [titular sensacional]: qué dice realmente el estudio sobre {entity}",
-       "Según [cardiólogo / OMS / investigación], {entity}: matiz no publicado",
-       "Cómo afecta {entity} a [grupo específico]: datos y recomendaciones",
-       "Confirmado: {entity} en el foco sanitario, fuentes propias pendientes"
-     ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "hogar"},
-     "lines": [
-       "{entity}: el truco de limpieza / hogar que está en tendencia",
-       "Según [experto / marca], {entity}: cómo funciona y por qué",
-       "No es [método dominante]: la alternativa a {entity} que sí funciona",
-       "{entity} en [Ikea / Leroy / Mercadona]: opciones y precio real",
-       "Paso a paso: cómo aplicar {entity} en casa sin [error común]",
-       "El truco de {entity} para [rutina doméstica]: qué cambia"
-     ]},
-    {"match": {"type": "entity_coverage", "topic": "hogar"},
-     "lines": [
-       "{entity}: {outlets}+ medios publican, nuestro ángulo probado en casa",
-       "No es [truco repetido]: la vuelta de tuerca sobre {entity}",
-       "Qué dicen los expertos sobre {entity}: evidencia vs viral",
-       "Confirmado: {entity} es tendencia doméstica, angulo propio pendiente"
-     ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "economia"},
-     "lines": [
-       "{entity}: las [X €] / [X%] que cambian en tu bolsillo desde [fecha]",
-       "Según Hacienda / SEPE / BCE, {entity}: a quién afecta y cómo",
-       "No es subida ni bajada generalizada: la letra pequeña de {entity}",
-       "Hasta ahora [X], desde el cambio sobre {entity}: lo que pagas / cobras",
-       "Cómo solicitar / beneficiarse de {entity}: guía paso a paso",
-       "Las {count} claves de {entity} para pensionistas / autónomos / asalariados"
-     ]},
-    {"match": {"type": "entity_coverage", "topic": "economia"},
-     "lines": [
-       "{entity}: {outlets}+ medios cubren, nuestro ángulo con cifras verificadas",
-       "No es [titular dominante]: lo que realmente cambia con {entity} (con números)",
-       "Según [economista / institución], {entity}: matiz que falta en otros medios",
-       "{entity}: a quién beneficia y a quién perjudica (comparativa por grupo)",
-       "Contexto y precedentes de {entity}: la lectura experta"
      ]},
     {"match": {"type": "own_media_absent", "topic": "economia"},
      "lines": [
        "{entity}: {outlets} medios cubren la medida, falta nuestro ángulo con datos",
        "Hueco económico sobre {entity}: fuentes propias pendientes",
-       "{entity}: Hacienda / SEPE / BCE ya comunican, entrar con cifras",
        "Confirmado: {entity}, tema económico del día sin nuestra firma"
-     ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "sociedad"},
-     "lines": [
-       "{entity}: qué dice la última encuesta / estudio sobre este fenómeno",
-       "Según el CIS / universidad / barómetro, {entity}: los datos reales",
-       "Las personas que [comportamiento relacionado con {entity}] tienen [rasgo según estudio]",
-       "No es [cliché generacional]: qué hay detrás de {entity}",
-       "{entity} en cifras: lo que dice el estudio más reciente"
-     ]},
-    {"match": {"type": "entity_coverage", "topic": "sociedad"},
-     "lines": [
-       "{entity}: {outlets}+ medios publican, nuestro ángulo con datos sociológicos",
-       "Según [sociólogo / estudio], {entity}: la lectura que falta en otros medios",
-       "No es [narrativa generacional estándar]: los matices sobre {entity}",
-       "Testimonio + dato: cómo explicar {entity} sin caer en clichés"
-     ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "entretenimiento"},
-     "lines": [
-       "{entity}, [cargo o atributo]: «declaración que puso el tema en tendencia»",
-       "Qué saber de {entity} antes de que sea spoiler total",
-       "{entity} en [plataforma / festival / sala]: cuándo, dónde y por qué ver",
-       "Según [crítica / festival], {entity}: la valoración diferente",
-       "El detrás de cámaras de {entity}: claves sin destripes",
-       "Las {count} claves de {entity} para seguir el estreno"
-     ]},
-    {"match": {"type": "entity_coverage", "topic": "entretenimiento"},
-     "lines": [
-       "{entity}, [cargo]: «cita exclusiva que nadie más ha publicado»",
-       "{entity}: {outlets}+ cabeceras publican, nuestro ángulo con contexto cultural",
-       "No es el tópico: por qué {entity} es más que [descripción habitual]",
-       "Qué aporta {entity} frente a [referencia anterior] (con cifras de audiencia)",
-       "Según [crítico / premio], {entity}: la lectura que diferencia"
-     ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "politica"},
-     "lines": [
-       "{entity}: qué ha pasado exactamente en el Congreso / Senado / Moncloa",
-       "Según [fuente parlamentaria], {entity}: «declaración textual»",
-       "No es [interpretación partidista]: los hechos verificables sobre {entity}",
-       "Contexto y precedentes parlamentarios de {entity}",
-       "{entity}: votación, actores y plazos (datos verificados)"
-     ]},
-    {"match": {"type": "entity_coverage", "topic": "politica"},
-     "lines": [
-       "{entity}: {outlets}+ medios cubren, nuestro ángulo con fuentes parlamentarias",
-       "Según fuentes del [grupo parlamentario], {entity}: matiz que falta",
-       "No es [narrativa partidista]: los hechos verificables sobre {entity}",
-       "Cómo afecta {entity} a [grupo específico] más allá del titular",
-       "Cronología parlamentaria de {entity}: sesiones, votos y plazos"
      ]},
     {"match": {"type": "own_media_absent", "topic": "politica"},
      "lines": [
        "{entity}: {outlets} medios cubren con fuentes propias, nos falta entrar",
-       "Hueco político sobre {entity}: contrastar con nuestras fuentes",
+       "Hueco político sobre {entity}: contraste con nuestras fuentes",
        "Confirmado: {entity}, tema parlamentario del día sin nuestra firma"
      ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "tech"},
+    {"match": {"type": "own_media_absent", "topic": "viajes"},
      "lines": [
-       "{entity}: qué trae realmente el lanzamiento (con especificaciones)",
-       "Según [fabricante / benchmark], {entity}: cifras y comparativa",
-       "{entity} vs [alternativa]: diferencias reales en ficha técnica",
-       "No es [promesa de marketing]: lo que sí / lo que no hace {entity}",
-       "Precio real vs precio de lanzamiento de {entity}",
-       "Las {count} claves de {entity} antes de comprar / probar"
+       "{entity}: {outlets} medios ya publican la ruta, nos falta entrar",
+       "Hueco turístico sobre {entity}: plan de escapada propio pendiente",
+       "Confirmado: {entity}, destino en tendencia sin nuestra firma"
+     ]},
+    {"match": {"type": "own_media_absent"},
+     "lines": [
+       "{entity}: {outlets}+ medios cubren, nosotros aún no",
+       "Falta nuestro ángulo sobre {entity} — hueco editorial",
+       "Confirmado: {entity}, hueco editorial disponible"
+     ]},
+
+    {"match": {"type": "entity_coverage", "topic": "legal"},
+     "lines": [
+       "{entity}: {outlets}+ medios cubren, nuestro ángulo con fuentes jurídicas",
+       "Qué aporta la sentencia sobre {entity}: lectura de expertos",
+       "Contexto y precedentes sobre {entity} que complementan el titular"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "sucesos"},
+     "lines": [
+       "{entity}: {outlets}+ cabeceras publican, nuestro ángulo con fuentes propias",
+       "Qué añade la investigación sobre {entity} a lo ya publicado",
+       "Contexto verificado del caso {entity}"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "politica"},
+     "lines": [
+       "{entity}: {outlets}+ medios cubren, nuestro ángulo con fuentes parlamentarias",
+       "Contraste de posturas sobre {entity} por grupos parlamentarios",
+       "Cronología parlamentaria de {entity}: sesiones, votos y plazos"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "economia"},
+     "lines": [
+       "{entity}: {outlets}+ medios cubren, nuestro ángulo con cifras verificadas",
+       "A quién beneficia y a quién perjudica {entity}, con datos por grupo",
+       "Contexto y precedentes de {entity}: lectura experta"
      ]},
     {"match": {"type": "entity_coverage", "topic": "tech"},
      "lines": [
-       "{entity}: {outlets}+ medios publican, nuestro ángulo con prueba / benchmark",
-       "No es [hype dominante]: la realidad técnica de {entity}",
-       "Según [laboratorio / ingeniería], {entity}: matiz que falta",
-       "{entity} comparado con [competidor] — tabla de datos real",
-       "Qué cambia {entity} frente a la versión anterior (con métricas)"
+       "{entity}: {outlets}+ medios publican, nuestro ángulo con benchmark",
+       "Qué cambia {entity} frente a la versión anterior, con métricas",
+       "{entity} comparado con la competencia: tabla de datos reales"
      ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "empleo"},
+    {"match": {"type": "entity_coverage", "topic": "gastro"},
      "lines": [
-       "{entity}: qué cambia en tu nómina / paro / permisos desde [fecha]",
-       "Según el SEPE / Seguridad Social, {entity}: quién tiene derecho",
-       "No es [rumor laboral]: lo que realmente dice el convenio / estatuto sobre {entity}",
-       "Hasta ahora [X], desde {entity} los trabajadores pueden / deben [Y]",
-       "Cómo solicitar {entity}: requisitos, plazos y documentación",
-       "Las {count} claves laborales de {entity}"
+       "{entity}: {outlets}+ cabeceras publican, nuestro ángulo probado en cocina",
+       "Claves de {entity} sin tópicos: ingredientes, tiempos, contexto",
+       "Dónde comer, cómo cocinar y cuánto cuesta {entity}"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "motor"},
+     "lines": [
+       "{entity}: {outlets}+ medios publican, nuestro ángulo con ficha técnica",
+       "{entity}: a quién compensa y a quién no, con cifras",
+       "Ficha técnica real frente a promesa de fabricante de {entity}"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "salud"},
+     "lines": [
+       "{entity}: {outlets}+ medios publican, nuestro ángulo con fuente médica",
+       "Qué dice realmente el último estudio sobre {entity}",
+       "Cómo afecta {entity} a los grupos de riesgo con datos"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "hogar"},
+     "lines": [
+       "{entity}: {outlets}+ medios publican, nuestro ángulo probado en casa",
+       "Qué dicen los expertos sobre {entity}: evidencia frente a viral",
+       "{entity} paso a paso sin errores comunes"
      ]},
     {"match": {"type": "entity_coverage", "topic": "empleo"},
      "lines": [
-       "{entity}: {outlets}+ medios publican, nuestro ángulo con fuentes sindicales / SEPE",
-       "Según [abogado laboralista / sindicato], {entity}: matiz que falta",
-       "No es [titular genérico]: cómo afecta {entity} a autónomos / asalariados / parados",
-       "Cronología del trámite / negociación de {entity}"
+       "{entity}: {outlets}+ medios publican, nuestro ángulo con fuentes sindicales o SEPE",
+       "Cómo afecta {entity} a autónomos, asalariados o parados",
+       "Cronología del trámite o negociación de {entity}"
      ]},
-
-    {"match": {"type": "trends_without_discover", "topic": "shopping"},
+    {"match": {"type": "entity_coverage", "topic": "sociedad"},
      "lines": [
-       "{entity}: fechas, descuento real y qué comprar (sin comisiones)",
-       "Según [comparador / prueba de producto], {entity}: vale o no vale",
-       "No es [precio de tachón]: el descuento real de {entity}",
-       "{entity} en [Amazon / Lidl / Mercadona]: comparativa con competencia",
-       "Hasta cuándo dura {entity} y qué comprar antes de que acabe",
-       "Las {count} claves para aprovechar {entity} sin gastar de más"
+       "{entity}: {outlets}+ medios publican, nuestro ángulo con datos sociológicos",
+       "Lectura de {entity} con fuentes académicas o CIS",
+       "Testimonio con datos: cómo explicar {entity} sin clichés"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "entretenimiento"},
+     "lines": [
+       "{entity}: {outlets}+ cabeceras publican, nuestro ángulo con contexto cultural",
+       "Qué aporta {entity} frente a referencias anteriores, con cifras de audiencia",
+       "La valoración de {entity} más allá del tópico"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "viajes"},
+     "lines": [
+       "{entity}: {outlets}+ medios ya recomiendan el destino, nuestro ángulo propio",
+       "Qué no cuentan los demás sobre {entity}: cómo llegar, dónde comer, cuándo ir",
+       "Guía real de escapada a {entity} con criterio"
      ]},
     {"match": {"type": "entity_coverage", "topic": "shopping"},
      "lines": [
        "{entity}: {outlets}+ medios publican, nuestro ángulo con comparativa propia",
-       "No es [lista genérica]: qué productos de {entity} merecen la pena",
-       "Precio real vs precio habitual en {entity}: evidencia con captura",
-       "Qué comprar y qué evitar en {entity} (guía con criterio)"
+       "Qué merece la pena y qué no en {entity}",
+       "Precio real frente a precio habitual en {entity}"
+     ]},
+    {"match": {"type": "entity_coverage"},
+     "lines": [
+       "{entity}: {outlets}+ medios cubren, nuestro ángulo con contexto",
+       "Contexto y datos sobre {entity} que complementan el titular",
+       "Por qué {entity} es tendencia en {outlets} medios ahora mismo"
+     ]},
+
+    {"match": {"type": "entity_concordance", "subtype": "discover_trends_x"},
+     "lines": [
+       "{entity}: tendencia en Discover, Google Trends y X al mismo tiempo, contexto",
+       "Qué está pasando con {entity} para ser tendencia multicanal ahora",
+       "Las claves de {entity}, el tema cross-canal del momento"
+     ]},
+    {"match": {"type": "entity_concordance"},
+     "lines": [
+       "{entity}: tendencia multicanal ahora mismo",
+       "Google, medios y X hablan de {entity}: el contexto",
+       "Las claves de por qué {entity} es tendencia en varios frentes"
+     ]},
+
+    {"match": {"type": "triple_match", "topic": "legal"},
+     "lines": [
+       "{entity}: qué dice la resolución que ~{traffic} españoles están buscando",
+       "Claves del fallo sobre {entity}, tendencia total en España",
+       "Confirmado: {entity}, tendencia legal absoluta"
+     ]},
+    {"match": {"type": "triple_match", "topic": "sucesos"},
+     "lines": [
+       "{entity}: hechos verificados del caso del momento, con fuentes",
+       "Cronología confirmada de {entity}, tendencia total en España",
+       "Aviso oficial sobre {entity}: ~{traffic} búsquedas en curso"
+     ]},
+    {"match": {"type": "triple_match"},
+     "lines": [
+       "{entity}: el tema del momento, triple tendencia, ~{traffic} búsquedas",
+       "Por qué {entity} es tendencia en Google y redes a la vez",
+       "Las claves de {entity}, tendencia cross-canal del día"
+     ]},
+
+    {"match": {"type": "multi_entity_article", "topic": "legal"},
+     "lines": [
+       "{entity}: cómo se relacionan en el expediente, con fuentes",
+       "Claves del vínculo jurídico entre {entity}",
+       "Contexto del cruce entre {entity} según documentación judicial"
+     ]},
+    {"match": {"type": "multi_entity_article", "topic": "sucesos"},
+     "lines": [
+       "{entity}: cómo se relacionan en el caso, según la investigación",
+       "Claves del vínculo entre {entity} con fuentes oficiales",
+       "Cronología del caso que une a {entity}"
+     ]},
+    {"match": {"type": "multi_entity_article"},
+     "lines": [
+       "{entity}: el nexo común del artículo y por qué se cruzan hoy",
+       "Cómo se relacionan {entity}: el dato que une el titular",
+       "El enfoque que conecta a {entity} en una sola noticia"
+     ]},
+
+    {"match": {"type": "headline_pattern"},
+     "lines": [
+       "\"{ngram}\": qué añade nuestro enfoque frente al patrón repetido",
+       "Más allá de \"{ngram}\": contexto y datos verificados",
+       "\"{ngram}\" aparece en {count} titulares: nuestro ángulo diferencial"
+     ]},
+
+    {"match": {"type": "headline_cluster"},
+     "lines": [
+       "Cobertura en directo: {count} frentes abiertos simultáneamente",
+       "Las claves de una jornada de evento grande con {count} focos activos",
+       "Cómo seguir {count} frentes sin perder contexto"
      ]}
   ]
 }
