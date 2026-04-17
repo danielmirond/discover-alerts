@@ -374,6 +374,140 @@
        "No es [truco repetido]: la vuelta de tuerca sobre {entity}",
        "Qué dicen los expertos sobre {entity}: evidencia vs viral",
        "Confirmado: {entity} es tendencia doméstica, angulo propio pendiente"
+     ]},
+
+    {"match": {"type": "trends_without_discover", "topic": "economia"},
+     "lines": [
+       "{entity}: las [X €] / [X%] que cambian en tu bolsillo desde [fecha]",
+       "Según Hacienda / SEPE / BCE, {entity}: a quién afecta y cómo",
+       "No es subida ni bajada generalizada: la letra pequeña de {entity}",
+       "Hasta ahora [X], desde el cambio sobre {entity}: lo que pagas / cobras",
+       "Cómo solicitar / beneficiarse de {entity}: guía paso a paso",
+       "Las {count} claves de {entity} para pensionistas / autónomos / asalariados"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "economia"},
+     "lines": [
+       "{entity}: {outlets}+ medios cubren, nuestro ángulo con cifras verificadas",
+       "No es [titular dominante]: lo que realmente cambia con {entity} (con números)",
+       "Según [economista / institución], {entity}: matiz que falta en otros medios",
+       "{entity}: a quién beneficia y a quién perjudica (comparativa por grupo)",
+       "Contexto y precedentes de {entity}: la lectura experta"
+     ]},
+    {"match": {"type": "own_media_absent", "topic": "economia"},
+     "lines": [
+       "{entity}: {outlets} medios cubren la medida, falta nuestro ángulo con datos",
+       "Hueco económico sobre {entity}: fuentes propias pendientes",
+       "{entity}: Hacienda / SEPE / BCE ya comunican, entrar con cifras",
+       "Confirmado: {entity}, tema económico del día sin nuestra firma"
+     ]},
+
+    {"match": {"type": "trends_without_discover", "topic": "sociedad"},
+     "lines": [
+       "{entity}: qué dice la última encuesta / estudio sobre este fenómeno",
+       "Según el CIS / universidad / barómetro, {entity}: los datos reales",
+       "Las personas que [comportamiento relacionado con {entity}] tienen [rasgo según estudio]",
+       "No es [cliché generacional]: qué hay detrás de {entity}",
+       "{entity} en cifras: lo que dice el estudio más reciente"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "sociedad"},
+     "lines": [
+       "{entity}: {outlets}+ medios publican, nuestro ángulo con datos sociológicos",
+       "Según [sociólogo / estudio], {entity}: la lectura que falta en otros medios",
+       "No es [narrativa generacional estándar]: los matices sobre {entity}",
+       "Testimonio + dato: cómo explicar {entity} sin caer en clichés"
+     ]},
+
+    {"match": {"type": "trends_without_discover", "topic": "entretenimiento"},
+     "lines": [
+       "{entity}, [cargo o atributo]: «declaración que puso el tema en tendencia»",
+       "Qué saber de {entity} antes de que sea spoiler total",
+       "{entity} en [plataforma / festival / sala]: cuándo, dónde y por qué ver",
+       "Según [crítica / festival], {entity}: la valoración diferente",
+       "El detrás de cámaras de {entity}: claves sin destripes",
+       "Las {count} claves de {entity} para seguir el estreno"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "entretenimiento"},
+     "lines": [
+       "{entity}, [cargo]: «cita exclusiva que nadie más ha publicado»",
+       "{entity}: {outlets}+ cabeceras publican, nuestro ángulo con contexto cultural",
+       "No es el tópico: por qué {entity} es más que [descripción habitual]",
+       "Qué aporta {entity} frente a [referencia anterior] (con cifras de audiencia)",
+       "Según [crítico / premio], {entity}: la lectura que diferencia"
+     ]},
+
+    {"match": {"type": "trends_without_discover", "topic": "politica"},
+     "lines": [
+       "{entity}: qué ha pasado exactamente en el Congreso / Senado / Moncloa",
+       "Según [fuente parlamentaria], {entity}: «declaración textual»",
+       "No es [interpretación partidista]: los hechos verificables sobre {entity}",
+       "Contexto y precedentes parlamentarios de {entity}",
+       "{entity}: votación, actores y plazos (datos verificados)"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "politica"},
+     "lines": [
+       "{entity}: {outlets}+ medios cubren, nuestro ángulo con fuentes parlamentarias",
+       "Según fuentes del [grupo parlamentario], {entity}: matiz que falta",
+       "No es [narrativa partidista]: los hechos verificables sobre {entity}",
+       "Cómo afecta {entity} a [grupo específico] más allá del titular",
+       "Cronología parlamentaria de {entity}: sesiones, votos y plazos"
+     ]},
+    {"match": {"type": "own_media_absent", "topic": "politica"},
+     "lines": [
+       "{entity}: {outlets} medios cubren con fuentes propias, nos falta entrar",
+       "Hueco político sobre {entity}: contrastar con nuestras fuentes",
+       "Confirmado: {entity}, tema parlamentario del día sin nuestra firma"
+     ]},
+
+    {"match": {"type": "trends_without_discover", "topic": "tech"},
+     "lines": [
+       "{entity}: qué trae realmente el lanzamiento (con especificaciones)",
+       "Según [fabricante / benchmark], {entity}: cifras y comparativa",
+       "{entity} vs [alternativa]: diferencias reales en ficha técnica",
+       "No es [promesa de marketing]: lo que sí / lo que no hace {entity}",
+       "Precio real vs precio de lanzamiento de {entity}",
+       "Las {count} claves de {entity} antes de comprar / probar"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "tech"},
+     "lines": [
+       "{entity}: {outlets}+ medios publican, nuestro ángulo con prueba / benchmark",
+       "No es [hype dominante]: la realidad técnica de {entity}",
+       "Según [laboratorio / ingeniería], {entity}: matiz que falta",
+       "{entity} comparado con [competidor] — tabla de datos real",
+       "Qué cambia {entity} frente a la versión anterior (con métricas)"
+     ]},
+
+    {"match": {"type": "trends_without_discover", "topic": "empleo"},
+     "lines": [
+       "{entity}: qué cambia en tu nómina / paro / permisos desde [fecha]",
+       "Según el SEPE / Seguridad Social, {entity}: quién tiene derecho",
+       "No es [rumor laboral]: lo que realmente dice el convenio / estatuto sobre {entity}",
+       "Hasta ahora [X], desde {entity} los trabajadores pueden / deben [Y]",
+       "Cómo solicitar {entity}: requisitos, plazos y documentación",
+       "Las {count} claves laborales de {entity}"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "empleo"},
+     "lines": [
+       "{entity}: {outlets}+ medios publican, nuestro ángulo con fuentes sindicales / SEPE",
+       "Según [abogado laboralista / sindicato], {entity}: matiz que falta",
+       "No es [titular genérico]: cómo afecta {entity} a autónomos / asalariados / parados",
+       "Cronología del trámite / negociación de {entity}"
+     ]},
+
+    {"match": {"type": "trends_without_discover", "topic": "shopping"},
+     "lines": [
+       "{entity}: fechas, descuento real y qué comprar (sin comisiones)",
+       "Según [comparador / prueba de producto], {entity}: vale o no vale",
+       "No es [precio de tachón]: el descuento real de {entity}",
+       "{entity} en [Amazon / Lidl / Mercadona]: comparativa con competencia",
+       "Hasta cuándo dura {entity} y qué comprar antes de que acabe",
+       "Las {count} claves para aprovechar {entity} sin gastar de más"
+     ]},
+    {"match": {"type": "entity_coverage", "topic": "shopping"},
+     "lines": [
+       "{entity}: {outlets}+ medios publican, nuestro ángulo con comparativa propia",
+       "No es [lista genérica]: qué productos de {entity} merecen la pena",
+       "Precio real vs precio habitual en {entity}: evidencia con captura",
+       "Qué comprar y qué evitar en {entity} (guía con criterio)"
      ]}
   ]
 }
