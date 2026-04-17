@@ -149,6 +149,12 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
     ));
   }
 
+  // Contexto real: snippets de Discover + descripciones RSS donde aparece la entidad
+  if (a.contextSnippets && a.contextSnippets.length > 0) {
+    const lines = a.contextSnippets.slice(0, 3).map(s => `• ${s}`).join('\n');
+    blocks.push(section(`:newspaper: *Así lo cuentan (contexto real):*\n${lines}`));
+  }
+
   // Enrichment: matching Google Trends
   if (a.matchingTrends && a.matchingTrends.length > 0) {
     const trendLines = a.matchingTrends

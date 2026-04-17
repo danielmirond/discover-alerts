@@ -176,7 +176,7 @@ export interface AppState {
   headlinePatterns: Record<string, number>;
   headlinePatternsHistory: Array<{ ngram: string; count: number; timestamp: string }>;
   dedupHashes: Record<string, number>;
-  mediaArticles: Record<string, { feedName: string; feedCategory: string; feedScope?: 'nacional' | 'internacional'; title: string; link: string; firstSeen: string; pubDate?: string }>;
+  mediaArticles: Record<string, { feedName: string; feedCategory: string; feedScope?: 'nacional' | 'internacional'; title: string; link: string; firstSeen: string; pubDate?: string; description?: string }>;
   entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)
   entityTopicMap: Record<string, string>; // entity name -> derived topic (sucesos/legal/...) from topics.json
   /** Registro de uso de reglas de headline-formulas. Retención: 30 días,
@@ -210,6 +210,8 @@ export interface MatchedMediaArticle {
   feedCategory: string;
   title: string;
   link: string;
+  /** RSS description/snippet (truncated). Para el bloque "Así lo cuentan" en Slack. */
+  description?: string;
 }
 
 export interface MatchedTrend {
@@ -258,6 +260,8 @@ export interface EntityAlert {
   matchingTrends?: MatchedTrend[];  // Google Trends enrichment
   matchingXTrends?: MatchedXTrend[]; // X/Twitter trends enrichment
   matchingArticles?: MatchedMediaArticle[]; // Media articles enrichment
+  /** Snippets reales de páginas Discover donde aparece la entidad (hasta 3). */
+  contextSnippets?: string[];
 }
 
 export interface CategoryExamplePage {

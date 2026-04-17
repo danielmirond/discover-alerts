@@ -52,6 +52,7 @@ export function detectMediaDiscoverCorrelations(
     link: string;
     firstSeen: string;
     pubDate?: string;
+    description?: string;
   }> = {};
   for (const [key, meta] of Object.entries(prevArticles)) {
     if (nowMs - new Date(meta.firstSeen).getTime() <= retentionMs) {
@@ -80,6 +81,7 @@ export function detectMediaDiscoverCorrelations(
       link: article.link,
       firstSeen: prevArticles[articleKey]?.firstSeen ?? now,
       pubDate: article.pubDate || prevArticles[articleKey]?.pubDate,
+      description: article.description || prevArticles[articleKey]?.description,
     };
 
     // Only process new articles (not seen before)

@@ -83,18 +83,44 @@ function normalize(s: string): string {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
+/** Cleans RSS description / DiscoverSnoop snippet: strip HTML, trim, truncate to ~160 chars. */
+function cleanSnippet(raw: string | undefined, maxLen = 160): string {
+  if (!raw) return '';
+  // Strip tags + decode minimal entities + collapse whitespace
+  let s = raw
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (s.length > maxLen) {
+    // Truncate at the last space before the limit
+    const slice = s.slice(0, maxLen);
+    const lastSpace = slice.lastIndexOf(' ');
+    s = (lastSpace > maxLen - 40 ? slice.slice(0, lastSpace) : slice).trim() + '…';
+  }
+  return s;
+}
+
 /**
- * Enriches an ascending/spike entity with matching Google Trends topics
- * and matching media articles (from cached state).
+ * Enriches an ascending/spike entity with matching Google Trends topics,
+ * matching media articles (from cached state) and real snippets from the
+ * current poll's Discover pages where the entity appears.
  */
 function enrichAscending(
   entityName: string,
   state: ReturnType<typeof getState>,
   fuzzyThreshold: number,
+  pagesForContext: DiscoverPage[] = [],
 ): {
   matchingTrends: MatchedTrend[];
   matchingXTrends: MatchedXTrend[];
   matchingArticles: MatchedMediaArticle[];
+  contextSnippets: string[];
 } {
   const entityNorm = normalize(entityName);
 
@@ -130,7 +156,7 @@ function enrichAscending(
     }
   }
 
-  // Match against cached media articles (substring on title)
+  // Match against cached media articles (substring on title), incluyendo description
   const matchingArticles: MatchedMediaArticle[] = [];
   for (const meta of Object.values(state.mediaArticles)) {
     if (!meta.title) continue;
@@ -141,14 +167,45 @@ function enrichAscending(
         feedCategory: meta.feedCategory,
         title: meta.title,
         link: meta.link,
+        description: cleanSnippet((meta as any).description),
       });
     }
+  }
+
+  // Collect real context snippets: up to 3 frases distintas a partir de:
+  //   (a) DiscoverSnoop page snippets del poll actual donde aparece la entidad
+  //   (b) RSS media article descriptions donde aparece la entidad
+  // Priorizamos pages Discover (más alineadas con lo que Google está mostrando).
+  const contextSnippets: string[] = [];
+  const seen = new Set<string>();
+  function addSnippet(s: string) {
+    const cleaned = cleanSnippet(s);
+    if (!cleaned || cleaned.length < 30) return;
+    const key = normalize(cleaned.slice(0, 80));
+    if (seen.has(key)) return;
+    seen.add(key);
+    contextSnippets.push(cleaned);
+  }
+  for (const page of pagesForContext) {
+    if (contextSnippets.length >= 3) break;
+    if (!page.snippet) continue;
+    const pTitleNorm = normalize(page.title || '');
+    const pSnippetNorm = normalize(page.snippet);
+    const entityInPage = (page.entities || []).some(e => e === entityName) ||
+      pTitleNorm.includes(entityNorm) ||
+      pSnippetNorm.includes(entityNorm);
+    if (entityInPage) addSnippet(page.snippet);
+  }
+  for (const a of matchingArticles) {
+    if (contextSnippets.length >= 3) break;
+    if (a.description) addSnippet(a.description);
   }
 
   return {
     matchingTrends: matchingTrends.slice(0, 3),
     matchingXTrends: matchingXTrends.slice(0, 3),
     matchingArticles: matchingArticles.slice(0, 5),
+    contextSnippets,
   };
 }
 
@@ -300,7 +357,7 @@ export async function detectEntityAlerts(
     const prevFlashCount = countInWindow(prevAppearances, flashWindowMs);
     const currFlashCount = countInWindow(appearances, flashWindowMs);
     if (prevFlashCount < flashMin && currFlashCount >= flashMin) {
-      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold, pages);
       alerts.push({
         type: 'entity',
         subtype: 'flash',
@@ -325,7 +382,7 @@ export async function detectEntityAlerts(
     const prevLongtailCount = countInWindow(prevAppearances, longtailWindowMs);
     const currLongtailCount = countInWindow(appearances, longtailWindowMs);
     if (prevLongtailCount < longtailMin && currLongtailCount >= longtailMin) {
-      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold, pages);
       alerts.push({
         type: 'entity',
         subtype: 'longtail',
@@ -350,7 +407,7 @@ export async function detectEntityAlerts(
     const prevAscCount = countInWindow(prevAppearances, ascendingWindowMs);
     const currAscCount = countInWindow(appearances, ascendingWindowMs);
     if (prevAscCount < ascendingMin && currAscCount >= ascendingMin) {
-      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold, pages);
       alerts.push({
         type: 'entity',
         subtype: 'ascending',
@@ -376,7 +433,7 @@ export async function detectEntityAlerts(
     const prevD1 = countInWindow(prevAppearances, disc1hWindowMs);
     const currD1 = countInWindow(appearances, disc1hWindowMs);
     if (prevD1 < disc1hMin && currD1 >= disc1hMin) {
-      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold, pages);
       alerts.push({
         type: 'entity',
         subtype: 'discover_1h',
@@ -400,7 +457,7 @@ export async function detectEntityAlerts(
     const prevD3 = countInWindow(prevAppearances, disc3hWindowMs);
     const currD3 = countInWindow(appearances, disc3hWindowMs);
     if (prevD3 < disc3hMin && currD3 >= disc3hMin) {
-      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold, pages);
       alerts.push({
         type: 'entity',
         subtype: 'discover_3h',
@@ -424,7 +481,7 @@ export async function detectEntityAlerts(
     const prevD12 = countInWindow(prevAppearances, disc12hWindowMs);
     const currD12 = countInWindow(appearances, disc12hWindowMs);
     if (prevD12 < disc12hMin && currD12 >= disc12hMin) {
-      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold);
+      const enrichment = enrichAscending(e.entity, state, fuzzyThreshold, pages);
       alerts.push({
         type: 'entity',
         subtype: 'discover_12h',
