@@ -268,6 +268,16 @@
 
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header">
+        <h2>&#9997;&#65039; Fórmulas del último mes<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Agregado de las fórmulas editoriales sugeridas en las alertas Slack durante los últimos <strong>30 días</strong>. Cada fila = regla de headline-formulas.json con su <strong>matchKey</strong> (ej: <code>entity/flash+legal</code>). Columnas: <strong>count</strong> (cuántas alertas la usaron), <strong>avg score DS</strong> (audiencia media de las entidades que la dispararon, 0-100 relativo — proxy de si los temas donde aplica son de mucha audiencia), <strong>entidades únicas</strong>, <strong>top entidades</strong> que más la dispararon. Ordenado por avg score DS descendente (las que acompañan mayor audiencia primero).</span></span></h2>
+        <span class="badge badge-green" id="formulas-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="formulas-30d" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando resumen de fórmulas...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
         <h2>&#128221; Patrones de titular (poll actual)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">N-gramas de <strong>3+ palabras</strong> que aparecen en <strong>3+ titulares distintos</strong> de Discover en el poll actual. Stopwords castellanas filtradas. Detecta patrones editoriales repetidos (ej: "fichaje sorpresa", "alerta roja").</span></span></h2>
         <span class="badge badge-orange" id="live-hl-count">Cargando...</span>
       </div>
@@ -637,6 +647,59 @@
       day_spike: 'SPIKE 24h'
     };
 
+    function renderFormulas30d(rows) {
+      document.getElementById('formulas-count').textContent = rows.length + ' reglas activas';
+      if (rows.length === 0) {
+        document.getElementById('formulas-30d').innerHTML =
+          '<div class="loading">Sin uso registrado en los últimos 30 días.<br><br><small>Las fórmulas empezarán a registrarse cuando se emitan alertas Slack con el formatter. Asegúrate de que los pollers están activos.</small></div>';
+        return;
+      }
+
+      var html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+      html += '<thead><tr style="border-bottom:1px solid #2a2a2a;text-align:left;color:#888">' +
+        '<th style="padding:8px 10px">Regla (matchKey)</th>' +
+        '<th style="padding:8px 10px;text-align:right">Count</th>' +
+        '<th style="padding:8px 10px;text-align:right">Avg score DS</th>' +
+        '<th style="padding:8px 10px;text-align:right">Max</th>' +
+        '<th style="padding:8px 10px;text-align:right">Entidades</th>' +
+        '<th style="padding:8px 10px">Top entidades</th>' +
+        '<th style="padding:8px 10px">Último uso</th>' +
+        '</tr></thead><tbody>';
+
+      rows.forEach(function(r) {
+        var parts = r.matchKey.split('+');
+        var typeSubtype = parts[0] || '';
+        var topic = parts[1] && parts[1] !== '_' ? parts[1] : '';
+        var topicBadge = topic
+          ? '<span class="badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;margin-left:6px;font-size:10px">' + escapeHtml(topic) + '</span>'
+          : '';
+        var topEntitiesTxt = (r.topEntities || []).map(function(e) {
+          return escapeHtml(e.name) + ' (' + e.count + ')';
+        }).join(', ');
+        var avgScore = r.avgEntityScore != null ? r.avgEntityScore.toFixed(1) : '—';
+        var maxScore = r.maxEntityScore != null ? r.maxEntityScore.toFixed(1) : '—';
+        // Colorize avg score: higher = greener (proxy of audience quality)
+        var avgColor = '#888';
+        if (r.avgEntityScore != null) {
+          if (r.avgEntityScore >= 15) avgColor = '#10b981';
+          else if (r.avgEntityScore >= 8) avgColor = '#60a5fa';
+          else if (r.avgEntityScore >= 4) avgColor = '#facc15';
+        }
+        var lastUsed = r.lastSeen ? timeAgo(r.lastSeen) : '—';
+        html += '<tr style="border-bottom:1px solid #1a1a1a">' +
+          '<td style="padding:8px 10px"><code style="background:rgba(255,255,255,0.04);padding:2px 6px;border-radius:4px;color:#ddd">' + escapeHtml(typeSubtype) + '</code>' + topicBadge + '</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:#ddd;font-weight:600">' + r.count + '</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:' + avgColor + ';font-weight:600">' + avgScore + '</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:#888">' + maxScore + '</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:#888">' + (r.uniqueEntities || 0) + '</td>' +
+          '<td style="padding:8px 10px;color:#bbb">' + (topEntitiesTxt || '<span style="color:#555">—</span>') + '</td>' +
+          '<td style="padding:8px 10px;color:#888">' + lastUsed + '</td>' +
+          '</tr>';
+      });
+      html += '</tbody></table></div>';
+      document.getElementById('formulas-30d').innerHTML = html;
+    }
+
     var currentOppKind = '__all__';
     var currentOppTopic = '__all__';
 
@@ -823,6 +886,9 @@
         var opportunities = data.opportunities || [];
         window.__opportunitiesData = opportunities;
         renderOpportunities();
+
+        // Formulas last 30d
+        renderFormulas30d(data.formulasLast30d || []);
 
         // Entities
         var entities = data.entities || [];

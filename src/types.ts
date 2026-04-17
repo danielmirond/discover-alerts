@@ -179,6 +179,18 @@ export interface AppState {
   mediaArticles: Record<string, { feedName: string; feedCategory: string; feedScope?: 'nacional' | 'internacional'; title: string; link: string; firstSeen: string; pubDate?: string }>;
   entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)
   entityTopicMap: Record<string, string>; // entity name -> derived topic (sucesos/legal/...) from topics.json
+  /** Registro de uso de reglas de headline-formulas. Retención: 30 días,
+   * cap ~5000 entries. Usado por live-view para mostrar qué fórmulas
+   * están funcionando (proxy: cuánta audiencia DiscoverSnoop acompaña). */
+  formulaUsage?: Array<{
+    matchKey: string; // ej. "entity/flash+legal" o "trends_without_discover+_+viajes"
+    alertType: string;
+    alertSubtype?: string;
+    alertTopic?: string;
+    entityName?: string;
+    entityScore?: number; // score DS de la entidad en ese momento (0-100)
+    timestamp: string; // ISO
+  }>;
   /**
    * Cache de clasificaciones LLM: entity -> { topic | "none", timestampMs }
    * Retencion 7 dias para ahorrar coste. Se consulta ANTES de llamar al LLM.

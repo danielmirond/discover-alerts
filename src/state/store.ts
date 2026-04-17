@@ -20,6 +20,7 @@ function emptyState(): AppState {
     entityCategoryMap: {},
     entityTopicMap: {},
     llmTopicCache: {},
+    formulaUsage: [],
     recentAlerts: [],
     weeklyHistory: {},
     lastPollDiscover: null,

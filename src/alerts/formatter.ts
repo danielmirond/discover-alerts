@@ -1,6 +1,62 @@
 import type { Alert } from '../types.js';
-import { buildFormulasContextText } from './headline-formulas.js';
+import { pickFormulasWithMeta } from './headline-formulas.js';
 import { momentumIcon, momentumLabel } from '../analysis/velocity.js';
+import { getState, updateState } from '../state/store.js';
+
+const FORMULA_USAGE_RETENTION_MS = 30 * 24 * 3600_000; // 30 days
+const FORMULA_USAGE_MAX_ENTRIES = 5000;
+
+function entityNameOf(a: Alert): string | undefined {
+  switch (a.type) {
+    case 'entity':
+    case 'entity_coverage':
+    case 'entity_concordance':
+    case 'triple_match':
+    case 'own_media_absent':
+      return (a as any).entityName || (a as any).name;
+    case 'trends_without_discover':
+      return (a as any).trendTitle;
+    case 'multi_entity_article':
+      return (a as any).articleTitle;
+    case 'category':
+      return (a as any).name;
+    case 'headline_pattern':
+      return (a as any).ngram;
+    default:
+      return undefined;
+  }
+}
+
+function entityScoreOf(a: Alert): number | undefined {
+  if ('score' in a && typeof (a as any).score === 'number') return (a as any).score;
+  return undefined;
+}
+
+function recordFormulaUsage(alert: Alert, matchKey: string): void {
+  try {
+    const state = getState();
+    const existing = state.formulaUsage || [];
+    const nowMs = Date.now();
+    // Append + prune expired + cap
+    const entry = {
+      matchKey,
+      alertType: alert.type,
+      alertSubtype: (alert as any).subtype,
+      alertTopic: (alert as any).topic,
+      entityName: entityNameOf(alert),
+      entityScore: entityScoreOf(alert),
+      timestamp: new Date().toISOString(),
+    };
+    const fresh = existing.filter(e => nowMs - new Date(e.timestamp).getTime() <= FORMULA_USAGE_RETENTION_MS);
+    fresh.push(entry);
+    const capped = fresh.length > FORMULA_USAGE_MAX_ENTRIES
+      ? fresh.slice(fresh.length - FORMULA_USAGE_MAX_ENTRIES)
+      : fresh;
+    updateState({ formulaUsage: capped });
+  } catch {
+    // Never let tracking break alert emission
+  }
+}
 
 interface SlackBlock {
   type: string;
@@ -443,12 +499,16 @@ function formatSingleAlert(alert: Alert): SlackBlock[] {
 
 /**
  * Append a declarative "fórmulas sugeridas" context block at the end of the
- * alert's blocks if the headline-formulas.json has a matching rule. Keeps
- * the existing per-alert formatters simple and synchronous.
+ * alert's blocks if the headline-formulas.json has a matching rule. Also
+ * records usage for later "qué fórmulas funcionaron" analytics.
  */
 async function withFormulas(alert: Alert, blocks: SlackBlock[]): Promise<SlackBlock[]> {
-  const txt = await buildFormulasContextText(alert);
-  if (!txt) return blocks;
+  const picked = await pickFormulasWithMeta(alert);
+  if (!picked || picked.lines.length === 0) return blocks;
+  // Fire-and-forget record (sync on in-memory state; persisted by caller saveState())
+  recordFormulaUsage(alert, picked.matchKey);
+  const bullets = picked.lines.map(l => `_• ${l}_`).join('\n');
+  const txt = `:pencil2: *Fórmulas sugeridas:*\n${bullets}`;
   return [...blocks, context(txt)];
 }
 

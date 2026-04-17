@@ -71,8 +71,17 @@ function ruleMatches(rule: FormulaRule, a: Alert): boolean {
 }
 
 export async function pickFormulas(alert: Alert): Promise<string[]> {
+  const r = await pickFormulasWithMeta(alert);
+  return r ? r.lines : [];
+}
+
+/**
+ * Same as pickFormulas but also returns the matched rule key ("{type}/{subtype|_}+{topic|_}").
+ * Used by the formatter to record usage in state.formulaUsage for analytics.
+ */
+export async function pickFormulasWithMeta(alert: Alert): Promise<{ lines: string[]; matchKey: string } | null> {
   const cfg = await loadHeadlineFormulas();
-  if (cfg.rules.length === 0) return [];
+  if (cfg.rules.length === 0) return null;
 
   let best: FormulaRule | null = null;
   let bestScore = 0;
@@ -81,9 +90,12 @@ export async function pickFormulas(alert: Alert): Promise<string[]> {
     const s = specificity(r.match);
     if (s > bestScore) { best = r; bestScore = s; }
   }
-  if (!best) return [];
+  if (!best) return null;
 
-  return best.lines.map(line => renderTemplate(line, alert)).slice(0, 3);
+  const m = best.match;
+  const matchKey = `${m.type}/${m.subtype || '_'}+${m.topic || '_'}`;
+  const lines = best.lines.map(line => renderTemplate(line, alert)).slice(0, 3);
+  return { lines, matchKey };
 }
 
 /**

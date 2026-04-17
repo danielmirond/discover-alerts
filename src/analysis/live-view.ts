@@ -91,6 +91,23 @@ interface LiveRecentAlert {
 }
 
 /**
+ * Resumen de fórmulas aplicadas en los últimos N días, agrupado por regla
+ * (matchKey). Sirve para ver "qué fórmulas funcionaron" proxy por volumen
+ * de uso y audiencia media (entityScore DiscoverSnoop) de las entidades
+ * que dispararon cada regla.
+ */
+interface LiveFormulaUsageStat {
+  matchKey: string;
+  count: number;
+  avgEntityScore: number | null;
+  maxEntityScore: number | null;
+  uniqueEntities: number;
+  topEntities: Array<{ name: string; count: number }>; // top 5
+  firstSeen: string;
+  lastSeen: string;
+}
+
+/**
  * Opportunity: huecos editoriales urgentes (activos AHORA mismo, no desde
  * el stream de alertas ya emitido/dedupado). Consolida:
  *   - hueco_seo: trends +10k sin match en Discover ni en nuestro RSS cache
@@ -141,6 +158,7 @@ interface LiveViewResponse {
   categories: LiveCategory[];
   concordances: LiveConcordance[];
   opportunities: LiveOpportunity[];
+  formulasLast30d: LiveFormulaUsageStat[];
   headlinePatterns: LiveHeadlinePattern[];
   headlinePatterns4d: LiveHeadlinePattern4d[];
   recentAlerts: LiveRecentAlert[];
@@ -942,6 +960,58 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     .sort((a, b) => b.priorityScore - a.priorityScore)
     .slice(0, 30);
 
+  // === FORMULAS LAST 30 DAYS ===============================================
+  // Agrupa state.formulaUsage[] por matchKey y calcula count, avg/max entity
+  // score, top entities. Sirve para mostrar qué fórmulas se están usando más
+  // y cuáles acompañan las entidades de mayor audiencia.
+  const THIRTY_DAYS_MS = 30 * 24 * 3600_000;
+  const cutoffMs = nowMs - THIRTY_DAYS_MS;
+  const usage = (state.formulaUsage || []).filter(
+    e => new Date(e.timestamp).getTime() >= cutoffMs,
+  );
+  const usageByKey = new Map<string, typeof usage>();
+  for (const u of usage) {
+    if (!usageByKey.has(u.matchKey)) usageByKey.set(u.matchKey, []);
+    usageByKey.get(u.matchKey)!.push(u);
+  }
+  const formulasLast30d: LiveFormulaUsageStat[] = [];
+  for (const [matchKey, rows] of usageByKey) {
+    const scoreRows = rows.filter(r => typeof r.entityScore === 'number');
+    const avgScore = scoreRows.length > 0
+      ? scoreRows.reduce((a, r) => a + (r.entityScore as number), 0) / scoreRows.length
+      : null;
+    const maxScore = scoreRows.length > 0
+      ? Math.max(...scoreRows.map(r => r.entityScore as number))
+      : null;
+    const entityCounts: Record<string, number> = {};
+    for (const r of rows) {
+      if (!r.entityName) continue;
+      entityCounts[r.entityName] = (entityCounts[r.entityName] || 0) + 1;
+    }
+    const topEntities = Object.entries(entityCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name, count]) => ({ name, count }));
+    const timestamps = rows.map(r => r.timestamp).sort();
+    formulasLast30d.push({
+      matchKey,
+      count: rows.length,
+      avgEntityScore: avgScore !== null ? Number(avgScore.toFixed(1)) : null,
+      maxEntityScore: maxScore !== null ? Number(maxScore.toFixed(1)) : null,
+      uniqueEntities: Object.keys(entityCounts).length,
+      topEntities,
+      firstSeen: timestamps[0] || '',
+      lastSeen: timestamps[timestamps.length - 1] || '',
+    });
+  }
+  // Sort: highest avg score first (fallback to count)
+  formulasLast30d.sort((a, b) => {
+    const sa = a.avgEntityScore ?? -1;
+    const sb = b.avgEntityScore ?? -1;
+    if (sb !== sa) return sb - sa;
+    return b.count - a.count;
+  });
+
   return {
     lastPollDiscover: state.lastPollDiscover,
     lastPollTrends: state.lastPollTrends,
@@ -951,6 +1021,7 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     categories: categories.slice(0, 15),
     concordances: concordances.slice(0, 20),
     opportunities: opportunitiesSorted,
+    formulasLast30d,
     headlinePatterns,
     headlinePatterns4d,
     recentAlerts,
