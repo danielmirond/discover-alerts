@@ -50,28 +50,32 @@ const HTML = `<!DOCTYPE html>
       color: #e0e0e0;
       min-height: 100vh;
     }
+
+    /* ── Header ────────────────────────────────────── */
     .header {
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      padding: 24px 32px;
+      padding: 20px 32px;
       border-bottom: 1px solid #2a2a4a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
     }
-    .header h1 {
-      font-size: 24px;
+    .header-left h1 {
+      font-size: 22px;
       font-weight: 700;
       color: #fff;
+    }
+    .header-left p {
+      color: #888;
+      margin-top: 2px;
+      font-size: 13px;
+    }
+    .header-right {
       display: flex;
       align-items: center;
       gap: 10px;
-    }
-    .header p {
-      color: #888;
-      margin-top: 4px;
-      font-size: 14px;
-    }
-    .status-bar {
-      display: flex;
-      gap: 16px;
-      margin-top: 12px;
       flex-wrap: wrap;
     }
     .status-pill {
@@ -79,13 +83,12 @@ const HTML = `<!DOCTYPE html>
       align-items: center;
       gap: 6px;
       background: rgba(255,255,255,0.06);
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12px;
     }
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 7px; height: 7px;
       border-radius: 50%;
       background: #4ade80;
       animation: pulse 2s infinite;
@@ -93,23 +96,37 @@ const HTML = `<!DOCTYPE html>
     .dot.orange { background: #fb923c; }
     .dot.blue { background: #60a5fa; }
     .dot.purple { background: #a78bfa; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .btn-compact {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #ccc;
+      padding: 5px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .15s;
+      white-space: nowrap;
     }
+    .btn-compact:hover { background: rgba(255,255,255,0.14); }
+
+    /* ── Layout ─────────────────────────────────────── */
     .container {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 20px;
     }
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 16px;
     }
     @media (max-width: 900px) {
       .grid { grid-template-columns: 1fr; }
     }
+
+    /* ── Collapsible Cards ─────────────────────────── */
     .card {
       background: #1a1a1a;
       border: 1px solid #2a2a2a;
@@ -117,30 +134,57 @@ const HTML = `<!DOCTYPE html>
       overflow: hidden;
     }
     .card-header {
-      padding: 16px 20px;
+      padding: 14px 18px;
       border-bottom: 1px solid #2a2a2a;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
     }
+    .card-header:hover { background: rgba(255,255,255,0.03); }
     .card-header h2 {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .card-body {
-      padding: 16px 20px;
-      max-height: 500px;
-      overflow-y: auto;
+    .card-header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .card-body::-webkit-scrollbar { width: 6px; }
+    .chevron {
+      font-size: 12px;
+      color: #555;
+      transition: transform .2s ease;
+    }
+    .card.collapsed .chevron { transform: rotate(-90deg); }
+    .card.collapsed .card-header { border-bottom-color: transparent; }
+
+    .card-body {
+      padding: 14px 18px;
+      max-height: 600px;
+      overflow-y: auto;
+      transition: max-height .25s ease, padding .25s ease, opacity .2s ease;
+    }
+    .card.collapsed .card-body {
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+    .card-body::-webkit-scrollbar { width: 5px; }
     .card-body::-webkit-scrollbar-track { background: transparent; }
     .card-body::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    /* ── Badges ─────────────────────────────────────── */
     .badge {
       font-size: 11px;
-      padding: 3px 10px;
+      padding: 2px 9px;
       border-radius: 12px;
       font-weight: 600;
     }
@@ -150,270 +194,243 @@ const HTML = `<!DOCTYPE html>
     .badge-purple { background: rgba(167,139,250,0.15); color: #a78bfa; }
     .badge-red { background: rgba(248,113,113,0.15); color: #f87171; }
 
+    /* ── Trends ─────────────────────────────────────── */
     .trend-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid #222;
-    }
-    .trend-item:last-child { border-bottom: none; }
-    .trend-rank {
-      font-size: 12px;
-      font-weight: 700;
-      color: #555;
-      width: 28px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    .trend-info { flex: 1; min-width: 0; }
-    .trend-title {
-      font-weight: 600;
-      font-size: 14px;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .trend-traffic {
-      font-size: 12px;
-      color: #888;
-      margin-top: 2px;
-    }
-    .trend-news {
-      font-size: 12px;
-      color: #666;
-      margin-top: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .trend-news a { color: #60a5fa; text-decoration: none; }
-    .trend-news a:hover { text-decoration: underline; }
-
-    .feed-item {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 8px 0;
       border-bottom: 1px solid #222;
     }
-    .feed-item:last-child { border-bottom: none; }
-    .feed-name {
-      font-weight: 600;
-      font-size: 14px;
-      color: #fff;
-      flex: 1;
-    }
+    .trend-item:last-child { border-bottom: none; }
+    .trend-rank { font-size: 11px; font-weight: 700; color: #555; width: 24px; text-align: center; flex-shrink: 0; }
+    .trend-info { flex: 1; min-width: 0; }
+    .trend-title { font-weight: 600; font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .trend-traffic { font-size: 11px; color: #888; margin-top: 1px; }
+    .trend-news { font-size: 11px; color: #666; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .trend-news a { color: #60a5fa; text-decoration: none; }
+    .trend-news a:hover { text-decoration: underline; }
 
+    /* ── Feeds ──────────────────────────────────────── */
+    .feed-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+      border-bottom: 1px solid #222;
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-name { font-weight: 600; font-size: 13px; color: #fff; flex: 1; }
+
+    /* ── Alert examples ────────────────────────────── */
     .alert-item {
-      padding: 12px;
-      margin-bottom: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
       border-radius: 8px;
       border-left: 3px solid;
     }
     .alert-item:last-child { margin-bottom: 0; }
     .alert-entity { background: rgba(74,222,128,0.06); border-color: #4ade80; }
+    .alert-domain { background: rgba(34,197,94,0.06); border-color: #22c55e; }
     .alert-category { background: rgba(96,165,250,0.06); border-color: #60a5fa; }
+    .alert-social { background: rgba(56,189,248,0.06); border-color: #38bdf8; }
     .alert-headline { background: rgba(251,146,60,0.06); border-color: #fb923c; }
     .alert-correlation { background: rgba(167,139,250,0.06); border-color: #a78bfa; }
     .alert-media { background: rgba(248,113,113,0.06); border-color: #f87171; }
-    .alert-type {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-    .alert-title {
-      font-weight: 600;
-      font-size: 14px;
-      color: #fff;
-    }
-    .alert-detail {
-      font-size: 13px;
-      color: #888;
-      margin-top: 4px;
-    }
+    .alert-type { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+    .alert-title { font-weight: 600; font-size: 13px; color: #fff; }
+    .alert-detail { font-size: 12px; color: #888; margin-top: 3px; }
 
-    .full-width { grid-column: 1 / -1; }
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: #555;
-    }
-    .spinner {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      border: 3px solid #333;
-      border-top: 3px solid #60a5fa;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 8px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .config-section {
-      background: rgba(255,255,255,0.03);
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 12px;
-    }
+    /* ── Config Grid ───────────────────────────────── */
     .config-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
     }
-    .config-item {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .config-item { display: flex; flex-direction: column; gap: 1px; }
+    .config-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    .config-value { font-size: 13px; color: #fff; font-weight: 600; font-family: 'SF Mono', 'Fira Code', monospace; }
+
+    .full-width { grid-column: 1 / -1; }
+    .loading { text-align: center; padding: 30px; color: #555; }
+    .spinner {
+      display: inline-block; width: 20px; height: 20px;
+      border: 2px solid #333; border-top: 2px solid #60a5fa;
+      border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 6px;
     }
-    .config-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
-    .config-value { font-size: 14px; color: #fff; font-weight: 600; font-family: 'SF Mono', monospace; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>📡 Discover Alerts</h1>
-    <p>Monitorizacion en tiempo real de Google Discover, Google Trends y medios RSS para Espana</p>
-    <div class="status-bar">
-      <div class="status-pill"><div class="dot"></div> DiscoverSnoop (5 min)</div>
-      <div class="status-pill"><div class="dot blue"></div> Google Trends (30 min)</div>
-      <div class="status-pill"><div class="dot orange"></div> Media RSS (15 min)</div>
-      <div class="status-pill"><div class="dot purple"></div> Slack Webhook</div>
+    <div class="header-left">
+      <h1>Discover Alerts</h1>
+      <p>Monitorizacion en tiempo real — Google Discover, Trends y RSS para ES</p>
+    </div>
+    <div class="header-right">
+      <div class="status-pill"><div class="dot"></div> Discover 5m</div>
+      <div class="status-pill"><div class="dot blue"></div> Trends 30m</div>
+      <div class="status-pill"><div class="dot orange"></div> RSS 15m</div>
+      <div class="status-pill"><div class="dot purple"></div> Slack</div>
+      <button class="btn-compact" onclick="toggleAll()" id="btn-toggle">Compactar todo</button>
     </div>
   </div>
 
   <div class="container">
-    <!-- Config overview -->
-    <div class="card full-width" style="margin-bottom: 20px;">
-      <div class="card-header">
-        <h2>⚙️ Configuracion</h2>
-      </div>
-      <div class="card-body">
-        <div class="config-grid">
-          <div class="config-item">
-            <span class="config-label">Pais</span>
-            <span class="config-value">ES (Espana)</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Ventana Discover</span>
-            <span class="config-value">6 horas</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Threshold Entidad</span>
-            <span class="config-value">+20 score</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Threshold Categoria</span>
-            <span class="config-value">+15 score / +50% pubs</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Min Patron Titular</span>
-            <span class="config-value">3 repeticiones</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Threshold Dominio</span>
-            <span class="config-value">+20 score / +50% pubs</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Threshold Canal Social</span>
-            <span class="config-value">+20 score / +50% pubs</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Correlacion Min</span>
-            <span class="config-value">60% similitud</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Ventana Dedup</span>
-            <span class="config-value">6 horas</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Max resultados/poll</span>
-            <span class="config-value">100 por endpoint</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="grid">
+
       <!-- Google Trends -->
-      <div class="card">
-        <div class="card-header">
-          <h2>🔥 Google Trends ES</h2>
-          <span class="badge badge-green" id="trends-count">Cargando...</span>
+      <div class="card" data-card="trends">
+        <div class="card-header" onclick="toggle(this)">
+          <h2>Google Trends ES</h2>
+          <div class="card-header-right">
+            <span class="badge badge-green" id="trends-count">...</span>
+            <span class="chevron">▼</span>
+          </div>
         </div>
         <div class="card-body" id="trends-list">
-          <div class="loading"><div class="spinner"></div><br>Cargando tendencias...</div>
+          <div class="loading"><div class="spinner"></div><br>Cargando...</div>
         </div>
       </div>
 
-      <!-- Media Feeds -->
-      <div class="card">
-        <div class="card-header">
-          <h2>📰 Feeds RSS Configurados</h2>
-          <span class="badge badge-blue" id="feeds-count">Cargando...</span>
+      <!-- Feeds RSS -->
+      <div class="card" data-card="feeds">
+        <div class="card-header" onclick="toggle(this)">
+          <h2>Feeds RSS</h2>
+          <div class="card-header-right">
+            <span class="badge badge-blue" id="feeds-count">...</span>
+            <span class="chevron">▼</span>
+          </div>
         </div>
         <div class="card-body" id="feeds-list">
-          <div class="loading"><div class="spinner"></div><br>Cargando feeds...</div>
+          <div class="loading"><div class="spinner"></div><br>Cargando...</div>
         </div>
       </div>
 
-      <!-- Sample Alerts -->
-      <div class="card full-width">
-        <div class="card-header">
-          <h2>🔔 Tipos de Alerta (ejemplo)</h2>
-          <span class="badge badge-purple">8 tipos</span>
+      <!-- Alertas Discover -->
+      <div class="card full-width" data-card="alerts">
+        <div class="card-header" onclick="toggle(this)">
+          <h2>Tipos de Alerta</h2>
+          <div class="card-header-right">
+            <span class="badge badge-purple">8 tipos</span>
+            <span class="chevron">▼</span>
+          </div>
         </div>
         <div class="card-body" id="alerts-list">
-          <div class="alert-item alert-entity">
-            <div class="alert-type" style="color: #4ade80;">🆕 Nueva entidad</div>
-            <div class="alert-title">Real Madrid</div>
-            <div class="alert-detail">Score: 87 | Posicion: #3 | Publicaciones: 24 | Primera aparicion: hace 2h</div>
-          </div>
-          <div class="alert-item alert-entity">
-            <div class="alert-type" style="color: #4ade80;">📈 Entidad en subida</div>
-            <div class="alert-title">Kylian Mbappe</div>
-            <div class="alert-detail">Score: 72 (+35) | Posicion: #5 (era #18) | Publicaciones: 16</div>
-          </div>
-          <div class="alert-item alert-category">
-            <div class="alert-type" style="color: #60a5fa;">📊 Spike en categoria</div>
-            <div class="alert-title">Deportes</div>
-            <div class="alert-detail">Score +22 (de 65 a 87) | Publicaciones: 48 (+60%) | Posicion: #1 (era #4)</div>
-          </div>
-          <div class="alert-item alert-entity">
-            <div class="alert-type" style="color: #4ade80;">🌐 Nuevo dominio</div>
-            <div class="alert-title">marca.com</div>
-            <div class="alert-detail">Score: 65 | Posicion: #2 | Publicaciones: 32</div>
-          </div>
-          <div class="alert-item alert-category">
-            <div class="alert-type" style="color: #60a5fa;">📢 Spike en canal social</div>
-            <div class="alert-title">twitter</div>
-            <div class="alert-detail">Score: 80 (+40) | Posicion: #1 (era #5) | Publicaciones: 45 (+80%)</div>
-          </div>
-          <div class="alert-item alert-headline">
-            <div class="alert-type" style="color: #fb923c;">📰 Patron de titular</div>
-            <div class="alert-title">"fichaje sorpresa"</div>
-            <div class="alert-detail">Encontrado en 5 titulos: "El fichaje sorpresa del Barcelona...", "Fichaje sorpresa en el Real Madrid...", ...</div>
-          </div>
-          <div class="alert-item alert-correlation">
-            <div class="alert-type" style="color: #a78bfa;">🔗 Trends ↔ Discover</div>
-            <div class="alert-title">Mbappe (Google Trends) → Kylian Mbappe (Discover)</div>
-            <div class="alert-detail">Trafico: 200,000+ | Similitud: 89% | 8 paginas mencionan "Mbappe"</div>
-          </div>
-          <div class="alert-item alert-media">
-            <div class="alert-type" style="color: #f87171;">📡 Medio ↔ Discover</div>
-            <div class="alert-title">Marca: "Mbappe confirma su fichaje por..."</div>
-            <div class="alert-detail">Entidades Discover: Kylian Mbappe, Real Madrid | Similitud: 92% | Deportivo</div>
+          <div class="grid" style="gap:8px">
+            <div>
+              <div class="alert-item alert-entity">
+                <div class="alert-type" style="color:#4ade80">Nueva entidad</div>
+                <div class="alert-title">Real Madrid</div>
+                <div class="alert-detail">Score: 87 | #3 | 24 pubs | hace 2h</div>
+              </div>
+              <div class="alert-item alert-entity">
+                <div class="alert-type" style="color:#4ade80">Entidad en subida</div>
+                <div class="alert-title">Kylian Mbappe</div>
+                <div class="alert-detail">Score: 72 (+35) | #5 (era #18) | 16 pubs</div>
+              </div>
+              <div class="alert-item alert-category">
+                <div class="alert-type" style="color:#60a5fa">Spike en categoria</div>
+                <div class="alert-title">Deportes</div>
+                <div class="alert-detail">Score +22 (65→87) | 48 pubs (+60%) | #1 (era #4)</div>
+              </div>
+              <div class="alert-item alert-domain">
+                <div class="alert-type" style="color:#22c55e">Nuevo dominio</div>
+                <div class="alert-title">marca.com</div>
+                <div class="alert-detail">Score: 65 | #2 | 32 pubs</div>
+              </div>
+            </div>
+            <div>
+              <div class="alert-item alert-social">
+                <div class="alert-type" style="color:#38bdf8">Spike canal social</div>
+                <div class="alert-title">twitter</div>
+                <div class="alert-detail">Score: 80 (+40) | #1 (era #5) | 45 pubs (+80%)</div>
+              </div>
+              <div class="alert-item alert-headline">
+                <div class="alert-type" style="color:#fb923c">Patron de titular</div>
+                <div class="alert-title">"fichaje sorpresa"</div>
+                <div class="alert-detail">5 titulos coincidentes</div>
+              </div>
+              <div class="alert-item alert-correlation">
+                <div class="alert-type" style="color:#a78bfa">Trends ↔ Discover</div>
+                <div class="alert-title">Mbappe → Kylian Mbappe</div>
+                <div class="alert-detail">200K+ busq. | 89% similitud | 8 paginas</div>
+              </div>
+              <div class="alert-item alert-media">
+                <div class="alert-type" style="color:#f87171">Medio ↔ Discover</div>
+                <div class="alert-title">Marca: "Mbappe confirma..."</div>
+                <div class="alert-detail">Entidades: Mbappe, Real Madrid | 92%</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Configuracion -->
+      <div class="card full-width collapsed" data-card="config">
+        <div class="card-header" onclick="toggle(this)">
+          <h2>Configuracion</h2>
+          <div class="card-header-right">
+            <span class="badge badge-blue">10 params</span>
+            <span class="chevron">▼</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="config-grid">
+            <div class="config-item"><span class="config-label">Pais</span><span class="config-value">ES</span></div>
+            <div class="config-item"><span class="config-label">Ventana</span><span class="config-value">6h</span></div>
+            <div class="config-item"><span class="config-label">Entidad</span><span class="config-value">+20 score</span></div>
+            <div class="config-item"><span class="config-label">Categoria</span><span class="config-value">+15 / +50%</span></div>
+            <div class="config-item"><span class="config-label">Dominio</span><span class="config-value">+20 / +50%</span></div>
+            <div class="config-item"><span class="config-label">Social</span><span class="config-value">+20 / +50%</span></div>
+            <div class="config-item"><span class="config-label">Patron titular</span><span class="config-value">3 reps</span></div>
+            <div class="config-item"><span class="config-label">Correlacion</span><span class="config-value">60%</span></div>
+            <div class="config-item"><span class="config-label">Dedup</span><span class="config-value">6h</span></div>
+            <div class="config-item"><span class="config-label">Resultados</span><span class="config-value">100/poll</span></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script>
+    function toggle(headerEl) {
+      headerEl.closest('.card').classList.toggle('collapsed');
+      saveState();
+    }
+
+    function toggleAll() {
+      const cards = document.querySelectorAll('.card');
+      const allCollapsed = [...cards].every(c => c.classList.contains('collapsed'));
+      cards.forEach(c => c.classList.toggle('collapsed', !allCollapsed));
+      document.getElementById('btn-toggle').textContent = allCollapsed ? 'Compactar todo' : 'Expandir todo';
+      saveState();
+    }
+
+    function saveState() {
+      const state = {};
+      document.querySelectorAll('.card[data-card]').forEach(c => {
+        state[c.dataset.card] = c.classList.contains('collapsed');
+      });
+      const allCollapsed = Object.values(state).every(Boolean);
+      document.getElementById('btn-toggle').textContent = allCollapsed ? 'Expandir todo' : 'Compactar todo';
+      try { localStorage.setItem('da-cards', JSON.stringify(state)); } catch {}
+    }
+
+    function restoreState() {
+      try {
+        const state = JSON.parse(localStorage.getItem('da-cards'));
+        if (!state) return;
+        document.querySelectorAll('.card[data-card]').forEach(c => {
+          if (state[c.dataset.card]) c.classList.add('collapsed');
+          else c.classList.remove('collapsed');
+        });
+        const allCollapsed = Object.values(state).every(Boolean);
+        document.getElementById('btn-toggle').textContent = allCollapsed ? 'Expandir todo' : 'Compactar todo';
+      } catch {}
+    }
+
     async function loadTrends() {
       try {
         const res = await fetch('/api/trends');
@@ -427,7 +444,7 @@ const HTML = `<!DOCTYPE html>
             '<div class="trend-rank">#' + (i+1) + '</div>' +
             '<div class="trend-info">' +
               '<div class="trend-title">' + t.title + '</div>' +
-              '<div class="trend-traffic">' + (t.approxTraffic > 0 ? t.approxTraffic.toLocaleString() + '+ busquedas' : '') + '</div>' +
+              '<div class="trend-traffic">' + (t.approxTraffic > 0 ? t.approxTraffic.toLocaleString() + '+ busq.' : '') + '</div>' +
               newsHtml +
             '</div></div>';
         }).join('');
@@ -442,28 +459,15 @@ const HTML = `<!DOCTYPE html>
         const res = await fetch('/api/feeds');
         const { feeds } = await res.json();
         document.getElementById('feeds-count').textContent = feeds.length + ' feeds';
-
         const cats = {};
-        feeds.forEach(f => {
-          if (!cats[f.category]) cats[f.category] = [];
-          cats[f.category].push(f);
-        });
-
-        const badgeClass = {
-          'generalista': 'badge-green',
-          'deportivo': 'badge-orange',
-          'tech-marketing': 'badge-purple'
-        };
-
+        feeds.forEach(f => { if (!cats[f.category]) cats[f.category] = []; cats[f.category].push(f); });
+        const bc = { generalista:'badge-green', deportivo:'badge-orange', 'tech-marketing':'badge-purple' };
         let html = '';
         for (const [cat, list] of Object.entries(cats)) {
-          html += '<div style="margin-bottom:12px">';
-          html += '<div style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">' + cat + '</div>';
+          html += '<div style="margin-bottom:10px">';
+          html += '<div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">' + cat + '</div>';
           list.forEach(f => {
-            html += '<div class="feed-item">' +
-              '<span class="feed-name">' + f.name + '</span>' +
-              '<span class="badge ' + (badgeClass[cat] || 'badge-blue') + '">' + cat + '</span>' +
-            '</div>';
+            html += '<div class="feed-item"><span class="feed-name">' + f.name + '</span><span class="badge ' + (bc[cat]||'badge-blue') + '">' + cat + '</span></div>';
           });
           html += '</div>';
         }
@@ -473,6 +477,7 @@ const HTML = `<!DOCTYPE html>
       }
     }
 
+    restoreState();
     loadTrends();
     loadFeeds();
   </script>
