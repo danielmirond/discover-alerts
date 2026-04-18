@@ -7,8 +7,8 @@
   "nav": {
     "home": "Home",
     "wearables": "Biomarkers",
-    "supplements": "Protocols",
-    "protocols": "Science",
+    "supplements": "Supplements",
+    "protocols": "Protocols",
     "beauty": "Beauty",
     "newsletter": "Briefing"
   },

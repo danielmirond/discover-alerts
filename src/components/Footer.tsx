@@ -6,6 +6,14 @@ export function Footer() {
   const t = useTranslations("footer");
   const locale = useLocale();
 
+  const paths: Record<string, { supplements: string; protocols: string; beauty: string }> = {
+    es: { supplements: "suplementos", protocols: "protocolos", beauty: "belleza" },
+    en: { supplements: "supplements", protocols: "protocols", beauty: "beauty" },
+    fr: { supplements: "supplements", protocols: "protocols", beauty: "beaute" },
+    de: { supplements: "supplements", protocols: "protocols", beauty: "schoenheit" },
+  };
+  const p = paths[locale] || paths.en;
+
   return (
     <footer className="bg-ivory border-t border-hairline mt-24">
       <div className="max-w-[1200px] mx-auto px-8 py-20">
@@ -37,21 +45,31 @@ export function Footer() {
                   : "Biomarkers & Tracking"}
               </Link>
               <Link
-                href={`/${locale}/suplementos`}
+                href={`/${locale}/${p.supplements}`}
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
                 {locale === "es" ? "Suplementación"
                   : locale === "fr" ? "Supplémentation"
+                  : locale === "de" ? "Supplementierung"
                   : "Supplementation"}
               </Link>
               <Link
-                href={`/${locale}/protocolos`}
+                href={`/${locale}/${p.protocols}`}
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
                 {locale === "es" ? "Protocolos & Ciencia"
                   : locale === "fr" ? "Protocoles & Science"
                   : locale === "de" ? "Protokolle & Wissenschaft"
                   : "Protocols & Science"}
+              </Link>
+              <Link
+                href={`/${locale}/${p.beauty}`}
+                className="text-[13px] text-slate hover:text-emerald transition-colors"
+              >
+                {locale === "es" ? "Skin Longevity"
+                  : locale === "fr" ? "Beauté & Longévité"
+                  : locale === "de" ? "Hautalterung"
+                  : "Skin Longevity"}
               </Link>
             </div>
           </div>

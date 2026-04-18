@@ -9,8 +9,10 @@ const categoryMap: Record<string, string> = {
   supplements: "supplements",
   protocolos: "protocols",
   protocols: "protocols",
-  protocoles: "protocols",
-  protokolle: "protocols",
+  belleza: "beauty",
+  beauty: "beauty",
+  beaute: "beauty",
+  schoenheit: "beauty",
 };
 
 export default async function CategoryPage({

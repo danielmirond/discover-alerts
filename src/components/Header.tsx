@@ -15,17 +15,19 @@ export function Header() {
     : locale === "de" ? "Über"
     : "About";
 
-  const beautyPath =
-    locale === "es" ? "belleza"
-    : locale === "fr" ? "beaute"
-    : locale === "de" ? "schoenheit"
-    : "beauty";
+  const paths: Record<string, { supplements: string; protocols: string; beauty: string }> = {
+    es: { supplements: "suplementos", protocols: "protocolos", beauty: "belleza" },
+    en: { supplements: "supplements", protocols: "protocols", beauty: "beauty" },
+    fr: { supplements: "supplements", protocols: "protocols", beauty: "beaute" },
+    de: { supplements: "supplements", protocols: "protocols", beauty: "schoenheit" },
+  };
+  const p = paths[locale] || paths.en;
 
   const links = [
     { href: `/${locale}/wearables`, label: t("wearables") },
-    { href: `/${locale}/suplementos`, label: t("supplements") },
-    { href: `/${locale}/protocolos`, label: t("protocols") },
-    { href: `/${locale}/${beautyPath}`, label: t("beauty") },
+    { href: `/${locale}/${p.supplements}`, label: t("supplements") },
+    { href: `/${locale}/${p.protocols}`, label: t("protocols") },
+    { href: `/${locale}/${p.beauty}`, label: t("beauty") },
     { href: `/${locale}/about`, label: aboutLabel },
   ];
 

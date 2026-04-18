@@ -5,22 +5,17 @@ import { getArticlesByLocale } from "@/lib/content";
 import { ArticleCard } from "@/components/ArticleCard";
 import { NewsletterEmbed } from "@/components/NewsletterEmbed";
 
+const categoryHrefs: Record<string, Record<string, string>> = {
+  es: { wearables: "wearables", supplements: "suplementos", protocols: "protocolos", beauty: "belleza" },
+  en: { wearables: "wearables", supplements: "supplements", protocols: "protocols", beauty: "beauty" },
+  fr: { wearables: "wearables", supplements: "supplements", protocols: "protocols", beauty: "beaute" },
+  de: { wearables: "wearables", supplements: "supplements", protocols: "protocols", beauty: "schoenheit" },
+};
+
 const categoryConfig = [
-  {
-    key: "wearables",
-    number: "01",
-    href: "wearables",
-  },
-  {
-    key: "supplements",
-    number: "02",
-    href: "suplementos",
-  },
-  {
-    key: "protocols",
-    number: "03",
-    href: "protocolos",
-  },
+  { key: "wearables", number: "01" },
+  { key: "supplements", number: "02" },
+  { key: "protocols", number: "03" },
 ] as const;
 
 export default async function HomePage({
@@ -106,10 +101,10 @@ function HomeContent({ locale }: { locale: string }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-line">
-          {categoryConfig.map(({ key, number, href }) => (
+          {categoryConfig.map(({ key, number }) => (
             <Link
               key={key}
-              href={`/${locale}/${href}`}
+              href={`/${locale}/${(categoryHrefs[locale] || categoryHrefs.en)[key]}`}
               className="bg-bg group p-10 hover:bg-ivory transition-colors"
             >
               <div className="font-serif italic text-[52px] font-extralight text-bronze/60 mb-6 group-hover:text-emerald transition-colors">
