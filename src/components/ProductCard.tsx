@@ -61,7 +61,7 @@ export function ProductCard({
       {/* Top: visual area + badge */}
       <div className="relative border-b border-hairline overflow-hidden">
         {badge && (
-          <div className="absolute top-5 right-5 z-10 bg-emerald text-bg px-3 py-1 text-[10px] tracking-[0.18em] uppercase font-medium">
+          <div className="absolute top-5 right-5 z-10 bg-charcoal text-bg px-3 py-1 text-[10px] tracking-[0.18em] uppercase font-medium">
             {badge}
           </div>
         )}
@@ -78,7 +78,7 @@ export function ProductCard({
           </div>
         ) : (
           <div className="bg-gradient-to-br from-ivory via-bg to-bronze-tint/30 p-10">
-            <div className="flex items-center justify-center h-32 text-[80px] leading-none font-serif text-emerald/30 select-none">
+            <div className="flex items-center justify-center h-32 text-[80px] leading-none font-serif text-bronze/30 select-none">
               {emoji || name.charAt(0)}
             </div>
           </div>
@@ -150,8 +150,8 @@ export function ProductCard({
                 rel="nofollow noopener sponsored"
                 className={`group inline-flex items-center justify-center gap-3 px-6 py-3.5 text-[12px] tracking-wide font-medium transition-colors ${
                   cta.primary !== false && i === 0
-                    ? "bg-emerald text-bg hover:bg-charcoal"
-                    : "border border-line text-charcoal hover:border-emerald hover:text-emerald"
+                    ? "bg-charcoal text-bg hover:bg-charcoal"
+                    : "border border-line text-charcoal hover:border-charcoal hover:text-charcoal"
                 }`}
               >
                 <span>{cta.label}</span>

@@ -70,11 +70,11 @@
 
   /* Buttons */
   .btn-primary {
-    @apply inline-flex items-center gap-2 bg-emerald text-bg px-6 py-3 text-[13px] tracking-wide font-medium hover:bg-charcoal transition-colors;
+    @apply inline-flex items-center gap-2 bg-charcoal text-bg px-6 py-3 text-[13px] tracking-wide font-medium hover:bg-bronze transition-colors;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center gap-2 border border-emerald text-emerald px-6 py-3 text-[13px] tracking-wide font-medium hover:bg-emerald hover:text-bg transition-colors;
+    @apply inline-flex items-center gap-2 border border-charcoal text-charcoal px-6 py-3 text-[13px] tracking-wide font-medium hover:bg-charcoal hover:text-bg transition-colors;
   }
 
   .btn-bronze {

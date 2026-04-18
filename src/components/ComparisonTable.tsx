@@ -42,11 +42,11 @@ export function ComparisonTable({
                   key={i}
                   className="text-center p-5 border-b border-line border-l border-l-line align-top"
                 >
-                  <div className="text-[44px] leading-none font-serif text-emerald/30 mb-2">
+                  <div className="text-[44px] leading-none font-serif text-bronze/30 mb-2">
                     {p.emoji || p.name.charAt(0)}
                   </div>
                   {p.badge && (
-                    <div className="inline-block bg-emerald/10 text-emerald text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 mb-2">
+                    <div className="inline-block bg-charcoal/10 text-charcoal text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 mb-2">
                       {p.badge}
                     </div>
                   )}
@@ -101,7 +101,7 @@ export function ComparisonTable({
                     href={p.ctaUrl}
                     target="_blank"
                     rel="nofollow noopener sponsored"
-                    className="inline-flex items-center gap-2 bg-emerald text-bg px-4 py-2.5 text-[11px] tracking-wide font-medium hover:bg-charcoal transition-colors"
+                    className="inline-flex items-center gap-2 bg-charcoal text-bg px-4 py-2.5 text-[11px] tracking-wide font-medium hover:bg-bronze transition-colors"
                   >
                     <span>Ver en {p.ctaStore}</span>
                     <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
@@ -120,12 +120,12 @@ export function ComparisonTable({
         {products.map((p, i) => (
           <div key={i} className="bg-bg border border-line p-6">
             <div className="flex items-start gap-4 mb-4">
-              <div className="text-[40px] leading-none font-serif text-emerald/30">
+              <div className="text-[40px] leading-none font-serif text-bronze/30">
                 {p.emoji || p.name.charAt(0)}
               </div>
               <div className="flex-1">
                 {p.badge && (
-                  <div className="inline-block bg-emerald/10 text-emerald text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 mb-1">
+                  <div className="inline-block bg-charcoal/10 text-charcoal text-[9px] tracking-[0.15em] uppercase px-2 py-0.5 mb-1">
                     {p.badge}
                   </div>
                 )}
@@ -149,7 +149,7 @@ export function ComparisonTable({
               href={p.ctaUrl}
               target="_blank"
               rel="nofollow noopener sponsored"
-              className="flex items-center justify-center gap-2 bg-emerald text-bg w-full px-4 py-3 text-[12px] tracking-wide font-medium"
+              className="flex items-center justify-center gap-2 bg-charcoal text-bg w-full px-4 py-3 text-[12px] tracking-wide font-medium"
             >
               <span>Ver en {p.ctaStore}</span>
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none">

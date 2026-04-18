@@ -66,7 +66,7 @@ export function ProsCons({ pros, cons, verdict, cta }: ProsConsProps) {
               href={cta.url}
               target="_blank"
               rel="nofollow noopener sponsored"
-              className="group inline-flex items-center gap-3 bg-emerald text-bg px-8 py-4 text-[13px] tracking-wide font-medium hover:bg-charcoal transition-colors"
+              className="group inline-flex items-center gap-3 bg-charcoal text-bg px-8 py-4 text-[13px] tracking-wide font-medium hover:bg-bronze transition-colors"
             >
               <span>{cta.label}</span>
               <span className="text-bronze text-[10px] tracking-[0.18em] uppercase border-l border-bronze/40 pl-3">
