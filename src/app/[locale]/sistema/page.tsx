@@ -12,8 +12,8 @@ import { AffiliateLink } from "@/components/AffiliateLink";
 import { Logo } from "@/components/Logo";
 
 export const metadata: Metadata = {
-  title: "Aevum Design System",
-  description: "Sistema de diseño de Aevum — tokens, tipografía, componentes.",
+  title: "byAevum — Design System",
+  description: "Sistema de diseño de byAevum — marca, notación, tokens, tipografía, componentes.",
 };
 
 const colors = [
@@ -52,23 +52,25 @@ export default async function DesignSystemPage({
     <div className="animate-fade-up">
       {/* HERO */}
       <section className="max-w-[1200px] mx-auto px-8 pt-20 pb-16 border-b border-hairline">
-        <div className="eyebrow mb-6">Design System · v1.0</div>
+        <div className="eyebrow mb-6">Design System · v2.0</div>
         <h1 className="display-xl mb-6">
-          Aevum <em className="italic text-emerald font-light">Sistema</em>
+          byAevum <em className="italic text-bronze font-light">Sistema</em>
         </h1>
         <p className="text-[18px] text-slate leading-[1.6] max-w-[620px] font-light">
-          Tokens de color, tipografía, componentes y principios de diseño que
-          articulan la identidad editorial de Aevum.
+          Marca, notación, tokens cromáticos, tipografía, componentes y principios
+          editoriales que articulan la identidad de byAevum — estudio de longevidad
+          de precisión con estética letterpress clásica.
         </p>
 
         {/* Nav anchors */}
         <div className="flex items-center gap-6 mt-10 flex-wrap">
           {[
             { href: "#brand", label: "01 · Marca" },
-            { href: "#color", label: "02 · Color" },
-            { href: "#type", label: "03 · Tipografía" },
-            { href: "#components", label: "04 · Componentes" },
-            { href: "#principles", label: "05 · Principios" },
+            { href: "#notation", label: "02 · Notación" },
+            { href: "#color", label: "03 · Color" },
+            { href: "#type", label: "04 · Tipografía" },
+            { href: "#components", label: "05 · Componentes" },
+            { href: "#principles", label: "06 · Principios" },
           ].map((item) => (
             <a
               key={item.href}
@@ -112,39 +114,182 @@ export default async function DesignSystemPage({
           </div>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-[1100px]">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-4 gap-8 max-w-[1100px]">
           <div>
             <div className="eyebrow mb-3">Significado</div>
             <p className="text-slate text-[14px] leading-[1.7]">
-              Aevum proviene del latín <em>aevum</em> — &ldquo;eternidad&rdquo;,
-              &ldquo;edad&rdquo;, &ldquo;tiempo indefinido&rdquo;. Concepto
-              filosófico medieval que denota un tiempo intermedio entre el
-              instante y la eternidad.
+              <em>Aevum</em> (latín): &ldquo;eternidad&rdquo;, &ldquo;edad&rdquo;,
+              &ldquo;tiempo indefinido&rdquo;. Concepto medieval que denota un
+              tiempo intermedio entre el instante y la eternidad.
+            </p>
+          </div>
+          <div>
+            <div className="eyebrow mb-3">El prefijo &ldquo;by&rdquo;</div>
+            <p className="text-slate text-[14px] leading-[1.7]">
+              En minúscula, Fraunces itálica, 55% del tamaño del wordmark.
+              Señala <strong>autoría curada</strong> — cada protocolo, stack y
+              producto pasa por el criterio editorial de Aevum.
             </p>
           </div>
           <div>
             <div className="eyebrow mb-3">Wordmark</div>
             <p className="text-slate text-[14px] leading-[1.7]">
-              Tipografía <strong>Cinzel</strong> — inspirada en las
-              inscripciones romanas de la Columna Trajana. Capitales clásicas
-              con proporciones áureas. Color: bronce <code className="font-mono text-[12px]">#a8865d</code>.
+              <strong>Cinzel</strong> — capitales romanas inspiradas en la
+              Columna Trajana. Impresas en foil bronce <code className="font-mono text-[12px]">#a8865d</code> sobre
+              papel crema letterpress.
             </p>
           </div>
           <div>
             <div className="eyebrow mb-3">Sello</div>
             <p className="text-slate text-[14px] leading-[1.7]">
-              Cinco anillos concéntricos. Metáfora dual: los anillos de
-              crecimiento de un árbol (longevidad medible) y los sellos
-              intaglio romanos de validación documental.
+              Cinco anillos concéntricos. Metáfora dual: anillos de crecimiento
+              de un árbol (longevidad medible) + sellos intaglio romanos de
+              validación documental.
             </p>
+          </div>
+        </div>
+
+        {/* Letterpress texture strip */}
+        <div className="mt-16 bg-ivory border border-hairline p-12 md:p-16">
+          <div className="flex flex-col items-center gap-4 mb-6">
+            <Logo variant="wordmark" size={72} />
+            <span className="font-serif italic text-stone text-[14px]">
+              Precision longevity, curated.
+            </span>
+          </div>
+          <div className="ornament text-[10px] tracking-[0.3em] uppercase text-stone">
+            <span>Letterpress · foil bronze · cream paper</span>
           </div>
         </div>
       </section>
 
-      {/* 02 · COLOR */}
-      <section id="color" className="bg-pearl py-20 px-8 border-y border-hairline">
+      {/* 02 · NOTATION */}
+      <section id="notation" className="bg-pearl py-20 px-8 border-y border-hairline">
         <div className="max-w-[1200px] mx-auto">
           <div className="eyebrow mb-3">02</div>
+          <h2 className="display-lg mb-12">Notación editorial</h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-[1px] bg-line border border-line mb-12">
+            {/* Signature block */}
+            <div className="bg-bg p-12 md:p-16 relative overflow-hidden">
+              {/* Architectural grid SVG */}
+              <svg
+                className="absolute inset-0 w-full h-full opacity-[0.35]"
+                viewBox="0 0 400 300"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                {[...Array(20)].map((_, i) => (
+                  <line
+                    key={`v${i}`}
+                    x1={i * 20}
+                    y1="0"
+                    x2={i * 20}
+                    y2="300"
+                    stroke="#a8865d"
+                    strokeWidth={i % 4 === 0 ? 0.8 : 0.3}
+                  />
+                ))}
+                {[...Array(15)].map((_, i) => (
+                  <line
+                    key={`h${i}`}
+                    x1="0"
+                    y1={i * 20}
+                    x2="400"
+                    y2={i * 20}
+                    stroke="#a8865d"
+                    strokeWidth={i % 4 === 0 ? 0.8 : 0.3}
+                  />
+                ))}
+              </svg>
+
+              <div className="relative">
+                <div className="eyebrow mb-8">Signature block</div>
+                <div className="flex items-baseline gap-4 font-mono text-[15px] text-charcoal tracking-[0.05em] mb-2">
+                  <span>0.785</span>
+                  <span className="text-bronze">AE</span>
+                  <span className="text-stone">—</span>
+                  <span className="text-bronze tracking-[0.15em]">[HSPAN]</span>
+                  <Logo variant="mark" size={22} />
+                </div>
+                <p className="text-stone text-[12px] leading-[1.7] mt-6 max-w-[420px]">
+                  Bloque de firma mostrado en footer. <code className="font-mono text-[11px]">0.785</code> es
+                  la fracción de healthspan promedio/lifespan total en países OCDE
+                  (2024). <code className="font-mono text-[11px]">AE</code> = Aevum Era.
+                  <code className="font-mono text-[11px]">[HSPAN]</code> = healthspan.
+                </p>
+              </div>
+            </div>
+
+            {/* Grid specs */}
+            <div className="bg-ivory p-12 md:p-16">
+              <div className="eyebrow mb-8">Grid arquitectónico</div>
+              <div className="space-y-5 font-mono text-[12px] text-slate">
+                <div className="flex justify-between border-b border-hairline pb-3">
+                  <span>Container</span>
+                  <span className="text-charcoal">1200px</span>
+                </div>
+                <div className="flex justify-between border-b border-hairline pb-3">
+                  <span>Gutter base</span>
+                  <span className="text-charcoal">32px</span>
+                </div>
+                <div className="flex justify-between border-b border-hairline pb-3">
+                  <span>Baseline</span>
+                  <span className="text-charcoal">8px</span>
+                </div>
+                <div className="flex justify-between border-b border-hairline pb-3">
+                  <span>Column count</span>
+                  <span className="text-charcoal">12</span>
+                </div>
+                <div className="flex justify-between border-b border-hairline pb-3">
+                  <span>Hairline</span>
+                  <span className="text-charcoal">1px · #f0ece6</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Line strong</span>
+                  <span className="text-charcoal">1px · #e8e4de</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[900px]">
+            <div>
+              <div className="eyebrow mb-3">Typographic marks</div>
+              <div className="font-serif text-[28px] text-bronze space-x-4">
+                <span>§</span>
+                <span>·</span>
+                <span>—</span>
+                <span>&rsquo;</span>
+                <span>I</span>
+                <span>II</span>
+                <span>III</span>
+              </div>
+            </div>
+            <div>
+              <div className="eyebrow mb-3">Eyebrow pattern</div>
+              <div className="eyebrow">Precision longevity</div>
+              <div className="eyebrow mt-2">Issue · Vol · Est. 2026</div>
+            </div>
+            <div>
+              <div className="eyebrow mb-3">Evidencia tiers</div>
+              <div className="flex gap-3 text-bronze font-mono text-[14px]">
+                <span>★★★</span>
+                <span>★★</span>
+                <span>★</span>
+              </div>
+              <p className="text-stone text-[11px] mt-2 leading-[1.6]">
+                Fuerte · Moderada · Limitada
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 03 · COLOR */}
+      <section id="color" className="max-w-[1200px] mx-auto px-8 py-20">
+        <div>
+          <div className="eyebrow mb-3">03</div>
           <h2 className="display-lg mb-12">Paleta cromática</h2>
 
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-[1px] bg-line border border-line mb-10">
@@ -171,34 +316,35 @@ export default async function DesignSystemPage({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[900px]">
             <div>
-              <div className="eyebrow mb-3">Emerald · #0a4d3c</div>
+              <div className="eyebrow mb-3">Bronze · #a8865d</div>
               <p className="text-slate text-[13px] leading-[1.7]">
-                Acento primario clínico. CTAs principales, acentos editoriales,
-                evidencia fuerte. Asociado con confianza científica.
+                Acento primario luxury. Wordmark foil, numerales romanos,
+                ornamentos, hover de CTAs. Warmth editorial.
               </p>
             </div>
             <div>
-              <div className="eyebrow mb-3">Bronze · #a8865d</div>
+              <div className="eyebrow mb-3">Emerald · #0a4d3c</div>
               <p className="text-slate text-[13px] leading-[1.7]">
-                Acento luxury. Numerales romanos, ornamentos, detalles
-                editoriales. Asociado con premium y warmth.
+                Acento secundario semántico. Evidencia fuerte (★★★),
+                tint para pros (bg emerald-tint). No para CTAs primarios.
               </p>
             </div>
             <div>
               <div className="eyebrow mb-3">Charcoal · #1a1a1a</div>
               <p className="text-slate text-[13px] leading-[1.7]">
-                No negro puro. Mejor legibilidad en pantallas, sensación
-                menos agresiva. Usado para titulares y cuerpo fuerte.
+                No negro puro. Usado para CTAs primarios (hover → bronze),
+                titulares y cuerpo fuerte. Legibilidad óptima en pantalla.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 03 · TYPOGRAPHY */}
-      <section id="type" className="max-w-[1200px] mx-auto px-8 py-20">
-        <div className="eyebrow mb-3">03</div>
-        <h2 className="display-lg mb-12">Tipografía</h2>
+      {/* 04 · TYPOGRAPHY */}
+      <section id="type" className="bg-pearl py-20 px-8 border-y border-hairline">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="eyebrow mb-3">04</div>
+          <h2 className="display-lg mb-12">Tipografía</h2>
 
         {/* Font families */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-line border border-line mb-16">
@@ -273,12 +419,13 @@ export default async function DesignSystemPage({
             </div>
           </div>
         </div>
+        </div>
       </section>
 
-      {/* 04 · COMPONENTS */}
-      <section id="components" className="bg-ivory py-20 px-8 border-y border-hairline">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="eyebrow mb-3">04</div>
+      {/* 05 · COMPONENTS */}
+      <section id="components" className="max-w-[1200px] mx-auto px-8 py-20">
+        <div>
+          <div className="eyebrow mb-3">05</div>
           <h2 className="display-lg mb-12">Componentes editoriales</h2>
 
           {/* EvidenceBadge */}
@@ -439,42 +586,53 @@ export default async function DesignSystemPage({
         </div>
       </section>
 
-      {/* 05 · PRINCIPLES */}
-      <section id="principles" className="max-w-[1200px] mx-auto px-8 py-20">
-        <div className="eyebrow mb-3">05</div>
+      {/* 06 · PRINCIPLES */}
+      <section id="principles" className="bg-ivory py-20 px-8 border-t border-hairline">
+        <div className="max-w-[1200px] mx-auto">
+        <div className="eyebrow mb-3">06</div>
         <h2 className="display-lg mb-12">Principios de diseño</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10">
           {[
             {
               n: "I",
-              title: "Whitespace como valor",
-              desc: "El espacio vacío no es ausencia — es jerarquía. Una página cargada señala desesperación. Aevum transmite autoridad tranquila a través del respiro visual.",
+              title: "Letterpress sobre papel crema",
+              desc: "La marca se imagina físicamente como foil bronce en letterpress sobre papel texturizado. Toda decisión visual debe sostener esa sensación: sobria, táctil, artesanal.",
             },
             {
               n: "II",
-              title: "Serifas editoriales, sans legibles",
-              desc: "Fraunces comunica tradición y rigor. Inter comunica claridad moderna. Nunca mezclar más de 3 pesos por página.",
+              title: "Whitespace como valor",
+              desc: "El espacio vacío no es ausencia — es jerarquía. Una página cargada señala desesperación. byAevum transmite autoridad tranquila a través del respiro visual.",
             },
             {
               n: "III",
-              title: "Color con intención",
-              desc: "Emerald es confianza científica. Bronze es warmth editorial. Nunca usar como decoración — siempre con significado semántico.",
+              title: "Serifas editoriales, sans legibles",
+              desc: "Cinzel para el wordmark (inscripción romana). Fraunces para editorial display. Inter para cuerpo. DM Mono para notación técnica. Nunca más de 3 pesos por página.",
             },
             {
               n: "IV",
+              title: "Color con intención",
+              desc: "Bronze es la marca (foil, acentos, hover). Charcoal es la voz (CTAs, titulares). Emerald es semántica (evidencia fuerte, pros). Nunca decoración sin significado.",
+            },
+            {
+              n: "V",
               title: "Evidencia visible",
               desc: "Cada intervención se clasifica (★★★/★★/★). Cada artículo cita fuentes. La transparencia editorial es un elemento visual, no solo textual.",
             },
             {
-              n: "V",
+              n: "VI",
               title: "Números romanos, no decorativos",
               desc: "I/II/III/IV en bronze italic para marcar jerarquía ordinal. Clásico, atemporal, apropiado para longevidad.",
             },
             {
-              n: "VI",
+              n: "VII",
               title: "Ornamentos con propósito",
               desc: "Líneas horizontales hairline separan secciones. Divisores bronze marcan momentos editoriales. Nunca decoración sin función.",
+            },
+            {
+              n: "VIII",
+              title: "Notación como firma",
+              desc: "El bloque 0.785 AE — [HSPAN] aparece en el footer de cada página. No es decoración: es la firma editorial — healthspan/lifespan ratio OCDE como métrica fundacional.",
             },
           ].map((p) => (
             <div key={p.n}>
@@ -491,17 +649,18 @@ export default async function DesignSystemPage({
             </div>
           ))}
         </div>
+        </div>
       </section>
 
       {/* ORNAMENT CLOSING */}
-      <section className="max-w-[800px] mx-auto px-8 pb-24 text-center">
+      <section className="max-w-[800px] mx-auto px-8 py-24 text-center">
         <div className="ornament text-[10px] tracking-[0.3em] uppercase">
           <span className="font-serif italic text-[16px] normal-case tracking-normal text-bronze">
             Fin
           </span>
         </div>
         <p className="text-stone text-[11px] mt-6 italic font-serif">
-          Aevum Design System · v1.0 · Última actualización abril 2026
+          byAevum Design System · v2.0 · Actualizado abril 2026
         </p>
       </section>
     </div>
