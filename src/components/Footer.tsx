@@ -70,7 +70,12 @@ export function Footer() {
               </Link>
               <span className="text-[13px] text-stone">{t("privacy")}</span>
               <span className="text-[13px] text-stone">{t("terms")}</span>
-              <span className="text-[13px] text-stone">{t("affiliate")}</span>
+              <Link
+                href={`/${locale}/afiliacion`}
+                className="text-[13px] text-slate hover:text-emerald transition-colors"
+              >
+                {t("affiliate")}
+              </Link>
             </div>
           </div>
         </div>

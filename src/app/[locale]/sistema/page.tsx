@@ -9,6 +9,7 @@ import { ExpertQuote } from "@/components/ExpertQuote";
 import { Sources } from "@/components/Sources";
 import { NewsletterEmbed } from "@/components/NewsletterEmbed";
 import { AffiliateLink } from "@/components/AffiliateLink";
+import { Logo } from "@/components/Logo";
 
 export const metadata: Metadata = {
   title: "Aevum Design System",
@@ -86,57 +87,55 @@ export default async function DesignSystemPage({
         <h2 className="display-lg mb-12">Marca</h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-[1px] bg-line border border-line">
-          {/* Wordmark primary */}
+          {/* Full logo */}
           <div className="bg-bg p-16 flex flex-col items-center justify-center min-h-[280px]">
-            <div className="flex items-baseline gap-3 mb-3">
-              <span className="font-serif text-[48px] font-light text-charcoal tracking-[0.08em] uppercase">
-                Aevum
-              </span>
-            </div>
-            <span className="text-[9px] tracking-[0.3em] uppercase text-bronze">
-              Precision longevity
-            </span>
-            <span className="mt-6 text-[10px] tracking-[0.2em] uppercase text-stone">
-              Primary wordmark
+            <Logo variant="full" size={44} />
+            <span className="mt-10 text-[10px] tracking-[0.2em] uppercase text-stone">
+              Logo principal
             </span>
           </div>
 
-          {/* Wordmark compact */}
+          {/* Wordmark only */}
           <div className="bg-ivory p-16 flex flex-col items-center justify-center min-h-[280px]">
-            <span className="font-serif text-[56px] font-light text-charcoal tracking-[0.08em] uppercase">
-              Aevum
-            </span>
-            <span className="mt-6 text-[10px] tracking-[0.2em] uppercase text-stone">
-              Compact wordmark
+            <Logo variant="wordmark" size={52} />
+            <span className="mt-10 text-[10px] tracking-[0.2em] uppercase text-stone">
+              Wordmark · Cinzel
             </span>
           </div>
 
-          {/* Monogram */}
+          {/* Seal on dark */}
           <div className="bg-charcoal p-16 flex flex-col items-center justify-center min-h-[280px]">
-            <span className="font-serif text-[80px] font-extralight text-bg tracking-tight italic">
-              Æ
-            </span>
-            <span className="mt-6 text-[10px] tracking-[0.2em] uppercase text-bronze">
-              Monogram (favicon)
+            <Logo variant="mark" size={96} color="#a8865d" />
+            <span className="mt-10 text-[10px] tracking-[0.2em] uppercase text-bronze">
+              Sello · Anillos
             </span>
           </div>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[800px]">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-[1100px]">
           <div>
             <div className="eyebrow mb-3">Significado</div>
             <p className="text-slate text-[14px] leading-[1.7]">
               Aevum proviene del latín <em>aevum</em> — &ldquo;eternidad&rdquo;,
               &ldquo;edad&rdquo;, &ldquo;tiempo indefinido&rdquo;. Concepto
               filosófico medieval que denota un tiempo intermedio entre el
-              instante y la eternidad. Apropiado para una marca de longevidad.
+              instante y la eternidad.
             </p>
           </div>
           <div>
-            <div className="eyebrow mb-3">Personalidad</div>
+            <div className="eyebrow mb-3">Wordmark</div>
             <p className="text-slate text-[14px] leading-[1.7]">
-              Precisa · Sobria · Científica · Premium. Autoridad tranquila.
-              Sin humo, sin promesas milagro.
+              Tipografía <strong>Cinzel</strong> — inspirada en las
+              inscripciones romanas de la Columna Trajana. Capitales clásicas
+              con proporciones áureas. Color: bronce <code className="font-mono text-[12px]">#a8865d</code>.
+            </p>
+          </div>
+          <div>
+            <div className="eyebrow mb-3">Sello</div>
+            <p className="text-slate text-[14px] leading-[1.7]">
+              Cinco anillos concéntricos. Metáfora dual: los anillos de
+              crecimiento de un árbol (longevidad medible) y los sellos
+              intaglio romanos de validación documental.
             </p>
           </div>
         </div>

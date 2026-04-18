@@ -47,28 +47,37 @@ function HomeContent({ locale }: { locale: string }) {
   return (
     <div className="animate-fade-up">
       {/* HERO */}
-      <section className="max-w-[1200px] mx-auto px-8 pt-20 pb-32">
-        <div className="max-w-[900px]">
-          <div className="eyebrow mb-8">
-            {t("site.tagline")} · {t("home.hero").split(" ")[0].toUpperCase()}
+      <section className="max-w-[1200px] mx-auto px-8 pt-24 pb-32">
+        <div className="max-w-[920px]">
+          <div className="flex items-center gap-4 mb-10">
+            <span className="h-px w-12 bg-bronze" />
+            <span className="text-[10px] tracking-[0.3em] uppercase text-bronze font-medium">
+              {t("site.tagline")}
+            </span>
           </div>
-          <h1 className="display-xl mb-10">
-            {rest_}{" "}
-            <em className="italic text-emerald font-light">
-              {lastTwo}
-            </em>
-            .
+
+          <h1 className="display-brand mb-10 text-charcoal">
+            {t("home.hero")}
           </h1>
-          <p className="text-[18px] text-slate leading-[1.6] max-w-[560px] mb-12 font-light">
+
+          <p className="font-serif italic text-[22px] md:text-[26px] text-stone leading-[1.4] max-w-[640px] mb-14 font-light tracking-[-0.005em]">
             {t("home.heroSub")}
           </p>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-6 flex-wrap">
             <Link href={`/${locale}/wearables`} className="btn-primary">
               {t("home.readMore")}
             </Link>
-            <div className="flex items-center gap-2 text-[11px] text-stone tracking-[0.15em] uppercase">
-              <span className="w-8 h-px bg-bronze" />
+            <Link
+              href={`/${locale}/about`}
+              className="text-[11px] text-bronze tracking-[0.2em] uppercase border-b border-bronze/30 hover:border-bronze pb-1 transition-colors"
+            >
+              {locale === "es" ? "La metodología"
+                : locale === "fr" ? "La méthodologie"
+                : locale === "de" ? "Die Methode"
+                : "The methodology"}
+            </Link>
+            <div className="flex items-center gap-3 text-[10px] text-stone tracking-[0.2em] uppercase ml-auto">
               <span>ES · EN · FR · DE</span>
             </div>
           </div>
