@@ -57,10 +57,22 @@
     .alert-item { padding: 12px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid; }
     .alert-item:last-child { margin-bottom: 0; }
     .alert-entity { background: rgba(74,222,128,0.06); border-color: #4ade80; }
+    .alert-spike { background: rgba(250,204,21,0.08); border-color: #facc15; }
+    .alert-longtail { background: rgba(250,204,21,0.08); border-color: #facc15; }
+    .alert-flash { background: rgba(239,68,68,0.10); border-color: #ef4444; }
+    .alert-day-spike { background: rgba(236,72,153,0.08); border-color: #ec4899; }
+    .alert-concordance { background: rgba(56,189,248,0.08); border-color: #38bdf8; }
+    .alert-triple { background: rgba(239,68,68,0.12); border-color: #f97316; box-shadow: 0 0 0 1px rgba(249,115,22,0.2); }
     .alert-category { background: rgba(96,165,250,0.06); border-color: #60a5fa; }
     .alert-headline { background: rgba(251,146,60,0.06); border-color: #fb923c; }
     .alert-correlation { background: rgba(167,139,250,0.06); border-color: #a78bfa; }
     .alert-media { background: rgba(248,113,113,0.06); border-color: #f87171; }
+    .alert-enrich { margin-top: 8px; padding-top: 8px; border-top: 1px solid #2a2a2a; font-size: 12px; color: #aaa; }
+    .alert-enrich-title { color: #ccc; font-weight: 600; margin-bottom: 3px; }
+    .alert-enrich ul { list-style: none; padding-left: 8px; }
+    .alert-enrich li { margin: 2px 0; }
+    .alert-enrich a { color: #60a5fa; text-decoration: none; }
+    .alert-enrich a:hover { text-decoration: underline; }
     .alert-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
     .alert-title { font-weight: 600; font-size: 14px; color: #fff; }
     .alert-detail { font-size: 13px; color: #888; margin-top: 4px; }
@@ -72,6 +84,77 @@
     .config-item { display: flex; flex-direction: column; gap: 2px; }
     .config-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
     .config-value { font-size: 14px; color: #fff; font-weight: 600; font-family: 'SF Mono', monospace; }
+    .route-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #222; }
+    .route-item:last-child { border-bottom: none; }
+    .route-arrow { color: #555; font-size: 14px; }
+    .route-name { font-weight: 600; font-size: 14px; color: #fff; min-width: 140px; }
+    .route-cats { color: #888; font-size: 12px; flex: 1; }
+    .route-env { font-family: 'SF Mono', monospace; font-size: 11px; color: #4ade80; background: rgba(74,222,128,0.08); padding: 3px 8px; border-radius: 4px; }
+    .filter-btn { background: rgba(255,255,255,0.04); color: #888; border: 1px solid #2a2a2a; padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+    .filter-btn:hover { background: rgba(255,255,255,0.08); color: #ccc; border-color: #444; }
+    .filter-btn.active { background: rgba(96,165,250,0.15); color: #60a5fa; border-color: #60a5fa; }
+    .filter-btn .count { opacity: 0.7; margin-left: 4px; font-weight: 400; }
+    .filter-select { background: rgba(255,255,255,0.04); color: #ccc; border: 1px solid #2a2a2a; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; min-width: 160px; outline: none; }
+    .filter-select:focus { border-color: #60a5fa; color: #fff; }
+    .filter-select option { background: #1a1a1a; color: #ccc; }
+    .filter-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; align-self: center; }
+    .tabs-nav { display: flex; gap: 4px; padding: 16px 24px 0; max-width: 1400px; margin: 0 auto; border-bottom: 1px solid #2a2a2a; }
+    .tab-btn-main { background: transparent; border: none; color: #666; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; font-family: inherit; transition: all 0.15s; }
+    .tab-btn-main:hover { color: #ccc; }
+    .tab-btn-main.active { color: #60a5fa; border-bottom-color: #60a5fa; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .hist-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    @media (max-width: 1000px) { .hist-grid { grid-template-columns: 1fr; } }
+    .hist-col h3 { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #222; }
+    .hist-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #1a1a1a; }
+    .hist-item:last-child { border-bottom: none; }
+    .hist-item-name { color: #ccc; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 8px; }
+    .hist-item-count { color: #60a5fa; font-weight: 700; font-family: 'SF Mono', monospace; }
+    .hist-summary { display: flex; gap: 24px; padding: 16px 20px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 16px; }
+    .hist-summary-item { display: flex; flex-direction: column; }
+    .hist-summary-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    .hist-summary-value { font-size: 20px; color: #fff; font-weight: 700; font-family: 'SF Mono', monospace; }
+    .tooltip { position: relative; display: inline-flex; align-items: center; margin-left: 6px; }
+    .tooltip-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.1); color: #888; font-size: 10px; font-weight: 700; cursor: help; border: 1px solid #333; }
+    .tooltip-icon:hover { background: rgba(96,165,250,0.2); color: #60a5fa; border-color: #60a5fa; }
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      top: 20px;
+      left: 0;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 10px 12px;
+      width: 320px;
+      font-size: 12px;
+      color: #ccc;
+      font-weight: 400;
+      line-height: 1.5;
+      z-index: 1000;
+      transition: opacity 0.15s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      text-transform: none;
+      letter-spacing: normal;
+    }
+    .tooltip .tooltip-text strong { color: #60a5fa; }
+    .tooltip .tooltip-text .tt-formula { color: #facc15; font-family: 'SF Mono', monospace; font-size: 11px; display: block; margin-top: 4px; padding: 4px 8px; background: rgba(250,204,21,0.08); border-radius: 4px; }
+    .tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
+    .media-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid #222; }
+    .media-row:last-child { border-bottom: none; }
+    .media-rank { font-size: 12px; font-weight: 700; color: #555; width: 28px; text-align: center; flex-shrink: 0; padding-top: 2px; }
+    .media-info { flex: 1; min-width: 0; }
+    .media-name { font-weight: 700; font-size: 15px; color: #fff; margin-bottom: 2px; }
+    .media-meta { font-size: 12px; color: #888; margin-bottom: 8px; }
+    .media-entities { display: flex; flex-wrap: wrap; gap: 6px; }
+    .media-ent { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.04); border: 1px solid #2a2a2a; padding: 4px 10px; border-radius: 12px; font-size: 12px; color: #ccc; }
+    .media-ent .ent-count { color: #666; font-size: 10px; margin-left: 2px; }
+    .media-ent .ent-mark { font-size: 9px; padding: 2px 6px; border-radius: 8px; font-weight: 700; margin-left: 4px; }
+    .ent-mark-gt { background: rgba(96,165,250,0.18); color: #60a5fa; }
+    .ent-mark-x { background: rgba(167,139,250,0.18); color: #a78bfa; }
+    .ent-mark-rss { background: rgba(248,113,113,0.18); color: #f87171; }
   </style>
 </head>
 <body>
@@ -82,11 +165,137 @@
       <div class="status-pill"><div class="dot"></div> DiscoverSnoop (5 min)</div>
       <div class="status-pill"><div class="dot blue"></div> Google Trends (30 min)</div>
       <div class="status-pill"><div class="dot orange"></div> Media RSS (15 min)</div>
+      <div class="status-pill"><div class="dot"></div> X/Twitter Trends (30 min)</div>
       <div class="status-pill"><div class="dot purple"></div> Slack Webhook</div>
     </div>
   </div>
 
+  <div class="tabs-nav">
+    <button class="tab-btn-main active" data-tab="live">Live</button>
+    <button class="tab-btn-main" data-tab="historico">&#128197; Historico semanal</button>
+  </div>
+
+  <div id="tab-live" class="tab-panel active">
   <div class="container">
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128276; Alertas enviadas a Slack (ultimas 6h)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Historial completo de las alertas que salen a Slack. Persistidas en Redis (max 200, retencion 6h). Puedes filtrar por <strong>ruta Slack</strong> (canal destino), <strong>tipo de alerta</strong> (flash, longtail, concordance, etc.) y <strong>categoria DiscoverSnoop</strong>.</span></span></h2>
+        <span class="badge badge-red" id="recent-count">Cargando...</span>
+      </div>
+      <div style="padding: 12px 20px; border-bottom: 1px solid #2a2a2a;">
+        <div id="recent-filters" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+          <button class="filter-btn active" data-route="__all__">Todas</button>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <span class="filter-label">Tipo:</span>
+          <select class="filter-select" id="filter-type">
+            <option value="__all__">Todos los tipos</option>
+          </select>
+          <span class="filter-label">Categoria DS:</span>
+          <select class="filter-select" id="filter-category">
+            <option value="__all__">Todas las categorias</option>
+          </select>
+        </div>
+      </div>
+      <div class="card-body" id="recent-alerts" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando alertas recientes...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px; border-color: #f97316;">
+      <div class="card-header">
+        <h2>&#128293; Huecos activos AHORA<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Oportunidades editoriales en este instante, calculadas sobre el cache actual (no sobre alertas ya emitidas). Incluye: <strong>Hueco SEO</strong> (trends ES +10k sin cobertura Discover), <strong>No cubrimos</strong> (entidad con cobertura externa, nuestro dominio ausente), <strong>Triple Match fresco</strong> (Discover + Trends + X con thresholds endurecidos), <strong>USA con cabida</strong> (trend US +50k que cruza con una entidad de Discover ES, con un titular de medio ES de las ultimas 12h, o clasifica como topic sucesos/legal). Los trends US puramente locales quedan excluidos. Ordenado por prioridad.</span></span></h2>
+        <span class="badge badge-orange" id="opportunities-count">Cargando...</span>
+      </div>
+      <div style="padding: 12px 20px; border-bottom: 1px solid #2a2a2a;">
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+          <span class="filter-label">Tipo:</span>
+          <button class="filter-btn active" data-opp-kind="__all__">Todos</button>
+          <button class="filter-btn" data-opp-kind="hueco_seo">&#128269; Hueco SEO</button>
+          <button class="filter-btn" data-opp-kind="not_covering">&#9888;&#65039; No cubrimos</button>
+          <button class="filter-btn" data-opp-kind="triple_match_fresh">&#128165; Triple Match</button>
+          <button class="filter-btn" data-opp-kind="us_relevant">&#127482;&#127480; USA con cabida</button>
+          <span class="filter-label" style="margin-left: 12px;">Topic:</span>
+          <button class="filter-btn active" data-opp-topic="__all__">Todos</button>
+          <button class="filter-btn" data-opp-topic="sucesos">Sucesos</button>
+          <button class="filter-btn" data-opp-topic="legal">Legal</button>
+        </div>
+      </div>
+      <div class="card-body" id="opportunities" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Calculando huecos...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128293; Entidades en vivo<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Entidades que en este instante cruzan los umbrales de <strong>flash</strong> (3+ en 1h), <strong>longtail</strong> (5+ en 2h) o <strong>ascending</strong> (3+ en 6h). Las 3 ventanas se calculan independientes: una misma entidad puede tener varios statuses simultaneamente.</span></span></h2>
+        <span class="badge badge-purple" id="live-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="live-alerts" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando alertas en vivo desde Redis...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128279; Concordancias cross-source<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Entidades del top-100 que aparecen <strong>en al menos 2 fuentes</strong> distintas (Discover + Google Trends/X Trends/Medios RSS). Prioriza <strong>triple match</strong> (Discover + Trends + X) como senal mas fuerte.</span></span></h2>
+        <span class="badge badge-purple" id="live-conc-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="live-concordances" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando concordancias...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128241; Top 10 medios (ultimas 24h)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Medios RSS con mas articulos cacheados en las ultimas 24h. Para cada medio, se muestran las entidades Discover mencionadas en sus titulares con <strong>marcas cross-source</strong>: <strong>GT</strong> = tambien en Google Trends, <strong>X</strong> = tambien en X/Twitter Trends, <strong>RSS</strong> = en medios (siempre true aqui).</span></span></h2>
+        <span class="badge badge-red" id="top-media-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="top-media" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando top medios...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128202; Categorias (spike 24h)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Top 15 categorias DiscoverSnoop ordenadas por <strong>delta de score respecto a 24h atras</strong> (baseline rolling). Se muestra el historial acumulado en el state (al menos 2 muestras por categoria). Incluye ejemplos de paginas Discover pertenecientes a esa categoria.</span></span></h2>
+        <span class="badge badge-blue" id="live-cat-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="live-categories" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando categorias...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#9997;&#65039; Fórmulas del último mes<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Agregado de las fórmulas editoriales sugeridas en las alertas Slack durante los últimos <strong>30 días</strong>. Cada fila = regla de headline-formulas.json con su <strong>matchKey</strong> (ej: <code>entity/flash+legal</code>). Columnas: <strong>count</strong> (cuántas alertas la usaron), <strong>avg score DS</strong> (audiencia media de las entidades que la dispararon, 0-100 relativo — proxy de si los temas donde aplica son de mucha audiencia), <strong>entidades únicas</strong>, <strong>top entidades</strong> que más la dispararon. Ordenado por avg score DS descendente (las que acompañan mayor audiencia primero).</span></span></h2>
+        <span class="badge badge-green" id="formulas-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="formulas-30d" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando resumen de fórmulas...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128221; Patrones de titular (poll actual)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">N-gramas de <strong>3+ palabras</strong> que aparecen en <strong>3+ titulares distintos</strong> de Discover en el poll actual. Stopwords castellanas filtradas. Detecta patrones editoriales repetidos (ej: "fichaje sorpresa", "alerta roja").</span></span></h2>
+        <span class="badge badge-orange" id="live-hl-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="live-headlines" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando patrones...</div>
+      </div>
+    </div>
+
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128221; Patrones de titular (ultimos 4 dias)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Agregado de patrones detectados en todos los polls de los ultimos 4 dias. Se filtra a los que aparecieron en <strong>2+ polls distintos</strong> (evita flash-in-the-pan). Ordenados por total de apariciones acumuladas.</span></span></h2>
+        <span class="badge badge-orange" id="live-hl4d-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="live-headlines-4d" style="max-height: none;">
+        <div class="loading"><div class="spinner"></div><br>Cargando historial de patrones...</div>
+      </div>
+    </div>
+
     <div class="card full-width" style="margin-bottom: 20px;">
       <div class="card-header"><h2>&#9881;&#65039; Configuracion</h2></div>
       <div class="card-body">
@@ -103,6 +312,16 @@
       </div>
     </div>
 
+    <div class="card full-width" style="margin-bottom: 20px;">
+      <div class="card-header">
+        <h2>&#128273; Routing Slack por Categoria</h2>
+        <span class="badge badge-green" id="routes-count">Cargando...</span>
+      </div>
+      <div class="card-body" id="routes-list">
+        <div class="loading"><div class="spinner"></div><br>Cargando rutas...</div>
+      </div>
+    </div>
+
     <div class="grid">
       <div class="card">
         <div class="card-header">
@@ -116,6 +335,16 @@
 
       <div class="card">
         <div class="card-header">
+          <h2>&#128038; X/Twitter Trends ES</h2>
+          <span class="badge badge-green" id="xtrends-count">Cargando...</span>
+        </div>
+        <div class="card-body" id="xtrends-list">
+          <div class="loading"><div class="spinner"></div><br>Cargando X trends...</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
           <h2>&#128240; Feeds RSS Configurados</h2>
           <span class="badge badge-blue" id="feeds-count">Cargando...</span>
         </div>
@@ -124,42 +353,62 @@
         </div>
       </div>
 
-      <div class="card full-width">
+    </div>
+  </div>
+  </div>
+
+  <div id="tab-historico" class="tab-panel">
+    <div class="container">
+
+      <!-- Historico DiscoverSnoop con rango de fechas (fetch on-demand) -->
+      <div class="card full-width" style="margin-bottom: 20px;">
         <div class="card-header">
-          <h2>&#128276; Tipos de Alerta (ejemplo)</h2>
-          <span class="badge badge-purple">6 tipos</span>
+          <h2>&#128269; Historico DiscoverSnoop (2025+)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Consulta directa a los endpoints historicos de <strong>DiscoverSnoop</strong> (<code>/entities</code>, <code>/categories</code>, <code>/pages</code>, <code>/domains</code>) con rango de fechas arbitrario. <strong>NO incluye datos de medios RSS</strong> (solo lo que DiscoverSnoop tiene cacheado). Util para comparar semanas de 2025 con las actuales. La respuesta se cachea 5 min.</span></span></h2>
+          <span class="badge badge-blue" id="hist-ds-count">Listo</span>
         </div>
-        <div class="card-body">
-          <div class="alert-item alert-entity">
-            <div class="alert-type" style="color: #4ade80;">&#127381; NUEVA ENTIDAD</div>
-            <div class="alert-title">Real Madrid</div>
-            <div class="alert-detail">Score: 87 | Posicion: #3 | Publicaciones: 24 | Primera aparicion: hace 2h</div>
+        <div style="padding: 16px 20px; border-bottom: 1px solid #2a2a2a; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <span class="filter-label">Desde:</span>
+          <input type="date" id="hist-ds-from" class="filter-select" style="min-width: 140px;" />
+          <span class="filter-label">Hasta:</span>
+          <input type="date" id="hist-ds-to" class="filter-select" style="min-width: 140px;" />
+          <span class="filter-label">Lines:</span>
+          <select class="filter-select" id="hist-ds-lines" style="min-width: 100px;">
+            <option value="200">200</option>
+            <option value="500" selected>500</option>
+            <option value="1000">1000</option>
+            <option value="2500">2500</option>
+            <option value="5000">5000</option>
+          </select>
+          <button class="filter-btn active" id="hist-ds-submit">Consultar</button>
+          <div style="display: flex; gap: 4px; margin-left: 8px;">
+            <button class="filter-btn" data-shortcut="7d">Ultima semana</button>
+            <button class="filter-btn" data-shortcut="30d">Ultimos 30d</button>
+            <button class="filter-btn" data-shortcut="w2025-01">Semana 1 2025</button>
+            <button class="filter-btn" data-shortcut="w2025-q1">Q1 2025</button>
           </div>
-          <div class="alert-item alert-entity">
-            <div class="alert-type" style="color: #4ade80;">&#128200; ENTIDAD EN SUBIDA</div>
-            <div class="alert-title">Kylian Mbappe</div>
-            <div class="alert-detail">Score: 72 (+35) | Posicion: #5 (era #18) | Publicaciones: 16</div>
-          </div>
-          <div class="alert-item alert-category">
-            <div class="alert-type" style="color: #60a5fa;">&#128202; SPIKE EN CATEGORIA</div>
-            <div class="alert-title">Deportes</div>
-            <div class="alert-detail">Score +22 (de 65 a 87) | Publicaciones: 48 (+60%) | Posicion: #1 (era #4)</div>
-          </div>
-          <div class="alert-item alert-headline">
-            <div class="alert-type" style="color: #fb923c;">&#128240; PATRON DE TITULAR</div>
-            <div class="alert-title">"fichaje sorpresa"</div>
-            <div class="alert-detail">Encontrado en 5 titulos: "El fichaje sorpresa del Barcelona...", "Fichaje sorpresa en el Real Madrid...", ...</div>
-          </div>
-          <div class="alert-item alert-correlation">
-            <div class="alert-type" style="color: #a78bfa;">&#128279; TRENDS &#8596; DISCOVER</div>
-            <div class="alert-title">Mbappe (Google Trends) &#8594; Kylian Mbappe (Discover)</div>
-            <div class="alert-detail">Trafico: 200,000+ | Similitud: 89% | 8 paginas mencionan "Mbappe"</div>
-          </div>
-          <div class="alert-item alert-media">
-            <div class="alert-type" style="color: #f87171;">&#128225; MEDIO &#8596; DISCOVER</div>
-            <div class="alert-title">Marca: "Mbappe confirma su fichaje por..."</div>
-            <div class="alert-detail">Entidades Discover: Kylian Mbappe, Real Madrid | Similitud: 92% | Deportivo</div>
-          </div>
+        </div>
+        <div class="card-body" id="hist-ds-content" style="max-height: none;">
+          <div class="loading">Selecciona un rango de fechas y pulsa Consultar</div>
+        </div>
+      </div>
+
+      <div class="card full-width" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <h2>&#128197; Historico semanal (medios RSS)<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Agregado semanal de <strong>articulos, entidades, categorias DiscoverSnoop y patrones</strong> para cada medio RSS. Los datos se construyen incrementalmente con cada poll de media (cada 15 min). Retencion: <strong>8 semanas</strong>. Los conteos son "articulos en los que se ha mencionado" para entidades/categorias, y "trigramas detectados" para patrones.</span></span></h2>
+          <span class="badge badge-purple" id="hist-total-count">Cargando...</span>
+        </div>
+        <div style="padding: 16px 20px; border-bottom: 1px solid #2a2a2a; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <span class="filter-label">Semana:</span>
+          <select class="filter-select" id="hist-week-select">
+            <option value="">Cargando...</option>
+          </select>
+          <span class="filter-label">Medio:</span>
+          <select class="filter-select" id="hist-feed-select">
+            <option value="__all__">Todos los medios</option>
+          </select>
+        </div>
+        <div class="card-body" id="hist-content" style="max-height: none;">
+          <div class="loading"><div class="spinner"></div><br>Cargando historico...</div>
         </div>
       </div>
     </div>
@@ -217,8 +466,944 @@
       }
     }
 
+    async function loadXTrends() {
+      try {
+        var res = await fetch('/api/x-trends');
+        var data = await res.json();
+        var trends = data.trends || [];
+        document.getElementById('xtrends-count').textContent = trends.length + ' trending';
+        var html = trends.slice(0, 15).map(function(t) {
+          return '<div class="trend-item">' +
+            '<div class="trend-rank">#' + t.rank + '</div>' +
+            '<div class="trend-info">' +
+              '<div class="trend-title">' + t.topic + '</div>' +
+              '<div class="trend-news"><a href="' + t.url + '" target="_blank">Ver en getdaytrends.com</a></div>' +
+            '</div></div>';
+        }).join('');
+        document.getElementById('xtrends-list').innerHTML = html || '<div class="loading">Sin datos</div>';
+      } catch(e) {
+        document.getElementById('xtrends-list').innerHTML = '<div class="loading">Error cargando X trends</div>';
+      }
+    }
+
+    function escapeHtml(s) {
+      return (s || '').replace(/[&<>"']/g, function(c) {
+        return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+      });
+    }
+
+    function timeAgo(iso) {
+      var d = Date.now() - new Date(iso).getTime();
+      var m = Math.floor(d / 60000);
+      if (m < 1) return 'hace segundos';
+      if (m < 60) return 'hace ' + m + ' min';
+      var h = Math.floor(m / 60);
+      return 'hace ' + h + 'h ' + (m % 60) + 'm';
+    }
+
+    var currentRouteFilter = '__all__';
+    var currentTypeFilter = '__all__';
+    var currentCategoryFilter = '__all__';
+
+    function applyAllFilters(recent) {
+      return recent.filter(function(r) {
+        if (currentRouteFilter !== '__all__' && r.routeName !== currentRouteFilter) return false;
+        if (currentTypeFilter !== '__all__') {
+          var key = r.subtype ? r.type + '/' + r.subtype : r.type;
+          if (key !== currentTypeFilter) return false;
+        }
+        if (currentCategoryFilter === '__none__') {
+          if (r.category) return false;
+        } else if (currentCategoryFilter !== '__all__' && r.category !== currentCategoryFilter) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    function renderRecentAlerts(recent) {
+      var filtered = applyAllFilters(recent);
+      var anyFilter = currentRouteFilter !== '__all__' || currentTypeFilter !== '__all__' || currentCategoryFilter !== '__all__';
+      document.getElementById('recent-count').textContent = filtered.length + (anyFilter ? ' / ' + recent.length + ' alertas' : ' alertas');
+
+      if (filtered.length === 0) {
+        document.getElementById('recent-alerts').innerHTML = '<div class="loading">Sin alertas que coincidan con los filtros actuales</div>';
+        return;
+      }
+
+      var typeColors = {
+        'entity': { bg: 'rgba(74,222,128,0.06)', border: '#4ade80', icon: '&#128293;' },
+        'entity_concordance': { bg: 'rgba(56,189,248,0.06)', border: '#38bdf8', icon: '&#128279;' },
+        'entity_coverage': { bg: 'rgba(248,113,113,0.06)', border: '#f87171', icon: '&#128225;' },
+        'category': { bg: 'rgba(96,165,250,0.06)', border: '#60a5fa', icon: '&#128202;' },
+        'headline_pattern': { bg: 'rgba(251,146,60,0.06)', border: '#fb923c', icon: '&#128221;' },
+        'trends_correlation': { bg: 'rgba(167,139,250,0.06)', border: '#a78bfa', icon: '&#128279;' },
+        'trends_new_topic': { bg: 'rgba(167,139,250,0.06)', border: '#a78bfa', icon: '&#128293;' },
+      'own_media': { bg: 'rgba(250,204,21,0.10)', border: '#facc15', icon: '&#11088;' },
+      'own_media_absent': { bg: 'rgba(249,115,22,0.10)', border: '#f97316', icon: '&#9888;&#65039;' },
+      'trends_without_discover': { bg: 'rgba(16,185,129,0.08)', border: '#10b981', icon: '&#128269;' },
+      'headline_cluster': { bg: 'rgba(236,72,153,0.10)', border: '#ec4899', icon: '&#128680;' },
+      'stale_data': { bg: 'rgba(120,113,108,0.10)', border: '#78716c', icon: '&#9888;&#65039;' },
+      'multi_entity_article': { bg: 'rgba(139,92,246,0.10)', border: '#8b5cf6', icon: '&#128209;' },
+      'triple_match': { bg: 'rgba(244,63,94,0.15)', border: '#f43f5e', icon: '&#128165;' }
+      };
+      var subtypeLabels = {
+        flash: 'FLASH (3+ en 1h)', longtail: 'LONGTAIL (5+ en 2h)', spike: 'SPIKE (legacy)', ascending: 'ASCENDING (3+ en 6h)',
+        rising: 'RISING', new: 'NEW',
+        discover_1h: 'DISCOVER 3+/1h',
+        discover_3h: 'DISCOVER 5+/3h',
+        discover_12h: 'DISCOVER 7+/12h',
+        discover_trends_x: 'TRIPLE: Discover+Trends+X',
+        discover_rss: 'Discover + Medios',
+        discover_trends: 'Discover + Trends',
+        discover_x: 'Discover + X',
+        day_spike: 'SPIKE 24h',
+        discover_page: 'NUESTRO en Discover',
+        trends_news: 'NUESTRO en Trends',
+        coverage_join: 'NUESTRO en cobertura conjunta'
+      };
+      var typeLabels = {
+        'triple_match': 'TRIPLE MATCH',
+      };
+      var html = filtered.map(function(r) {
+        var c = typeColors[r.type] || typeColors['entity'];
+        var label = (r.subtype ? subtypeLabels[r.subtype] || r.subtype : (typeLabels[r.type] || r.type)).toUpperCase();
+        var routeBadge = r.routeName !== 'default' ? ' <span class="badge badge-green" style="font-size:9px">→ ' + escapeHtml(r.routeName) + '</span>' : '';
+        var examplesHtml = '';
+        if (r.examples && r.examples.length > 0) {
+          examplesHtml = '<div class="alert-enrich"><div class="alert-enrich-title">&#128240; Ejemplos</div><ul>';
+          r.examples.forEach(function(ex) {
+            var srcTxt = ex.source ? ' <em>(' + escapeHtml(ex.source) + ')</em>' : '';
+            if (ex.url) {
+              examplesHtml += '<li>&bull; <a href="' + escapeHtml(ex.url) + '" target="_blank">' + escapeHtml(ex.title) + '</a>' + srcTxt + '</li>';
+            } else {
+              examplesHtml += '<li>&bull; ' + escapeHtml(ex.title) + srcTxt + '</li>';
+            }
+          });
+          examplesHtml += '</ul></div>';
+        }
+        return '<div class="alert-item" style="background:' + c.bg + ';border-color:' + c.border + '">' +
+          '<div class="alert-type" style="color:' + c.border + ';display:flex;justify-content:space-between">' +
+            '<span>' + c.icon + ' ' + escapeHtml(label) + tooltipHtml(r.type, r.subtype) + routeBadge + '</span>' +
+            '<span style="color:#666;font-weight:400;font-size:10px">' + timeAgo(r.timestamp) + '</span>' +
+          '</div>' +
+          '<div class="alert-title">' + escapeHtml(r.title) + '</div>' +
+          '<div class="alert-detail">' + escapeHtml(r.detail) + '</div>' +
+          examplesHtml +
+        '</div>';
+      }).join('');
+      document.getElementById('recent-alerts').innerHTML = html;
+    }
+
+    var alertTooltips = {
+      'entity/flash': 'La misma entidad ha aparecido <strong>3 o mas veces en la ultima hora</strong> en Discover ES. Senal de breaking news o pico muy rapido.<span class="tt-formula">appearances(1h) >= 3</span>',
+      'entity/longtail': 'Entidad con <strong>5+ apariciones en las ultimas 2 horas</strong>. Senal de persistencia media: el tema se mantiene caliente.<span class="tt-formula">appearances(2h) >= 5</span>',
+      'entity/ascending': 'Entidad con <strong>3+ apariciones en las ultimas 6 horas</strong>. Tema sostenido, ya no es flash pero sigue activo.<span class="tt-formula">appearances(6h) >= 3</span>',
+      'entity/rising': 'El score de la entidad ha <strong>subido mas de 20 puntos</strong> entre el poll anterior y el actual.<span class="tt-formula">score_now - score_prev >= 20</span>',
+      'entity/spike': 'Alerta legacy (antes de longtail). Deprecated.',
+      'entity/new': 'Entidad nueva que no existia en el state. Deshabilitada por defecto para evitar ruido.',
+      'entity_concordance/discover_trends_x': '<strong>Triple match:</strong> la entidad aparece simultaneamente en Discover + Google Trends + X/Twitter. Senal exceptional de convergencia cross-source.',
+      'triple_match': '<strong>TRIPLE MATCH (alta prioridad):</strong> version endurecida de la concordance Discover+Trends+X. Exige posicion Discover <=50, trafico Trends sumado >=2000 busquedas y rank X <=30. Cuando dispara, es el tema del momento con maxima certeza.<span class="tt-formula">pos<=50 AND traffic_sum>=2000 AND x_rank<=30</span>',
+      'entity_concordance/discover_rss': 'La entidad aparece en Discover + al menos un articulo RSS de medios. La cobertura mediatica confirma Discover.',
+      'entity_concordance/discover_trends': 'La entidad aparece en Discover + Google Trends. La gente lo esta buscando.',
+      'entity_concordance/discover_x': 'La entidad aparece en Discover + X/Twitter trends. Conversacion viral en redes.',
+      'entity_coverage': 'Los feeds RSS de medios han publicado <strong>multiples articulos</strong> mencionando esta entidad en el titular.',
+      'category/day_spike': 'El score de esta categoria DiscoverSnoop ha subido <strong>+30 o mas en las ultimas 24h</strong> comparado con la baseline rolling.<span class="tt-formula">score_now - score_24h_ago >= 30</span>',
+      'category/spike': 'La categoria ha tenido un salto poll-over-poll de <strong>score +15 o publicaciones +50%</strong>, con un delta real (>=5) para evitar falsos positivos.<span class="tt-formula">delta >= 5 AND (score_jump >= 15 OR pub_jump >= 50%)</span>',
+      'headline_pattern': 'Un n-grama de <strong>3+ palabras</strong> aparece en al menos <strong>3 titulares distintos</strong> de Discover en el mismo poll. Detecta patrones editoriales (ej: "fichaje sorpresa").',
+      'trends_correlation': 'Un topic de Google Trends RSS matchea con una entidad o pagina cacheada de Discover. Cruce entre lo que la gente busca y lo que Discover esta amplificando.',
+      'trends_new_topic': 'Nuevo topic detectado en el feed RSS de Google Trends ES que no habiamos visto antes.',
+      'own_media/discover_page': '<strong>Nuestro dominio</strong> aparece como pagina en Google Discover ES. Senal de que estamos logrando colocar contenido propio.<span class="tt-formula">page.domain ∈ OWN_MEDIA_DOMAINS</span>',
+      'own_media/trends_news': '<strong>Nuestro dominio</strong> figura como fuente en las news items del RSS de Google Trends ES.',
+      'own_media/coverage_join': '<strong>Nuestro medio</strong> cubre una entidad que tambien publican N+ medios distintos (cobertura editorial conjunta). Por defecto N=1 (configurable via OWN_MEDIA_COVERAGE_MIN_OTHERS).',
+      'own_media_absent': '<strong>NO estamos cubriendo</strong> una entidad que N+ medios (por defecto 3) SI publican. Filtrado por categoria DS (por defecto Sport para Mundo Deportivo). Oportunidad editorial perdida.<span class="tt-formula">others >= 3 AND own == 0 AND cat matches</span>',
+      'trends_without_discover': 'Topic de <strong>Google Trends con >10k busquedas</strong> que NO matchea con ninguna entidad ni pagina de DiscoverSnoop. <strong>Hueco SEO puro</strong>: la gente lo busca pero nadie lo cubre.<span class="tt-formula">traffic >= 10000 AND not in entities AND not in pages</span>',
+      'headline_cluster': '<strong>N+ entidades distintas</strong> (por defecto 4) han disparado actividad en la ultima hora. Senal de <strong>evento grande</strong> en curso (elecciones, desastre, escandalo).<span class="tt-formula">distinct_entities_in_1h >= 4</span>',
+      'stale_data': 'Un poll (discover/trends/media/x) no ha corrido en los ultimos <strong>45 minutos</strong>. Health-check del pipeline. Revisa GitHub Actions, Upstash o las credenciales del source.<span class="tt-formula">now - lastPoll > 45 min</span>',
+      'entity/discover_1h': '<strong>3+ apariciones en la ultima hora</strong> en DiscoverSnoop. Paralelo a FLASH pero con umbral configurable propio.<span class="tt-formula">appearances(1h) >= 3</span>',
+      'entity/discover_3h': '<strong>5+ apariciones en las ultimas 3 horas</strong> en DiscoverSnoop. Tema con persistencia media.<span class="tt-formula">appearances(3h) >= 5</span>',
+      'entity/discover_12h': '<strong>7+ apariciones en las ultimas 12 horas</strong> en DiscoverSnoop. Tema muy sostenido a lo largo del dia.<span class="tt-formula">appearances(12h) >= 7</span>',
+      'multi_entity_article': 'Un articulo RSS de medios menciona <strong>2+ entidades distintas</strong> del state de DiscoverSnoop en su titular. Contenido multi-angulo.<span class="tt-formula">entities_in_title >= 2</span>',
+    };
+
+    function getTooltipFor(type, subtype) {
+      var key = subtype ? type + '/' + subtype : type;
+      return alertTooltips[key] || alertTooltips[type] || null;
+    }
+
+    function tooltipHtml(type, subtype) {
+      var txt = getTooltipFor(type, subtype);
+      if (!txt) return '';
+      return '<span class="tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">' + txt + '</span></span>';
+    }
+
+    var subtypeLabelsGlobal = {
+      flash: 'FLASH (3+ en 1h)', longtail: 'LONGTAIL (5+ en 2h)', spike: 'SPIKE (legacy)', ascending: 'ASCENDING (3+ en 6h)',
+      rising: 'RISING', new: 'NEW',
+      discover_trends_x: 'TRIPLE: Discover+Trends+X',
+      discover_rss: 'Discover + Medios',
+      discover_trends: 'Discover + Trends',
+      discover_x: 'Discover + X',
+      day_spike: 'SPIKE 24h'
+    };
+
+    function renderFormulas30d(rows) {
+      document.getElementById('formulas-count').textContent = rows.length + ' reglas activas';
+      if (rows.length === 0) {
+        document.getElementById('formulas-30d').innerHTML =
+          '<div class="loading">Sin uso registrado en los últimos 30 días.<br><br><small>Las fórmulas empezarán a registrarse cuando se emitan alertas Slack con el formatter. Asegúrate de que los pollers están activos.</small></div>';
+        return;
+      }
+
+      var html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+      html += '<thead><tr style="border-bottom:1px solid #2a2a2a;text-align:left;color:#888">' +
+        '<th style="padding:8px 10px">Regla (matchKey)</th>' +
+        '<th style="padding:8px 10px;text-align:right">Count</th>' +
+        '<th style="padding:8px 10px;text-align:right">Avg score DS</th>' +
+        '<th style="padding:8px 10px;text-align:right">Max</th>' +
+        '<th style="padding:8px 10px;text-align:right">Entidades</th>' +
+        '<th style="padding:8px 10px">Top entidades</th>' +
+        '<th style="padding:8px 10px">Último uso</th>' +
+        '</tr></thead><tbody>';
+
+      rows.forEach(function(r) {
+        var parts = r.matchKey.split('+');
+        var typeSubtype = parts[0] || '';
+        var topic = parts[1] && parts[1] !== '_' ? parts[1] : '';
+        var topicBadge = topic
+          ? '<span class="badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;margin-left:6px;font-size:10px">' + escapeHtml(topic) + '</span>'
+          : '';
+        var topEntitiesTxt = (r.topEntities || []).map(function(e) {
+          return escapeHtml(e.name) + ' (' + e.count + ')';
+        }).join(', ');
+        var avgScore = r.avgEntityScore != null ? r.avgEntityScore.toFixed(1) : '—';
+        var maxScore = r.maxEntityScore != null ? r.maxEntityScore.toFixed(1) : '—';
+        // Colorize avg score: higher = greener (proxy of audience quality)
+        var avgColor = '#888';
+        if (r.avgEntityScore != null) {
+          if (r.avgEntityScore >= 15) avgColor = '#10b981';
+          else if (r.avgEntityScore >= 8) avgColor = '#60a5fa';
+          else if (r.avgEntityScore >= 4) avgColor = '#facc15';
+        }
+        var lastUsed = r.lastSeen ? timeAgo(r.lastSeen) : '—';
+        html += '<tr style="border-bottom:1px solid #1a1a1a">' +
+          '<td style="padding:8px 10px"><code style="background:rgba(255,255,255,0.04);padding:2px 6px;border-radius:4px;color:#ddd">' + escapeHtml(typeSubtype) + '</code>' + topicBadge + '</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:#ddd;font-weight:600">' + r.count + '</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:' + avgColor + ';font-weight:600">' + avgScore + '</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:#888">' + maxScore + '</td>' +
+          '<td style="padding:8px 10px;text-align:right;color:#888">' + (r.uniqueEntities || 0) + '</td>' +
+          '<td style="padding:8px 10px;color:#bbb">' + (topEntitiesTxt || '<span style="color:#555">—</span>') + '</td>' +
+          '<td style="padding:8px 10px;color:#888">' + lastUsed + '</td>' +
+          '</tr>';
+      });
+      html += '</tbody></table></div>';
+      document.getElementById('formulas-30d').innerHTML = html;
+    }
+
+    var currentOppKind = '__all__';
+    var currentOppTopic = '__all__';
+
+    function renderOpportunities() {
+      var all = window.__opportunitiesData || [];
+      var filtered = all.filter(function(o) {
+        if (currentOppKind !== '__all__' && o.kind !== currentOppKind) return false;
+        if (currentOppTopic !== '__all__' && o.topic !== currentOppTopic) return false;
+        return true;
+      });
+      document.getElementById('opportunities-count').textContent = filtered.length + ' de ' + all.length;
+
+      if (filtered.length === 0) {
+        document.getElementById('opportunities').innerHTML =
+          '<div class="loading">Sin huecos editoriales activos con esos filtros.</div>';
+        return;
+      }
+
+      var kindMap = {
+        hueco_seo: { icon: '&#128269;', label: 'HUECO SEO', color: '#10b981' },
+        not_covering: { icon: '&#9888;&#65039;', label: 'NO CUBRIMOS', color: '#f97316' },
+        triple_match_fresh: { icon: '&#128165;', label: 'TRIPLE MATCH FRESCO', color: '#f43f5e' },
+        us_relevant: { icon: '&#127482;&#127480;', label: 'USA CON CABIDA', color: '#6366f1' }
+      };
+
+      var html = filtered.map(function(o) {
+        var km = kindMap[o.kind] || kindMap.hueco_seo;
+        var topicBadge = o.topic
+          ? '<span class="badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;margin-left:8px">' + escapeHtml(o.topic) + '</span>'
+          : '';
+        var catText = o.category
+          ? '<span style="margin-left:8px;color:#888">&mdash; ' + escapeHtml(o.category) + '</span>'
+          : '';
+        // Cabida reason badges (only on us_relevant)
+        var cabidaBadges = '';
+        if (o.cabidaReason && o.cabidaReason.length > 0) {
+          var cabidaMap = { entity_es: 'Discover ES', media_es: 'medio ES', topic: 'topic' };
+          cabidaBadges = o.cabidaReason.map(function(r) {
+            return '<span class="badge" style="background:rgba(99,102,241,0.15);color:#a5b4fc;margin-left:4px;font-size:9px">&#10003; ' + (cabidaMap[r] || r) + '</span>';
+          }).join('');
+        }
+        var metaParts = [];
+        if (o.trafficEstimate) metaParts.push('Trafico: ~' + o.trafficEstimate.toLocaleString() + '+');
+        if (o.outletCount) metaParts.push(o.outletCount + ' medios');
+        if (o.xRank) metaParts.push('X #' + o.xRank);
+        if (o.discoverPosition) metaParts.push('Discover #' + o.discoverPosition);
+        var metaLine = metaParts.length > 0 ? '<div class="alert-detail">' + metaParts.join(' | ') + '</div>' : '';
+
+        var examplesHtml = '';
+        if (o.examples && o.examples.length > 0) {
+          examplesHtml = '<div class="alert-enrich"><div class="alert-enrich-title">&#128240; Cobertura de la competencia</div><ul>';
+          o.examples.forEach(function(ex) {
+            var srcTxt = ex.source ? ' <em>(' + escapeHtml(ex.source) + ')</em>' : '';
+            if (ex.url) {
+              examplesHtml += '<li>&bull; <a href="' + escapeHtml(ex.url) + '" target="_blank">' + escapeHtml(ex.title) + '</a>' + srcTxt + '</li>';
+            } else {
+              examplesHtml += '<li>&bull; ' + escapeHtml(ex.title) + srcTxt + '</li>';
+            }
+          });
+          examplesHtml += '</ul></div>';
+        }
+
+        var outletsList = '';
+        if (o.otherOutlets && o.otherOutlets.length > 0) {
+          outletsList = '<div class="alert-detail" style="margin-top:4px;color:#aaa">Cubren: ' + o.otherOutlets.map(escapeHtml).join(', ') + '</div>';
+        }
+
+        return '<div class="alert-item" style="border-left-color:' + km.color + '">' +
+          '<div class="alert-type" style="color:' + km.color + '">' + km.icon + ' ' + km.label + topicBadge + cabidaBadges + catText + '</div>' +
+          '<div class="alert-title">' + escapeHtml(o.title) + '</div>' +
+          '<div class="alert-detail">' + escapeHtml(o.detail) + '</div>' +
+          metaLine +
+          outletsList +
+          examplesHtml +
+        '</div>';
+      }).join('');
+      document.getElementById('opportunities').innerHTML = html;
+    }
+
+    // Wire filter buttons for opportunities
+    document.addEventListener('click', function(ev) {
+      var t = ev.target;
+      if (!t || !t.classList || !t.classList.contains('filter-btn')) return;
+      var oppKind = t.getAttribute('data-opp-kind');
+      var oppTopic = t.getAttribute('data-opp-topic');
+      if (oppKind) {
+        currentOppKind = oppKind;
+        Array.from(document.querySelectorAll('[data-opp-kind]')).forEach(function(b) { b.classList.remove('active'); });
+        t.classList.add('active');
+        renderOpportunities();
+      }
+      if (oppTopic) {
+        currentOppTopic = oppTopic;
+        Array.from(document.querySelectorAll('[data-opp-topic]')).forEach(function(b) { b.classList.remove('active'); });
+        t.classList.add('active');
+        renderOpportunities();
+      }
+    });
+
+    function renderFilterButtons(recent) {
+      // Route buttons
+      var routeCounts = { __all__: recent.length };
+      recent.forEach(function(r) {
+        routeCounts[r.routeName] = (routeCounts[r.routeName] || 0) + 1;
+      });
+      var routes = Object.keys(routeCounts).filter(function(k) { return k !== '__all__'; }).sort();
+      var order = ['__all__'].concat(routes);
+      var html = order.map(function(route) {
+        var label = route === '__all__' ? 'Todas' : route;
+        var activeCls = route === currentRouteFilter ? ' active' : '';
+        return '<button class="filter-btn' + activeCls + '" data-route="' + escapeHtml(route) + '">' +
+          escapeHtml(label) + '<span class="count">' + routeCounts[route] + '</span>' +
+        '</button>';
+      }).join('');
+      var container = document.getElementById('recent-filters');
+      container.innerHTML = html;
+      Array.from(container.querySelectorAll('.filter-btn')).forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          currentRouteFilter = btn.getAttribute('data-route');
+          Array.from(container.querySelectorAll('.filter-btn')).forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          renderRecentAlerts(recent);
+        });
+      });
+
+      // Type selector
+      var typeCounts = {};
+      recent.forEach(function(r) {
+        var key = r.subtype ? r.type + '/' + r.subtype : r.type;
+        typeCounts[key] = (typeCounts[key] || 0) + 1;
+      });
+      var typeOptions = ['<option value="__all__">Todos los tipos (' + recent.length + ')</option>'];
+      Object.keys(typeCounts).sort().forEach(function(key) {
+        var parts = key.split('/');
+        var label = parts[1] ? (subtypeLabelsGlobal[parts[1]] || parts[1]) : parts[0];
+        var selected = key === currentTypeFilter ? ' selected' : '';
+        typeOptions.push('<option value="' + escapeHtml(key) + '"' + selected + '>' + escapeHtml(label) + ' (' + typeCounts[key] + ')</option>');
+      });
+      var typeSelect = document.getElementById('filter-type');
+      typeSelect.innerHTML = typeOptions.join('');
+      typeSelect.onchange = function() {
+        currentTypeFilter = typeSelect.value;
+        renderRecentAlerts(recent);
+      };
+
+      // Category selector (DiscoverSnoop derived category)
+      var catCounts = {};
+      var withoutCat = 0;
+      recent.forEach(function(r) {
+        if (r.category) {
+          catCounts[r.category] = (catCounts[r.category] || 0) + 1;
+        } else {
+          withoutCat++;
+        }
+      });
+      var catOptions = ['<option value="__all__">Todas las categorias (' + recent.length + ')</option>'];
+      if (withoutCat > 0) {
+        catOptions.push('<option value="__none__">Sin categoria (' + withoutCat + ')</option>');
+      }
+      Object.keys(catCounts).sort().forEach(function(cat) {
+        var selected = cat === currentCategoryFilter ? ' selected' : '';
+        catOptions.push('<option value="' + escapeHtml(cat) + '"' + selected + '>' + escapeHtml(cat) + ' (' + catCounts[cat] + ')</option>');
+      });
+      var catSelect = document.getElementById('filter-category');
+      catSelect.innerHTML = catOptions.join('');
+      catSelect.onchange = function() {
+        currentCategoryFilter = catSelect.value;
+        renderRecentAlerts(recent);
+      };
+    }
+
+    async function loadLiveAlerts() {
+      try {
+        var res = await fetch('/api/live-alerts');
+        if (!res.ok) throw new Error('http ' + res.status);
+        var data = await res.json();
+
+        // Recent alerts
+        var recent = data.recentAlerts || [];
+        renderFilterButtons(recent);
+        renderRecentAlerts(recent);
+
+        // Opportunities (Huecos activos)
+        var opportunities = data.opportunities || [];
+        window.__opportunitiesData = opportunities;
+        renderOpportunities();
+
+        // Formulas last 30d
+        renderFormulas30d(data.formulasLast30d || []);
+
+        // Entities
+        var entities = data.entities || [];
+        document.getElementById('live-count').textContent = entities.length + ' activas / ' + data.totals.entitiesTracked + ' tracked';
+
+        if (entities.length === 0) {
+          document.getElementById('live-alerts').innerHTML =
+            '<div class="loading">Sin entidades en flash/longtail/ascending ahora mismo.<br><br>' +
+            '<small>Ultimo poll Discover: ' + (data.lastPollDiscover || 'nunca') + '</small></div>';
+        } else {
+          var html = entities.map(function(e) {
+            var statusMap = {
+              flash: { cls: 'alert-flash', icon: '&#9889;', label: 'FLASH 1h', color: '#ef4444' },
+              longtail: { cls: 'alert-longtail', icon: '&#128293;', label: 'LONGTAIL 2h', color: '#facc15' },
+              ascending: { cls: 'alert-entity', icon: '&#128640;', label: 'ASCENSO 6h', color: '#4ade80' }
+            };
+            // Primary status is the highest severity, but show all matched statuses as badges
+            var st = statusMap[e.status] || statusMap.ascending;
+            var allStatuses = (e.statuses || [e.status]).map(function(s) {
+              var m = statusMap[s] || statusMap.ascending;
+              var count = s === 'flash' ? e.appearancesLastHour :
+                          s === 'longtail' ? e.appearancesLast2h :
+                          e.appearancesLast6h;
+              var win = s === 'flash' ? '1h' : s === 'longtail' ? '2h' : '6h';
+              return '<span class="badge" style="background:' + m.cls.replace('alert-','') + ';color:' + m.color + ';background:rgba(' + (m.color === '#ef4444' ? '239,68,68' : m.color === '#facc15' ? '250,204,21' : '74,222,128') + ',0.15);margin-right:4px">' + m.icon + ' ' + count + ' en ' + win + '</span>' + tooltipHtml('entity', s);
+            }).join('');
+
+            var enrichHtml = '';
+            var hasEnrich = (e.matchingGoogleTrends.length + e.matchingXTrends.length + e.matchingArticles.length) > 0;
+            if (hasEnrich) {
+              enrichHtml += '<div class="alert-enrich">';
+              if (e.matchingGoogleTrends.length > 0) {
+                enrichHtml += '<div class="alert-enrich-title">&#128279; Google Trends</div><ul>';
+                e.matchingGoogleTrends.forEach(function(t) {
+                  enrichHtml += '<li>&bull; <strong>' + escapeHtml(t.title) + '</strong>' +
+                    (t.approxTraffic > 0 ? ' &mdash; ' + t.approxTraffic.toLocaleString() + '+ busquedas' : '') + '</li>';
+                });
+                enrichHtml += '</ul>';
+              }
+              if (e.matchingXTrends.length > 0) {
+                enrichHtml += '<div class="alert-enrich-title" style="margin-top:6px">&#128038; X/Twitter Trends</div><ul>';
+                e.matchingXTrends.forEach(function(t) {
+                  enrichHtml += '<li>&bull; <strong>' + escapeHtml(t.topic) + '</strong> &mdash; #' + t.rank + ' en X</li>';
+                });
+                enrichHtml += '</ul>';
+              }
+              if (e.matchingArticles.length > 0) {
+                enrichHtml += '<div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios publicando</div><ul>';
+                e.matchingArticles.forEach(function(a) {
+                  enrichHtml += '<li>&bull; <a href="' + escapeHtml(a.link) + '" target="_blank">' + escapeHtml(a.title) + '</a> <em>(' + escapeHtml(a.feedName) + ')</em></li>';
+                });
+                enrichHtml += '</ul>';
+              }
+              enrichHtml += '</div>';
+            }
+
+            var momentumMap = {
+              rising:  { icon: '&#128640;', label: 'Rising', color: '#22c55e' },
+              peaking: { icon: '&#128293;', label: 'Peaking', color: '#ef4444' },
+              fading:  { icon: '&#128201;', label: 'Fading', color: '#78716c' },
+              steady:  { icon: '&#10134;', label: 'Steady', color: '#a3a3a3' },
+              'new':   { icon: '&#10024;', label: 'New burst', color: '#38bdf8' }
+            };
+            var momBadge = '';
+            if (e.velocity && e.velocity.momentum) {
+              var mm = momentumMap[e.velocity.momentum] || momentumMap.steady;
+              var accTxt = typeof e.velocity.acceleration === 'number'
+                ? ' &middot; acc ' + e.velocity.acceleration.toFixed(2) + '&times;'
+                : '';
+              momBadge = '<span class="badge" style="background:rgba(255,255,255,0.06);color:' + mm.color + ';margin-left:6px">' + mm.icon + ' ' + mm.label + accTxt + '</span>';
+            }
+
+            return '<div class="alert-item ' + st.cls + '">' +
+              '<div class="alert-type" style="color:' + st.color + '">' + allStatuses + momBadge + (e.category ? '<span style="margin-left:8px;color:#888">&mdash; ' + escapeHtml(e.category) + '</span>' : '') + '</div>' +
+              '<div class="alert-title">' + escapeHtml(e.name) + '</div>' +
+              '<div class="alert-detail">Score: ' + e.score + ' | Posicion: #' + e.position + ' | Publicaciones: ' + e.publications + '</div>' +
+              enrichHtml +
+            '</div>';
+          }).join('');
+          document.getElementById('live-alerts').innerHTML = html;
+        }
+
+        // Concordances
+        var concs = data.concordances || [];
+        document.getElementById('live-conc-count').textContent = concs.length + ' activas';
+        if (concs.length === 0) {
+          document.getElementById('live-concordances').innerHTML = '<div class="loading">Sin concordancias cross-source ahora mismo</div>';
+        } else {
+          var concMap = {
+            discover_trends_x: { cls: 'alert-triple', icon: '&#128165;', label: 'TRIPLE: Discover + Trends + X' },
+            discover_rss: { cls: 'alert-concordance', icon: '&#128225;', label: 'Discover + Medios' },
+            discover_trends: { cls: 'alert-concordance', icon: '&#128279;', label: 'Discover + Google Trends' },
+            discover_x: { cls: 'alert-concordance', icon: '&#128038;', label: 'Discover + X/Twitter' }
+          };
+          var concHtml = concs.map(function(c) {
+            var m = concMap[c.subtype] || concMap.discover_rss;
+            var enrich = '<div class="alert-enrich">';
+            if (c.matchingTrends.length > 0) {
+              enrich += '<div class="alert-enrich-title">&#128279; Google Trends</div><ul>';
+              c.matchingTrends.forEach(function(t) {
+                enrich += '<li>&bull; <strong>' + escapeHtml(t.title) + '</strong>' + (t.approxTraffic > 0 ? ' &mdash; ' + t.approxTraffic.toLocaleString() + '+' : '') + '</li>';
+              });
+              enrich += '</ul>';
+            }
+            if (c.matchingXTrends.length > 0) {
+              enrich += '<div class="alert-enrich-title" style="margin-top:6px">&#128038; X/Twitter</div><ul>';
+              c.matchingXTrends.forEach(function(t) {
+                enrich += '<li>&bull; <strong>' + escapeHtml(t.topic) + '</strong> &mdash; #' + t.rank + '</li>';
+              });
+              enrich += '</ul>';
+            }
+            if (c.matchingArticles.length > 0) {
+              enrich += '<div class="alert-enrich-title" style="margin-top:6px">&#128240; Medios</div><ul>';
+              c.matchingArticles.forEach(function(a) {
+                enrich += '<li>&bull; <a href="' + escapeHtml(a.link) + '" target="_blank">' + escapeHtml(a.title) + '</a> <em>(' + escapeHtml(a.feedName) + ')</em></li>';
+              });
+              enrich += '</ul>';
+            }
+            enrich += '</div>';
+            var cat = c.category ? ' &mdash; ' + escapeHtml(c.category) : '';
+            return '<div class="alert-item ' + m.cls + '">' +
+              '<div class="alert-type" style="color:#38bdf8">' + m.icon + ' ' + m.label + tooltipHtml('entity_concordance', c.subtype) + cat + '</div>' +
+              '<div class="alert-title">' + escapeHtml(c.entityName) + '</div>' +
+              '<div class="alert-detail">Score: ' + c.score + ' | Posicion: #' + c.position + '</div>' +
+              enrich +
+            '</div>';
+          }).join('');
+          document.getElementById('live-concordances').innerHTML = concHtml;
+        }
+
+        // Categories
+        var cats = data.categories || [];
+        document.getElementById('live-cat-count').textContent = cats.length + ' tracked';
+        if (cats.length === 0) {
+          document.getElementById('live-categories').innerHTML = '<div class="loading">Sin categorias tracked aun</div>';
+        } else {
+          var catHtml = cats.map(function(c) {
+            var deltaText = c.scoreDelta24h == null ? 'Sin baseline 24h aun' :
+              (c.scoreDelta24h > 0 ? '+' : '') + c.scoreDelta24h + ' en 24h (de ' + c.score24hAgo + ' a ' + c.score + ')';
+            var cls = c.scoreDelta24h != null && c.scoreDelta24h >= 30 ? 'alert-day-spike' :
+                      c.scoreDelta24h != null && c.scoreDelta24h >= 15 ? 'alert-category' : 'alert-entity';
+            var examples = (c.examplePages || []).slice(0, 5);
+            var examplesHtml = '';
+            if (examples.length > 0) {
+              examplesHtml = '<div class="alert-enrich"><div class="alert-enrich-title">&#128240; Ejemplos (' + examples.length + ')</div><ul>';
+              examples.forEach(function(p) {
+                examplesHtml += '<li>&bull; <a href="' + escapeHtml(p.url) + '" target="_blank">' + escapeHtml(p.title) + '</a>' + (p.publisher ? ' <em>(' + escapeHtml(p.publisher) + ')</em>' : '') + '</li>';
+              });
+              examplesHtml += '</ul></div>';
+            }
+            return '<div class="alert-item ' + cls + '">' +
+              '<div class="alert-title">' + escapeHtml(c.name) + ' <span style="color:#666;font-weight:400">(#' + c.position + ')</span></div>' +
+              '<div class="alert-detail">' + deltaText + ' | Publicaciones: ' + c.publications + ' | Muestras: ' + c.historyPoints + '/24h</div>' +
+              examplesHtml +
+            '</div>';
+          }).join('');
+          document.getElementById('live-categories').innerHTML = catHtml;
+        }
+
+        // Headline patterns
+        var hls = data.headlinePatterns || [];
+        document.getElementById('live-hl-count').textContent = hls.length + ' patrones';
+        if (hls.length === 0) {
+          document.getElementById('live-headlines').innerHTML = '<div class="loading">Sin patrones detectados aun (necesita 3+ repeticiones de 3+ palabras)</div>';
+        } else {
+          var hlHtml = hls.map(function(h) {
+            return '<div class="alert-item alert-headline">' +
+              '<div class="alert-title">"' + escapeHtml(h.ngram) + '"</div>' +
+              '<div class="alert-detail">Repetido ' + h.count + ' veces | ' + h.words + ' palabras</div>' +
+            '</div>';
+          }).join('');
+          document.getElementById('live-headlines').innerHTML = hlHtml;
+        }
+
+        // Headline patterns 4 dias
+        var hl4d = data.headlinePatterns4d || [];
+        document.getElementById('live-hl4d-count').textContent = hl4d.length + ' patrones';
+        if (hl4d.length === 0) {
+          document.getElementById('live-headlines-4d').innerHTML = '<div class="loading">Sin historial aun (necesita 2+ polls con el mismo patron)</div>';
+        } else {
+          var hl4dHtml = hl4d.map(function(h) {
+            var days = Math.max(1, Math.round((new Date(h.lastSeen) - new Date(h.firstSeen)) / 86400000));
+            return '<div class="alert-item alert-headline">' +
+              '<div class="alert-title">"' + escapeHtml(h.ngram) + '"</div>' +
+              '<div class="alert-detail">Total: ' + h.totalCount + ' apariciones en ' + h.polls + ' polls | span: ' + days + 'd | ' + h.words + ' palabras</div>' +
+            '</div>';
+          }).join('');
+          document.getElementById('live-headlines-4d').innerHTML = hl4dHtml;
+        }
+
+        // Top 10 medios
+        var topMedia = data.topMedia || [];
+        document.getElementById('top-media-count').textContent = topMedia.length + ' medios';
+        if (topMedia.length === 0) {
+          document.getElementById('top-media').innerHTML = '<div class="loading">Sin articulos de medios cacheados aun</div>';
+        } else {
+          var tmHtml = topMedia.map(function(m, idx) {
+            var entHtml = m.entities.map(function(e) {
+              var marks = '';
+              if (e.inGoogleTrends) marks += '<span class="ent-mark ent-mark-gt">GT</span>';
+              if (e.inXTrends) marks += '<span class="ent-mark ent-mark-x">X</span>';
+              if (e.inRss) marks += '<span class="ent-mark ent-mark-rss">RSS</span>';
+              return '<span class="media-ent">' +
+                escapeHtml(e.name) + '<span class="ent-count">&times;' + e.count + '</span>' + marks +
+              '</span>';
+            }).join('');
+            return '<div class="media-row">' +
+              '<div class="media-rank">#' + (idx + 1) + '</div>' +
+              '<div class="media-info">' +
+                '<div class="media-name">' + escapeHtml(m.feedName) + '</div>' +
+                '<div class="media-meta">' + m.articleCount + ' articulos &middot; ' + m.entities.length + ' entidades matcheadas</div>' +
+                '<div class="media-entities">' + (entHtml || '<span style="color:#555;font-size:12px">Sin entidades coincidentes</span>') + '</div>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+          document.getElementById('top-media').innerHTML = tmHtml;
+        }
+      } catch(e) {
+        document.getElementById('live-alerts').innerHTML = '<div class="loading">Error cargando alertas: ' + escapeHtml(e.message) + '</div>';
+        document.getElementById('live-categories').innerHTML = '<div class="loading">Error</div>';
+      }
+    }
+
+    async function loadRoutes() {
+      try {
+        var res = await fetch('/api/routing');
+        var data = await res.json();
+        var routes = data.routes;
+        document.getElementById('routes-count').textContent = (routes.length + 1) + ' rutas';
+        var html = '';
+
+        routes.forEach(function(r) {
+          html += '<div class="route-item">' +
+            '<div class="route-name">' + r.name + '</div>' +
+            '<div class="route-arrow">&rarr;</div>' +
+            '<div class="route-cats">' + r.categories.join(', ') + '</div>' +
+            '<div class="route-env">$' + r.webhookEnv + '</div>' +
+          '</div>';
+        });
+        html += '<div class="route-item">' +
+          '<div class="route-name" style="color:#888">Default (fallback)</div>' +
+          '<div class="route-arrow">&rarr;</div>' +
+          '<div class="route-cats">todo lo que no matchee arriba</div>' +
+          '<div class="route-env">$SLACK_WEBHOOK_URL</div>' +
+        '</div>';
+        document.getElementById('routes-list').innerHTML = html;
+      } catch(e) {
+        document.getElementById('routes-list').innerHTML = '<div class="loading">Error cargando rutas</div>';
+      }
+    }
+
+    // Tab switching
+    var currentTab = 'live';
+    var historicoLoadedOnce = false;
+    Array.from(document.querySelectorAll('.tab-btn-main')).forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var tab = btn.getAttribute('data-tab');
+        currentTab = tab;
+        Array.from(document.querySelectorAll('.tab-btn-main')).forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        Array.from(document.querySelectorAll('.tab-panel')).forEach(function(p) { p.classList.remove('active'); });
+        document.getElementById('tab-' + tab).classList.add('active');
+        if (tab === 'historico' && !historicoLoadedOnce) {
+          historicoLoadedOnce = true;
+          initHistDsShortcuts();
+          initHistorico();
+        }
+      });
+    });
+
+    // ============== HISTORICO DISCOVERSNOOP (date range) ==============
+    function pad2(n) { return n < 10 ? '0' + n : String(n); }
+    function fmtDate(d) { return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()); }
+
+    function initHistDsShortcuts() {
+      Array.from(document.querySelectorAll('#tab-historico [data-shortcut]')).forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var sc = btn.getAttribute('data-shortcut');
+          var now = new Date();
+          var from, to;
+          if (sc === '7d') {
+            to = now; from = new Date(now.getTime() - 7*86400000);
+          } else if (sc === '30d') {
+            to = now; from = new Date(now.getTime() - 30*86400000);
+          } else if (sc === 'w2025-01') {
+            from = new Date(2025, 0, 1); to = new Date(2025, 0, 7);
+          } else if (sc === 'w2025-q1') {
+            from = new Date(2025, 0, 1); to = new Date(2025, 2, 31);
+          }
+          if (from && to) {
+            document.getElementById('hist-ds-from').value = fmtDate(from);
+            document.getElementById('hist-ds-to').value = fmtDate(to);
+            queryHistDs();
+          }
+        });
+      });
+      document.getElementById('hist-ds-submit').addEventListener('click', queryHistDs);
+
+      // Default: last 7 days
+      var now = new Date();
+      document.getElementById('hist-ds-from').value = fmtDate(new Date(now.getTime() - 7*86400000));
+      document.getElementById('hist-ds-to').value = fmtDate(now);
+    }
+
+    async function queryHistDs() {
+      var from = document.getElementById('hist-ds-from').value;
+      var to = document.getElementById('hist-ds-to').value;
+      var lines = document.getElementById('hist-ds-lines').value || '500';
+      if (!from || !to) {
+        alert('Por favor selecciona ambas fechas');
+        return;
+      }
+      document.getElementById('hist-ds-content').innerHTML = '<div class="loading"><div class="spinner"></div><br>Consultando DiscoverSnoop de ' + from + ' a ' + to + '...</div>';
+      document.getElementById('hist-ds-count').textContent = 'Cargando...';
+      try {
+        var url = '/api/historical-discover?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&lines=' + lines;
+        var res = await fetch(url);
+        var data = await res.json();
+        if (data.error) {
+          document.getElementById('hist-ds-content').innerHTML = '<div class="loading">Error: ' + escapeHtml(data.error) + '</div>';
+          return;
+        }
+        renderHistDs(data);
+      } catch (e) {
+        document.getElementById('hist-ds-content').innerHTML = '<div class="loading">Error: ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    function renderHistDs(data) {
+      var ents = data.entities || [];
+      var cats = data.categories || [];
+      var pages = data.pages || [];
+      var doms = data.domains || [];
+
+      document.getElementById('hist-ds-count').textContent =
+        ents.length + ' entities · ' + cats.length + ' cats · ' + pages.length + ' pages · ' + doms.length + ' domains';
+
+      var summary = '<div class="hist-summary">' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Rango</span><span class="hist-summary-value" style="font-size:14px">' + data.from + ' → ' + data.to + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Entidades</span><span class="hist-summary-value">' + ents.length + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Categorias</span><span class="hist-summary-value">' + cats.length + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Paginas</span><span class="hist-summary-value">' + pages.length + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Dominios</span><span class="hist-summary-value">' + doms.length + '</span></div>' +
+      '</div>';
+
+      function rankedList(items, maxItems, renderName) {
+        var limited = items.slice(0, maxItems);
+        if (limited.length === 0) return '<div style="color:#555;font-size:12px;padding:6px 0">Sin datos</div>';
+        return limited.map(function(item, i) {
+          return '<div class="hist-item"><span class="hist-item-name">#' + (i+1) + ' ' + renderName(item) + '</span><span class="hist-item-count">' + (item.score || 0) + '</span></div>';
+        }).join('');
+      }
+
+      var entsHtml = rankedList(ents, 30, function(e) { return escapeHtml(e.entity || e.name || '?'); });
+      var catsHtml = rankedList(cats, 25, function(c) { return escapeHtml(c.name || ('cat ' + c.id)); });
+      var domsHtml = rankedList(doms, 25, function(d) { return escapeHtml(d.publisher || d.publisher_url || '?'); });
+
+      var pagesHtml = pages.slice(0, 30).map(function(p, i) {
+        var title = p.title || p.title_original || '(sin titulo)';
+        var source = p.publisher || '';
+        return '<div class="hist-item">' +
+          '<span class="hist-item-name">#' + (i+1) + ' ' +
+            (p.url ? '<a href="' + escapeHtml(p.url) + '" target="_blank" style="color:#60a5fa;text-decoration:none">' + escapeHtml(title) + '</a>' : escapeHtml(title)) +
+            (source ? ' <em style="color:#666">(' + escapeHtml(source) + ')</em>' : '') +
+          '</span>' +
+          '<span class="hist-item-count">' + (p.score || 0) + '</span>' +
+        '</div>';
+      }).join('') || '<div style="color:#555;font-size:12px;padding:6px 0">Sin datos</div>';
+
+      document.getElementById('hist-ds-content').innerHTML = summary +
+        '<div class="hist-grid">' +
+          '<div class="hist-col"><h3>&#128293; Top entidades</h3>' + entsHtml + '</div>' +
+          '<div class="hist-col"><h3>&#128202; Top categorias</h3>' + catsHtml + '</div>' +
+          '<div class="hist-col"><h3>&#127760; Top dominios</h3>' + domsHtml + '</div>' +
+        '</div>' +
+        '<div style="margin-top:20px"><h3 style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #222">&#128240; Top paginas</h3>' + pagesHtml + '</div>';
+    }
+
+    // ============== HISTORICO (medios RSS) ==============
+    var histAvailableWeeks = [];
+    var histCurrentWeek = null;
+    var histCurrentFeed = '__all__';
+    var histCurrentData = null;
+
+    async function initHistorico() {
+      try {
+        var liveRes = await fetch('/api/live-alerts');
+        var liveData = await liveRes.json();
+        var summary = liveData.weeklyHistorySummary || { availableWeeks: [], feedNames: [] };
+        histAvailableWeeks = summary.availableWeeks || [];
+        var allFeeds = summary.feedNames || [];
+
+        // Week selector
+        var weekSelect = document.getElementById('hist-week-select');
+        if (histAvailableWeeks.length === 0) {
+          weekSelect.innerHTML = '<option value="">Sin datos aun</option>';
+          document.getElementById('hist-content').innerHTML =
+            '<div class="loading">Aun no hay historial semanal.<br><br>' +
+            '<small>Se construye con cada poll de media (cada 15 min). Espera unas horas para ver datos agregados.</small></div>';
+          return;
+        }
+        weekSelect.innerHTML = histAvailableWeeks.map(function(w, i) {
+          return '<option value="' + w + '"' + (i === 0 ? ' selected' : '') + '>' + w + '</option>';
+        }).join('');
+        histCurrentWeek = histAvailableWeeks[0];
+
+        // Feed selector
+        var feedSelect = document.getElementById('hist-feed-select');
+        feedSelect.innerHTML = '<option value="__all__">Todos los medios</option>' +
+          allFeeds.map(function(f) { return '<option value="' + escapeHtml(f) + '">' + escapeHtml(f) + '</option>'; }).join('');
+
+        // Wire up change handlers
+        weekSelect.onchange = function() {
+          histCurrentWeek = weekSelect.value;
+          loadHistWeek();
+        };
+        feedSelect.onchange = function() {
+          histCurrentFeed = feedSelect.value;
+          renderHistContent();
+        };
+
+        await loadHistWeek();
+      } catch (e) {
+        document.getElementById('hist-content').innerHTML = '<div class="loading">Error: ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    async function loadHistWeek() {
+      if (!histCurrentWeek) return;
+      document.getElementById('hist-content').innerHTML = '<div class="loading"><div class="spinner"></div><br>Cargando ' + escapeHtml(histCurrentWeek) + '...</div>';
+      try {
+        var res = await fetch('/api/weekly-history?week=' + encodeURIComponent(histCurrentWeek));
+        var data = await res.json();
+        histCurrentData = data;
+        renderHistContent();
+      } catch (e) {
+        document.getElementById('hist-content').innerHTML = '<div class="loading">Error: ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    function aggregateAcrossFeeds(feedsObj) {
+      var result = { articleCount: 0, entities: {}, categories: {}, patterns: {} };
+      Object.values(feedsObj).forEach(function(s) {
+        result.articleCount += s.articleCount || 0;
+        Object.entries(s.entities || {}).forEach(function(kv) {
+          result.entities[kv[0]] = (result.entities[kv[0]] || 0) + kv[1];
+        });
+        Object.entries(s.categories || {}).forEach(function(kv) {
+          result.categories[kv[0]] = (result.categories[kv[0]] || 0) + kv[1];
+        });
+        Object.entries(s.patterns || {}).forEach(function(kv) {
+          result.patterns[kv[0]] = (result.patterns[kv[0]] || 0) + kv[1];
+        });
+      });
+      return result;
+    }
+
+    function renderTopDict(obj, limit) {
+      var entries = Object.entries(obj).sort(function(a, b) { return b[1] - a[1]; }).slice(0, limit || 20);
+      if (entries.length === 0) return '<div style="color:#555;font-size:12px;padding:6px 0">Sin datos</div>';
+      return entries.map(function(kv) {
+        return '<div class="hist-item"><span class="hist-item-name">' + escapeHtml(kv[0]) + '</span><span class="hist-item-count">' + kv[1] + '</span></div>';
+      }).join('');
+    }
+
+    function renderHistContent() {
+      if (!histCurrentData) return;
+      var feeds = histCurrentData.feeds || {};
+      var feedNames = Object.keys(feeds);
+
+      if (feedNames.length === 0) {
+        document.getElementById('hist-content').innerHTML = '<div class="loading">Sin datos para ' + escapeHtml(histCurrentWeek) + '</div>';
+        document.getElementById('hist-total-count').textContent = '0 medios';
+        return;
+      }
+
+      var stats;
+      var titlePrefix;
+      if (histCurrentFeed === '__all__') {
+        stats = aggregateAcrossFeeds(feeds);
+        titlePrefix = feedNames.length + ' medios';
+      } else {
+        stats = feeds[histCurrentFeed];
+        if (!stats) {
+          document.getElementById('hist-content').innerHTML = '<div class="loading">El medio "' + escapeHtml(histCurrentFeed) + '" no tiene datos en ' + escapeHtml(histCurrentWeek) + '</div>';
+          return;
+        }
+        titlePrefix = histCurrentFeed;
+      }
+      document.getElementById('hist-total-count').textContent = titlePrefix;
+
+      var summary = '<div class="hist-summary">' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Articulos</span><span class="hist-summary-value">' + stats.articleCount + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Entidades unicas</span><span class="hist-summary-value">' + Object.keys(stats.entities).length + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Categorias DS</span><span class="hist-summary-value">' + Object.keys(stats.categories).length + '</span></div>' +
+        '<div class="hist-summary-item"><span class="hist-summary-label">Patrones</span><span class="hist-summary-value">' + Object.keys(stats.patterns).length + '</span></div>' +
+      '</div>';
+
+      var html = summary + '<div class="hist-grid">' +
+        '<div class="hist-col"><h3>&#128293; Top entidades</h3>' + renderTopDict(stats.entities, 25) + '</div>' +
+        '<div class="hist-col"><h3>&#128202; Top categorias</h3>' + renderTopDict(stats.categories, 25) + '</div>' +
+        '<div class="hist-col"><h3>&#128221; Top patrones</h3>' + renderTopDict(stats.patterns, 25) + '</div>' +
+      '</div>';
+
+      document.getElementById('hist-content').innerHTML = html;
+    }
+
     loadTrends();
+    loadXTrends();
     loadFeeds();
+    loadRoutes();
+    loadLiveAlerts();
+
+    // Auto-refresh live alerts every 60s
+    setInterval(loadLiveAlerts, 60000);
   </script>
 </body>
 </html>

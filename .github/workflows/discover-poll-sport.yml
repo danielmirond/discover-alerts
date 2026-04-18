@@ -1,0 +1,32 @@
+name: "[Sport] Discover Poll"
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: discover-poll-sport
+  cancel-in-progress: true
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production-sport
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --prefer-offline
+      - run: npx tsx src/run-poll.ts discover
+        env:
+          DISCOVERSNOOP_TOKEN: ${{ secrets.DISCOVERSNOOP_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          OWN_MEDIA_DOMAINS: ${{ secrets.OWN_MEDIA_DOMAINS }}
+          FEEDS_PATH: feeds-sport.json
+          OWN_MEDIA_ABSENT_CATEGORY_FILTER: Sport

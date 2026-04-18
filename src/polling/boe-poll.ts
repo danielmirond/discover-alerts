@@ -22,14 +22,16 @@ export async function runBoePoll(): Promise<void> {
   // Get cached Discover data for correlation
   const state = getState();
   const cachedEntities = Object.entries(state.entities).map(([name, snap]) => ({
+    entity: name,
     name,
+    country: 'ES',
     score: snap.score,
     score_decimal: snap.scoreDecimal,
     position: snap.position,
     publications: snap.publications,
     firstviewed: snap.firstSeen,
     lastviewed: snap.lastUpdated,
-  }));
+  })) as any[];
   const cachedPages = Object.entries(state.pages).map(([url, snap]) => ({
     url,
     title: snap.title,
@@ -65,7 +67,7 @@ export async function runBoePoll(): Promise<void> {
   const filtered = dedup(alerts);
   if (filtered.length > 0) {
     console.log(`[boe] Sending ${filtered.length} alerts (${alerts.length} before dedup)`);
-    const messages = formatAlerts(filtered);
+    const messages = await formatAlerts(filtered);
     await sendBatch(messages);
   } else {
     console.log(`[boe] No new alerts (${alerts.length} suppressed by dedup)`);

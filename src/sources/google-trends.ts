@@ -1,11 +1,10 @@
 import { XMLParser } from 'fast-xml-parser';
 import type { TrendsItem, TrendsNewsItem } from '../types.js';
 
-const RSS_URL = 'https://trends.google.com/trending/rss?geo=ES';
-
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '@_',
+  processEntities: false,
 });
 
 function parseTraffic(raw: string): number {
@@ -19,10 +18,15 @@ function toArray<T>(val: T | T[] | undefined): T[] {
   return Array.isArray(val) ? val : [val];
 }
 
-export async function fetchGoogleTrends(): Promise<TrendsItem[]> {
-  const res = await fetch(RSS_URL);
+/**
+ * Fetch Google Trends RSS for the given geo code (e.g. 'ES', 'US').
+ * Default = ES for backward compatibility.
+ */
+export async function fetchGoogleTrends(geo: string = 'ES'): Promise<TrendsItem[]> {
+  const url = `https://trends.google.com/trending/rss?geo=${encodeURIComponent(geo)}`;
+  const res = await fetch(url);
   if (!res.ok) {
-    throw new Error(`Google Trends RSS ${res.status}: ${await res.text().catch(() => '')}`);
+    throw new Error(`Google Trends RSS ${geo} ${res.status}: ${await res.text().catch(() => '')}`);
   }
 
   const xml = await res.text();
@@ -48,4 +52,9 @@ export async function fetchGoogleTrends(): Promise<TrendsItem[]> {
       newsItems,
     };
   });
+}
+
+/** Convenience wrapper for US trends. */
+export function fetchGoogleTrendsUS(): Promise<TrendsItem[]> {
+  return fetchGoogleTrends('US');
 }

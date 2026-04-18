@@ -64,19 +64,19 @@ export function detectBoeDiscoverCorrelations(
     // Check against Discover entities
     for (const entity of entities) {
       const boeNorm = normalizeForSubstring(boe.titulo);
-      const entityNorm = normalizeForSubstring(entity.name);
+      const entityNorm = normalizeForSubstring((entity as any).entity ?? (entity as any).name);
 
       // Substring match: entity name appears in BOE title
       if (boeNorm.includes(entityNorm) && entityNorm.length > 3) {
-        matchingEntities.push(entity.name);
+        matchingEntities.push((entity as any).entity ?? (entity as any).name);
         bestScore = Math.max(bestScore, 0.9);
         continue;
       }
 
       // Fuzzy match
-      const sim = diceCoefficient(boe.titulo, entity.name);
+      const sim = diceCoefficient(boe.titulo, (entity as any).entity ?? (entity as any).name);
       if (sim >= threshold) {
-        matchingEntities.push(entity.name);
+        matchingEntities.push((entity as any).entity ?? (entity as any).name);
         bestScore = Math.max(bestScore, sim);
       }
     }

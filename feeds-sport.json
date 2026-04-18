@@ -1,0 +1,2036 @@
+{
+  "feeds": [
+    {
+      "name": "Mundo Deportivo Home",
+      "url": "https://www.mundodeportivo.com/rss/home.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Portada",
+      "url": "https://www.mundodeportivo.com/rss/portada.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Lo Ultimo",
+      "url": "https://www.mundodeportivo.com/rss/loultimo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Futbol",
+      "url": "https://www.mundodeportivo.com/rss/futbol.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo FC Barcelona",
+      "url": "https://www.mundodeportivo.com/rss/futbol/fc-barcelona.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Real Madrid",
+      "url": "https://www.mundodeportivo.com/rss/futbol/real-madrid.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Atletico",
+      "url": "https://www.mundodeportivo.com/rss/futbol/atletico-madrid.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo LaLiga",
+      "url": "https://www.mundodeportivo.com/rss/futbol/laliga.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Champions",
+      "url": "https://www.mundodeportivo.com/rss/futbol/champions-league.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Europa League",
+      "url": "https://www.mundodeportivo.com/rss/futbol/europa-league.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Premier",
+      "url": "https://www.mundodeportivo.com/rss/futbol/premier-league.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Bundesliga",
+      "url": "https://www.mundodeportivo.com/rss/futbol/bundesliga.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Serie A",
+      "url": "https://www.mundodeportivo.com/rss/futbol/serie-a.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Ligue 1",
+      "url": "https://www.mundodeportivo.com/rss/futbol/ligue-1.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Futbol Internacional",
+      "url": "https://www.mundodeportivo.com/rss/futbol/internacional.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Copa del Rey",
+      "url": "https://www.mundodeportivo.com/rss/futbol/copa-del-rey.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Baloncesto",
+      "url": "https://www.mundodeportivo.com/rss/baloncesto.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo NBA",
+      "url": "https://www.mundodeportivo.com/rss/baloncesto/nba.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo ACB",
+      "url": "https://www.mundodeportivo.com/rss/baloncesto/acb.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Euroliga",
+      "url": "https://www.mundodeportivo.com/rss/baloncesto/euroliga.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Tenis",
+      "url": "https://www.mundodeportivo.com/rss/tenis.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Motor",
+      "url": "https://www.mundodeportivo.com/rss/motor.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo F1",
+      "url": "https://www.mundodeportivo.com/rss/motor/f1.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo MotoGP",
+      "url": "https://www.mundodeportivo.com/rss/motor/motogp.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Motociclismo",
+      "url": "https://www.mundodeportivo.com/rss/motor/motociclismo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Ciclismo",
+      "url": "https://www.mundodeportivo.com/rss/ciclismo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Atletismo",
+      "url": "https://www.mundodeportivo.com/rss/atletismo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Balonmano",
+      "url": "https://www.mundodeportivo.com/rss/balonmano.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Golf",
+      "url": "https://www.mundodeportivo.com/rss/golf.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Rugby",
+      "url": "https://www.mundodeportivo.com/rss/rugby.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Boxeo",
+      "url": "https://www.mundodeportivo.com/rss/boxeo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo UFC",
+      "url": "https://www.mundodeportivo.com/rss/ufc.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Padel",
+      "url": "https://www.mundodeportivo.com/rss/padel.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo El Otro Mundo",
+      "url": "https://www.mundodeportivo.com/rss/elotromundo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Opinion",
+      "url": "https://www.mundodeportivo.com/rss/opinion.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Mas Deporte",
+      "url": "https://www.mundodeportivo.com/rss/mas-deporte.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Estadio Deportivo",
+      "url": "https://www.estadiodeportivo.com/sitemaps/rss.xml",
+      "category": "deportivo",
+      "domain": "estadiodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Portada",
+      "url": "https://objetos.estaticos-marca.com/rss/portada.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Primera Division",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/primera-division.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Segunda Division",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/segunda-division.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Mas Futbol",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/mas-futbol.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Copa del Rey",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/copa-rey.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Futbol Femenino",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/futbol-femenino.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Seleccion",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/seleccion.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Futbol Sala",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/futbol-sala.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Futbol Internacional",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/futbol-internacional.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Champions",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/champions-league.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Europa League",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/europa-league.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Premier League",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/premier-league.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Bundesliga",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/bundesliga.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Liga Italiana",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/liga-italiana.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Liga Francesa",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/liga-francesa.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Mundial Clubes",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/mundial-de-clubes.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca America",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/america.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Alaves",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/alaves.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Athletic",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/athletic.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Atletico",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/atletico.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Barcelona",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/barcelona.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Betis",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/betis.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Celta",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/celta.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Eibar",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/eibar.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Espanyol",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/espanyol.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Getafe",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/getafe.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Granada",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/granada.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Leganes",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/leganes.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Levante",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/levante.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Mallorca",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/mallorca.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Osasuna",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/osasuna.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Real Madrid",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/real-madrid.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Real Sociedad",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/real-sociedad.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Sevilla",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/sevilla.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Valencia",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/valencia.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Valladolid",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/valladolid.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Villarreal",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/villarreal.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Albacete",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/albacete.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Alcorcon",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/alcorcon.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Almeria",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/almeria.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Cadiz",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/cadiz.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Deportivo",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/deportivo.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Elche",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/elche.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Extremadura",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/extremadura.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Fuenlabrada",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/fuenlabrada.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Girona",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/girona.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Huesca",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/huesca.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Las Palmas",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/las-palmas.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Lugo",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/lugo.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Malaga",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/malaga.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Mirandes",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/mirandes.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Numancia",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/numancia.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Oviedo",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/oviedo.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Ponferradina",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/ponferradina.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Racing Santander",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/racing-santander.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Rayo",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/rayo.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Sporting",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/sporting.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Tenerife",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/tenerife.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Zaragoza",
+      "url": "https://objetos.estaticos-marca.com/rss/futbol/zaragoza.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca ACB",
+      "url": "https://objetos.estaticos-marca.com/rss/baloncesto/acb.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca BasketFEB",
+      "url": "https://objetos.estaticos-marca.com/rss/baloncesto/basketfeb.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Basket Copa Rey",
+      "url": "https://objetos.estaticos-marca.com/rss/baloncesto/copa-rey.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Basket Seleccion",
+      "url": "https://objetos.estaticos-marca.com/rss/baloncesto/seleccion.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Euroliga",
+      "url": "https://objetos.estaticos-marca.com/rss/baloncesto/euroliga.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Eurocup",
+      "url": "https://objetos.estaticos-marca.com/rss/baloncesto/eurocup.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca NBA",
+      "url": "https://objetos.estaticos-marca.com/rss/baloncesto/nba.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca F1",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/formula1.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca MotoGP",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/motogp.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Rallies",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/rallies.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Dakar",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/dakar.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Coches",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/modelos-coches.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Mas Motor",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/mas-motor.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Atletismo",
+      "url": "https://objetos.estaticos-marca.com/rss/atletismo.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Ciclismo",
+      "url": "https://objetos.estaticos-marca.com/rss/ciclismo.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Deportes Invierno",
+      "url": "https://objetos.estaticos-marca.com/rss/deportes-invierno.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Golf",
+      "url": "https://objetos.estaticos-marca.com/rss/golf.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Natacion",
+      "url": "https://objetos.estaticos-marca.com/rss/natacion.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Balonmano",
+      "url": "https://objetos.estaticos-marca.com/rss/balonmano.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Tenis",
+      "url": "https://objetos.estaticos-marca.com/rss/tenis.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Futbol",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Primera",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/subsection/primera/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Segunda",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/subsection/segunda/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Champions",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/subsection/champions/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS UEFA",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/subsection/uefa/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Primera (tag)",
+      "url": "https://feeds.as.com/mrss-s/list/as/site/as.com/tag/primera_division_real_federacion_espanola_de_futbol_a/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Segunda (tag)",
+      "url": "https://feeds.as.com/mrss-s/list/as/site/as.com/tag/segunda_division_real_federacion_espanola_futbol_a/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Tercera (tag)",
+      "url": "https://feeds.as.com/mrss-s/list/as/site/as.com/tag/tercera_division_real_federacion_espanola_futbol_a/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Mundial",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/subsection/mundial/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Eurocopa",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/subsection/eurocopa/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Seleccion",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/subsection/seleccion/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Motor",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/motor/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS F1",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/motor/subsection/formula_1/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Moto",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/motor/subsection/motociclismo/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Mas Motor",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/motor/subsection/mas_motor/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Baloncesto",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/baloncesto/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS ACB",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/baloncesto/subsection/acb/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Basket Copa Rey",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/baloncesto/subsection/copa_del_rey/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS NBA",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/baloncesto/subsection/nba/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Euroliga",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/baloncesto/subsection/euroliga/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Eurocup",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/baloncesto/subsection/eurocup/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Mundial Basket",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/baloncesto/subsection/mundial_baloncesto/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Mas Basket",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/baloncesto/subsection/mas_baloncesto/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Tenis",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tenis/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Open Australia",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tenis/subsection/open_australia/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Roland Garros",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tenis/subsection/roland_garros/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Wimbledon",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tenis/subsection/wimbledon/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS US Open",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tenis/subsection/us_open/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Mas Tenis",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tenis/subsection/mas_tenis/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Copa Davis",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tenis/subsection/copa_davis/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Masters ATP",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tenis/subsection/final_atp/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Masters 1000",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tenis/subsection/masters_1000/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Ciclismo",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/ciclismo/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Tour Francia",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/ciclismo/subsection/tour_francia/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Giro Italia",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/ciclismo/subsection/giro_italia/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Vuelta Espana",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/ciclismo/subsection/vuelta_espana",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Mas Ciclismo",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/ciclismo/subsection/mas_ciclismo/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Mas Deporte",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/masdeporte/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Atletismo",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/masdeporte/subsection/atletismo/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Balonmano",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/masdeporte/subsection/balonmano/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Polideportivo",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/masdeporte/subsection/polideportivo/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Golf",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/masdeporte/subsection/golf/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS NFL",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/masdeporte/subsection/nfl/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Futbol Sala",
+      "url": "https://feeds.as.com/mrss-s/list/as/site/as.com/tag/futbol_sala_a/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Boxeo",
+      "url": "https://feeds.as.com/mrss-s/list/as/site/as.com/tag/boxeo_a/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Opinion",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/opinion/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Real Madrid (tag)",
+      "url": "https://feeds.as.com/mrss-s/list/as/site/as.com/tag/real_madrid_a/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Barcelona (tag)",
+      "url": "https://feeds.as.com/mrss-s/list/as/site/as.com/tag/fc_barcelona_a/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Atletico (tag)",
+      "url": "https://feeds.as.com/mrss-s/list/as/site/as.com/tag/atletico_madrid_a/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Tikitakas",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tikitakas/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Actualidad",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/actualidad/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Showroom",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/showroom/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Ultimas",
+      "url": "https://www.sport.es/es/rss/ultimas/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Barca",
+      "url": "https://www.sport.es/es/rss/barca/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Basket",
+      "url": "https://www.sport.es/es/rss/basket/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport NBA",
+      "url": "https://www.sport.es/es/rss/nba/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Tenis",
+      "url": "https://www.sport.es/es/rss/tennis/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Atletismo",
+      "url": "https://www.sport.es/es/rss/atletismo/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Padel",
+      "url": "https://www.sport.es/es/rss/padel/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Futbol Italia",
+      "url": "https://www.sport.es/es/rss/futbol-italia/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Opinion",
+      "url": "https://www.sport.es/es/rss/opinion/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Liga",
+      "url": "https://www.sport.es/es/rss/liga-bbva/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Champions",
+      "url": "https://www.sport.es/es/rss/champions-league/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Futbol Catalunya",
+      "url": "https://www.sport.es/es/rss/futbol-catalunya/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport F1",
+      "url": "https://www.sport.es/es/rss/formula-1/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Mundo Motor",
+      "url": "https://www.sport.es/es/rss/mundo-motor/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Madrid",
+      "url": "https://www.sport.es/es/rss/madrid/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Futbol Base",
+      "url": "https://www.sport.es/es/rss/futbol-base/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Liga Endesa",
+      "url": "https://www.sport.es/es/rss/liga-endesa/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Mundial Basket",
+      "url": "https://www.sport.es/es/rss/mundial-baloncesto/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Ciclismo",
+      "url": "https://www.sport.es/es/rss/ciclismo/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Hockey",
+      "url": "https://www.sport.es/es/rss/hockey/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Deporte Extremo",
+      "url": "https://www.sport.es/es/rss/deporte-extremo/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Futbol Inglaterra",
+      "url": "https://www.sport.es/es/rss/futbol-inglaterra/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Futbol America",
+      "url": "https://www.sport.es/es/rss/futbol-america/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Espanyol",
+      "url": "https://www.sport.es/es/rss/espanyol/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Liga Adelante",
+      "url": "https://www.sport.es/es/rss/liga-adelante/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Europa League",
+      "url": "https://www.sport.es/es/rss/europa-league/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Motor",
+      "url": "https://www.sport.es/es/rss/motor/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Veteranos",
+      "url": "https://www.sport.es/es/rss/veteranos/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Euroliga",
+      "url": "https://www.sport.es/es/rss/euroliga/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Resto Mundo",
+      "url": "https://www.sport.es/es/rss/resto-del-mundo/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport LaLiga",
+      "url": "https://www.sport.es/es/rss/la-liga/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Mas Deportes",
+      "url": "https://www.sport.es/es/rss/mas-deportes/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Balonmano",
+      "url": "https://www.sport.es/es/rss/balonmano/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Golf",
+      "url": "https://www.sport.es/es/rss/golf/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Futbol Internacional",
+      "url": "https://www.sport.es/es/rss/futbol-internacional/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Futbol Francia",
+      "url": "https://www.sport.es/es/rss/futbol-francia/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Copa del Rey",
+      "url": "https://www.sport.es/es/rss/copa-del-rey/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Seleccion",
+      "url": "https://www.sport.es/es/rss/seleccion/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Mas Motor",
+      "url": "https://www.sport.es/es/rss/mas-motor/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "BBC Sport",
+      "url": "https://feeds.bbci.co.uk/sport/rss.xml",
+      "category": "deportivo",
+      "domain": "bbc.co.uk",
+      "scope": "internacional"
+    },
+    {
+      "name": "BBC Football",
+      "url": "https://feeds.bbci.co.uk/sport/football/rss.xml",
+      "category": "deportivo",
+      "domain": "bbc.co.uk",
+      "scope": "internacional"
+    },
+    {
+      "name": "Sky Sports",
+      "url": "https://www.skysports.com/rss/12040",
+      "category": "deportivo",
+      "domain": "skysports.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Sky Sports Football",
+      "url": "https://www.skysports.com/rss/11095",
+      "category": "deportivo",
+      "domain": "skysports.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Sport",
+      "url": "https://www.theguardian.com/sport/rss",
+      "category": "deportivo",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Football",
+      "url": "https://www.theguardian.com/football/rss",
+      "category": "deportivo",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "ESPN Soccer",
+      "url": "https://www.espn.com/espn/rss/soccer/news",
+      "category": "deportivo",
+      "domain": "espn.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "ESPN NBA",
+      "url": "https://www.espn.com/espn/rss/nba/news",
+      "category": "deportivo",
+      "domain": "espn.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "ESPN Top",
+      "url": "https://www.espn.com/espn/rss/news",
+      "category": "deportivo",
+      "domain": "espn.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Gazzetta",
+      "url": "https://www.gazzetta.it/rss/home.xml",
+      "category": "deportivo",
+      "domain": "gazzetta.it",
+      "scope": "internacional"
+    },
+    {
+      "name": "Kicker",
+      "url": "https://newsfeed.kicker.de/news/aktuell",
+      "category": "deportivo",
+      "domain": "kicker.de",
+      "scope": "internacional"
+    },
+    {
+      "name": "El Pais Deportes",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/deportes/portada",
+      "category": "deportivo-generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Deportes",
+      "url": "https://e00-elmundo.uecdn.es/rss/deportes.xml",
+      "category": "deportivo-generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Deportes",
+      "url": "https://www.lavanguardia.com/rss/deportes.xml",
+      "category": "deportivo-generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "20 Minutos Deportes",
+      "url": "https://www.20minutos.es/rss/deportes/",
+      "category": "deportivo-generalista",
+      "domain": "20minutos.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Deportes",
+      "url": "https://www.abc.es/rss/feeds/abc_Deportes.xml",
+      "category": "deportivo-generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "RTVE Deportes",
+      "url": "https://www.rtve.es/rss/temas_deportes.xml",
+      "category": "deportivo-generalista",
+      "domain": "rtve.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "OKdiario Deportes",
+      "url": "https://okdiario.com/deportes/feed",
+      "category": "deportivo-generalista",
+      "domain": "okdiario.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Huffington Post Deportes",
+      "url": "https://www.huffingtonpost.es/feeds/index.xml?ch=deportes",
+      "category": "deportivo-generalista",
+      "domain": "huffingtonpost.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Deportes",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/deportes/portada",
+      "category": "deportivo-generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Deportes",
+      "url": "https://e00-elmundo.uecdn.es/rss/deportes.xml",
+      "category": "deportivo-generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Deportes",
+      "url": "https://www.lavanguardia.com/rss/deportes.xml",
+      "category": "deportivo-generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "20 Minutos Deportes",
+      "url": "https://www.20minutos.es/rss/deportes/",
+      "category": "deportivo-generalista",
+      "domain": "20minutos.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Deportes",
+      "url": "https://www.abc.es/rss/feeds/abc_Deportes.xml",
+      "category": "deportivo-generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "RTVE Deportes",
+      "url": "https://www.rtve.es/rss/temas_deportes.xml",
+      "category": "deportivo-generalista",
+      "domain": "rtve.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "OKdiario Deportes",
+      "url": "https://okdiario.com/deportes/feed",
+      "category": "deportivo-generalista",
+      "domain": "okdiario.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Huffington Post Deportes",
+      "url": "https://www.huffingtonpost.es/feeds/index.xml?ch=deportes",
+      "category": "deportivo-generalista",
+      "domain": "huffingtonpost.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Home",
+      "url": "https://www.lavanguardia.com/rss/home.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Politica",
+      "url": "https://www.lavanguardia.com/rss/politica.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Internacional",
+      "url": "https://www.lavanguardia.com/rss/internacional.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Economia",
+      "url": "https://www.lavanguardia.com/rss/economia.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Cultura",
+      "url": "https://www.lavanguardia.com/rss/cultura.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Tecnologia",
+      "url": "https://www.lavanguardia.com/rss/tecnologia.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Vida",
+      "url": "https://www.lavanguardia.com/rss/vida.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Opinion",
+      "url": "https://www.lavanguardia.com/rss/opinion.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "La Vanguardia Sucesos",
+      "url": "https://www.lavanguardia.com/rss/sucesos.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Portada",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Internacional",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/internacional/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Espana",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/espana/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Economia",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/economia/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Opinion",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/opinion/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Cultura",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/cultura/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Pais Tecnologia",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/tecnologia/portada",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Portada",
+      "url": "https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml",
+      "category": "generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Espana",
+      "url": "https://e00-elmundo.uecdn.es/elmundo/rss/espana.xml",
+      "category": "generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Internacional",
+      "url": "https://e00-elmundo.uecdn.es/elmundo/rss/internacional.xml",
+      "category": "generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Cultura",
+      "url": "https://e00-elmundo.uecdn.es/elmundo/rss/cultura.xml",
+      "category": "generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Mundo Opinion",
+      "url": "https://e00-elmundo.uecdn.es/elmundo/rss/opinion.xml",
+      "category": "generalista",
+      "domain": "elmundo.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Portada",
+      "url": "https://www.abc.es/rss/2.0/portada/",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Nacional",
+      "url": "https://www.abc.es/rss/feeds/abc_EspanaEspana.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Internacional",
+      "url": "https://www.abc.es/rss/feeds/abc_Internacional.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Economia",
+      "url": "https://www.abc.es/rss/feeds/abc_Economia.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Politica",
+      "url": "https://www.abc.es/rss/feeds/abc_Politica.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Opinion",
+      "url": "https://www.abc.es/rss/feeds/abc_Opinion.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Cultura",
+      "url": "https://www.abc.es/rss/feeds/abc_Cultura.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Confidencial Espana",
+      "url": "https://rss.elconfidencial.com/espana/",
+      "category": "generalista",
+      "domain": "elconfidencial.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Confidencial Mundo",
+      "url": "https://rss.elconfidencial.com/mundo/",
+      "category": "generalista",
+      "domain": "elconfidencial.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Confidencial Economia",
+      "url": "https://rss.elconfidencial.com/economia/",
+      "category": "generalista",
+      "domain": "elconfidencial.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "El Confidencial Tecnologia",
+      "url": "https://rss.elconfidencial.com/tecnologia/",
+      "category": "generalista",
+      "domain": "elconfidencial.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "eldiario Home",
+      "url": "https://www.eldiario.es/rss/",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "eldiario Politica",
+      "url": "https://www.eldiario.es/rss/politica/",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "eldiario Economia",
+      "url": "https://www.eldiario.es/rss/economia/",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "eldiario Internacional",
+      "url": "https://www.eldiario.es/rss/internacional/",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "eldiario Cultura",
+      "url": "https://www.eldiario.es/rss/cultura/",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "NYT HomePage",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT World",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT US",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/US.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT Politics",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT Technology",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT Business",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian World",
+      "url": "https://www.theguardian.com/world/rss",
+      "category": "generalista",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Politics",
+      "url": "https://www.theguardian.com/politics/rss",
+      "category": "generalista",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Business",
+      "url": "https://www.theguardian.com/business/rss",
+      "category": "generalista",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Technology",
+      "url": "https://www.theguardian.com/technology/rss",
+      "category": "generalista",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Guardian Opinion",
+      "url": "https://www.theguardian.com/commentisfree/rss",
+      "category": "generalista",
+      "domain": "theguardian.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Une",
+      "url": "https://www.lemonde.fr/rss/une.xml",
+      "category": "generalista",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Intl",
+      "url": "https://www.lemonde.fr/international/rss_full.xml",
+      "category": "generalista",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Politique",
+      "url": "https://www.lemonde.fr/politique/rss_full.xml",
+      "category": "generalista",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Economie",
+      "url": "https://www.lemonde.fr/economie/rss_full.xml",
+      "category": "generalista",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Culture",
+      "url": "https://www.lemonde.fr/culture/rss_full.xml",
+      "category": "generalista",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "Le Monde Sport",
+      "url": "https://www.lemonde.fr/sport/rss_full.xml",
+      "category": "deportivo",
+      "domain": "lemonde.fr",
+      "scope": "internacional"
+    },
+    {
+      "name": "NYT News (sitemap)",
+      "url": "https://www.nytimes.com/sitemaps/new/news.xml.gz",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "NYT Espanol (sitemap)",
+      "url": "https://www.nytimes.com/sitemaps/new/espanol.xml.gz",
+      "category": "generalista",
+      "domain": "nytimes.com",
+      "scope": "internacional",
+      "type": "news-sitemap"
+    }
+  ]
+}

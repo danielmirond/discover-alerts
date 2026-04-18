@@ -1,10 +1,15 @@
 import { readFile } from 'node:fs/promises';
 import { XMLParser } from 'fast-xml-parser';
+import { fetchNewsSitemap } from './news-sitemap.js';
 import type { MediaFeed, MediaArticle } from '../types.js';
 
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '@_',
+  // Disable entity processing to bypass fast-xml-parser's 1000-entity limit
+  // that rejects large RSS feeds (some AS/Mundo Deportivo feeds have >1000
+  // HTML entity references per document)
+  processEntities: false,
 });
 
 function toArray<T>(val: T | T[] | undefined): T[] {
@@ -19,6 +24,11 @@ export async function loadFeeds(path: string): Promise<MediaFeed[]> {
 }
 
 export async function fetchFeed(feed: MediaFeed): Promise<MediaArticle[]> {
+  // Dispatch to specialized parsers by feed type
+  if (feed.type === 'news-sitemap') {
+    return fetchNewsSitemap(feed);
+  }
+
   const res = await fetch(feed.url, {
     headers: { 'User-Agent': 'DiscoverAlerts/1.0' },
     signal: AbortSignal.timeout(15_000),
@@ -49,6 +59,7 @@ export async function fetchFeed(feed: MediaFeed): Promise<MediaArticle[]> {
     return {
       feedName: feed.name,
       feedCategory: feed.category,
+      feedScope: feed.scope || 'nacional',
       title: title.trim(),
       link: typeof link === 'string' ? link.trim() : '',
       pubDate,

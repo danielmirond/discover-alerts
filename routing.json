@@ -1,0 +1,42 @@
+{
+  "//": "Mapea categorias DS y topics (sucesos/legal/...) a canales Slack. Cada ruta apunta a una env var que contiene el webhook URL. 'topics' (de topics.json) tiene precedencia sobre 'categories'. Si una alerta no matchea ninguna ruta, va al webhook por defecto (SLACK_WEBHOOK_URL).",
+  "routes": [
+    {
+      "name": "Sucesos",
+      "topics": ["sucesos"],
+      "categories": [],
+      "webhookEnv": "SLACK_WEBHOOK_SUCESOS"
+    },
+    {
+      "name": "Legal",
+      "topics": ["legal"],
+      "categories": [],
+      "webhookEnv": "SLACK_WEBHOOK_LEGAL"
+    },
+    {
+      "name": "Deportes",
+      "categories": ["Sports", "Sport", "Deportes", "Football", "Soccer", "Futbol", "Tennis", "Basketball"],
+      "webhookEnv": "SLACK_WEBHOOK_DEPORTES"
+    },
+    {
+      "name": "Politica",
+      "categories": ["Politics", "Government", "Politica", "Gobierno"],
+      "webhookEnv": "SLACK_WEBHOOK_POLITICA"
+    },
+    {
+      "name": "Tecnologia",
+      "categories": ["Technology", "Tech", "Tecnologia", "Science", "Ciencia", "Internet", "Computers"],
+      "webhookEnv": "SLACK_WEBHOOK_TECH"
+    },
+    {
+      "name": "Entretenimiento",
+      "categories": ["Entertainment", "Celebrity", "Movies", "Music", "Espectaculos", "Famosos", "Cine", "Musica", "TV"],
+      "webhookEnv": "SLACK_WEBHOOK_ENTRETENIMIENTO"
+    },
+    {
+      "name": "Economia",
+      "categories": ["Business", "Economy", "Finance", "Economia", "Negocios", "Finanzas"],
+      "webhookEnv": "SLACK_WEBHOOK_ECONOMIA"
+    }
+  ]
+}
