@@ -2,6 +2,7 @@ import type { Alert } from '../types.js';
 import { pickFormulasWithMeta } from './headline-formulas.js';
 import { momentumIcon, momentumLabel } from '../analysis/velocity.js';
 import { getState, updateState } from '../state/store.js';
+import { checkImage } from '../analysis/image-check.js';
 
 const FORMULA_USAGE_RETENTION_MS = 30 * 24 * 3600_000; // 30 days
 const FORMULA_USAGE_MAX_ENTRIES = 5000;
@@ -95,7 +96,49 @@ function contextSnippetsBlock(snippets: string[] | undefined): SlackBlock | null
   return section(`:newspaper: *Así lo cuentan (contexto real):*\n${lines}`);
 }
 
-function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
+/**
+ * Renderiza la imagen que Google Discover está mostrando (si viene en la
+ * alerta) con un chequeo técnico de cumplimiento Discover debajo.
+ * Devuelve 0-2 bloques: el `image` bloque + un `context` con el verdict.
+ */
+async function imageBlocks(
+  url: string | undefined,
+  alt: string | undefined,
+  precomputed: import('../types.js').ImageCheck | undefined,
+): Promise<SlackBlock[]> {
+  if (!url) return [];
+  const blocks: SlackBlock[] = [];
+  const safeAlt = (alt || 'imagen Discover').slice(0, 1999);
+  // Slack requires https + accessible URLs. DiscoverSnoop cache URLs son https.
+  blocks.push({ type: 'image', image_url: url, alt_text: safeAlt } as any);
+
+  let check = precomputed;
+  if (!check) {
+    try {
+      check = await Promise.race([
+        checkImage(url),
+        new Promise<undefined>(res => setTimeout(() => res(undefined), 5000)),
+      ]);
+    } catch { /* noop */ }
+  }
+  if (check) {
+    const parts: string[] = [];
+    if (check.width && check.height) {
+      parts.push(`${check.width}×${check.height}`);
+      if (check.aspectRatio) parts.push(`ratio ${check.aspectRatio}`);
+    }
+    if (check.verdict) {
+      const icon = check.verdict === 'apta' ? ':white_check_mark:' :
+                   check.verdict === 'revisar' ? ':warning:' : ':x:';
+      parts.push(`${icon} Discover: ${check.verdict}`);
+    }
+    if (check.notes && check.notes.length > 0) parts.push(check.notes.slice(0, 2).join(' · '));
+    if (parts.length > 0) blocks.push(context(parts.join(' | ')));
+  }
+  return blocks;
+}
+
+async function formatEntity(a: Extract<Alert, { type: 'entity' }>): Promise<SlackBlock[]> {
   const emoji =
     a.subtype === 'new' ? ':new:' :
     a.subtype === 'flash' ? ':zap:' :
@@ -159,6 +202,12 @@ function formatEntity(a: Extract<Alert, { type: 'entity' }>): SlackBlock[] {
   // Contexto real: snippets de Discover + descripciones RSS donde aparece la entidad
   const ctxBlock = contextSnippetsBlock(a.contextSnippets);
   if (ctxBlock) blocks.push(ctxBlock);
+
+  // Imagen que Google Discover muestra para esta entidad, con chequeo tecnico
+  if (a.imageUrl) {
+    const imgBlks = await imageBlocks(a.imageUrl, a.imageAlt, a.imageCheck);
+    blocks.push(...imgBlks);
+  }
 
   // Enrichment: matching Google Trends
   if (a.matchingTrends && a.matchingTrends.length > 0) {
@@ -506,9 +555,9 @@ function formatStaleData(a: Extract<Alert, { type: 'stale_data' }>): SlackBlock[
   ];
 }
 
-function formatSingleAlert(alert: Alert): SlackBlock[] {
+async function formatSingleAlert(alert: Alert): Promise<SlackBlock[]> {
   switch (alert.type) {
-    case 'entity': return formatEntity(alert);
+    case 'entity': return await formatEntity(alert);
     case 'category': return formatCategory(alert);
     case 'headline_pattern': return formatHeadline(alert);
     case 'trends_correlation': return formatCorrelation(alert);
@@ -551,7 +600,7 @@ export async function formatAlerts(alerts: Alert[]): Promise<{ blocks: SlackBloc
 
     for (let j = 0; j < batch.length; j++) {
       if (j > 0) blocks.push(divider());
-      const singleBlocks = await withFormulas(batch[j], formatSingleAlert(batch[j]));
+      const singleBlocks = await withFormulas(batch[j], await formatSingleAlert(batch[j]));
       blocks.push(...singleBlocks);
     }
 

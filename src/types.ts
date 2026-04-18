@@ -262,6 +262,32 @@ export interface EntityAlert {
   matchingArticles?: MatchedMediaArticle[]; // Media articles enrichment
   /** Snippets reales de páginas Discover donde aparece la entidad (hasta 3). */
   contextSnippets?: string[];
+  /** Imagen que Google Discover está mostrando para esta entidad (de DiscoverSnoop page.image). */
+  imageUrl?: string;
+  imageAlt?: string;
+  /** Análisis de cumplimiento Discover de la imagen. */
+  imageCheck?: ImageCheck;
+}
+
+/** Chequeo técnico y editorial de imagen contra requisitos Discover. */
+export interface ImageCheck {
+  /** Dimensiones en px si se pudieron leer */
+  width?: number;
+  height?: number;
+  /** Ratio ancho/alto (Discover recomienda ~16:9 = 1.77) */
+  aspectRatio?: number;
+  /** Cumple min 1200px ancho */
+  meetsWidth?: boolean;
+  /** Cumple min 300.000 px totales */
+  meetsPixels?: boolean;
+  /** Aspect ratio aproximado a 16:9 (0.5 tolerance) */
+  meetsRatio?: boolean;
+  /** Descripción LLM opcional (¿contiene texto? ¿gente reconocible?) */
+  llmDescription?: string;
+  /** Resumen ejecutivo: apta / revisar / no apta */
+  verdict?: 'apta' | 'revisar' | 'no apta';
+  /** Notas explicativas cortas (ej. 'ratio correcto, resolución baja'). */
+  notes?: string[];
 }
 
 export interface CategoryExamplePage {

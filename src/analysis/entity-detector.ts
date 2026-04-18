@@ -3,6 +3,7 @@ import { getState, updateState } from '../state/store.js';
 import { buildEntityTopicMap, loadTopicsDictionary } from './topic-classifier.js';
 import { classifyEntitiesBatch, type ClassifyRequest } from './llm-classifier.js';
 import { computeVelocity } from './velocity.js';
+import { checkImage } from './image-check.js';
 import type {
   DiscoverEntity,
   DiscoverPage,
@@ -121,6 +122,8 @@ function enrichAscending(
   matchingXTrends: MatchedXTrend[];
   matchingArticles: MatchedMediaArticle[];
   contextSnippets: string[];
+  imageUrl?: string;
+  imageAlt?: string;
 } {
   const entityNorm = normalize(entityName);
 
@@ -201,11 +204,31 @@ function enrichAscending(
     if (a.description) addSnippet(a.description);
   }
 
+  // Top Discover page for this entity = fuente de la imagen que Google está mostrando
+  let imageUrl: string | undefined;
+  let imageAlt: string | undefined;
+  let bestScore = -1;
+  for (const page of pagesForContext) {
+    if (!page.image) continue;
+    const titleNorm = normalize(page.title || '');
+    const entityInPage = (page.entities || []).some(e => e === entityName) ||
+      titleNorm.includes(entityNorm);
+    if (!entityInPage) continue;
+    const sc = page.score || 0;
+    if (sc > bestScore) {
+      bestScore = sc;
+      imageUrl = page.image;
+      imageAlt = page.title || entityName;
+    }
+  }
+
   return {
     matchingTrends: matchingTrends.slice(0, 3),
     matchingXTrends: matchingXTrends.slice(0, 3),
     matchingArticles: matchingArticles.slice(0, 5),
     contextSnippets,
+    imageUrl,
+    imageAlt,
   };
 }
 
