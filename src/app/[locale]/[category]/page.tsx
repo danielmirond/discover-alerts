@@ -36,36 +36,42 @@ function CategoryContent({
   const articles = getArticlesByCategory(locale, category);
 
   return (
-    <div className="max-w-[1000px] mx-auto px-6 py-12 animate-fade-up">
-      <div className="label-tag mb-4">
-        {t(`categories.${categoryKey}.title`)}
-      </div>
-      <h1 className="font-serif text-3xl font-extralight text-white tracking-tight mb-3">
-        {t(`categories.${categoryKey}.title`)}
-      </h1>
-      <p className="text-muted max-w-[600px] mb-10">
-        {t(`categories.${categoryKey}.description`)}
-      </p>
+    <div className="animate-fade-up">
+      {/* HEADER */}
+      <section className="max-w-[1200px] mx-auto px-8 pt-20 pb-16 border-b border-hairline">
+        <div className="eyebrow mb-6">Collection</div>
+        <h1 className="display-lg mb-6">
+          {t(`categories.${categoryKey}.title`)}
+        </h1>
+        <p className="text-[17px] text-slate leading-[1.6] max-w-[620px] font-light">
+          {t(`categories.${categoryKey}.description`)}
+        </p>
+      </section>
 
-      {articles.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {articles.map((article) => (
-            <ArticleCard key={article.slug} article={article} locale={locale} />
-          ))}
-        </div>
-      ) : (
-        <div className="card text-center py-12">
-          <p className="text-muted text-sm">
-            {locale === "es"
-              ? "Próximamente nuevos artículos en esta categoría."
-              : locale === "fr"
-              ? "De nouveaux articles arrivent bientôt dans cette catégorie."
-              : locale === "de"
-              ? "Neue Artikel in dieser Kategorie folgen in Kürze."
-              : "New articles coming soon in this category."}
-          </p>
-        </div>
-      )}
+      {/* ARTICLES GRID */}
+      <section className="max-w-[1200px] mx-auto px-8 py-16">
+        {articles.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-line">
+            {articles.map((article) => (
+              <div key={article.slug} className="bg-bg">
+                <ArticleCard article={article} locale={locale} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="card-ivory p-16 text-center">
+            <div className="font-serif italic text-[24px] text-stone">
+              {locale === "es"
+                ? "Próximamente nuevos artículos en esta categoría"
+                : locale === "fr"
+                ? "De nouveaux articles arrivent bientôt"
+                : locale === "de"
+                ? "Neue Artikel folgen in Kürze"
+                : "New articles coming soon"}
+            </div>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

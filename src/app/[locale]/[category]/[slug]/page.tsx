@@ -60,7 +60,7 @@ export default async function ArticlePage({
 
   const related = getArticlesByCategory(locale, category)
     .filter((a) => a.slug !== slug)
-    .slice(0, 2);
+    .slice(0, 3);
 
   const t = (key: string) => {
     const translations: Record<string, Record<string, string>> = {
@@ -73,58 +73,76 @@ export default async function ArticlePage({
         de: "Dieser Artikel enthält Affiliate-Links. Wenn du über diese Links kaufst, erhalten wir eine Provision ohne zusätzliche Kosten für dich.",
       },
       related: {
-        es: "Artículos relacionados",
-        en: "Related articles",
-        fr: "Articles connexes",
-        de: "Verwandte Artikel",
+        es: "Continúa leyendo",
+        en: "Continue reading",
+        fr: "Continuer la lecture",
+        de: "Weiterlesen",
       },
     };
     return translations[key]?.[locale] || translations[key]?.["en"] || key;
   };
 
   return (
-    <div className="max-w-[700px] mx-auto px-6 py-12 animate-fade-up">
-      {/* Article header */}
-      <div className="label-tag mb-4">{category}</div>
-      <h1 className="font-serif text-[clamp(28px,5vw,42px)] font-extralight text-white leading-[1.1] tracking-tight mb-4">
-        {article.meta.title}
-      </h1>
-      <div className="flex items-center gap-4 text-muted text-[11px] mb-6">
-        <span>{t("published")} {article.meta.date}</span>
-        <span>·</span>
-        <span>{article.readingTime} {t("readTime")}</span>
+    <article className="animate-fade-up">
+      {/* HERO */}
+      <header className="max-w-[780px] mx-auto px-8 pt-20 pb-16 text-center">
+        <div className="eyebrow mb-6">{category}</div>
+        <h1 className="display-lg mb-8">
+          {article.meta.title}
+        </h1>
+        <p className="font-serif italic text-[18px] text-stone font-light max-w-[580px] mx-auto leading-[1.5]">
+          {article.meta.description}
+        </p>
+
+        <div className="flex items-center justify-center gap-5 mt-10 text-[11px] text-stone tracking-[0.15em] uppercase">
+          <span>{t("published")} · {article.meta.date}</span>
+          <span className="w-6 h-px bg-bronze" />
+          <span>{article.readingTime} {t("readTime")}</span>
+        </div>
+      </header>
+
+      {/* DIVIDER */}
+      <div className="max-w-[640px] mx-auto px-8">
+        <div className="ornament text-[10px] tracking-[0.3em] uppercase max-w-[300px] mx-auto" />
       </div>
 
-      {/* Affiliate disclosure */}
+      {/* AFFILIATE DISCLOSURE */}
       {article.meta.affiliate && (
-        <div className="card accent-left-orange text-[11px] text-muted mb-8">
-          {t("disclosure")}
+        <div className="max-w-[640px] mx-auto px-8 mt-12">
+          <div className="bg-bronze/5 border-l-2 border-bronze p-5 text-[12px] text-stone leading-[1.7] italic">
+            {t("disclosure")}
+          </div>
         </div>
       )}
 
-      {/* Article body */}
-      <article className="prose-biohack mb-16">
-        <MDXRemote source={article.content} components={mdxComponents} />
-      </article>
-
-      {/* Newsletter CTA */}
-      <div className="mb-16">
-        <NewsletterEmbed />
+      {/* BODY */}
+      <div className="max-w-[640px] mx-auto px-8 py-16">
+        <div className="prose-editorial">
+          <MDXRemote source={article.content} components={mdxComponents} />
+        </div>
       </div>
 
-      {/* Related articles */}
+      {/* NEWSLETTER */}
+      <section className="max-w-[1200px] mx-auto px-8 py-16">
+        <NewsletterEmbed />
+      </section>
+
+      {/* RELATED */}
       {related.length > 0 && (
-        <section>
-          <h2 className="font-serif text-xl font-light text-white tracking-tight mb-5">
-            {t("related")}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {related.map((a) => (
-              <ArticleCard key={a.slug} article={a} locale={locale} />
-            ))}
+        <section className="bg-pearl py-24 px-8 mt-12">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="eyebrow mb-3">Further reading</div>
+            <h2 className="display-md mb-10">{t("related")}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-line">
+              {related.map((a) => (
+                <div key={a.slug} className="bg-bg">
+                  <ArticleCard article={a} locale={locale} />
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}
-    </div>
+    </article>
   );
 }

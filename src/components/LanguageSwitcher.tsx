@@ -4,11 +4,11 @@ import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { locales } from "@/i18n/routing";
 
-const flags: Record<string, string> = {
-  es: "🇪🇸",
-  en: "🇬🇧",
-  fr: "🇫🇷",
-  de: "🇩🇪",
+const labels: Record<string, string> = {
+  es: "ES",
+  en: "EN",
+  fr: "FR",
+  de: "DE",
 };
 
 export function LanguageSwitcher() {
@@ -23,19 +23,18 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center border border-line rounded-full overflow-hidden">
       {locales.map((l) => (
         <button
           key={l}
           onClick={() => switchLocale(l)}
-          className={`px-2 py-1 text-[13px] transition-opacity ${
+          className={`px-3 py-1.5 text-[10px] tracking-[0.1em] font-medium transition-colors ${
             l === locale
-              ? "opacity-100"
-              : "opacity-40 hover:opacity-80"
+              ? "bg-charcoal text-bg"
+              : "text-stone hover:text-emerald"
           }`}
-          title={l.toUpperCase()}
         >
-          {flags[l]}
+          {labels[l]}
         </button>
       ))}
     </div>

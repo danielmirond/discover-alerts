@@ -5,24 +5,37 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "#07090d",
-        s1: "#0e1420",
-        s2: "#141e2e",
-        border: "rgba(100,180,255,0.1)",
-        accent: {
-          green: "#00d296",
-          blue: "#4da8ff",
-          orange: "#ff7a3d",
-          purple: "#b06aff",
-          yellow: "#ffd166",
-          red: "#ff4d6d",
+        // Base surfaces
+        bg: "#ffffff",
+        ivory: "#f8f5f0",
+        pearl: "#faf8f4",
+        sand: "#f0ebe2",
+
+        // Text
+        charcoal: "#1a1a1a",
+        slate: "#3a3a3a",
+        stone: "#6b6560",
+        mist: "#a8a39d",
+
+        // Accents
+        emerald: {
+          DEFAULT: "#0a4d3c",
+          light: "#d4e8de",
+          tint: "#ebf3ee",
         },
-        text: "#b8ccd8",
-        muted: "#4a6070",
-        white: "#eaf2f8",
+        bronze: {
+          DEFAULT: "#a8865d",
+          light: "#e8dcc8",
+          tint: "#f5ede0",
+        },
+
+        // Borders
+        line: "#e8e4de",
+        hairline: "#f0ece6",
       },
       fontFamily: {
         serif: ["Fraunces", "Georgia", "serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
         mono: ["DM Mono", "Menlo", "monospace"],
       },
     },
