@@ -34,6 +34,7 @@ const config: Config = {
         hairline: "#f0ece6",
       },
       fontFamily: {
+        wordmark: ["Cinzel", "Fraunces", "Georgia", "serif"],
         serif: ["Fraunces", "Georgia", "serif"],
         sans: ["Inter", "system-ui", "sans-serif"],
         mono: ["DM Mono", "Menlo", "monospace"],

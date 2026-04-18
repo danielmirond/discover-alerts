@@ -27,16 +27,13 @@ export function Header() {
       <div className="max-w-[1200px] mx-auto px-8 flex items-center justify-between h-[72px]">
         <Link
           href={`/${locale}`}
-          className="group flex items-center gap-4"
+          className="group flex items-center gap-3"
         >
-          <Logo variant="mark" size={28} color="#1a1a1a" className="group-hover:opacity-70 transition-opacity" />
-          <div className="flex items-baseline gap-3">
-            <Logo variant="wordmark" size={11} color="#1a1a1a" className="group-hover:opacity-70 transition-opacity" />
-            <span className="hidden sm:inline w-px h-4 bg-line" />
-            <span className="text-[9px] tracking-[0.3em] uppercase text-stone hidden sm:inline">
-              Precision longevity
-            </span>
-          </div>
+          <Logo variant="wordmark" size={22} className="group-hover:opacity-80 transition-opacity" />
+          <span className="hidden sm:inline w-px h-4 bg-line" />
+          <span className="text-[9px] tracking-[0.3em] uppercase text-stone hidden sm:inline">
+            Precision longevity
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">

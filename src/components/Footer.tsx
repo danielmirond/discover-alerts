@@ -11,15 +11,13 @@ export function Footer() {
       <div className="max-w-[1200px] mx-auto px-8 py-20">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
           <div className="md:col-span-5">
-            <div className="flex items-center gap-4 mb-6">
-              <Logo variant="mark" size={32} color="#1a1a1a" />
-              <div className="flex items-baseline gap-3">
-                <Logo variant="wordmark" size={12} color="#1a1a1a" />
-                <span className="w-px h-5 bg-line" />
-                <span className="text-[9px] tracking-[0.3em] uppercase text-stone">
-                  Est. 2026
-                </span>
-              </div>
+            <div className="mb-7">
+              <Logo variant="full" size={36} />
+            </div>
+            <div className="flex items-center gap-3 mb-6 text-[10px] tracking-[0.25em] uppercase text-stone">
+              <span>Precision longevity</span>
+              <span className="w-1 h-1 rounded-full bg-bronze" />
+              <span>Est. 2026</span>
             </div>
             <p className="text-stone text-[13px] leading-[1.75] max-w-[380px]">
               {t("about")}
@@ -77,10 +75,12 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-hairline pt-8 flex items-center justify-between text-[11px] text-stone">
-          <span>&copy; {new Date().getFullYear()} Aevum</span>
-          <span className="tracking-[0.2em] uppercase text-bronze">
-            {t("allRights")}
+        <div className="border-t border-hairline pt-8 flex items-center justify-between">
+          <span className="text-[11px] text-stone font-mono tracking-[0.05em]">
+            0.785 AE — [HSPAN]
+          </span>
+          <span className="text-[11px] text-stone tracking-[0.2em] uppercase">
+            &copy; {new Date().getFullYear()} &nbsp;·&nbsp; {t("allRights")}
           </span>
         </div>
       </div>
