@@ -39,8 +39,8 @@ function Seal({
 }
 
 /**
- * AEVUM wordmark in Cinzel (classical Roman inscription style).
- * Renders as text — requires Cinzel font loaded.
+ * byAEVUM wordmark: lowercase italic "by" prefix (Fraunces)
+ * + "AEVUM" in Cinzel (classical Roman inscription style).
  */
 function Wordmark({
   size,
@@ -53,15 +53,31 @@ function Wordmark({
 }) {
   return (
     <span
-      className={`font-wordmark uppercase leading-none ${className || ""}`}
-      style={{
-        fontSize: `${size}px`,
-        letterSpacing: "0.12em",
-        color,
-        fontWeight: 500,
-      }}
+      className={`inline-flex items-baseline leading-none ${className || ""}`}
+      style={{ color }}
+      aria-label="byAevum"
     >
-      Aevum
+      <span
+        className="font-serif italic lowercase"
+        style={{
+          fontSize: `${size * 0.55}px`,
+          fontWeight: 300,
+          letterSpacing: "0em",
+          marginRight: `${size * 0.08}px`,
+        }}
+      >
+        by
+      </span>
+      <span
+        className="font-wordmark uppercase"
+        style={{
+          fontSize: `${size}px`,
+          letterSpacing: "0.12em",
+          fontWeight: 500,
+        }}
+      >
+        Aevum
+      </span>
     </span>
   );
 }

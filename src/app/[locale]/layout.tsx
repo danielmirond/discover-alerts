@@ -11,7 +11,7 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aevum.io";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://byaevum.com";
 
 export async function generateMetadata({
   params,
