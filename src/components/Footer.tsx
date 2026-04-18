@@ -1,5 +1,6 @@
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
+import { Logo } from "./Logo";
 
 export function Footer() {
   const t = useTranslations("footer");
@@ -10,14 +11,15 @@ export function Footer() {
       <div className="max-w-[1200px] mx-auto px-8 py-20">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
           <div className="md:col-span-5">
-            <div className="flex items-baseline gap-3 mb-6">
-              <span className="font-serif text-[28px] font-light text-charcoal tracking-[0.08em] uppercase">
-                Aevum
-              </span>
-              <span className="w-px h-5 bg-line" />
-              <span className="text-[9px] tracking-[0.3em] uppercase text-stone">
-                Est. 2026
-              </span>
+            <div className="flex items-center gap-4 mb-6">
+              <Logo variant="mark" size={32} color="#1a1a1a" />
+              <div className="flex items-baseline gap-3">
+                <Logo variant="wordmark" size={12} color="#1a1a1a" />
+                <span className="w-px h-5 bg-line" />
+                <span className="text-[9px] tracking-[0.3em] uppercase text-stone">
+                  Est. 2026
+                </span>
+              </div>
             </div>
             <p className="text-stone text-[13px] leading-[1.75] max-w-[380px]">
               {t("about")}

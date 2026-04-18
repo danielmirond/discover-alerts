@@ -74,6 +74,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         {locales.map((l) => (
           <link
             key={l}

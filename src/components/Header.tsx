@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { Logo } from "./Logo";
 
 export function Header() {
   const t = useTranslations("nav");
@@ -26,15 +27,16 @@ export function Header() {
       <div className="max-w-[1200px] mx-auto px-8 flex items-center justify-between h-[72px]">
         <Link
           href={`/${locale}`}
-          className="group flex items-baseline gap-3"
+          className="group flex items-center gap-4"
         >
-          <span className="font-serif text-[24px] font-light text-charcoal tracking-[0.08em] uppercase group-hover:text-emerald transition-colors">
-            Aevum
-          </span>
-          <span className="hidden sm:inline w-px h-4 bg-line" />
-          <span className="text-[9px] tracking-[0.3em] uppercase text-stone hidden sm:inline">
-            Precision longevity
-          </span>
+          <Logo variant="mark" size={28} color="#1a1a1a" className="group-hover:opacity-70 transition-opacity" />
+          <div className="flex items-baseline gap-3">
+            <Logo variant="wordmark" size={11} color="#1a1a1a" className="group-hover:opacity-70 transition-opacity" />
+            <span className="hidden sm:inline w-px h-4 bg-line" />
+            <span className="text-[9px] tracking-[0.3em] uppercase text-stone hidden sm:inline">
+              Precision longevity
+            </span>
+          </div>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
