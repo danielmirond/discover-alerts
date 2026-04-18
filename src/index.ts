@@ -2,7 +2,7 @@ import { loadState, saveState } from './state/store.js';
 import { sendToSlack } from './alerts/slack.js';
 import { formatHeartbeat } from './alerts/formatter.js';
 import { startPolling } from './polling/scheduler.js';
-import { logger } from './utils/logger.js';
+import { logger, getErrorMessage } from './utils/logger.js';
 import { validateSlackWebhookUrl } from './utils/validate.js';
 import { config } from './config.js';
 
@@ -20,7 +20,7 @@ async function main(): Promise<void> {
     await sendToSlack(formatHeartbeat());
     logger.info('[main] Heartbeat sent to Slack');
   } catch (err) {
-    logger.error('[main] Failed to send heartbeat', { error: err instanceof Error ? err.message : String(err) });
+    logger.error('[main] Failed to send heartbeat', { error: getErrorMessage(err) });
   }
 
   // Start polling loops
@@ -40,6 +40,6 @@ async function main(): Promise<void> {
 }
 
 main().catch(err => {
-  logger.error('[main] Fatal error', { error: err instanceof Error ? err.message : String(err) });
+  logger.error('[main] Fatal error', { error: getErrorMessage(err) });
   process.exit(1);
 });

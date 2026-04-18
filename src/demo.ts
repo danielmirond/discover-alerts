@@ -23,7 +23,6 @@ import type {
   Alert,
 } from './types.js';
 
-// ── Seed previous state to simulate a "second poll" ─────────────────
 updateState({
   entities: {
     'Kylian Mbappe': { score: 30, scoreDecimal: 0.3, position: 12, publications: 5, firstSeen: '2025-06-01T10:00:00Z', lastUpdated: '2025-06-01T10:00:00Z' },
@@ -41,7 +40,6 @@ updateState({
   dedupHashes: {},
 });
 
-// ── Mock data arriving from "APIs" ──────────────────────────────────
 const entities: DiscoverEntity[] = [
   { name: 'Real Madrid', score: 85, score_decimal: 0.85, position: 1, publications: 32, firstviewed: '2025-06-01T12:00:00Z', lastviewed: '2025-06-01T14:00:00Z' },
   { name: 'Kylian Mbappe', score: 72, score_decimal: 0.72, position: 3, publications: 18, firstviewed: '2025-06-01T10:00:00Z', lastviewed: '2025-06-01T14:00:00Z' },
@@ -90,16 +88,17 @@ const pages: DiscoverPage[] = [
   ai_overviews: [],
 }));
 
-// ── Run Demo ────────────────────────────────────────────────────────
+function section(n: number, title: string): void {
+  console.log('\n' + '━'.repeat(70));
+  console.log(`  ${n}. ${title}`);
+  console.log('━'.repeat(70));
+}
 
 console.log('\n' + '═'.repeat(70));
 console.log('  DISCOVER ALERTS — DEMO');
 console.log('═'.repeat(70) + '\n');
 
-// 1. Validate API response
-console.log('━'.repeat(70));
-console.log('  1. SCHEMA VALIDATION');
-console.log('━'.repeat(70));
+section(1, 'SCHEMA VALIDATION');
 try {
   const mockApiResponse = { status: true, transaction_id: 'demo-123', transaction_state: 'completed', data: entities };
   validateApiResponse(mockApiResponse, '/liveentities');
@@ -113,10 +112,7 @@ try {
   logger.warn('Expected validation failure caught', { error: err.message });
 }
 
-// 2. Retry demo
-console.log('\n' + '━'.repeat(70));
-console.log('  2. RETRY WITH BACKOFF');
-console.log('━'.repeat(70));
+section(2, 'RETRY WITH BACKOFF');
 let attempt = 0;
 await withRetry(async () => {
   attempt++;
@@ -125,10 +121,7 @@ await withRetry(async () => {
 }, 'demo-fetch', { maxAttempts: 3, baseDelayMs: 100 });
 logger.info('Retry demo completed', { attempts: attempt });
 
-// 3. Run detectors
-console.log('\n' + '━'.repeat(70));
-console.log('  3. RUNNING DETECTORS');
-console.log('━'.repeat(70));
+section(3, 'RUNNING DETECTORS');
 
 const alerts: Alert[] = [];
 
@@ -152,23 +145,17 @@ const headlineAlerts = detectHeadlinePatterns(pages);
 logger.info('Headline pattern detector', { alerts: headlineAlerts.length });
 alerts.push(...headlineAlerts);
 
-// 4. Dedup
-console.log('\n' + '━'.repeat(70));
-console.log('  4. DEDUPLICATION');
-console.log('━'.repeat(70));
+section(4, 'DEDUPLICATION');
 logger.info('Before dedup', { total: alerts.length });
 const filtered = dedup(alerts);
 logger.info('After dedup', { sent: filtered.length, suppressed: alerts.length - filtered.length });
 
-// 5. Persist
 persistAlerts(filtered);
 const history = getState().alertHistory;
 logger.info('Alert history persisted', { total: history.length });
 
-// 6. Format for Slack
-console.log('\n' + '━'.repeat(70));
-console.log('  5. FORMATTED SLACK MESSAGES');
-console.log('━'.repeat(70) + '\n');
+section(5, 'FORMATTED SLACK MESSAGES');
+console.log('');
 const messages = formatAlerts(filtered);
 
 for (const msg of messages) {
@@ -188,10 +175,7 @@ for (const msg of messages) {
   }
 }
 
-// 7. Run dedup again to show suppression
-console.log('\n' + '━'.repeat(70));
-console.log('  6. DEDUP ON SECOND RUN (same alerts)');
-console.log('━'.repeat(70));
+section(6, 'DEDUP ON SECOND RUN (same alerts)');
 const secondRun = dedup(alerts);
 logger.info('Second dedup pass', { sent: secondRun.length, suppressed: alerts.length - secondRun.length });
 

@@ -25,6 +25,10 @@ function formatMessage(level: LogLevel, message: string, meta?: Record<string, u
   return JSON.stringify(entry);
 }
 
+export function getErrorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
+}
+
 export const logger = {
   debug(message: string, meta?: Record<string, unknown>): void {
     if (shouldLog('debug')) console.debug(formatMessage('debug', message, meta));

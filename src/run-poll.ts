@@ -3,7 +3,7 @@ import { loadState } from './state/store.js';
 import { runDiscoverPoll } from './polling/discover-poll.js';
 import { runTrendsPoll } from './polling/trends-poll.js';
 import { runMediaPoll } from './polling/media-poll.js';
-import { logger } from './utils/logger.js';
+import { logger, getErrorMessage } from './utils/logger.js';
 
 const target = process.argv[2]; // 'discover' | 'trends' | 'media' | 'all'
 
@@ -34,6 +34,6 @@ async function main() {
 }
 
 main().catch(err => {
-  logger.error('[run-poll] Fatal', { error: err instanceof Error ? err.message : String(err) });
+  logger.error('[run-poll] Fatal', { error: getErrorMessage(err) });
   process.exit(1);
 });

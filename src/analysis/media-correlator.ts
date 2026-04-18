@@ -1,37 +1,12 @@
 import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
+import { diceCoefficient, normalize } from '../utils/string-similarity.js';
 import type {
   MediaArticle,
   DiscoverEntity,
   DiscoverPage,
   MediaDiscoverCorrelationAlert,
 } from '../types.js';
-
-function diceCoefficient(a: string, b: string): number {
-  const norm = (s: string) =>
-    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-  const aN = norm(a);
-  const bN = norm(b);
-
-  if (aN === bN) return 1;
-  if (aN.length < 2 || bN.length < 2) return 0;
-
-  const bigramsA = new Set<string>();
-  for (let i = 0; i < aN.length - 1; i++) bigramsA.add(aN.slice(i, i + 2));
-
-  let intersection = 0;
-  const bigramsBSize = bN.length - 1;
-  for (let i = 0; i < bN.length - 1; i++) {
-    if (bigramsA.has(bN.slice(i, i + 2))) intersection++;
-  }
-
-  return (2 * intersection) / (bigramsA.size + bigramsBSize);
-}
-
-function normalizeForSubstring(s: string): string {
-  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-}
 
 export function detectMediaDiscoverCorrelations(
   articles: MediaArticle[],
@@ -65,8 +40,8 @@ export function detectMediaDiscoverCorrelations(
 
     // Check against Discover entities
     for (const entity of entities) {
-      const articleNorm = normalizeForSubstring(article.title);
-      const entityNorm = normalizeForSubstring(entity.name);
+      const articleNorm = normalize(article.title);
+      const entityNorm = normalize(entity.name);
 
       // Substring match: entity name appears in article title
       if (articleNorm.includes(entityNorm) && entityNorm.length > 3) {

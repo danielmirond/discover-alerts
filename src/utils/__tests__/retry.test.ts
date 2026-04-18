@@ -8,6 +8,7 @@ vi.mock('../logger.js', () => ({
     error: vi.fn(),
     debug: vi.fn(),
   },
+  getErrorMessage: (err: unknown) => err instanceof Error ? err.message : String(err),
 }));
 
 describe('withRetry', () => {

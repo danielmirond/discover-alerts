@@ -1,4 +1,4 @@
-import { logger } from './logger.js';
+import { logger, getErrorMessage } from './logger.js';
 
 export interface RetryOptions {
   maxAttempts?: number;
@@ -29,7 +29,7 @@ export async function withRetry<T>(
 
       const delay = Math.min(opts.baseDelayMs * 2 ** (attempt - 1), opts.maxDelayMs);
       logger.warn(`[retry] ${label} attempt ${attempt}/${opts.maxAttempts} failed, retrying in ${delay}ms`, {
-        error: err instanceof Error ? err.message : String(err),
+        error: getErrorMessage(err),
       });
       await new Promise(r => setTimeout(r, delay));
     }

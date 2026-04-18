@@ -2,11 +2,11 @@ import { config } from '../config.js';
 import { runDiscoverPoll } from './discover-poll.js';
 import { runTrendsPoll } from './trends-poll.js';
 import { runMediaPoll } from './media-poll.js';
-import { logger } from '../utils/logger.js';
+import { logger, getErrorMessage } from '../utils/logger.js';
 
 function safeRun(name: string, fn: () => Promise<void>): () => void {
   return () => {
-    fn().catch(err => logger.error(`[scheduler] ${name} poll failed`, { error: err instanceof Error ? err.message : String(err) }));
+    fn().catch(err => logger.error(`[scheduler] ${name} poll failed`, { error: getErrorMessage(err) }));
   };
 }
 

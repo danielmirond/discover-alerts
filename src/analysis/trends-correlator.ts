@@ -1,5 +1,6 @@
 import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
+import { diceCoefficient, normalize } from '../utils/string-similarity.js';
 import type {
   TrendsItem,
   DiscoverEntity,
@@ -8,29 +9,6 @@ import type {
   TrendsNewTopicAlert,
   TrendSnapshot,
 } from '../types.js';
-
-// Dice coefficient on character bigrams for fuzzy matching
-function diceCoefficient(a: string, b: string): number {
-  const norm = (s: string) =>
-    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-  const aN = norm(a);
-  const bN = norm(b);
-
-  if (aN === bN) return 1;
-  if (aN.length < 2 || bN.length < 2) return 0;
-
-  const bigramsA = new Set<string>();
-  for (let i = 0; i < aN.length - 1; i++) bigramsA.add(aN.slice(i, i + 2));
-
-  let intersection = 0;
-  const bigramsBSize = bN.length - 1;
-  for (let i = 0; i < bN.length - 1; i++) {
-    if (bigramsA.has(bN.slice(i, i + 2))) intersection++;
-  }
-
-  return (2 * intersection) / (bigramsA.size + bigramsBSize);
-}
 
 export function detectTrendsCorrelations(
   trends: TrendsItem[],
@@ -55,8 +33,8 @@ export function detectTrendsCorrelations(
 
     for (const page of pages) {
       const title = page.title || page.title_original || '';
-      const titleNorm = title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      const trendNorm = trend.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const titleNorm = normalize(title);
+      const trendNorm = normalize(trend.title);
 
       if (titleNorm.includes(trendNorm) || diceCoefficient(trend.title, title) >= threshold) {
         matchingPageTitles.push(title);
