@@ -2,7 +2,7 @@ import { config } from '../config.js';
 import { getState, updateState } from '../state/store.js';
 import type { Alert } from '../types.js';
 
-function alertKey(alert: Alert): string {
+function alertKey(alert: Alert) {
   switch (alert.type) {
     case 'entity':
       return `entity:${alert.subtype}:${alert.name}`;
@@ -14,6 +14,8 @@ function alertKey(alert: Alert): string {
       return `correlation:${alert.trendTitle}`;
     case 'trends_new_topic':
       return `trend_new:${alert.title}`;
+    case 'boe_discover_correlation':
+      return `boe:${alert.boeId || alert.boeTitle}`;
     case 'entity_coverage':
       return `entity_coverage:${alert.entityName}`;
     case 'entity_concordance':
@@ -54,7 +56,8 @@ export function dedup(alerts: Alert[]): Alert[] {
 
   const result: Alert[] = [];
   for (const alert of alerts) {
-    const key = alertKey(alert);
+    const key = alertKey(alert) ?? '';
+    if (!key) { result.push(alert); continue; }
     if (hashes[key] && now - hashes[key] < windowMs) continue;
     hashes[key] = now;
     result.push(alert);

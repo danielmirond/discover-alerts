@@ -17,6 +17,7 @@ function emptyState(): AppState {
     headlinePatternsHistory: [],
     dedupHashes: {},
     mediaArticles: {},
+    boeItems: {},
     entityCategoryMap: {},
     entityTopicMap: {},
     llmTopicCache: {},
@@ -26,6 +27,7 @@ function emptyState(): AppState {
     lastPollDiscover: null,
     lastPollTrends: null,
     lastPollMedia: null,
+    lastPollBoe: null,
     lastPollX: null,
   };
 }

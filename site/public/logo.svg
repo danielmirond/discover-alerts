@@ -1,0 +1,36 @@
+<svg width="720" height="260" viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Radar BOE — Analisis de boletines oficiales">
+  <!-- Simbolo (radar con R integrada) -->
+  <g transform="translate(20 30)">
+    <circle cx="100" cy="100" r="92" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+    <circle cx="100" cy="100" r="70" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+    <circle cx="100" cy="100" r="48" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+    <circle cx="100" cy="100" r="26" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+    <rect x="62" y="30" width="18" height="140" fill="#1e3a5f"/>
+    <path d="M 80 30 L 125 30 Q 148 30 148 60 Q 148 90 125 90 L 80 90 Z" fill="#1e3a5f"/>
+    <path d="M 90 42 L 122 42 Q 136 42 136 60 Q 136 78 122 78 L 90 78 Z" fill="#f0ebe0"/>
+    <polygon points="110,90 128,90 158,170 140,170" fill="#1e3a5f"/>
+    <circle cx="138" cy="58" r="7" fill="#c0392b"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="260" y="110"
+        font-family="'Playfair Display', Didot, 'Bodoni 72', Georgia, serif"
+        font-weight="700"
+        font-size="74"
+        letter-spacing="3"
+        fill="#1e3a5f">RADAR</text>
+  <text x="260" y="180"
+        font-family="'Playfair Display', Didot, 'Bodoni 72', Georgia, serif"
+        font-weight="700"
+        font-size="74"
+        letter-spacing="3"
+        fill="#1e3a5f">BOE</text>
+
+  <!-- Tagline -->
+  <text x="260" y="215"
+        font-family="Inter, system-ui, sans-serif"
+        font-weight="500"
+        font-size="17"
+        letter-spacing="2"
+        fill="#1e3a5f">ANÁLISIS DE BOLETINES OFICIALES</text>
+</svg>

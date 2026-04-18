@@ -77,7 +77,7 @@ function section(mrkdwn: string): SlackBlock {
 function fields(...pairs: string[]): SlackBlock {
   return {
     type: 'section',
-    fields: pairs.map(t => ({ type: 'mrkdwn', text: t })),
+    fields: pairs.map((t: any) => ({ type: 'mrkdwn', text: t })),
   };
 }
 
@@ -212,7 +212,7 @@ async function formatEntity(a: Extract<Alert, { type: 'entity' }>): Promise<Slac
   // Enrichment: matching Google Trends
   if (a.matchingTrends && a.matchingTrends.length > 0) {
     const trendLines = a.matchingTrends
-      .map(t => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
+      .map((t: any) => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
       .join('\n');
     blocks.push(section(`:link: *Google Trends:*\n${trendLines}`));
   }
@@ -220,7 +220,7 @@ async function formatEntity(a: Extract<Alert, { type: 'entity' }>): Promise<Slac
   // Enrichment: matching X/Twitter trends
   if (a.matchingXTrends && a.matchingXTrends.length > 0) {
     const xLines = a.matchingXTrends
-      .map(t => `• <${t.url}|${t.topic}> — #${t.rank} en X`)
+      .map((t: any) => `• <${t.url}|${t.topic}> — #${t.rank} en X`)
       .join('\n');
     blocks.push(section(`:bird: *X/Twitter Trends:*\n${xLines}`));
   }
@@ -228,7 +228,7 @@ async function formatEntity(a: Extract<Alert, { type: 'entity' }>): Promise<Slac
   // Enrichment: matching media articles
   if (a.matchingArticles && a.matchingArticles.length > 0) {
     const articleLines = a.matchingArticles
-      .map(m => `• <${m.link}|${m.title}> _(${m.feedName})_`)
+      .map((m: any) => `• <${m.link}|${m.title}> _(${m.feedName})_`)
       .join('\n');
     blocks.push(section(`:newspaper: *Medios publicando:*\n${articleLines}`));
   }
@@ -263,7 +263,7 @@ function formatCategory(a: Extract<Alert, { type: 'category' }>): SlackBlock[] {
 
   if (a.examplePages && a.examplePages.length > 0) {
     const lines = a.examplePages
-      .map(p => `• <${p.url}|${p.title}>${p.publisher ? ` _(${p.publisher})_` : ''}`)
+      .map((p: any) => `• <${p.url}|${p.title}>${p.publisher ? ` _(${p.publisher})_` : ''}`)
       .join('\n');
     blocks.push(section(`:newspaper: *Ejemplos de noticias:*\n${lines}`));
   }
@@ -273,7 +273,7 @@ function formatCategory(a: Extract<Alert, { type: 'category' }>): SlackBlock[] {
 }
 
 function formatHeadline(a: Extract<Alert, { type: 'headline_pattern' }>): SlackBlock[] {
-  const titles = a.matchingTitles.map(t => `• ${t}`).join('\n');
+  const titles = a.matchingTitles.map((t: any) => `• ${t}`).join('\n');
   return [
     header(`:newspaper: Patron de titular detectado`),
     section(
@@ -294,7 +294,7 @@ function formatCorrelation(a: Extract<Alert, { type: 'trends_correlation' }>): S
     parts.push(`*Entidades Discover:* ${a.matchingEntities.join(', ')}`);
   }
   if (a.matchingPageTitles.length > 0) {
-    parts.push(`*Paginas Discover:*\n${a.matchingPageTitles.map(t => `• ${t}`).join('\n')}`);
+    parts.push(`*Paginas Discover:*\n${a.matchingPageTitles.map((t: any) => `• ${t}`).join('\n')}`);
   }
 
   return [
@@ -306,7 +306,7 @@ function formatCorrelation(a: Extract<Alert, { type: 'trends_correlation' }>): S
 
 function formatNewTrend(a: Extract<Alert, { type: 'trends_new_topic' }>): SlackBlock[] {
   const news = a.newsItems
-    .map(n => `• <${n.url}|${n.title}> (${n.source})`)
+    .map((n: any) => `• <${n.url}|${n.title}> (${n.source})`)
     .join('\n');
 
   return [
@@ -344,21 +344,21 @@ function formatConcordance(a: Extract<Alert, { type: 'entity_concordance' }>): S
 
   if (a.matchingTrends.length > 0) {
     const lines = a.matchingTrends
-      .map(t => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
+      .map((t: any) => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
       .join('\n');
     blocks.push(section(`:link: *Google Trends:*\n${lines}`));
   }
 
   if (a.matchingXTrends.length > 0) {
     const lines = a.matchingXTrends
-      .map(t => `• <${t.url}|${t.topic}> — #${t.rank} en X`)
+      .map((t: any) => `• <${t.url}|${t.topic}> — #${t.rank} en X`)
       .join('\n');
     blocks.push(section(`:bird: *X/Twitter:*\n${lines}`));
   }
 
   if (a.matchingArticles.length > 0) {
     const lines = a.matchingArticles
-      .map(m => `• <${m.link}|${m.title}> _(${m.feedName})_`)
+      .map((m: any) => `• <${m.link}|${m.title}> _(${m.feedName})_`)
       .join('\n');
     blocks.push(section(`:newspaper: *Medios:*\n${lines}`));
   }
@@ -370,13 +370,13 @@ function formatConcordance(a: Extract<Alert, { type: 'entity_concordance' }>): S
 function formatEntityCoverage(a: Extract<Alert, { type: 'entity_coverage' }>): SlackBlock[] {
   const outletList = a.mediaOutlets.join(' • ');
   const articleLines = a.articles
-    .map(art => {
+    .map((art: any) => {
       const tag = art.feedScope === 'internacional' ? ' :globe_with_meridians:' : '';
       return `• <${art.link}|${art.title}> _(${art.feedName})_${tag}`;
     })
     .join('\n');
 
-  const hasInternational = a.articles.some(art => art.feedScope === 'internacional');
+  const hasInternational = a.articles.some((art: any) => art.feedScope === 'internacional');
   const scopeNote = hasInternational ? ' (incluye medios internacionales)' : '';
 
   const ctxEC = contextSnippetsBlock(a.contextSnippets);
@@ -445,7 +445,7 @@ function formatOwnMediaAbsent(a: Extract<Alert, { type: 'own_media_absent' }>): 
   }
   if (a.otherTitles.length > 0) {
     blocks.push(section(
-      `*Titulares de la competencia:*\n` + a.otherTitles.map(t => `• ${t}`).join('\n'),
+      `*Titulares de la competencia:*\n` + a.otherTitles.map((t: any) => `• ${t}`).join('\n'),
     ));
   }
   blocks.push(context('Own media absent | Oportunidad editorial'));
@@ -454,7 +454,7 @@ function formatOwnMediaAbsent(a: Extract<Alert, { type: 'own_media_absent' }>): 
 
 function formatTrendsWithoutDiscover(a: Extract<Alert, { type: 'trends_without_discover' }>): SlackBlock[] {
   const newsLines = a.newsItems
-    .map(n => `• <${n.url}|${n.title}> _(${n.source})_`)
+    .map((n: any) => `• <${n.url}|${n.title}> _(${n.source})_`)
     .join('\n');
   const blocks: SlackBlock[] = [
     header(`:mag: Hueco SEO: ${a.trendTitle}`),
@@ -475,8 +475,32 @@ function formatHeadlineCluster(a: Extract<Alert, { type: 'headline_cluster' }>):
     section(
       `${a.entitiesInCluster.length} entidades distintas han disparado actividad en la ultima ${a.windowHours}h. Posible evento noticia grande en curso.`,
     ),
-    section(`*Entidades en el cluster:*\n${a.entitiesInCluster.map(e => `• ${e}`).join('\n')}`),
+    section(`*Entidades en el cluster:*\n${a.entitiesInCluster.map((e: any) => `• ${e}`).join('\n')}`),
     context('Headline cluster | Big-event signal'),
+  ];
+}
+
+function formatBoeCorrelation(a: Extract<Alert, { type: 'boe_discover_correlation' }>): SlackBlock[] {
+  const parts: string[] = [];
+  const linkText = a.boeUrl
+    ? `<${a.boeUrl}|${a.boeTitle}>`
+    : a.boeTitle;
+  parts.push(`*Publicacion BOE:* ${linkText}`);
+  if (a.boeId) parts.push(`*ID:* ${a.boeId}`);
+  if (a.departamento) parts.push(`*Departamento:* ${a.departamento}`);
+  if (a.seccion) parts.push(`*Seccion:* ${a.seccion}`);
+
+  if (a.matchingEntities.length > 0) {
+    parts.push(`*Entidades Discover:* ${a.matchingEntities.join(', ')}`);
+  }
+  if (a.matchingPageTitles.length > 0) {
+    parts.push(`*Paginas Discover:*\n${a.matchingPageTitles.map((t: any) => `• ${t}`).join('\n')}`);
+  }
+
+  return [
+    header(`:classical_building: BOE <-> Discover`),
+    section(parts.join('\n')),
+    context(`Similitud: ${(a.similarityScore * 100).toFixed(0)}% | BOE + DiscoverSnoop ES`),
   ];
 }
 
@@ -499,14 +523,14 @@ function formatTripleMatch(a: Extract<Alert, { type: 'triple_match' }>): SlackBl
 
   if (a.matchingTrends.length > 0) {
     const lines = a.matchingTrends
-      .map(t => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
+      .map((t: any) => `• *${t.title}*${t.approxTraffic > 0 ? ` — ${t.approxTraffic.toLocaleString()}+ busquedas` : ''}`)
       .join('\n');
     blocks.push(section(`:mag: *Google Trends:*\n${lines}`));
   }
 
   if (a.matchingXTrends.length > 0) {
     const lines = a.matchingXTrends
-      .map(t => `• <${t.url}|${t.topic}> — #${t.rank} en X`)
+      .map((t: any) => `• <${t.url}|${t.topic}> — #${t.rank} en X`)
       .join('\n');
     blocks.push(section(`:bird: *X/Twitter:*\n${lines}`));
   }
@@ -514,7 +538,7 @@ function formatTripleMatch(a: Extract<Alert, { type: 'triple_match' }>): SlackBl
   if (a.matchingArticles.length > 0) {
     const lines = a.matchingArticles
       .slice(0, 5)
-      .map(m => `• <${m.link}|${m.title}> _(${m.feedName})_`)
+      .map((m: any) => `• <${m.link}|${m.title}> _(${m.feedName})_`)
       .join('\n');
     blocks.push(section(`:newspaper: *Medios:*\n${lines}`));
   }
@@ -604,13 +628,14 @@ function formatFirstMover(a: Extract<Alert, { type: 'first_mover' }>): SlackBloc
   ];
 }
 
-async function formatSingleAlert(alert: Alert): Promise<SlackBlock[]> {
+async function formatSingleAlert(alert: Alert) {
   switch (alert.type) {
     case 'entity': return await formatEntity(alert);
     case 'category': return formatCategory(alert);
     case 'headline_pattern': return formatHeadline(alert);
     case 'trends_correlation': return formatCorrelation(alert);
     case 'trends_new_topic': return formatNewTrend(alert);
+    case 'boe_discover_correlation': return formatBoeCorrelation(alert);
     case 'entity_coverage': return formatEntityCoverage(alert);
     case 'entity_concordance': return formatConcordance(alert);
     case 'triple_match': return formatTripleMatch(alert);
@@ -652,7 +677,7 @@ export async function formatAlerts(alerts: Alert[]): Promise<{ blocks: SlackBloc
 
     for (let j = 0; j < batch.length; j++) {
       if (j > 0) blocks.push(divider());
-      const singleBlocks = await withFormulas(batch[j], await formatSingleAlert(batch[j]));
+      const singleBlocks = await withFormulas(batch[j], (await formatSingleAlert(batch[j])) ?? []);
       blocks.push(...singleBlocks);
     }
 
@@ -670,7 +695,7 @@ export function formatHeartbeat(): { blocks: SlackBlock[] } {
       section(
         `*Hora:* ${now}\n` +
         `*Pais:* ES\n` +
-        `*Monitorizando:* Entidades, Categorias, Patrones de titular, Google Trends, RSS Medios`,
+        `*Monitorizando:* Entidades, Categorias, Patrones de titular, Google Trends, RSS Medios, BOE`,
       ),
     ],
   };

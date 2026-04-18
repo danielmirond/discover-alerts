@@ -1,0 +1,22 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Radar BOE">
+  <!-- Anillo exterior completo -->
+  <circle cx="100" cy="100" r="92" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+
+  <!-- Anillos concentricos con stroke (quedan parcialmente cubiertos por la R) -->
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+  <circle cx="100" cy="100" r="48" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+  <circle cx="100" cy="100" r="26" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+
+  <!-- Letra R superpuesta en el negativo — pata vertical gruesa -->
+  <rect x="62" y="30" width="18" height="140" fill="#1e3a5f"/>
+
+  <!-- Curva superior de la R (cabeza) -->
+  <path d="M 80 30 L 125 30 Q 148 30 148 60 Q 148 90 125 90 L 80 90 Z" fill="#1e3a5f"/>
+  <path d="M 90 42 L 122 42 Q 136 42 136 60 Q 136 78 122 78 L 90 78 Z" fill="#f0ebe0"/>
+
+  <!-- Pierna diagonal de la R -->
+  <polygon points="110,90 128,90 158,170 140,170" fill="#1e3a5f"/>
+
+  <!-- Blip del radar (punto rojo) -->
+  <circle cx="138" cy="58" r="7" fill="#c0392b"/>
+</svg>

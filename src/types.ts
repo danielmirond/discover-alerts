@@ -177,30 +177,25 @@ export interface AppState {
   headlinePatternsHistory: Array<{ ngram: string; count: number; timestamp: string }>;
   dedupHashes: Record<string, number>;
   mediaArticles: Record<string, { feedName: string; feedCategory: string; feedScope?: 'nacional' | 'internacional'; title: string; link: string; firstSeen: string; pubDate?: string; description?: string }>;
-  entityCategoryMap: Record<string, string>; // entity name -> derived category (from pages)
-  entityTopicMap: Record<string, string>; // entity name -> derived topic (sucesos/legal/...) from topics.json
-  /** Registro de uso de reglas de headline-formulas. Retención: 30 días,
-   * cap ~5000 entries. Usado por live-view para mostrar qué fórmulas
-   * están funcionando (proxy: cuánta audiencia DiscoverSnoop acompaña). */
+  boeItems: Record<string, { firstSeen: string }>;
+  entityCategoryMap: Record<string, string>;
+  entityTopicMap: Record<string, string>;
   formulaUsage?: Array<{
-    matchKey: string; // ej. "entity/flash+legal" o "trends_without_discover+_+viajes"
+    matchKey: string;
     alertType: string;
     alertSubtype?: string;
     alertTopic?: string;
     entityName?: string;
-    entityScore?: number; // score DS de la entidad en ese momento (0-100)
-    timestamp: string; // ISO
+    entityScore?: number;
+    timestamp: string;
   }>;
-  /**
-   * Cache de clasificaciones LLM: entity -> { topic | "none", timestampMs }
-   * Retencion 7 dias para ahorrar coste. Se consulta ANTES de llamar al LLM.
-   */
   llmTopicCache?: Record<string, { topic: string; ts: number }>;
-  recentAlerts: Array<{ alert: Alert; timestamp: string; routeName: string }>; // last 6h of alerts sent to Slack
-  weeklyHistory: Record<string, Record<string, WeeklyMediaStats>>; // weekKey -> feedName -> stats
+  recentAlerts: Array<{ alert: Alert; timestamp: string; routeName: string }>;
+  weeklyHistory: Record<string, Record<string, WeeklyMediaStats>>;
   lastPollDiscover: string | null;
   lastPollTrends: string | null;
   lastPollMedia: string | null;
+  lastPollBoe: string | null;
   lastPollX: string | null;
 }
 
@@ -343,6 +338,7 @@ export type Alert =
   | HeadlinePatternAlert
   | TrendsCorrelationAlert
   | TrendsNewTopicAlert
+  | BoeDiscoverCorrelationAlert
   | EntityCoverageAlert
   | EntityConcordanceAlert
   | TripleMatchAlert
@@ -579,6 +575,29 @@ export interface FirstMoverAlert {
   windowMinutes: number;
   category?: string;
   topic?: string;
+}
+
+// BOE types
+export interface BoeItem {
+  identificador: string;
+  titulo: string;
+  urlPdf: string;
+  urlHtml: string;
+  seccion: string;
+  departamento: string;
+  epigrafe: string;
+}
+
+export interface BoeDiscoverCorrelationAlert {
+  type: 'boe_discover_correlation';
+  boeTitle: string;
+  boeId: string;
+  boeUrl: string;
+  departamento: string;
+  seccion: string;
+  matchingEntities: string[];
+  matchingPageTitles: string[];
+  similarityScore: number;
 }
 
 // Poll results

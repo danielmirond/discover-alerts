@@ -1,0 +1,119 @@
+name: Publish Daily Content
+
+on:
+  schedule:
+    # 06:30 UTC = 08:30 CET (invierno) / 08:30 CEST (verano)
+    - cron: '30 6 * * 1-6'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'What to generate'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - boe
+          - trending
+      count:
+        description: 'Trending articles to generate (1-5)'
+        required: false
+        default: '3'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Configure git
+        run: |
+          git config user.name "Radar BOE Bot"
+          git config user.email "bot@radarboe.es"
+
+      - name: Create draft branch
+        id: branch
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          TIME=$(date -u +%H%M)
+          BRANCH="drafts/${DATE}-${TIME}"
+          git checkout -b "$BRANCH"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+
+      - name: Generate content
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-5' }}
+        run: |
+          TARGET="${{ inputs.target || 'all' }}"
+          COUNT="${{ inputs.count || '3' }}"
+          npx tsx src/generator/run-generator.ts "$TARGET" "$COUNT"
+
+      - name: Check for new content
+        id: check
+        run: |
+          git add site/content/
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No new content generated."
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            FILES=$(git diff --cached --name-only | wc -l)
+            echo "files_changed=$FILES" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push draft
+        if: steps.check.outputs.has_changes == 'true'
+        run: |
+          git commit -m "content(draft): daily publication ${{ steps.branch.outputs.date }}"
+          git push origin "${{ steps.branch.outputs.branch }}"
+
+      - name: Create pull request
+        if: steps.check.outputs.has_changes == 'true'
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_URL=$(gh pr create \
+            --base main \
+            --head "${{ steps.branch.outputs.branch }}" \
+            --title "Draft: contenido diario ${{ steps.branch.outputs.date }}" \
+            --body "Contenido generado automaticamente el ${{ steps.branch.outputs.date }}.
+
+          **Archivos modificados:** ${{ steps.check.outputs.files_changed }}
+
+          Revisa la preview de Vercel (link en los checks de este PR) y mergea
+          si el contenido pasa la revision editorial.
+
+          Para rechazar: cierra el PR sin mergear.")
+          echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
+
+      - name: Notify Slack
+        if: steps.check.outputs.has_changes == 'true' && env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-Type: application/json' \
+            --data "{
+              \"blocks\": [
+                {\"type\":\"header\",\"text\":{\"type\":\"plain_text\",\"text\":\"📰 Draft diario listo para revisar\",\"emoji\":true}},
+                {\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Fecha:* ${{ steps.branch.outputs.date }}\n*Archivos nuevos:* ${{ steps.check.outputs.files_changed }}\n*PR:* ${{ steps.pr.outputs.pr_url }}\"}},
+                {\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"Abre el PR, revisa la preview de Vercel y mergea si te convence.\"}]}
+              ]
+            }" \
+            "$SLACK_WEBHOOK_URL"

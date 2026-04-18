@@ -23,7 +23,7 @@ const RECENT_ALERTS_RETENTION_HOURS = 6;
  *  - category spike poll-over-poll
  *  - headline pattern / trends correlation / new topic
  */
-function alertPriority(alert: Alert): number {
+function alertPriority(alert: Alert) {
   switch (alert.type) {
     case 'entity':
       switch (alert.subtype) {
@@ -62,6 +62,7 @@ function alertPriority(alert: Alert): number {
     case 'trends_correlation': return 35;
     case 'headline_pattern': return 30;
     case 'trends_new_topic': return 20;
+    case 'boe_discover_correlation': return 15;
   }
 }
 
@@ -92,7 +93,7 @@ export async function dispatchAlerts(
 
   // Sort by (priority DESC, score DESC) and cap
   const sorted = [...alerts].sort((a, b) => {
-    const pDiff = alertPriority(b) - alertPriority(a);
+    const pDiff = (alertPriority(b) ?? 0) - (alertPriority(a) ?? 0);
     if (pDiff !== 0) return pDiff;
     return alertScore(b) - alertScore(a);
   });

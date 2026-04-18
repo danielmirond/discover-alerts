@@ -109,6 +109,7 @@ export function getConfig() {
       discoverIntervalMs: envInt('POLL_INTERVAL_DISCOVER_MS', 300_000),
       trendsIntervalMs: envInt('POLL_INTERVAL_TRENDS_MS', 1_800_000),
       mediaIntervalMs: envInt('POLL_INTERVAL_MEDIA_MS', 900_000),
+      boeIntervalMs: envInt('POLL_INTERVAL_BOE_MS', 21_600_000), // 6 hours
     },
   };
 }
