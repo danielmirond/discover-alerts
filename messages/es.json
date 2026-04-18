@@ -9,6 +9,7 @@
     "wearables": "Biomarcadores",
     "supplements": "Protocolos",
     "protocols": "Ciencia",
+    "beauty": "Belleza",
     "newsletter": "Briefing"
   },
   "home": {
@@ -60,6 +61,10 @@
     "protocols": {
       "title": "Protocolos & Ciencia",
       "description": "Guías basadas en evidencia para optimizar sueño, recuperación, cognición y healthspan. Lo que funciona y lo que no."
+    },
+    "beauty": {
+      "title": "Skin Longevity & Cosmética Premium",
+      "description": "El nuevo paradigma en cosmética: salud y rejuvenecimiento de la piel desde la biología celular. Augustinus Bader, La Prairie, ingredientes con evidencia."
     }
   }
 }

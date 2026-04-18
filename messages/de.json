@@ -9,6 +9,7 @@
     "wearables": "Biomarker",
     "supplements": "Protokolle",
     "protocols": "Wissenschaft",
+    "beauty": "Schönheit",
     "newsletter": "Briefing"
   },
   "home": {
@@ -60,6 +61,10 @@
     "protocols": {
       "title": "Protokolle & Wissenschaft",
       "description": "Evidenzbasierte Leitfäden zur Optimierung von Schlaf, Erholung, Kognition und Healthspan."
+    },
+    "beauty": {
+      "title": "Skin Longevity & Premium-Kosmetik",
+      "description": "Das neue Paradigma in der Kosmetik: Hautgesundheit und Verjüngung aus der Zellbiologie."
     }
   }
 }

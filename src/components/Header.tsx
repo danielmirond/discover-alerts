@@ -15,10 +15,17 @@ export function Header() {
     : locale === "de" ? "Über"
     : "About";
 
+  const beautyPath =
+    locale === "es" ? "belleza"
+    : locale === "fr" ? "beaute"
+    : locale === "de" ? "schoenheit"
+    : "beauty";
+
   const links = [
     { href: `/${locale}/wearables`, label: t("wearables") },
     { href: `/${locale}/suplementos`, label: t("supplements") },
     { href: `/${locale}/protocolos`, label: t("protocols") },
+    { href: `/${locale}/${beautyPath}`, label: t("beauty") },
     { href: `/${locale}/about`, label: aboutLabel },
   ];
 

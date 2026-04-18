@@ -9,6 +9,7 @@
     "wearables": "Biomarqueurs",
     "supplements": "Protocoles",
     "protocols": "Science",
+    "beauty": "Beauté",
     "newsletter": "Briefing"
   },
   "home": {
@@ -60,6 +61,10 @@
     "protocols": {
       "title": "Protocoles & Science",
       "description": "Guides basés sur les preuves pour optimiser sommeil, récupération, cognition et healthspan."
+    },
+    "beauty": {
+      "title": "Skin Longevity & Cosmétique Premium",
+      "description": "Le nouveau paradigme en cosmétique : santé et rajeunissement de la peau depuis la biologie cellulaire."
     }
   }
 }
