@@ -7,10 +7,16 @@ import { locales } from "@/i18n/routing";
 import { NewsletterEmbed } from "@/components/NewsletterEmbed";
 import { AffiliateLink } from "@/components/AffiliateLink";
 import { ArticleCard } from "@/components/ArticleCard";
+import { EvidenceBadge } from "@/components/EvidenceBadge";
+import { Sources } from "@/components/Sources";
+import { ExpertQuote } from "@/components/ExpertQuote";
 
 const mdxComponents = {
   AffiliateLink,
   NewsletterEmbed,
+  EvidenceBadge,
+  Sources,
+  ExpertQuote,
 };
 
 export async function generateMetadata({
