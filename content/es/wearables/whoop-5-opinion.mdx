@@ -13,6 +13,28 @@ alternates:
 
 <EvidenceBadge level={3} label="Evidencia fuerte" />
 
+<ProductCard
+  name="WHOOP 5.0"
+  category="Wearable · Performance"
+  badge="Mejor para atletas"
+  emoji="▱"
+  description="La pulsera definitiva para gestionar carga de entrenamiento, recuperación y sueño. Sin pantalla, solo datos puros para deportistas serios."
+  rating={4.6}
+  testedFor="6 meses de uso diario"
+  specs={[
+    { label: "Sensores", value: "PPG 5 LEDs, EDA, SpO2, temperatura" },
+    { label: "Autonomía", value: "5–7 días" },
+    { label: "Resistencia", value: "IP68 · Natación" },
+    { label: "Peso", value: "25g" }
+  ]}
+  price="€20/mes"
+  priceContext="Anual · €25/mes mensual"
+  ctas={[
+    { label: "Probar WHOOP", url: "https://join.whoop.com", store: "WHOOP.com", primary: true },
+    { label: "Plan 24 meses", url: "https://join.whoop.com", store: "Best price" }
+  ]}
+/>
+
 ## ¿Qué es WHOOP?
 
 WHOOP es un **wearable de rendimiento** enfocado en tres pilares: carga de entrenamiento (strain), recuperación (recovery) y sueño. A diferencia de otros dispositivos, WHOOP no tiene pantalla — toda la información se consume desde la app. Es un sensor puro de datos fisiológicos.
@@ -75,23 +97,6 @@ WHOOP trackea el sueño automáticamente (detección sin intervención):
 
 Una de las funciones más útiles: el **Sleep Coach**, que te dice a qué hora acostarte para alcanzar tu peak performance mañana.
 
-## Pros y contras
-
-### Lo mejor
-- Strain tracking incomparable — el mejor sistema de carga de entrenamiento del mercado
-- Recovery diario accionable (rojo/amarillo/verde)
-- Detección automática de actividades
-- Sin pantalla = zero distracciones, enfoque puro en datos
-- Comunidad y retos con otros usuarios
-- Se lleva en muñeca, bíceps o ropa interior (boxers WHOOP)
-
-### Lo peor
-- **Solo suscripción** — nunca es tuyo, sin suscripción no tienes nada
-- €25/mes es caro vs Oura (€5,99/mes) o Garmin (€0/mes)
-- Sin pantalla ni GPS — necesitas el móvil para todo
-- Menos preciso que Oura en sueño profundo
-- Sin NFC ni pagos — es un sensor puro, no un smartwatch
-
 ## ¿Para quién es WHOOP?
 
 WHOOP es ideal para:
@@ -107,6 +112,24 @@ NO es para ti si:
 
 ## Veredicto
 
-WHOOP 5.0 es el **mejor wearable para gestionar carga de entrenamiento y recuperación**. Su sistema de Strain + Recovery no tiene rival. El modelo de suscripción es su mayor barrera, pero si entrenas en serio y tomas decisiones basadas en datos, los €25/mes se rentabilizan evitando sobreentrenamiento y optimizando tu rendimiento.
-
-<AffiliateLink href="https://join.whoop.com" store="WHOOP.com">Probar WHOOP 5.0 — primer mes gratis</AffiliateLink>
+<ProsCons
+  pros={[
+    "Strain tracking incomparable — el mejor del mercado",
+    "Recovery diario accionable (rojo/amarillo/verde)",
+    "Detección automática de actividades",
+    "Sin pantalla = cero distracciones, datos puros",
+    "Comunidad y retos con otros atletas"
+  ]}
+  cons={[
+    "Solo suscripción — el dispositivo nunca es tuyo",
+    "€25/mes es caro vs Oura (€5,99/mes) o Garmin (gratis)",
+    "Sin pantalla ni GPS — móvil obligatorio",
+    "Menos preciso que Oura en sueño profundo"
+  ]}
+  verdict="El mejor wearable para gestionar carga de entrenamiento y recuperación. Si entrenas en serio, los €25/mes se rentabilizan evitando sobreentrenamiento."
+  cta={{
+    label: "Probar WHOOP 5.0 — Primer mes gratis",
+    url: "https://join.whoop.com",
+    store: "WHOOP.com"
+  }}
+/>

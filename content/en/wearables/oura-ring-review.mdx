@@ -13,23 +13,33 @@ alternates:
 
 <EvidenceBadge level={3} label="Strong evidence" />
 
+<ProductCard
+  name="Oura Ring Gen 4"
+  category="Smart Ring · Wearable"
+  badge="Editor's Choice"
+  emoji="◯"
+  description="The best smart ring for tracking sleep, HRV and body temperature. Discreet, accurate and 8 days of battery life."
+  rating={4.7}
+  testedFor="3 months of daily use"
+  specs={[
+    { label: "Sensors", value: "PPG, SpO2, temperature, accelerometer" },
+    { label: "Battery", value: "6–8 days" },
+    { label: "Material", value: "Titanium · IP68" },
+    { label: "Weight", value: "4–6g" }
+  ]}
+  price="$299"
+  priceContext="+ $5.99/mo subscription"
+  ctas={[
+    { label: "Buy Oura Ring", url: "https://ouraring.com", store: "Oura.com", primary: true },
+    { label: "Check Amazon", url: "https://amazon.com", store: "Amazon" }
+  ]}
+/>
+
 ## What is the Oura Ring?
 
 The Oura Ring is a **smart ring** designed to track your sleep, heart rate variability (HRV), body temperature and daily activity. Unlike a smartwatch, its discreet form factor makes it comfortable to wear 24/7, including at night — where it truly excels.
 
 **Gen 4** (launched in 2025) introduces improved SpO2 sensors, real-time stress detection and up to 8 days of battery life.
-
-## Key Specifications
-
-| Feature | Detail |
-|---|---|
-| Sensors | PPG (photoplethysmography), temperature, 3D accelerometer, SpO2 |
-| Battery life | 6–8 days |
-| Water resistance | 100m (IP68) |
-| Connectivity | Bluetooth 5.3 |
-| Materials | Titanium |
-| Weight | 4–6g depending on size |
-| Price | ~$299 / £279 |
 
 ## Sleep Tracking Analysis
 
@@ -48,35 +58,79 @@ Heart rate variability (HRV) is the most valuable biomarker the Oura offers. A h
 
 Oura measures your HRV during sleep (RMSSD), when readings are most reliable. After a few weeks, it establishes your personal baseline and alerts you when something deviates.
 
-## Pros and Cons
+## Oura Ring vs the Competition
 
-### The Good
-- Best-in-class sleep tracking in a ring form factor
-- Accurate and consistent nighttime HRV
-- Discreet design that doesn't interfere with daily life
-- Clean app with actionable metrics
-- 6–8 day battery life
-
-### The Bad
-- £5.99/month subscription required for full metrics access
-- No GPS (you need your phone for route tracking)
-- Sizing can be tricky — order the sizing kit first
-- Premium price point ($299 + subscription)
-
-## Oura Ring vs WHOOP 5.0
-
-The most common comparison. In short:
-
-- **Oura** wins on **sleep** tracking and discretion
-- **WHOOP** wins on **exercise** and strain tracking
-- Oura is a one-time purchase + subscription; WHOOP is subscription-only ($30/mo)
-- For biohackers focused on sleep and recovery → **Oura**
-- For competitive athletes → **WHOOP**
+<ComparisonTable
+  title="Oura vs WHOOP vs Ultrahuman"
+  attributes={["Form factor", "Sleep", "Strain", "Battery", "Subscription"]}
+  products={[
+    {
+      name: "Oura Ring Gen 4",
+      emoji: "◯",
+      badge: "Best sleep",
+      attributes: {
+        "Form factor": "Ring · Titanium",
+        "Sleep": "★★★★★",
+        "Strain": "★★★",
+        "Battery": "6–8 days",
+        "Subscription": "$5.99/mo"
+      },
+      price: "$299",
+      ctaUrl: "https://ouraring.com",
+      ctaStore: "Oura"
+    },
+    {
+      name: "WHOOP 5.0",
+      emoji: "▱",
+      badge: "Best strain",
+      attributes: {
+        "Form factor": "Wristband",
+        "Sleep": "★★★★",
+        "Strain": "★★★★★",
+        "Battery": "5–7 days",
+        "Subscription": "Subscription only"
+      },
+      price: "$30/mo",
+      ctaUrl: "https://join.whoop.com",
+      ctaStore: "WHOOP"
+    },
+    {
+      name: "Ultrahuman Ring AIR",
+      emoji: "◌",
+      attributes: {
+        "Form factor": "Ring · Titanium",
+        "Sleep": "★★★★",
+        "Strain": "★★★",
+        "Battery": "4–6 days",
+        "Subscription": "No subscription"
+      },
+      price: "$349",
+      ctaUrl: "https://amazon.com",
+      ctaStore: "Amazon"
+    }
+  ]}
+/>
 
 ## Verdict
 
-The Oura Ring Gen 4 is the **best wearable for sleep optimization** you can buy in 2026. If your primary goal is improving rest quality and monitoring HRV to make informed decisions about training, supplementation and lifestyle, this ring pays for itself.
-
-The subscription is a downside, but access to detailed sleep and HRV data over years is invaluable for anyone serious about their health.
-
-<AffiliateLink href="https://ouraring.com" store="Oura.com">Check Oura Ring Gen 4 price</AffiliateLink>
+<ProsCons
+  pros={[
+    "Best sleep tracking in a ring form factor",
+    "Accurate and consistent nighttime HRV (RMSSD)",
+    "Discreet design that doesn't interfere with daily life",
+    "Clean app with actionable metrics",
+    "Real 6–8 day battery life"
+  ]}
+  cons={[
+    "Required $5.99/mo subscription for full metrics access",
+    "No GPS — phone needed for route tracking",
+    "Sizing can be tricky — order the sizing kit first",
+    "Premium price: $299 + annual subscription"
+  ]}
+  verdict="The best sleep and HRV wearable of 2026. If your priority is optimizing rest and recovery, this investment pays for itself."
+  cta={{
+    label: "Buy Oura Ring Gen 4",
+    url: "https://ouraring.com",
+    store: "Oura.com"
+  }}
+/>

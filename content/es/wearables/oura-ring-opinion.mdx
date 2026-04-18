@@ -13,23 +13,33 @@ alternates:
 
 <EvidenceBadge level={3} label="Evidencia fuerte" />
 
+<ProductCard
+  name="Oura Ring Gen 4"
+  category="Smart Ring · Wearable"
+  badge="Editor's Choice"
+  emoji="◯"
+  description="El mejor anillo inteligente para monitorizar sueño, HRV y temperatura corporal. Discreto, preciso y con 8 días de autonomía."
+  rating={4.7}
+  testedFor="3 meses de uso diario"
+  specs={[
+    { label: "Sensores", value: "PPG, SpO2, temperatura, acelerómetro" },
+    { label: "Autonomía", value: "6–8 días" },
+    { label: "Material", value: "Titanio · IP68" },
+    { label: "Peso", value: "4–6g" }
+  ]}
+  price="€349"
+  priceContext="+ €5,99/mes de suscripción"
+  ctas={[
+    { label: "Comprar Oura Ring", url: "https://ouraring.com", store: "Oura.com", primary: true },
+    { label: "Ver en Amazon", url: "https://amazon.es", store: "Amazon" }
+  ]}
+/>
+
 ## ¿Qué es el Oura Ring?
 
 El Oura Ring es un **anillo inteligente** diseñado para monitorizar tu sueño, variabilidad de frecuencia cardíaca (HRV), temperatura corporal y actividad diaria. A diferencia de un smartwatch, su formato discreto permite llevarlo las 24 horas sin molestias, incluyendo la noche, donde realmente destaca.
 
 La **Gen 4** (lanzada en 2025) introduce sensores mejorados de SpO2, detección de estrés en tiempo real y una autonomía de hasta 8 días.
-
-## Especificaciones técnicas
-
-| Característica | Detalle |
-|---|---|
-| Sensores | PPG (fotopletismografía), temperatura, acelerómetro 3D, SpO2 |
-| Autonomía | 6–8 días |
-| Resistencia al agua | 100m (IP68) |
-| Conectividad | Bluetooth 5.3 |
-| Materiales | Titanio |
-| Peso | 4–6g según talla |
-| Precio | ~€349 |
 
 ## Análisis del seguimiento de sueño
 
@@ -48,35 +58,79 @@ La variabilidad de frecuencia cardíaca (HRV) es el biomarcador más valioso que
 
 El Oura mide tu HRV durante la noche (RMSSD), cuando las lecturas son más fiables. Después de unas semanas, establece tu baseline personal y te alerta si algo se desvía.
 
-## Pros y contras
+## ¿Oura Ring vs la competencia?
 
-### Lo mejor
-- Seguimiento de sueño excelente — el mejor del mercado en formato anillo
-- HRV nocturno preciso y consistente
-- Diseño discreto que no interfiere con el día a día
-- App clara con métricas accionables
-- Autonomía de 6–8 días
-
-### Lo peor
-- Suscripción de €5,99/mes obligatoria para acceder a todas las métricas
-- No tiene GPS (necesitas el móvil para trackear rutas)
-- El tallaje puede ser complicado — pide el kit de tallas primero
-- Precio elevado para un anillo (€349 + suscripción)
-
-## ¿Oura Ring vs WHOOP 5.0?
-
-La comparación más frecuente. En resumen:
-
-- **Oura** gana en **sueño** y discreción
-- **WHOOP** gana en **actividad física** y strain tracking
-- Oura es una compra única + suscripción; WHOOP es solo suscripción (€25/mes)
-- Para biohackers enfocados en sueño y recuperación → **Oura**
-- Para atletas de alto rendimiento → **WHOOP**
+<ComparisonTable
+  title="Oura vs WHOOP vs Ultrahuman"
+  attributes={["Formato", "Sueño", "Strain", "Autonomía", "Suscripción"]}
+  products={[
+    {
+      name: "Oura Ring Gen 4",
+      emoji: "◯",
+      badge: "Mejor sueño",
+      attributes: {
+        "Formato": "Anillo · Titanio",
+        "Sueño": "★★★★★",
+        "Strain": "★★★",
+        "Autonomía": "6–8 días",
+        "Suscripción": "€5,99/mes"
+      },
+      price: "€349",
+      ctaUrl: "https://ouraring.com",
+      ctaStore: "Oura"
+    },
+    {
+      name: "WHOOP 5.0",
+      emoji: "▱",
+      badge: "Mejor strain",
+      attributes: {
+        "Formato": "Pulsera",
+        "Sueño": "★★★★",
+        "Strain": "★★★★★",
+        "Autonomía": "5–7 días",
+        "Suscripción": "Solo suscripción"
+      },
+      price: "€25/mes",
+      ctaUrl: "https://join.whoop.com",
+      ctaStore: "WHOOP"
+    },
+    {
+      name: "Ultrahuman Ring AIR",
+      emoji: "◌",
+      attributes: {
+        "Formato": "Anillo · Titanio",
+        "Sueño": "★★★★",
+        "Strain": "★★★",
+        "Autonomía": "4–6 días",
+        "Suscripción": "Sin suscripción"
+      },
+      price: "€399",
+      ctaUrl: "https://amazon.es",
+      ctaStore: "Amazon"
+    }
+  ]}
+/>
 
 ## Veredicto
 
-El Oura Ring Gen 4 es el **mejor wearable para optimizar el sueño** que puedes comprar en 2026. Si tu objetivo principal es mejorar la calidad de tu descanso y monitorizar tu HRV para tomar decisiones sobre entrenamiento, suplementación y estilo de vida, este anillo es una inversión que se paga sola.
-
-La suscripción es el punto negativo, pero acceder a datos detallados de sueño y HRV durante años tiene un valor incalculable para quien se toma en serio su salud.
-
-<AffiliateLink href="https://ouraring.com" store="Oura.com">Ver precio del Oura Ring Gen 4</AffiliateLink>
+<ProsCons
+  pros={[
+    "Mejor seguimiento de sueño del mercado en formato anillo",
+    "HRV nocturno preciso y consistente (RMSSD)",
+    "Diseño discreto que no interfiere con el día a día",
+    "App clara con métricas accionables",
+    "Autonomía real de 6–8 días"
+  ]}
+  cons={[
+    "Suscripción obligatoria de €5,99/mes para todas las métricas",
+    "Sin GPS — necesitas móvil para tracking de rutas",
+    "Tallaje complicado — pide el sizing kit antes de comprar",
+    "Precio elevado: €349 + suscripción anual"
+  ]}
+  verdict="El mejor wearable de sueño y HRV de 2026. Si tu prioridad es optimizar descanso y recuperación, esta inversión se paga sola."
+  cta={{
+    label: "Comprar Oura Ring Gen 4",
+    url: "https://ouraring.com",
+    store: "Oura.com"
+  }}
+/>

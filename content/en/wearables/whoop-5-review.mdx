@@ -13,6 +13,28 @@ alternates:
 
 <EvidenceBadge level={3} label="Strong evidence" />
 
+<ProductCard
+  name="WHOOP 5.0"
+  category="Wearable · Performance"
+  badge="Best for athletes"
+  emoji="▱"
+  description="The ultimate band for managing training load, recovery and sleep. No screen, just pure data for serious athletes."
+  rating={4.6}
+  testedFor="6 months of daily use"
+  specs={[
+    { label: "Sensors", value: "PPG 5 LEDs, EDA, SpO2, temperature" },
+    { label: "Battery", value: "5–7 days" },
+    { label: "Water resistance", value: "IP68 · Swimming" },
+    { label: "Weight", value: "25g" }
+  ]}
+  price="$24/mo"
+  priceContext="Annual · $30/mo monthly"
+  ctas={[
+    { label: "Try WHOOP", url: "https://join.whoop.com", store: "WHOOP.com", primary: true },
+    { label: "24-month plan", url: "https://join.whoop.com", store: "Best price" }
+  ]}
+/>
+
 ## What Is WHOOP?
 
 WHOOP is a **performance wearable** focused on three pillars: training load (strain), recovery and sleep. Unlike other devices, WHOOP has no screen — all information is consumed through the app. It's a pure physiological data sensor.
@@ -74,23 +96,6 @@ WHOOP tracks sleep automatically (no manual start needed):
 - **Sleep Performance**: % of need met (target: >85%)
 - **Sleep Coach**: tells you what time to go to bed to hit peak performance tomorrow
 
-## Pros and Cons
-
-### The Good
-- Unmatched strain tracking — best training load system on the market
-- Actionable daily recovery (red/yellow/green)
-- Auto-detect workouts and activities
-- No screen = zero distractions, pure data focus
-- Community features and challenges
-- Wear on wrist, bicep or WHOOP-branded underwear
-
-### The Bad
-- **Subscription-only** — you never own it
-- $30/mo is expensive vs Oura ($5.99/mo) or Garmin ($0/mo)
-- No screen or GPS — phone needed for everything
-- Less accurate than Oura for deep sleep detection
-- No NFC or payments — pure sensor, not a smartwatch
-
 ## Who Is WHOOP For?
 
 WHOOP is ideal for:
@@ -106,6 +111,24 @@ NOT for you if:
 
 ## Verdict
 
-WHOOP 5.0 is the **best wearable for managing training load and recovery**. Its Strain + Recovery system is unrivalled. The subscription model is its biggest barrier, but if you train seriously and make data-driven decisions, the $30/mo pays for itself by preventing overtraining and optimising performance.
-
-<AffiliateLink href="https://join.whoop.com" store="WHOOP.com">Try WHOOP 5.0 — first month free</AffiliateLink>
+<ProsCons
+  pros={[
+    "Unmatched strain tracking — best training load system",
+    "Actionable daily recovery (red/yellow/green)",
+    "Auto-detect workouts and activities",
+    "No screen = zero distractions, pure data focus",
+    "Community features and challenges"
+  ]}
+  cons={[
+    "Subscription-only — you never own the device",
+    "$30/mo expensive vs Oura ($5.99/mo) or Garmin (free)",
+    "No screen or GPS — phone needed for everything",
+    "Less accurate than Oura for deep sleep"
+  ]}
+  verdict="The best wearable for managing training load and recovery. If you train seriously, the $30/mo pays for itself by preventing overtraining."
+  cta={{
+    label: "Try WHOOP 5.0 — First month free",
+    url: "https://join.whoop.com",
+    store: "WHOOP.com"
+  }}
+/>

@@ -10,6 +10,9 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { EvidenceBadge } from "@/components/EvidenceBadge";
 import { Sources } from "@/components/Sources";
 import { ExpertQuote } from "@/components/ExpertQuote";
+import { ProductCard } from "@/components/ProductCard";
+import { ComparisonTable } from "@/components/ComparisonTable";
+import { ProsCons } from "@/components/ProsCons";
 
 const mdxComponents = {
   AffiliateLink,
@@ -17,6 +20,9 @@ const mdxComponents = {
   EvidenceBadge,
   Sources,
   ExpertQuote,
+  ProductCard,
+  ComparisonTable,
+  ProsCons,
 };
 
 export async function generateMetadata({
