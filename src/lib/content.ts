@@ -15,6 +15,8 @@ export interface ArticleMeta {
   affiliate?: boolean;
   readingTime: number;
   alternates?: Record<string, string>;
+  heroImage?: string;
+  heroCredit?: string;
   stickyCta?: {
     product: string;
     price: string;
@@ -55,6 +57,8 @@ function parseArticle(
       affiliate: data.affiliate || false,
       readingTime: Math.ceil(stats.minutes),
       alternates: data.alternates,
+      heroImage: data.heroImage,
+      heroCredit: data.heroCredit,
       stickyCta: data.stickyCta,
     };
   } catch {
@@ -147,6 +151,8 @@ export function getArticle(
       affiliate: data.affiliate || false,
       readingTime: Math.ceil(stats.minutes),
       alternates: data.alternates,
+      heroImage: data.heroImage,
+      heroCredit: data.heroCredit,
       stickyCta: data.stickyCta,
     },
     content,

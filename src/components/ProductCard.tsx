@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface ProductCTA {
   label: string;
   url: string;
@@ -51,20 +53,36 @@ export function ProductCard({
   price,
   priceContext,
   ctas,
+  image,
   emoji,
 }: ProductCardProps) {
   return (
     <div className="my-10 bg-bg border border-line shadow-[0_4px_32px_rgba(10,77,60,0.06)] overflow-hidden">
       {/* Top: visual area + badge */}
-      <div className="bg-gradient-to-br from-ivory via-bg to-bronze-tint/30 border-b border-hairline p-10 relative">
+      <div className="relative border-b border-hairline overflow-hidden">
         {badge && (
-          <div className="absolute top-5 right-5 bg-emerald text-bg px-3 py-1 text-[10px] tracking-[0.18em] uppercase font-medium">
+          <div className="absolute top-5 right-5 z-10 bg-emerald text-bg px-3 py-1 text-[10px] tracking-[0.18em] uppercase font-medium">
             {badge}
           </div>
         )}
-        <div className="flex items-center justify-center h-32 text-[80px] leading-none font-serif text-emerald/30 select-none">
-          {emoji || name.charAt(0)}
-        </div>
+        {image ? (
+          <div className="relative h-64 md:h-80">
+            <Image
+              src={image}
+              alt={name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-bg/30 via-transparent to-transparent" />
+          </div>
+        ) : (
+          <div className="bg-gradient-to-br from-ivory via-bg to-bronze-tint/30 p-10">
+            <div className="flex items-center justify-center h-32 text-[80px] leading-none font-serif text-emerald/30 select-none">
+              {emoji || name.charAt(0)}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Body */}

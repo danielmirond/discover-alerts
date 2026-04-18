@@ -16,6 +16,7 @@ import { ProsCons } from "@/components/ProsCons";
 import { DealBox } from "@/components/DealBox";
 import { StickyBuyBar } from "@/components/StickyBuyBar";
 import { AmazonLink } from "@/components/AmazonLink";
+import { ArticleHero } from "@/components/ArticleHero";
 
 const mdxComponents = {
   AffiliateLink,
@@ -101,8 +102,17 @@ export default async function ArticlePage({
 
   return (
     <article className="animate-fade-up">
-      {/* HERO */}
-      <header className="max-w-[780px] mx-auto px-8 pt-20 pb-16 text-center">
+      {/* HERO IMAGE */}
+      {article.meta.heroImage && (
+        <ArticleHero
+          src={article.meta.heroImage}
+          alt={article.meta.title}
+          credit={article.meta.heroCredit}
+        />
+      )}
+
+      {/* HEADER */}
+      <header className={`max-w-[780px] mx-auto px-8 ${article.meta.heroImage ? "pt-12" : "pt-20"} pb-16 text-center`}>
         <div className="eyebrow mb-6">{category}</div>
         <h1 className="display-lg mb-8">
           {article.meta.title}
