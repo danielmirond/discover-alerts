@@ -1,26 +1,30 @@
+import { readdir } from 'node:fs/promises';
+import { join } from 'node:path';
 import { fetchBoeSumario } from '../sources/boe.js';
 import { fetchGoogleTrends } from '../sources/google-trends.js';
 import type { BoeItem } from '../types.js';
-import { callLlm, getModelName } from './llm.js';
+import { callLlmForArticle, getModelName } from './llm.js';
 import { EDITORIAL_GUIDELINES } from './prompts.js';
 import { slugify } from './slugify.js';
 import { writeNoticia } from './storage.js';
 
-interface GeneratedArticle {
-  title: string;
-  description: string;
-  painCategory: string;
-  painHook: string;
-  tags: string[];
-  body: string;
+async function existingNoticiaSlugs(): Promise<Set<string>> {
+  const dir = join(process.cwd(), 'site', 'content', 'articulos');
+  try {
+    const files = await readdir(dir);
+    return new Set(files.filter(f => f.endsWith('.md')).map(f => f.slice(0, -3)));
+  } catch {
+    return new Set();
+  }
 }
 
-function parseJson(raw: string): GeneratedArticle {
-  const cleaned = raw
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/```\s*$/i, '')
-    .trim();
-  return JSON.parse(cleaned) as GeneratedArticle;
+function ensureUniqueSlug(base: string, existing: Set<string>): string {
+  if (!existing.has(base)) return base;
+  for (let i = 2; i < 100; i++) {
+    const candidate = `${base}-${i}`;
+    if (!existing.has(candidate)) return candidate;
+  }
+  return `${base}-${Date.now()}`;
 }
 
 function todayYYYYMMDD(): string {
@@ -100,6 +104,7 @@ ${trends.slice(0, 20).map(t => `- ${t.title} (${t.approxTraffic.toLocaleString()
       : '';
 
   const results: Array<{ filepath: string; slug: string; title: string }> = [];
+  const existingSlugs = await existingNoticiaSlugs();
 
   for (const item of top) {
     try {
@@ -126,21 +131,21 @@ Pasos obligatorios ANTES de escribir:
 
 Devuelve SOLO el JSON.`;
 
-      const raw = await callLlm({
+      const generated = await callLlmForArticle({
         system: EDITORIAL_GUIDELINES,
         user: userPrompt,
         maxTokens: 2500,
         temperature: 0.5,
       });
 
-      const generated = parseJson(raw);
-
-      if (generated.title === 'SKIP' || !generated.body) {
+      if (!generated) {
         console.log(`[trending] Skip: ${item.identificador} (sin dolor claro)`);
         continue;
       }
 
-      const slug = slugify(generated.title);
+      const baseSlug = slugify(generated.title);
+      const slug = ensureUniqueSlug(baseSlug, existingSlugs);
+      existingSlugs.add(slug);
       const filepath = await writeNoticia({
         slug,
         frontmatter: {

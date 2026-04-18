@@ -1,27 +1,8 @@
 import { fetchBoeSumario } from '../sources/boe.js';
 import type { BoeItem } from '../types.js';
-import { callLlm, getModelName } from './llm.js';
+import { callLlmForArticle, getModelName } from './llm.js';
 import { EDITORIAL_GUIDELINES } from './prompts.js';
-import { slugify } from './slugify.js';
 import { writeBoeBrief } from './storage.js';
-
-export interface GeneratedArticle {
-  title: string;
-  description: string;
-  painCategory: string;
-  painHook: string;
-  tags: string[];
-  body: string;
-}
-
-function parseJson(raw: string): GeneratedArticle {
-  // El modelo a veces envuelve en ```json```
-  const cleaned = raw
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/```\s*$/i, '')
-    .trim();
-  return JSON.parse(cleaned) as GeneratedArticle;
-}
 
 function formatBoeDate(dateStr: string): string {
   // YYYYMMDD -> YYYY-MM-DD
@@ -96,14 +77,17 @@ ${itemsToPrompt(items)}
 
 Devuelve SOLO el JSON segun el esquema especificado.`;
 
-  const raw = await callLlm({
+  const generated = await callLlmForArticle({
     system: EDITORIAL_GUIDELINES,
     user: userPrompt,
     maxTokens: 3500,
     temperature: 0.4,
   });
 
-  const generated = parseJson(raw);
+  if (!generated) {
+    console.log('[brief] LLM devolvio SKIP, no se publica brief hoy.');
+    return null;
+  }
 
   // Top items mas relevantes como "sources" visibles
   const topSources = items.slice(0, 10).map(item => ({
