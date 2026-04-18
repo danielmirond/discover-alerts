@@ -13,6 +13,8 @@ import { ExpertQuote } from "@/components/ExpertQuote";
 import { ProductCard } from "@/components/ProductCard";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { ProsCons } from "@/components/ProsCons";
+import { DealBox } from "@/components/DealBox";
+import { StickyBuyBar } from "@/components/StickyBuyBar";
 
 const mdxComponents = {
   AffiliateLink,
@@ -23,6 +25,7 @@ const mdxComponents = {
   ProductCard,
   ComparisonTable,
   ProsCons,
+  DealBox,
 };
 
 export async function generateMetadata({
@@ -154,6 +157,17 @@ export default async function ArticlePage({
             </div>
           </div>
         </section>
+      )}
+
+      {/* STICKY BUY BAR (mobile) */}
+      {article.meta.stickyCta && (
+        <StickyBuyBar
+          product={article.meta.stickyCta.product}
+          price={article.meta.stickyCta.price}
+          url={article.meta.stickyCta.url}
+          store={article.meta.stickyCta.store}
+          cta={article.meta.stickyCta.label}
+        />
       )}
     </article>
   );
