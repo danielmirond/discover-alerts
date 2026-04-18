@@ -15,6 +15,7 @@ import { ComparisonTable } from "@/components/ComparisonTable";
 import { ProsCons } from "@/components/ProsCons";
 import { DealBox } from "@/components/DealBox";
 import { StickyBuyBar } from "@/components/StickyBuyBar";
+import { AmazonLink } from "@/components/AmazonLink";
 
 const mdxComponents = {
   AffiliateLink,
@@ -26,6 +27,7 @@ const mdxComponents = {
   ComparisonTable,
   ProsCons,
   DealBox,
+  AmazonLink,
 };
 
 export async function generateMetadata({
