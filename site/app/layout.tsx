@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { siteConfig } from '@/lib/site-config';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { Analytics } from '@/components/Analytics';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -57,6 +58,7 @@ export default function RootLayout({
         <Header />
         <main className="mx-auto max-w-4xl px-4 py-8">{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );

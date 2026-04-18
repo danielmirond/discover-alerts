@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { loadArticleBySlug, loadArticlesByType } from '@/lib/content';
 import { siteConfig } from '@/lib/site-config';
 import { ArticleJsonLd } from '@/components/ArticleJsonLd';
+import { ArticleHero } from '@/components/ArticleHero';
 
 export const revalidate = 300;
 
@@ -52,6 +53,7 @@ export default async function ArticlePage({ params }: Props) {
         article={article}
         url={`${siteConfig.url}/articulo/${slug}`}
       />
+      <ArticleHero pain={fm.pain} title={fm.title} kicker={dateLabel} />
       <header className="mb-8 border-b-4 border-ink pb-6">
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent">
           {dateLabel} · {article.readingMinutes} min de lectura
