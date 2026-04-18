@@ -4,8 +4,9 @@
 export const siteConfig = {
   name: 'Radar BOE',
   shortName: 'Radar BOE',
+  tagline: 'Análisis de boletines oficiales',
   description:
-    'Lo que el BOE publica hoy y por qué te afecta. Resumen diario y noticias con contexto sobre lo que cambia en tu nomina, tu calendario y tu vida cotidiana.',
+    'Análisis diario del Boletín Oficial del Estado con foco en cómo afecta a tu nómina, tu calendario y tu vida cotidiana.',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://radarboe.es',
   locale: 'es-ES',
   language: 'es',

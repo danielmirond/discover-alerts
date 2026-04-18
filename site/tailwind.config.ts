@@ -10,8 +10,15 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        serif: ['Georgia', 'Cambria', 'Times New Roman', 'serif'],
+        serif: [
+          'var(--font-serif)',
+          'Didot',
+          'Bodoni 72',
+          'Georgia',
+          'serif',
+        ],
         sans: [
+          'var(--font-sans)',
           'system-ui',
           '-apple-system',
           'Segoe UI',
@@ -22,9 +29,12 @@ const config: Config = {
         ],
       },
       colors: {
-        ink: '#0a0a0a',
-        paper: '#fafafa',
-        accent: '#b91c1c',
+        ink: '#1e3a5f',   // navy periodistico
+        paper: '#f0ebe0', // crema papel
+        accent: '#c0392b',// rojo blip calido
+        // Aliases utiles
+        navy: '#1e3a5f',
+        cream: '#f0ebe0',
       },
     },
   },

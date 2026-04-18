@@ -13,31 +13,31 @@ export default async function OpengraphImage() {
         style={{
           width: '100%',
           height: '100%',
-          background: '#fafafa',
+          background: '#f0ebe0',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           padding: '72px',
           fontFamily: 'Georgia, serif',
-          color: '#0a0a0a',
+          color: '#1e3a5f',
           position: 'relative',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           <svg width="80" height="80" viewBox="0 0 60 60">
-            <g stroke="#0a0a0a" fill="none" strokeWidth="3">
+            <g stroke="#1e3a5f" fill="none" strokeWidth="3">
               <circle cx="30" cy="30" r="26" />
               <circle cx="30" cy="30" r="18" />
               <circle cx="30" cy="30" r="10" />
               <line x1="30" y1="30" x2="52" y2="8" strokeWidth="3.2" />
             </g>
-            <circle cx="42" cy="18" r="5.5" fill="#b91c1c" />
+            <circle cx="42" cy="18" r="5.5" fill="#c0392b" />
           </svg>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: 48, fontWeight: 700, lineHeight: 1 }}>
               RADAR
             </div>
-            <div style={{ fontSize: 48, fontWeight: 700, color: '#b91c1c', lineHeight: 1 }}>
+            <div style={{ fontSize: 48, fontWeight: 700, color: '#c0392b', lineHeight: 1 }}>
               BOE
             </div>
           </div>
@@ -60,7 +60,7 @@ export default async function OpengraphImage() {
               fontWeight: 700,
               lineHeight: 1.1,
               letterSpacing: '-0.02em',
-              color: '#b91c1c',
+              color: '#c0392b',
             }}
           >
             y por que te afecta.

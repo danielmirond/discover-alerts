@@ -23,11 +23,11 @@ export default async function ArticleOpengraphImage({
         style={{
           width: '100%',
           height: '100%',
-          background: '#fafafa',
+          background: '#f0ebe0',
           display: 'flex',
           flexDirection: 'column',
           fontFamily: 'Georgia, serif',
-          color: '#0a0a0a',
+          color: '#1e3a5f',
         }}
       >
         {/* Barra de color segun el dolor */}
@@ -50,12 +50,12 @@ export default async function ArticleOpengraphImage({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <svg width="44" height="44" viewBox="0 0 60 60">
-              <g stroke="#0a0a0a" fill="none" strokeWidth="3">
+              <g stroke="#1e3a5f" fill="none" strokeWidth="3">
                 <circle cx="30" cy="30" r="26" />
                 <circle cx="30" cy="30" r="18" />
                 <circle cx="30" cy="30" r="10" />
               </g>
-              <circle cx="42" cy="18" r="5.5" fill="#b91c1c" />
+              <circle cx="42" cy="18" r="5.5" fill="#c0392b" />
             </svg>
             <div
               style={{
@@ -68,7 +68,7 @@ export default async function ArticleOpengraphImage({
               }}
             >
               <span>RADAR</span>
-              <span style={{ color: '#b91c1c' }}>BOE</span>
+              <span style={{ color: '#c0392b' }}>BOE</span>
             </div>
             <div style={{ flex: 1 }} />
             <div

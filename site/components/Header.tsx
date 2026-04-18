@@ -1,34 +1,34 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { siteConfig } from '@/lib/site-config';
 
 export function Header() {
   return (
-    <header className="border-b border-neutral-200 bg-paper">
+    <header className="border-b border-ink/10 bg-paper">
       <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-5">
         <Link
           href="/"
           className="flex items-center gap-3 no-underline"
           aria-label={siteConfig.name}
         >
-          <svg
-            width="36"
-            height="36"
-            viewBox="0 0 60 60"
-            aria-hidden="true"
-            className="shrink-0"
-          >
-            <g stroke="currentColor" fill="none" strokeWidth="2.4">
-              <circle cx="30" cy="30" r="26" />
-              <circle cx="30" cy="30" r="18" />
-              <circle cx="30" cy="30" r="10" />
-            </g>
-            <circle cx="42" cy="18" r="4.5" fill="#b91c1c" />
-          </svg>
-          <span className="font-serif text-xl font-bold tracking-tight text-ink md:text-2xl">
-            RADAR <span className="text-accent">BOE</span>
+          <Image
+            src="/logo-mark.svg"
+            alt=""
+            width={44}
+            height={44}
+            priority
+            className="h-10 w-10 md:h-11 md:w-11"
+          />
+          <span className="flex flex-col leading-none">
+            <span className="font-serif text-xl font-bold tracking-wide text-ink md:text-2xl">
+              RADAR BOE
+            </span>
+            <span className="mt-1 text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70 md:text-xs">
+              {siteConfig.tagline}
+            </span>
           </span>
         </Link>
-        <nav className="flex gap-5 text-sm font-medium text-neutral-700">
+        <nav className="flex gap-5 text-sm font-medium text-ink/80">
           <Link href="/" className="no-underline hover:text-accent">
             Portada
           </Link>

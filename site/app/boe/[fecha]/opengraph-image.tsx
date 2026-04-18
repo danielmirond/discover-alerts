@@ -28,8 +28,8 @@ export default async function BoeOpengraphImage({
         style={{
           width: '100%',
           height: '100%',
-          background: '#0a0a0a',
-          color: '#fafafa',
+          background: '#1e3a5f',
+          color: '#f0ebe0',
           display: 'flex',
           flexDirection: 'column',
           padding: '72px',
@@ -39,12 +39,12 @@ export default async function BoeOpengraphImage({
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <svg width="44" height="44" viewBox="0 0 60 60">
-            <g stroke="#fafafa" fill="none" strokeWidth="3">
+            <g stroke="#f0ebe0" fill="none" strokeWidth="3">
               <circle cx="30" cy="30" r="26" />
               <circle cx="30" cy="30" r="18" />
               <circle cx="30" cy="30" r="10" />
             </g>
-            <circle cx="42" cy="18" r="5.5" fill="#b91c1c" />
+            <circle cx="42" cy="18" r="5.5" fill="#c0392b" />
           </svg>
           <div
             style={{
@@ -57,13 +57,13 @@ export default async function BoeOpengraphImage({
             }}
           >
             <span>RADAR</span>
-            <span style={{ color: '#b91c1c' }}>BOE</span>
+            <span style={{ color: '#c0392b' }}>BOE</span>
           </div>
           <div style={{ flex: 1 }} />
           <div
             style={{
-              background: '#b91c1c',
-              color: '#fafafa',
+              background: '#c0392b',
+              color: '#f0ebe0',
               padding: '10px 22px',
               fontSize: 18,
               fontWeight: 700,
