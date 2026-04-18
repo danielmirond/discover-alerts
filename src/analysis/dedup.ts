@@ -32,6 +32,12 @@ function alertKey(alert: Alert): string {
       return `stale:${alert.source}`;
     case 'multi_entity_article':
       return `multi_entity:${alert.articleLink || alert.articleTitle}`;
+    case 'meneame_hot':
+      return `meneame:${alert.storyUrl || alert.title}`;
+    case 'wikipedia_surge':
+      return `wiki:${alert.title}`;
+    case 'first_mover':
+      return `first_mover:${alert.entityName}:${alert.feedName}`;
   }
 }
 

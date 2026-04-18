@@ -56,11 +56,15 @@ function getCategoryForAlert(alert: Alert): string | undefined {
       return alert.category;
     case 'triple_match':
       return alert.category;
+    case 'first_mover':
+      return alert.category;
     case 'trends_without_discover':
     case 'headline_cluster':
     case 'stale_data':
     case 'trends_correlation':
     case 'trends_new_topic':
+    case 'meneame_hot':
+    case 'wikipedia_surge':
       return undefined; // no category context
   }
 }
@@ -80,6 +84,9 @@ function getTopicForAlert(alert: Alert): string | undefined {
     case 'multi_entity_article':
     case 'headline_pattern':
     case 'trends_without_discover':
+    case 'meneame_hot':
+    case 'wikipedia_surge':
+    case 'first_mover':
       return (alert as any).topic;
     case 'category':
     case 'headline_cluster':

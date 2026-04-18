@@ -555,6 +555,55 @@ function formatStaleData(a: Extract<Alert, { type: 'stale_data' }>): SlackBlock[
   ];
 }
 
+function formatMeneameHot(a: Extract<Alert, { type: 'meneame_hot' }>): SlackBlock[] {
+  const discoverNote = a.discoverAbsent
+    ? ':warning: *Aún no aparece en Discover — posible adelantamiento*'
+    : `:link: También en Discover: ${a.matchingDiscoverEntities.join(', ')}`;
+  return [
+    header(`:fire: Viral en Menéame: ${a.title.slice(0, 100)}`),
+    fields(
+      `*Karma:* ${a.karma}`,
+      `*Votos:* ${a.votes}`,
+      `*Comentarios:* ${a.comments}`,
+      `*Sub:* ${a.sub || '-'}`,
+    ),
+    section(
+      `${discoverNote}\n\n<${a.storyUrl}|Ver en Menéame> · <${a.externalUrl}|Fuente original>`,
+    ),
+    context(`Menéame upstream signal | ${new Date(a.pubDate).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}`),
+  ];
+}
+
+function formatWikipediaSurge(a: Extract<Alert, { type: 'wikipedia_surge' }>): SlackBlock[] {
+  const discoverNote = a.discoverAbsent
+    ? ':warning: *Aún no aparece en Discover — posible adelantamiento*'
+    : `:link: También en Discover: ${a.matchingDiscoverEntities.join(', ')}`;
+  return [
+    header(`:books: Wikipedia ES: edit surge en "${a.title}"`),
+    fields(
+      `*Edits:* ${a.editCount}`,
+      `*Editores únicos:* ${a.uniqueEditors}`,
+      `*Ventana:* ${a.windowMinutes} min`,
+      `*Artículo:* <${a.url}|Wikipedia>`,
+    ),
+    section(discoverNote),
+    context('Wikipedia recent-changes | spike de ediciones ≥ umbral'),
+  ];
+}
+
+function formatFirstMover(a: Extract<Alert, { type: 'first_mover' }>): SlackBlock[] {
+  return [
+    header(`:dart: Exclusiva de ${a.feedName}: ${a.entityName}`),
+    section(
+      `Solo *${a.feedName}* publica sobre *${a.entityName}* en los últimos ${a.windowMinutes} min.\n` +
+      `<${a.link}|${a.title}>`,
+    ),
+    context(
+      `First mover | ${a.category || '-'}${a.topic ? ' · ' + a.topic : ''} · decidir entrar o saltar con fuentes propias`,
+    ),
+  ];
+}
+
 async function formatSingleAlert(alert: Alert): Promise<SlackBlock[]> {
   switch (alert.type) {
     case 'entity': return await formatEntity(alert);
@@ -571,6 +620,9 @@ async function formatSingleAlert(alert: Alert): Promise<SlackBlock[]> {
     case 'headline_cluster': return formatHeadlineCluster(alert);
     case 'stale_data': return formatStaleData(alert);
     case 'multi_entity_article': return formatMultiEntityArticle(alert);
+    case 'meneame_hot': return formatMeneameHot(alert);
+    case 'wikipedia_surge': return formatWikipediaSurge(alert);
+    case 'first_mover': return formatFirstMover(alert);
   }
 }
 

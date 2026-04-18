@@ -8,6 +8,7 @@ import type {
   DiscoverPage,
   EntityCoverageAlert,
   MultiEntityArticleAlert,
+  FirstMoverAlert,
 } from '../types.js';
 
 function normalize(s: string): string {
@@ -35,7 +36,7 @@ export function detectMediaDiscoverCorrelations(
   _pages: DiscoverPage[],
   entityCategoryMap: Record<string, string> = {},
   entityTopicMap: Record<string, string> = {},
-): Array<EntityCoverageAlert | MultiEntityArticleAlert> {
+): Array<EntityCoverageAlert | MultiEntityArticleAlert | FirstMoverAlert> {
   const state = getState();
   const now = new Date().toISOString();
   const nowMs = Date.now();
@@ -157,7 +158,7 @@ export function detectMediaDiscoverCorrelations(
   }
 
   // Build one alert per entity with matches
-  const alerts: Array<EntityCoverageAlert | MultiEntityArticleAlert> = [...multiEntityAlerts];
+  const alerts: Array<EntityCoverageAlert | MultiEntityArticleAlert | FirstMoverAlert> = [...multiEntityAlerts];
   for (const [entityName, hits] of entityArticles) {
     if (hits.length === 0) continue;
 
@@ -173,6 +174,37 @@ export function detectMediaDiscoverCorrelations(
       category: entityCategoryMap[entityName],
       topic: entityTopicMap[entityName],
       contextSnippets: extractContextSnippets(entityName),
+    });
+  }
+
+  // First-mover detection: entidades Discover cubiertas por EXACTAMENTE 1 medio
+  // en los ultimos 30 min. Señal de exclusiva competidora — o entramos YA o
+  // decidimos saltarnos por falta de corroboracion.
+  const firstMoverWindowMs = 30 * 60_000;
+  for (const [entityName, hits] of entityArticles) {
+    const recentHits = hits.filter(h => {
+      // article.pubDate no esta en ArticleHit, pero podemos cruzar con nextArticles
+      const meta = Object.values(nextArticles).find(m => m.link === h.link);
+      if (!meta) return false;
+      const pubTs = meta.pubDate ? new Date(meta.pubDate).getTime() : NaN;
+      const refTs = !isNaN(pubTs) ? pubTs : new Date(meta.firstSeen).getTime();
+      return (nowMs - refTs) <= firstMoverWindowMs;
+    });
+    if (recentHits.length === 0) continue;
+    const uniqueOutlets = new Set(recentHits.map(h => h.feedName));
+    if (uniqueOutlets.size !== 1) continue; // tiene que ser exactamente 1
+    const solo = recentHits[0];
+    const metaSolo = Object.values(nextArticles).find(m => m.link === solo.link);
+    alerts.push({
+      type: 'first_mover',
+      entityName,
+      feedName: solo.feedName,
+      title: solo.title,
+      link: solo.link,
+      pubDate: metaSolo?.pubDate,
+      windowMinutes: 30,
+      category: entityCategoryMap[entityName],
+      topic: entityTopicMap[entityName],
     });
   }
 

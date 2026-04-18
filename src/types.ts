@@ -351,7 +351,10 @@ export type Alert =
   | TrendsWithoutDiscoverAlert
   | HeadlineClusterAlert
   | StaleDataAlert
-  | MultiEntityArticleAlert;
+  | MultiEntityArticleAlert
+  | MeneameHotAlert
+  | WikipediaSurgeAlert
+  | FirstMoverAlert;
 
 // Media RSS types
 export interface MediaFeed {
@@ -520,6 +523,62 @@ export interface TripleMatchAlert {
   matchingArticles: MatchedMediaArticle[];
   /** Snippets reales de Discover/RSS donde aparece la entidad. */
   contextSnippets?: string[];
+}
+
+/**
+ * Menéame hot story: artículo viral en Menéame (karma alto + recién publicado)
+ * que cruzamos con el estado Discover. Si no hay match con una entidad Discover,
+ * es señal "viral upstream sin Discover aún" → oportunidad de ir primero.
+ */
+export interface MeneameHotAlert {
+  type: 'meneame_hot';
+  title: string;
+  storyUrl: string;
+  externalUrl: string;
+  karma: number;
+  votes: number;
+  comments: number;
+  pubDate: string;
+  sub: string;
+  topic?: string;
+  /** Entidades Discover ES que matchean el titulo (si existen) — util para cross-ref */
+  matchingDiscoverEntities: string[];
+  /** true si el tema NO esta aún en Discover = señal predictiva */
+  discoverAbsent: boolean;
+}
+
+/**
+ * Wikipedia surge: artículo Wikipedia ES con spike de edits. Señal de breaking
+ * news en curso. Si cruza entidad Discover nueva, ventaja editorial.
+ */
+export interface WikipediaSurgeAlert {
+  type: 'wikipedia_surge';
+  title: string;
+  url: string;
+  editCount: number;
+  uniqueEditors: number;
+  windowMinutes: number;
+  topic?: string;
+  matchingDiscoverEntities: string[];
+  discoverAbsent: boolean;
+}
+
+/**
+ * First mover: una entidad ha sido publicada SOLO por un medio en los últimos
+ * N minutos. Mientras el resto no entra, ese medio tiene la exclusiva. Para la
+ * redacción propia: o competir de inmediato, o decidir saltar por falta de
+ * corroboración.
+ */
+export interface FirstMoverAlert {
+  type: 'first_mover';
+  entityName: string;
+  feedName: string;
+  title: string;
+  link: string;
+  pubDate?: string;
+  windowMinutes: number;
+  category?: string;
+  topic?: string;
 }
 
 // Poll results

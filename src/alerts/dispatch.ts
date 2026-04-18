@@ -47,6 +47,9 @@ function alertPriority(alert: Alert): number {
       }
       return 0;
     case 'triple_match': return 99; // Highest priority: Discover+Trends+X with thresholds met
+    case 'first_mover': return 87; // Exclusive by one outlet in 30min — act or skip fast
+    case 'wikipedia_surge': return 86; // Breaking: article being edited heavily right now
+    case 'meneame_hot': return 84; // Viral upstream before Discover
     case 'own_media': return 92; // Own media highly important
     case 'own_media_absent': return 88; // You're missing the story
     case 'headline_cluster': return 90; // Big event signal
