@@ -3,7 +3,7 @@ import { locales } from "@/i18n/routing";
 import fs from "fs";
 import path from "path";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://biohacklab.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aevum.io";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const entries: MetadataRoute.Sitemap = [];

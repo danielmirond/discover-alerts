@@ -45,7 +45,7 @@ export function Sources({ items }: SourcesProps) {
 
       <p className="text-[11px] text-mist mt-6 italic font-serif">
         Las fuentes incluyen instituciones médicas, revistas peer-reviewed y
-        organizaciones de investigación. BiohackLab no ofrece consejo médico.
+        organizaciones de investigación. Aevum no ofrece consejo médico.
       </p>
     </div>
   );

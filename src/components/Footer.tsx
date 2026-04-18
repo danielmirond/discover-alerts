@@ -9,22 +9,21 @@ export function Footer() {
     <footer className="bg-ivory border-t border-hairline mt-24">
       <div className="max-w-[1200px] mx-auto px-8 py-20">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
-          {/* Brand */}
           <div className="md:col-span-5">
-            <div className="flex items-baseline gap-2 mb-6">
-              <span className="font-serif text-[28px] font-normal text-charcoal tracking-[-0.01em]">
-                BiohackLab
+            <div className="flex items-baseline gap-3 mb-6">
+              <span className="font-serif text-[28px] font-light text-charcoal tracking-[0.08em] uppercase">
+                Aevum
               </span>
-              <span className="text-[9px] tracking-[0.25em] uppercase text-bronze">
-                Longevity
+              <span className="w-px h-5 bg-line" />
+              <span className="text-[9px] tracking-[0.3em] uppercase text-stone">
+                Est. 2026
               </span>
             </div>
-            <p className="text-stone text-[14px] leading-[1.7] max-w-[360px]">
+            <p className="text-stone text-[13px] leading-[1.75] max-w-[380px]">
               {t("about")}
             </p>
           </div>
 
-          {/* Categories */}
           <div className="md:col-span-3">
             <div className="eyebrow mb-5">{t("categories")}</div>
             <div className="flex flex-col gap-3">
@@ -32,29 +31,31 @@ export function Footer() {
                 href={`/${locale}/wearables`}
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
-                Wearables & Tracking
+                {locale === "es" ? "Biomarcadores & Tracking"
+                  : locale === "fr" ? "Biomarqueurs & Suivi"
+                  : locale === "de" ? "Biomarker & Tracking"
+                  : "Biomarkers & Tracking"}
               </Link>
               <Link
                 href={`/${locale}/suplementos`}
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
-                {locale === "es" ? "Suplementos"
-                  : locale === "fr" ? "Suppléments"
-                  : "Supplements"}
+                {locale === "es" ? "Suplementación"
+                  : locale === "fr" ? "Supplémentation"
+                  : "Supplementation"}
               </Link>
               <Link
                 href={`/${locale}/protocolos`}
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
-                {locale === "es" ? "Protocolos"
-                  : locale === "fr" ? "Protocoles"
-                  : locale === "de" ? "Protokolle"
-                  : "Protocols"}
+                {locale === "es" ? "Protocolos & Ciencia"
+                  : locale === "fr" ? "Protocoles & Science"
+                  : locale === "de" ? "Protokolle & Wissenschaft"
+                  : "Protocols & Science"}
               </Link>
             </div>
           </div>
 
-          {/* Legal */}
           <div className="md:col-span-4">
             <div className="eyebrow mb-5">{t("legal")}</div>
             <div className="flex flex-col gap-3">
@@ -66,7 +67,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-hairline pt-8 flex items-center justify-between text-[11px] text-stone">
-          <span>&copy; {new Date().getFullYear()} BiohackLab</span>
+          <span>&copy; {new Date().getFullYear()} Aevum</span>
           <span className="tracking-[0.2em] uppercase text-bronze">
             {t("allRights")}
           </span>

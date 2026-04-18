@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://biohacklab.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aevum.io";
 
 export default function robots(): MetadataRoute.Robots {
   return {

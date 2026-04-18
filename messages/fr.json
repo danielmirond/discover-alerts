@@ -1,23 +1,23 @@
 {
   "site": {
-    "name": "BiohackLab",
-    "tagline": "Biohacking basé sur les preuves",
-    "description": "Votre laboratoire personnel de biohacking, longévité et optimisation humaine. Reviews, protocoles et suppléments analysés avec rigueur scientifique."
+    "name": "Aevum",
+    "tagline": "Longévité de précision",
+    "description": "L'architecture d'une vie longue et de haute qualité. Protocoles, biomarqueurs et technologie d'optimisation analysés avec rigueur scientifique."
   },
   "nav": {
     "home": "Accueil",
-    "wearables": "Wearables",
-    "supplements": "Suppléments",
-    "protocols": "Protocoles",
-    "newsletter": "Newsletter"
+    "wearables": "Biomarqueurs",
+    "supplements": "Protocoles",
+    "protocols": "Science",
+    "newsletter": "Briefing"
   },
   "home": {
-    "hero": "Optimisez votre biologie avec la science",
-    "heroSub": "Tests de wearables, protocoles de longévité et suppléments analysés avec des preuves scientifiques. En 4 langues.",
-    "latestArticles": "Derniers articles",
-    "categories": "Explorer par catégorie",
-    "newsletterCta": "Recevez protocoles et analyses chaque semaine",
-    "readMore": "Lire la suite",
+    "hero": "La science de vivre plus longtemps et mieux",
+    "heroSub": "Protocoles de longévité, biomarqueurs et technologie d'optimisation humaine analysés avec des preuves scientifiques. Sans bruit, sans promesses miracles.",
+    "latestArticles": "Dernières publications",
+    "categories": "Domaines de recherche",
+    "newsletterCta": "Le briefing hebdomadaire de longévité",
+    "readMore": "Explorer",
     "minRead": "min de lecture"
   },
   "article": {
@@ -25,41 +25,41 @@
     "updated": "Mis à jour",
     "readTime": "min de lecture",
     "tableOfContents": "Sommaire",
-    "relatedArticles": "Articles connexes",
-    "affiliateDisclosure": "Cet article contient des liens d'affiliation. Si vous achetez via ces liens, nous percevons une commission sans frais supplémentaires pour vous.",
+    "relatedArticles": "Continuer la lecture",
+    "affiliateDisclosure": "Cet article contient des liens d'affiliation. Si vous achetez via ces liens, nous percevons une commission sans frais supplémentaires pour vous. Cela nous permet de maintenir Aevum comme ressource indépendante.",
     "buyOn": "Acheter sur",
     "checkPrice": "Voir le prix"
   },
   "newsletter": {
-    "title": "Newsletter Biohacking",
-    "description": "Protocoles, analyses de suppléments et les dernières avancées en longévité. Gratuit chaque semaine.",
+    "title": "Aevum Briefing",
+    "description": "Chaque semaine : un protocole, une analyse de preuves et ce qui compte en longévité. Sans bruit. Directement dans votre boîte.",
     "placeholder": "vous@email.com",
-    "subscribe": "S'abonner gratuitement",
-    "premiumTitle": "Premium",
-    "premiumDesc": "Protocoles mensuels complets, stacks sélectionnés et analyses approfondies.",
+    "subscribe": "S'abonner",
+    "premiumTitle": "Pro",
+    "premiumDesc": "Protocoles complets, stacks sélectionnés et analyses approfondies de biomarqueurs.",
     "premiumPrice": "7 €/mois"
   },
   "footer": {
-    "about": "BiohackLab est votre laboratoire personnel d'optimisation humaine. Contenu basé sur des preuves scientifiques.",
-    "categories": "Catégories",
+    "about": "Aevum est un laboratoire indépendant de longévité de précision. Nous analysons protocoles, technologies et suppléments avec rigueur scientifique.",
+    "categories": "Domaines",
     "legal": "Mentions légales",
     "privacy": "Confidentialité",
     "terms": "Conditions",
-    "affiliate": "Affiliation",
+    "affiliate": "Transparence",
     "allRights": "Tous droits réservés."
   },
   "categories": {
     "wearables": {
-      "title": "Wearables & Suivi",
-      "description": "Tests de bagues connectées, moniteurs de VFC, CGMs et dispositifs de quantification personnelle."
+      "title": "Biomarqueurs & Suivi",
+      "description": "Dispositifs de surveillance, bagues connectées et systèmes de mesure pour quantifier votre biologie et prendre des décisions basées sur les données."
     },
     "supplements": {
-      "title": "Suppléments de Longévité",
-      "description": "NMN, NR, resvératrol, magnésium et plus. Nous analysons les preuves scientifiques de chaque supplément."
+      "title": "Supplémentation & Longévité",
+      "description": "NMN, NR, resvératrol, magnésium et précurseurs de NAD+. Preuves scientifiques réelles, sans claims exagérés."
     },
     "protocols": {
-      "title": "Protocoles & Guides",
-      "description": "Guides pas à pas pour optimiser le sommeil, le jeûne intermittent, l'exposition au froid et plus."
+      "title": "Protocoles & Science",
+      "description": "Guides basés sur les preuves pour optimiser sommeil, récupération, cognition et healthspan."
     }
   }
 }

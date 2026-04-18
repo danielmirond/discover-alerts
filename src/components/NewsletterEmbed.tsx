@@ -21,7 +21,7 @@ export function NewsletterEmbed() {
           onSubmit={(e) => {
             e.preventDefault();
             window.open(
-              `https://biohacklab.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,
+              `https://aevum.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,
               "_blank"
             );
           }}

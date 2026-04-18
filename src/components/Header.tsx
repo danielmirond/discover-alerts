@@ -19,13 +19,14 @@ export function Header() {
       <div className="max-w-[1200px] mx-auto px-8 flex items-center justify-between h-[72px]">
         <Link
           href={`/${locale}`}
-          className="group flex items-baseline gap-2"
+          className="group flex items-baseline gap-3"
         >
-          <span className="font-serif text-[22px] font-normal text-charcoal tracking-[-0.01em] group-hover:text-emerald transition-colors">
-            BiohackLab
+          <span className="font-serif text-[24px] font-light text-charcoal tracking-[0.08em] uppercase group-hover:text-emerald transition-colors">
+            Aevum
           </span>
-          <span className="text-[9px] tracking-[0.25em] uppercase text-bronze mt-1 hidden sm:inline">
-            Longevity
+          <span className="hidden sm:inline w-px h-4 bg-line" />
+          <span className="text-[9px] tracking-[0.3em] uppercase text-stone hidden sm:inline">
+            Precision longevity
           </span>
         </Link>
 
@@ -34,16 +35,14 @@ export function Header() {
             <Link
               key={href}
               href={href}
-              className="text-[12px] tracking-[0.08em] uppercase text-stone hover:text-emerald transition-colors font-medium"
+              className="text-[11px] tracking-[0.1em] uppercase text-stone hover:text-emerald transition-colors font-medium"
             >
               {label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
-          <LanguageSwitcher />
-        </div>
+        <LanguageSwitcher />
       </div>
     </header>
   );

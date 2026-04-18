@@ -156,13 +156,13 @@ function HomeContent({ locale }: { locale: string }) {
 
       {/* QUOTE / EDITORIAL MANIFESTO */}
       <section className="max-w-[900px] mx-auto px-8 py-32 text-center">
-        <div className="eyebrow mb-8">Manifesto</div>
+        <div className="eyebrow mb-8">Filosofía</div>
         <blockquote className="font-serif text-[clamp(26px,3.5vw,40px)] font-extralight leading-[1.35] text-charcoal tracking-[-0.01em] italic">
-          &ldquo;La longevidad no es un destino — es la suma silenciosa de
+          &ldquo;La longevidad no es un destino — es la arquitectura silenciosa de
           decisiones diarias, respaldadas por la ciencia&rdquo;.
         </blockquote>
         <div className="ornament mt-10 text-[10px] tracking-[0.3em] uppercase max-w-[400px] mx-auto">
-          <span>BiohackLab</span>
+          <span>Aevum</span>
         </div>
       </section>
 
