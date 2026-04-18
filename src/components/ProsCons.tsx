@@ -24,7 +24,7 @@ export function ProsCons({ pros, cons, verdict, cta }: ProsConsProps) {
           <ul className="list-none p-0 m-0 space-y-3">
             {pros.map((pro, i) => (
               <li key={i} className="text-[13.5px] text-charcoal leading-[1.6] pl-5 relative">
-                <span className="absolute left-0 top-[8px] w-2 h-px bg-emerald" />
+                <span className="absolute left-0 top-[8px] w-2 h-px bg-bronze" />
                 {pro}
               </li>
             ))}

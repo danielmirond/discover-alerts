@@ -16,7 +16,7 @@ export function AffiliateLink({
       href={href}
       target="_blank"
       rel="nofollow noopener sponsored"
-      className="inline-flex items-center gap-3 group no-underline my-6 bg-emerald hover:bg-bronze transition-colors px-7 py-4"
+      className="inline-flex items-center gap-3 group no-underline my-6 bg-charcoal hover:bg-bronze transition-colors px-7 py-4"
     >
       <span className="text-bg text-[13px] tracking-wide font-medium">
         {children}

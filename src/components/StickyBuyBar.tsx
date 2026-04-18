@@ -58,7 +58,7 @@ export function StickyBuyBar({
           href={url}
           target="_blank"
           rel="nofollow noopener sponsored"
-          className="bg-emerald text-bg px-5 py-3 text-[12px] tracking-wide font-medium whitespace-nowrap shrink-0"
+          className="bg-charcoal text-bg px-5 py-3 text-[12px] tracking-wide font-medium whitespace-nowrap shrink-0"
         >
           {cta || "Comprar →"}
         </a>

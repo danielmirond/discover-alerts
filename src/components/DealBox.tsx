@@ -65,7 +65,7 @@ export function DealBox({
             href={url}
             target="_blank"
             rel="nofollow noopener sponsored"
-            className="group inline-flex items-center justify-center gap-3 bg-charcoal text-bg px-7 py-4 text-[12px] tracking-wide font-medium hover:bg-emerald transition-colors shrink-0"
+            className="group inline-flex items-center justify-center gap-3 bg-charcoal text-bg px-7 py-4 text-[12px] tracking-wide font-medium hover:bg-bronze transition-colors shrink-0"
           >
             <span>{cta || "Aprovechar oferta"}</span>
             <span className="text-bronze text-[10px] tracking-[0.18em] uppercase border-l border-bronze/40 pl-3">

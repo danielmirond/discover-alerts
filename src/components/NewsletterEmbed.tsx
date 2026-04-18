@@ -33,7 +33,7 @@ export function NewsletterEmbed() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t("placeholder")}
             required
-            className="flex-1 bg-bg border border-line px-5 py-3.5 text-[14px] text-charcoal placeholder:text-mist outline-none focus:border-emerald transition-colors"
+            className="flex-1 bg-bg border border-line px-5 py-3.5 text-[14px] text-charcoal placeholder:text-mist outline-none focus:border-charcoal transition-colors"
           />
           <button type="submit" className="btn-primary justify-center">
             {t("subscribe")}
