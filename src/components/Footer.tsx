@@ -59,6 +59,15 @@ export function Footer() {
           <div className="md:col-span-4">
             <div className="eyebrow mb-5">{t("legal")}</div>
             <div className="flex flex-col gap-3">
+              <Link
+                href={`/${locale}/about`}
+                className="text-[13px] text-slate hover:text-emerald transition-colors"
+              >
+                {locale === "es" ? "Sobre Aevum"
+                  : locale === "fr" ? "À propos d'Aevum"
+                  : locale === "de" ? "Über Aevum"
+                  : "About Aevum"}
+              </Link>
               <span className="text-[13px] text-stone">{t("privacy")}</span>
               <span className="text-[13px] text-stone">{t("terms")}</span>
               <span className="text-[13px] text-stone">{t("affiliate")}</span>

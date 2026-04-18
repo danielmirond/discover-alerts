@@ -8,10 +8,17 @@ export function Header() {
   const t = useTranslations("nav");
   const locale = useLocale();
 
+  const aboutLabel =
+    locale === "es" ? "Sobre"
+    : locale === "fr" ? "À propos"
+    : locale === "de" ? "Über"
+    : "About";
+
   const links = [
     { href: `/${locale}/wearables`, label: t("wearables") },
     { href: `/${locale}/suplementos`, label: t("supplements") },
     { href: `/${locale}/protocolos`, label: t("protocols") },
+    { href: `/${locale}/about`, label: aboutLabel },
   ];
 
   return (
