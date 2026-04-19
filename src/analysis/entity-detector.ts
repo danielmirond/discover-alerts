@@ -599,6 +599,7 @@ export async function detectEntityAlerts(
     { ...getState().entityTopicMap, ...entityTopicMap },
     isValidKey,
   );
+  console.log(`[entity-detector] built entityCategoryMap=${Object.keys(entityCategoryMap).length} · merged=${Object.keys(mergedCatMap).length} · entityTopicMap merged=${Object.keys(mergedTopicMap).length}`);
   updateState({
     entities: next,
     entityCategoryMap: mergedCatMap,
