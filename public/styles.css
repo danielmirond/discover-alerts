@@ -43,6 +43,162 @@
   --accent-soft: #3B1414;
 }
 
+/* ---------- Help tooltip (inline info icon) ---------- */
+.help-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--paper-3);
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  margin-left: 6px;
+  cursor: help;
+  position: relative;
+  border: 1px solid var(--rule);
+  user-select: none;
+}
+.help-tip:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.help-tip .tip-body {
+  display: none;
+  position: absolute;
+  top: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  min-width: 240px;
+  max-width: 320px;
+  padding: 10px 12px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  white-space: normal;
+  text-align: left;
+}
+.help-tip:hover .tip-body { display: block; }
+.help-tip .tip-body::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: var(--ink);
+}
+
+/* ---------- Onboarding modal ---------- */
+.onboarding-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 12, 13, 0.55);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.onboarding-card {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  max-width: 560px;
+  width: 100%;
+  padding: 32px 34px 26px;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+.onboarding-card h1 {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+.onboarding-card .kicker-mono {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+.onboarding-step {
+  padding: 10px 0;
+  display: flex;
+  gap: 14px;
+  border-bottom: 1px solid var(--rule-2);
+}
+.onboarding-step:last-child { border-bottom: none; }
+.onboarding-step .num {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  min-width: 28px;
+}
+.onboarding-step .stuff h4 {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 2px;
+  color: var(--ink);
+}
+.onboarding-step .stuff p {
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-3);
+  margin: 0;
+}
+.onboarding-card .actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  align-items: center;
+}
+.onboarding-card .actions button {
+  padding: 10px 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.onboarding-card .actions button.primary {
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+}
+.onboarding-card .actions button.primary:hover { background: var(--accent); border-color: var(--accent); }
+.onboarding-card .actions .skip {
+  background: transparent;
+  color: var(--ink-3);
+  border: none;
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;

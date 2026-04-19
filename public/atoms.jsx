@@ -94,4 +94,17 @@ function AlertRow({ alert, onOpen, fresh }) {
   );
 }
 
-Object.assign(window, { cx, Tag, VelocityBadge, SourceLine, ImageCheck, AlertRow });
+/**
+ * <Help> — icono "?" con tooltip al hover. Contenido en children.
+ * Pensado para acompañar kickers de paneles y labels de filtros.
+ */
+function Help({ children }) {
+  return (
+    <span className="help-tip" tabIndex={0}>
+      ?
+      <span className="tip-body">{children}</span>
+    </span>
+  );
+}
+
+Object.assign(window, { cx, Tag, VelocityBadge, SourceLine, ImageCheck, AlertRow, Help });

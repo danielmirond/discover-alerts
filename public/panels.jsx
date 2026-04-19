@@ -7,6 +7,18 @@ function GapsPanel({ gaps }) {
     <div className="panel">
       <div className="kicker">
         Huecos activos AHORA
+        <Help>
+          Oportunidades editoriales del momento que el sistema detecta en tiempo real.
+          <br/><br/>
+          <strong>Hueco SEO</strong>: un tema con +10.000 búsquedas en Google Trends que no aparece
+          en Discover ni cubre ningún medio español. Tráfico libre si entras primero.<br/>
+          <strong>No cubrimos</strong>: entidad cubierta por ≥3 medios competidores y tu dominio
+          propio ausente.<br/>
+          <strong>Triple match</strong>: entidad presente en Discover + Trends + X/Twitter con
+          alta intensidad en los tres.<br/>
+          <strong>USA→ES</strong>: trend US con cabida editorial española (cruza una entidad
+          o medio español o clasifica en un topic).
+        </Help>
         <span className="bar"></span>
         <span className="meta live" style={{ color: list.length > 0 ? 'var(--accent)' : 'var(--ink-4)', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
           {list.length > 0 && (
@@ -38,7 +50,18 @@ function EntitiesPanel({ entities }) {
   return (
     <div className="panel">
       <div className="kicker">
-        Entidades en vivo <span className="bar"></span> <span className="meta">momentum · últimas 60 min</span>
+        Entidades en vivo
+        <Help>
+          Una <strong>entidad</strong> es un tema, persona, organismo o evento que DiscoverSnoop
+          está detectando en titulares. No confundir con <strong>medio</strong> (cabecera que
+          publica) ni con <strong>topic</strong> (vertical editorial interno: sucesos, legal,
+          política…).<br/><br/>
+          El <strong>momentum</strong> es la aceleración: ratio de apariciones/hora en la última
+          hora frente a las últimas 3 horas. <strong>Rising</strong> = acelerando,
+          <strong> peaking</strong> = pico sostenido, <strong>fading</strong> = bajando.
+        </Help>
+        <span className="bar"></span>
+        <span className="meta">momentum · últimas 60 min</span>
       </div>
       {entities.map((e, i) => (
         <div key={i} className="ent-row">
@@ -59,10 +82,19 @@ function EntitiesPanel({ entities }) {
 }
 
 function TopMediaPanel({ media }) {
-  const max = Math.max(...media.map(m => m.pubs));
+  const max = Math.max(...(media || []).map(m => m.pubs), 1);
   return (
     <div className="panel">
-      <div className="kicker">Top 10 medios <span className="bar"></span> <span className="meta">últimas 12h</span></div>
+      <div className="kicker">
+        Medios más activos
+        <Help>
+          Cabeceras RSS con más artículos publicados en las últimas 12h. Son
+          <strong> medios</strong> (ABC, El País, Marca…), no entidades de Discover.
+          El ranking solo refleja volumen de publicación, no calidad editorial.
+        </Help>
+        <span className="bar"></span>
+        <span className="meta">últimas 12h</span>
+      </div>
       {media.map((m, i) => (
         <div key={i} className="simple-row">
           <div className="left">
@@ -82,10 +114,22 @@ function TopMediaPanel({ media }) {
 }
 
 function SpikePanel({ spikes }) {
-  const maxAbs = Math.max(...spikes.map(s => Math.abs(s.delta)));
+  const maxAbs = Math.max(...(spikes || []).map(s => Math.abs(s.delta)), 1);
   return (
     <div className="panel">
-      <div className="kicker">Categorías spike <span className="bar"></span> <span className="meta">vs. 24h baseline</span></div>
+      <div className="kicker">
+        Categorías Discover
+        <Help>
+          Estas son las <strong>categorías de Google Discover</strong> (Sports, Politics,
+          Entertainment…), la taxonomía que usa Google para clasificar cada página. No confundir
+          con nuestros <strong>topics</strong> internos (sucesos, legal…) que son un clasificador
+          editorial paralelo.<br/><br/>
+          El delta es la variación de score frente a la baseline rolling de 24h. Positivo = la
+          categoría está subiendo; negativo = bajando.
+        </Help>
+        <span className="bar"></span>
+        <span className="meta">delta 24h</span>
+      </div>
       {spikes.map((s, i) => (
         <div key={i} className="spike-row">
           <span className="cat">{s.cat}</span>
@@ -104,7 +148,18 @@ function SpikePanel({ spikes }) {
 function ConcordancePanel({ concordances }) {
   return (
     <div className="panel">
-      <div className="kicker">Concordancias cross-source <span className="bar"></span></div>
+      <div className="kicker">
+        Concordancias cross-source
+        <Help>
+          Entidades que aparecen simultáneamente en varias fuentes. Cuantas más fuentes
+          coinciden, más sólida es la señal de tema del momento.<br/><br/>
+          <strong>D</strong> = Discover (DiscoverSnoop ES)<br/>
+          <strong>T</strong> = Google Trends<br/>
+          <strong>X</strong> = X/Twitter trends<br/>
+          <strong>M</strong> = número de artículos RSS de medios que la mencionan
+        </Help>
+        <span className="bar"></span>
+      </div>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--mono)', fontSize: 11 }}>
         <thead>
           <tr style={{ borderBottom: '1px solid var(--rule)', color: 'var(--ink-4)', fontSize: 9, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
@@ -133,7 +188,19 @@ function ConcordancePanel({ concordances }) {
 function FormulasPanel({ formulas }) {
   return (
     <div className="panel">
-      <div className="kicker">Fórmulas del mes <span className="bar"></span> <span className="meta">proxy rendimiento</span></div>
+      <div className="kicker">
+        Fórmulas del mes
+        <Help>
+          Plantillas de titular sugeridas en cada alerta Slack durante los últimos 30 días.
+          Cada regla se identifica por su <code>matchKey</code> (ej. <code>entity/flash+legal</code>)
+          y se muestra con cuántas veces se usó, a qué audiencia media acompañó (score DS de la
+          entidad al dispararse) y las entidades que más la dispararon.<br/><br/>
+          <strong>winner</strong> = avg score ≥15 (entidades de mucha audiencia),
+          <strong> standard</strong> = ≥8, <strong>faltan_datos</strong> = pocas muestras.
+        </Help>
+        <span className="bar"></span>
+        <span className="meta">proxy rendimiento</span>
+      </div>
       {formulas.slice(0, 5).map(f => (
         <div key={f.id} className="formula-row">
           <div className="formula-pattern">"{f.pattern}"</div>
@@ -154,7 +221,16 @@ function FormulasPanel({ formulas }) {
 function PatternsPanel({ patterns }) {
   return (
     <div className="panel">
-      <div className="kicker">Patrones de titular <span className="bar"></span> <span className="meta">poll actual</span></div>
+      <div className="kicker">
+        Patrones de titular
+        <Help>
+          N-gramas (secuencias de palabras) que aparecen repetidamente en titulares de Discover.
+          Señal de que varios medios están usando la misma fórmula — útil para detectar
+          saturación editorial y pivotar con un ángulo distinto.
+        </Help>
+        <span className="bar"></span>
+        <span className="meta">poll actual</span>
+      </div>
       {patterns.map((p, i) => (
         <div key={i} className="pattern-row">
           <span style={{ fontFamily: 'var(--serif)' }}>{p.pattern}</span>
@@ -171,7 +247,16 @@ function PatternsPanel({ patterns }) {
 function WeeklyPanel({ weekly }) {
   return (
     <div className="panel">
-      <div className="kicker">Histórico semanal por medio <span className="bar"></span> <span className="meta">últimas 7 semanas</span></div>
+      <div className="kicker">
+        Histórico semanal por medio
+        <Help>
+          Número de artículos publicados por cada medio en cada una de las últimas 7 semanas.
+          Útil para ver estacionalidad (¿hay semanas más activas?), contraste (¿un medio nos
+          supera en volumen?) y detección de silencios inesperados.
+        </Help>
+        <span className="bar"></span>
+        <span className="meta">últimas 7 semanas</span>
+      </div>
       <div className="weekly-chart">
         {weekly.map((w, i) => {
           const max = Math.max(...w.w);
@@ -197,7 +282,16 @@ function TrendsPanel({ trends }) {
   return (
     <div className="panel">
       <div className="kicker">
-        Google Trends ES <span className="bar"></span>
+        Google Trends ES
+        <Help>
+          Topics que más está buscando la gente en Google dentro de España en este momento.
+          El número (aprox. búsquedas) es el <code>approxTraffic</code> que publica Google
+          Trends — es una estimación con granularidad gruesa (200 / 500 / 1.000 / 10.000+ …).
+          <br/><br/>
+          Un trend sin match en Discover es un <strong>Hueco SEO</strong>: hay demanda pero
+          nadie está cubriéndolo.
+        </Help>
+        <span className="bar"></span>
         <span className="meta">{items.length} topics · aprox. búsquedas</span>
       </div>
       {items.length === 0 && (
