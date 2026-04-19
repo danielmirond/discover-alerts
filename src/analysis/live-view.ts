@@ -543,6 +543,24 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
         detail = `${a.entities.length} entidades: ${a.entities.slice(0, 5).join(', ')}${a.entities.length > 5 ? '...' : ''} | ${a.feedName}${scopeTag}`;
         examples = [{ title: a.articleTitle, url: a.articleLink, source: a.feedName }];
         break;
+      case 'first_mover':
+        title = a.entityName;
+        detail = `Exclusiva de ${a.feedName} en los ultimos ${a.windowMinutes}min`;
+        examples = [{ title: a.title, url: a.link, source: a.feedName }];
+        break;
+      case 'wikipedia_surge':
+        title = a.title;
+        detail = `${a.editCount} edits de ${a.uniqueEditors} editores en ${a.windowMinutes}min${a.discoverAbsent ? ' (aun no en Discover)' : ''}`;
+        examples = [{ title: a.title, url: a.url, source: 'es.wikipedia.org' }];
+        break;
+      case 'meneame_hot':
+        title = a.title;
+        detail = `karma ${a.karma} · votos ${a.votes} · ${a.comments} comentarios${a.discoverAbsent ? ' · aun no en Discover' : ''}`;
+        examples = [
+          { title: a.title, url: a.storyUrl, source: 'meneame.net' },
+          ...(a.externalUrl && a.externalUrl !== a.storyUrl ? [{ title: 'Fuente original', url: a.externalUrl }] : []),
+        ];
+        break;
     }
     // Derive category for filtering:
     // - entity/concordance/coverage alerts have their own derived category

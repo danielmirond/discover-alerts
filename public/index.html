@@ -59,7 +59,6 @@ function Masthead({ activeNav, setActiveNav, clock }) {
         <div className="wordmark">
           <span className="dot"></span>
           DISCOVER<span style={{ color: 'var(--accent)' }}>·</span>ALERTS
-          <span className="edition">Ed. Madrid · Redacción</span>
         </div>
         <div className="datetime">
           <span>{fmtDate.toUpperCase()}</span>
@@ -179,7 +178,7 @@ function Drawer({ alert, onClose }) {
           </div>
           <h1>{alert.headline}</h1>
           <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', letterSpacing: '0.04em', marginBottom: 4 }}>
-            {alert.ts} · {alert.ago} · entidad ▸ <strong style={{ color: 'var(--ink)' }}>{alert.entity}</strong> · canal <strong style={{ color: 'var(--ink)' }}>{alert.channel}</strong>
+            {alert.ts} · {alert.ago} · entidad ▸ <strong style={{ color: 'var(--ink)' }}>{alert.entity}</strong>
           </div>
           <p style={{ fontFamily: 'var(--serif)', fontSize: 15, lineHeight: 1.5, color: 'var(--ink-2)', margin: '10px 0 4px' }}>{alert.snippet}</p>
 

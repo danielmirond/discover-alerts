@@ -61,12 +61,37 @@
   function alertKind(recent) {
     // Para filtrar en la UI: usamos subtype si es entity, o type principal
     if (recent.type === 'entity' && recent.subtype) return recent.subtype;
-    return recent.type;
+    return recent.type || 'unknown';
   }
 
   function alertTypeLabel(recent) {
     if (recent.type === 'entity' && recent.subtype) return SUBTYPE_LABEL[recent.subtype] || recent.subtype.toUpperCase();
-    return TYPE_LABEL[recent.type] || recent.type.toUpperCase();
+    return TYPE_LABEL[recent.type] || (recent.type || 'alert').toUpperCase();
+  }
+
+  /**
+   * LiveRecentAlert (shape plano emitido por live-view.ts) trae:
+   *   { type, subtype?, title, detail, timestamp, routeName, category?, examples? }
+   * Para tipos recientes (first_mover, wikipedia_surge, meneame_hot) el
+   * live-view aún deja title/detail vacíos — aquí les damos un fallback
+   * razonable por tipo para que el feed sea legible hasta que arreglemos
+   * backend.
+   */
+  function fallbackTitle(r) {
+    if (r.title && r.title.trim()) return r.title;
+    switch (r.type) {
+      case 'first_mover': return 'Exclusiva detectada en un solo medio';
+      case 'wikipedia_surge': return 'Surge de edits en Wikipedia ES';
+      case 'meneame_hot': return 'Historia viral en Menéame';
+      case 'headline_cluster': return 'Evento grande en curso';
+      case 'stale_data': return 'Pipeline sin actividad';
+      case 'trends_without_discover': return 'Hueco SEO activo';
+      default: return '(sin título)';
+    }
+  }
+  function fallbackDetail(r) {
+    if (r.detail && r.detail.trim()) return r.detail;
+    return '';
   }
 
   function velocityFromEntity(e) {
@@ -91,9 +116,10 @@
     for (const e of api.entities || []) entitiesByName[e.name] = e;
 
     return recent.slice(0, 60).map((r, idx) => {
-      const title = r.title || r.detail || '—';
-      const entityName = r.alert?.entityName || r.alert?.name || r.title || '';
-      const ent = entitiesByName[entityName];
+      const headline = fallbackTitle(r);
+      // Intentamos extraer entidad del title, o del detail si no hay
+      const entityName = r.title || '';
+      const ent = entityName ? entitiesByName[entityName] : null;
       const { velocity, velocityRatio } = velocityFromEntity(ent);
       const kind = alertKind(r);
 
@@ -108,8 +134,8 @@
         category: r.category || '—',
         channel: channelFromRoute(r.routeName),
         entity: entityName || '—',
-        headline: title,
-        snippet: r.detail || '',
+        headline,
+        snippet: fallbackDetail(r),
         discoverScore: ent ? ent.score : null,
         feedPos: ent ? ent.position : null,
         publications: ent ? ent.publications : 0,
@@ -118,8 +144,8 @@
           trends: Boolean(ent && ent.matchingGoogleTrends && ent.matchingGoogleTrends.length > 0),
           twitter: Boolean(ent && ent.matchingXTrends && ent.matchingXTrends.length > 0),
           media: ent && ent.matchingArticles ? ent.matchingArticles.length : 0,
-          meneame: false,
-          wikipedia: false,
+          meneame: kind === 'meneame_hot',
+          wikipedia: kind === 'wikipedia_surge',
         },
         image: null,
         formulas: [], // el backend aún no persiste formulas por alerta

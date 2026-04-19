@@ -74,9 +74,8 @@ function AlertRow({ alert, onOpen, fresh }) {
       <div className="alert-body">
         <div className="alert-tags">
           <Tag kind={typeStyle}>{alert.typeLabel}</Tag>
-          <Tag kind="ghost">{alert.category}</Tag>
+          {alert.category && alert.category !== '—' ? <Tag kind="ghost">{alert.category}</Tag> : null}
           <VelocityBadge velocity={alert.velocity} ratio={alert.velocityRatio} />
-          <span className="mono xs muted" style={{ marginLeft: 'auto' }}>{alert.channel}</span>
         </div>
         <h3 className="alert-headline">{alert.headline}</h3>
         <p className="alert-snippet">{alert.snippet}</p>
