@@ -9,6 +9,7 @@
 
 import type { DiscoverPage } from '../types.js';
 import { getState } from '../state/store.js';
+import { extractEntityName } from './entity-detector.js';
 
 function normalize(s: string): string {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
@@ -69,7 +70,7 @@ export function extractContextSnippets(
     if (!page.snippet) continue;
     const titleNorm = normalize(page.title || '');
     const snippetNorm = normalize(page.snippet);
-    const entityInPage = (page.entities || []).some(e => e === entityName) ||
+    const entityInPage = ((page.entities as unknown as unknown[]) || []).some(e => extractEntityName(e) === entityName) ||
       titleNorm.includes(entityNorm) ||
       snippetNorm.includes(entityNorm);
     if (entityInPage) addSnippet(page.snippet);

@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { DiscoverPage } from '../types.js';
+import { extractEntityName } from './entity-detector.js';
 
 /**
  * Topic-based classifier, ortogonal a las categorias de DiscoverSnoop.
@@ -115,13 +116,16 @@ export function buildEntityTopicMap(
   const counts: Record<string, Record<string, number>> = {};
 
   for (const page of pages) {
-    if (!page.entities || page.entities.length === 0) continue;
+    const rawEntities = (page.entities as unknown as unknown[] | undefined) || [];
+    if (rawEntities.length === 0) continue;
     const titleNorm = normalize(page.title || page.title_original || '');
     if (!titleNorm) continue;
     const pageHits = classifyText(titleNorm, dict);
     if (Object.keys(pageHits).length === 0) continue;
 
-    for (const entityName of page.entities) {
+    for (const rawEnt of rawEntities) {
+      const entityName = extractEntityName(rawEnt);
+      if (!entityName) continue;
       if (!counts[entityName]) counts[entityName] = {};
       for (const [topicId, hit] of Object.entries(pageHits)) {
         counts[entityName][topicId] = (counts[entityName][topicId] ?? 0) + hit;

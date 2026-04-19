@@ -15,6 +15,44 @@ import type {
 } from '../types.js';
 
 /**
+ * Extrae el nombre (string) de una entrada de `page.entities`. DS a veces
+ * devuelve strings y otras objetos `{entity, name, text, title}`. Tolera
+ * ambos shapes y devuelve null si no puede extraer un nombre válido.
+ */
+export function extractEntityName(e: unknown): string | null {
+  if (typeof e === 'string') return e.trim() || null;
+  if (!e || typeof e !== 'object') return null;
+  const obj = e as Record<string, unknown>;
+  const candidate =
+    (typeof obj.entity === 'string' && obj.entity) ||
+    (typeof obj.name === 'string' && obj.name) ||
+    (typeof obj.text === 'string' && obj.text) ||
+    (typeof obj.title === 'string' && obj.title);
+  if (typeof candidate !== 'string') return null;
+  return candidate.trim() || null;
+}
+
+function pruneKeys<T>(obj: Record<string, T>, keep: (k: string) => boolean): Record<string, T> {
+  const out: Record<string, T> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (keep(k)) out[k] = v;
+  }
+  return out;
+}
+
+/** Normaliza `page.entities` (mixto string/object) a string[]. */
+function pageEntityNames(page: DiscoverPage): string[] {
+  const raw = page.entities as unknown as unknown[] | undefined;
+  if (!raw || !Array.isArray(raw)) return [];
+  const out: string[] = [];
+  for (const e of raw) {
+    const n = extractEntityName(e);
+    if (n) out.push(n);
+  }
+  return out;
+}
+
+/**
  * Builds a map of entity name -> most frequent category based on
  * DiscoverPages that mention each entity. Uses majority vote.
  */
@@ -24,8 +62,15 @@ function buildEntityCategoryMap(
 ): Record<string, string> {
   const counts: Record<string, Record<string, number>> = {};
 
+  // Debug one-time: dump shape del primer page.entities para verificar el tipo real
+  if (pages.length > 0 && pages[0].entities && pages[0].entities.length > 0) {
+    const raw = (pages[0].entities as unknown[])[0];
+    console.log(`[entity-detector] Sample page.entities[0] shape:`, typeof raw === 'object' ? JSON.stringify(raw).slice(0, 200) : `"${raw}"`);
+  }
+
   for (const page of pages) {
-    if (!page.entities || page.entities.length === 0) continue;
+    const names = pageEntityNames(page);
+    if (names.length === 0) continue;
 
     // Resolve category name (page.category can be a name string or numeric id)
     let categoryName: string | undefined;
@@ -36,7 +81,7 @@ function buildEntityCategoryMap(
     }
     if (!categoryName) continue;
 
-    for (const entityName of page.entities) {
+    for (const entityName of names) {
       if (!counts[entityName]) counts[entityName] = {};
       counts[entityName][categoryName] = (counts[entityName][categoryName] ?? 0) + 1;
     }
@@ -194,7 +239,7 @@ function enrichAscending(
     if (!page.snippet) continue;
     const pTitleNorm = normalize(page.title || '');
     const pSnippetNorm = normalize(page.snippet);
-    const entityInPage = (page.entities || []).some(e => e === entityName) ||
+    const entityInPage = pageEntityNames(page).some(e => e === entityName) ||
       pTitleNorm.includes(entityNorm) ||
       pSnippetNorm.includes(entityNorm);
     if (entityInPage) addSnippet(page.snippet);
@@ -211,7 +256,7 @@ function enrichAscending(
   for (const page of pagesForContext) {
     if (!page.image) continue;
     const titleNorm = normalize(page.title || '');
-    const entityInPage = (page.entities || []).some(e => e === entityName) ||
+    const entityInPage = pageEntityNames(page).some(e => e === entityName) ||
       titleNorm.includes(entityNorm);
     if (!entityInPage) continue;
     const sc = page.score || 0;
@@ -257,10 +302,11 @@ export async function detectEntityAlerts(
     // Build entity -> sample titles map from pages
     const entitySamples = new Map<string, string[]>();
     for (const page of pages) {
-      if (!page.entities || page.entities.length === 0) continue;
+      const names = pageEntityNames(page);
+      if (names.length === 0) continue;
       const title = (page.title || page.title_original || '').trim();
       if (!title) continue;
-      for (const entName of page.entities) {
+      for (const entName of names) {
         if (!entitySamples.has(entName)) entitySamples.set(entName, []);
         const arr = entitySamples.get(entName)!;
         if (arr.length < 3) arr.push(title);
@@ -527,11 +573,23 @@ export async function detectEntityAlerts(
   }
 
   // Persist the entity→category and entity→topic maps so other polls (media)
-  // can route correctly
+  // can route correctly. Filtramos claves corruptas (`[object Object]`,
+  // strings vacíos, undefined) que quedaron de bugs anteriores donde el
+  // shape de page.entities era un objeto y JS lo stringificaba mal.
+  const isValidKey = (k: string) =>
+    !!k && k !== '[object Object]' && k !== 'undefined' && k !== 'null';
+  const mergedCatMap = pruneKeys(
+    { ...getState().entityCategoryMap, ...entityCategoryMap },
+    isValidKey,
+  );
+  const mergedTopicMap = pruneKeys(
+    { ...getState().entityTopicMap, ...entityTopicMap },
+    isValidKey,
+  );
   updateState({
     entities: next,
-    entityCategoryMap: { ...getState().entityCategoryMap, ...entityCategoryMap },
-    entityTopicMap: { ...getState().entityTopicMap, ...entityTopicMap },
+    entityCategoryMap: mergedCatMap,
+    entityTopicMap: mergedTopicMap,
   });
   return alerts;
 }
