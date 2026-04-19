@@ -83,7 +83,15 @@ function AlertRow({ alert, onOpen, fresh }) {
           {alert.discoverScore != null && <span className="m">score <span className="score">{alert.discoverScore}</span></span>}
           {alert.feedPos != null && <span className="m">pos <strong>#{alert.feedPos}</strong></span>}
           <span className="m">pubs <strong>{alert.publications}</strong></span>
-          <span className="m muted">entidad · <strong style={{ color: 'var(--ink)' }}>{alert.entity}</strong></span>
+          {(() => {
+            const e = alert.entity;
+            if (!e) return null;
+            // Heurística: si es un título largo o una frase (>60 chars o con puntuación de frase),
+            // NO es una entidad real → no pintar. Evita el bug de pintar titulares como "entidad".
+            const isSentence = e.length > 60 || /[.!?]\s|["“]/.test(e);
+            if (isSentence) return null;
+            return <span className="m muted">entidad · <strong style={{ color: 'var(--ink)' }}>{e}</strong></span>;
+          })()}
         </div>
       </div>
       <div className="alert-right">

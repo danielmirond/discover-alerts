@@ -487,7 +487,6 @@ function App() {
     <>
       <section className="main">
         {kicker('Feed en vivo', `${filtered.length} alertas · orden por tiempo · actualiza cada 60s${loaded ? '' : ' · cargando…'}`)}
-        <h2 className="section-title">Lo que está pasando ahora mismo en la web hispanohablante</h2>
         <FilterBar filter={filter} setFilter={setFilter} counts={counts} />
         {filtered.map(a => (
           <AlertRow key={a.id} alert={a} fresh={freshId === a.id} onOpen={setOpenAlert} />
