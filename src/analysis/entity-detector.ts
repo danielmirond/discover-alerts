@@ -62,10 +62,23 @@ function buildEntityCategoryMap(
 ): Record<string, string> {
   const counts: Record<string, Record<string, number>> = {};
 
-  // Debug one-time: dump shape del primer page.entities para verificar el tipo real
-  if (pages.length > 0 && pages[0].entities && pages[0].entities.length > 0) {
-    const raw = (pages[0].entities as unknown[])[0];
-    console.log(`[entity-detector] Sample page.entities[0] shape:`, typeof raw === 'object' ? JSON.stringify(raw).slice(0, 200) : `"${raw}"`);
+  // Debug one-time: dump shape del primer page para verificar el tipo real
+  if (pages.length > 0) {
+    const p0 = pages[0];
+    const rawEnt = p0.entities && p0.entities.length > 0 ? (p0.entities as unknown[])[0] : null;
+    console.log(`[entity-detector] Sample page.entities[0]:`, JSON.stringify(rawEnt).slice(0, 150));
+    console.log(`[entity-detector] Sample page.category type=${typeof p0.category} value=${JSON.stringify(p0.category)}`);
+    console.log(`[entity-detector] categoryNames size=${Object.keys(categoryNames).length}`);
+    // Count cómo quedan los datos
+    let withEnts = 0, withCat = 0, withBoth = 0;
+    for (const p of pages) {
+      const hasEnts = Array.isArray(p.entities) && p.entities.length > 0;
+      const hasCat = p.category !== undefined && p.category !== null && p.category !== '';
+      if (hasEnts) withEnts++;
+      if (hasCat) withCat++;
+      if (hasEnts && hasCat) withBoth++;
+    }
+    console.log(`[entity-detector] ${pages.length} pages · ${withEnts} con entities · ${withCat} con category · ${withBoth} con ambos`);
   }
 
   for (const page of pages) {
