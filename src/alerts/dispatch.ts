@@ -47,7 +47,10 @@ function alertPriority(alert: Alert) {
       }
       return 0;
     case 'triple_match': return 99; // Highest priority: Discover+Trends+X with thresholds met
-    case 'first_mover': return 87; // Exclusive by one outlet in 30min — act or skip fast
+    case 'first_mover':
+      // Si el único publisher es una agencia wire (EFE, Europa Press, Reuters),
+      // elevamos la prioridad: es la fuente primaria que el resto va a citar.
+      return (alert as any).isWire ? 93 : 87;
     case 'wikipedia_surge': return 86; // Breaking: article being edited heavily right now
     case 'meneame_hot': return 84; // Viral upstream before Discover
     case 'own_media': return 92; // Own media highly important

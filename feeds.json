@@ -70,7 +70,8 @@
       "name": "Europa Press",
       "url": "https://www.europapress.es/rss/rss.aspx",
       "category": "generalista",
-      "domain": "europapress.es"
+      "domain": "europapress.es",
+      "wire": true
     },
     {
       "name": "InfoLibre",
@@ -2207,6 +2208,15 @@
       "category": "generalista",
       "domain": "okdiario.com",
       "scope": "nacional"
+    },
+    {
+      "name": "EFE Sitemap News",
+      "url": "https://efe.com/news-sitemap.xml",
+      "category": "generalista",
+      "domain": "efe.com",
+      "scope": "nacional",
+      "type": "news-sitemap",
+      "wire": true
     }
   ]
 }

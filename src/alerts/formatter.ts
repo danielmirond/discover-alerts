@@ -616,14 +616,18 @@ function formatWikipediaSurge(a: Extract<Alert, { type: 'wikipedia_surge' }>): S
 }
 
 function formatFirstMover(a: Extract<Alert, { type: 'first_mover' }>): SlackBlock[] {
+  const wirePrefix = a.isWire ? ':newspaper: WIRE · ' : '';
+  const wireContext = a.isWire
+    ? ' · AGENCIA PRIMARIA (EFE/Europa Press/Reuters) — los medios citarán esto en 15-60 min'
+    : ' · decidir entrar o saltar con fuentes propias';
   return [
-    header(`:dart: Exclusiva de ${a.feedName}: ${a.entityName}`),
+    header(`${a.isWire ? ':newspaper:' : ':dart:'} ${wirePrefix}Exclusiva de ${a.feedName}: ${a.entityName}`),
     section(
       `Solo *${a.feedName}* publica sobre *${a.entityName}* en los últimos ${a.windowMinutes} min.\n` +
       `<${a.link}|${a.title}>`,
     ),
     context(
-      `First mover | ${a.category || '-'}${a.topic ? ' · ' + a.topic : ''} · decidir entrar o saltar con fuentes propias`,
+      `${a.isWire ? 'Wire first' : 'First mover'} | ${a.category || '-'}${a.topic ? ' · ' + a.topic : ''}${wireContext}`,
     ),
   ];
 }

@@ -365,6 +365,11 @@ export interface MediaFeed {
    * 'news-sitemap' for Google News-format sitemaps (<news:news> schema)
    */
   type?: 'rss' | 'news-sitemap';
+  /** Si true, este feed es una agencia wire (EFE, Europa Press, Reuters).
+   * Las alertas first_mover con este feed como único publisher se elevan
+   * a prioridad 'wire' (más alta) porque es la fuente primaria que el
+   * resto cita en 15-60 min. */
+  wire?: boolean;
 }
 
 export interface WeeklyMediaStats {
@@ -575,6 +580,8 @@ export interface FirstMoverAlert {
   windowMinutes: number;
   category?: string;
   topic?: string;
+  /** true si el único publisher es un feed marcado wire:true (EFE, EP, Reuters). */
+  isWire?: boolean;
 }
 
 // BOE types

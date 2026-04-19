@@ -180,10 +180,14 @@ export function detectMediaDiscoverCorrelations(
   // First-mover detection: entidades Discover cubiertas por EXACTAMENTE 1 medio
   // en los ultimos 30 min. Señal de exclusiva competidora — o entramos YA o
   // decidimos saltarnos por falta de corroboracion.
+  // Wire agencies (EFE, Europa Press, Reuters...): si son el único publisher,
+  // la alerta se marca isWire=true y obtiene prioridad más alta en dispatch.
+  const WIRE_FEED_PREFIXES = ['EFE', 'Europa Press', 'Reuters', 'AP'];
+  const isWireFeed = (feedName: string) => WIRE_FEED_PREFIXES.some(p => feedName.startsWith(p));
+
   const firstMoverWindowMs = 30 * 60_000;
   for (const [entityName, hits] of entityArticles) {
     const recentHits = hits.filter(h => {
-      // article.pubDate no esta en ArticleHit, pero podemos cruzar con nextArticles
       const meta = Object.values(nextArticles).find(m => m.link === h.link);
       if (!meta) return false;
       const pubTs = meta.pubDate ? new Date(meta.pubDate).getTime() : NaN;
@@ -192,7 +196,7 @@ export function detectMediaDiscoverCorrelations(
     });
     if (recentHits.length === 0) continue;
     const uniqueOutlets = new Set(recentHits.map(h => h.feedName));
-    if (uniqueOutlets.size !== 1) continue; // tiene que ser exactamente 1
+    if (uniqueOutlets.size !== 1) continue;
     const solo = recentHits[0];
     const metaSolo = Object.values(nextArticles).find(m => m.link === solo.link);
     alerts.push({
@@ -205,6 +209,7 @@ export function detectMediaDiscoverCorrelations(
       windowMinutes: 30,
       category: entityCategoryMap[entityName],
       topic: entityTopicMap[entityName],
+      isWire: isWireFeed(solo.feedName),
     });
   }
 
