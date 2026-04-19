@@ -5,6 +5,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { locales, type Locale } from "@/i18n/routing";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { CookieBanner } from "@/components/CookieBanner";
 import "@/app/globals.css";
 
 export function generateStaticParams() {
@@ -90,6 +91,7 @@ export default async function LocaleLayout({
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <CookieBanner />
         </NextIntlClientProvider>
       </body>
     </html>

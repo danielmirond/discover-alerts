@@ -86,8 +86,18 @@ export function Footer() {
                   : locale === "de" ? "Über Aevum"
                   : "About Aevum"}
               </Link>
-              <span className="text-[13px] text-stone">{t("privacy")}</span>
-              <span className="text-[13px] text-stone">{t("terms")}</span>
+              <Link
+                href={`/${locale}/privacidad`}
+                className="text-[13px] text-slate hover:text-emerald transition-colors"
+              >
+                {t("privacy")}
+              </Link>
+              <Link
+                href={`/${locale}/cookies`}
+                className="text-[13px] text-slate hover:text-emerald transition-colors"
+              >
+                Cookies
+              </Link>
               <Link
                 href={`/${locale}/afiliacion`}
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
