@@ -89,7 +89,9 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {} }) {
   const navs = [
     { id: 'feed', label: 'Feed en vivo', count: counts.feed },
     { id: 'huecos', label: 'Huecos', count: counts.huecos },
-    { id: 'trends', label: 'Trends', count: counts.trends },
+    { id: 'sucesos', label: 'Sucesos', count: counts.sucesos },
+    { id: 'trends', label: 'Google Trends', count: counts.trends },
+    { id: 'xtrends', label: 'X/Twitter', count: counts.xtrends },
     { id: 'entidades', label: 'Entidades', count: counts.entidades },
     { id: 'medios', label: 'Medios' },
     { id: 'formulas', label: 'Fórmulas' },
@@ -484,6 +486,7 @@ function App() {
         <GapsPanel gaps={data.gaps || []} />
         <EntitiesPanel entities={data.entities || []} />
         <TrendsPanel trends={data.trends || []} />
+        <XTrendsPanel xTrends={data.xTrends || []} />
         {(data.spikes && data.spikes.length > 0) && <SpikePanel spikes={data.spikes} />}
         {(data.concordances && data.concordances.length > 0) && <ConcordancePanel concordances={data.concordances} />}
         <TopMediaPanel media={data.topMedia || []} />
@@ -523,6 +526,18 @@ function App() {
       (data.trends || []).length + ' topics · lo que España busca ahora mismo',
       <TrendsPanel trends={data.trends || []} />
     );
+  } else if (activeNav === 'xtrends') {
+    body = viewSinglePanel(
+      'X / Twitter ES',
+      (data.xTrends || []).length + ' topics · top 50 ranking en vivo',
+      <XTrendsPanel xTrends={data.xTrends || []} />
+    );
+  } else if (activeNav === 'sucesos') {
+    body = viewSinglePanel(
+      'Sucesos',
+      'capa editorial YMYL · tratamiento factual, atribución obligatoria, sin hipérbole',
+      <SucesosView data={data} onOpenAlert={setOpenAlert} />
+    );
   } else if (activeNav === 'medios') {
     body = viewSinglePanel(
       'Top medios',
@@ -555,10 +570,22 @@ function App() {
     );
   }
 
+  // Filtrados por topic 'sucesos' (capa con tratamiento YMYL estricto)
+  const sucesosAlerts = useMemo(() => {
+    const raw = (data._raw && data._raw.recentAlerts) || [];
+    return raw
+      .filter(r => (r.alertTopic || r.topic) === 'sucesos' ||
+                   ['first_mover','own_media_absent','trends_without_discover','meneame_hot']
+                     .includes(r.type) && (r.alert && r.alert.topic === 'sucesos'))
+      .length;
+  }, [data._raw]);
+
   const navCounts = {
     feed: alerts.length,
     huecos: (data.gaps || []).length,
+    sucesos: sucesosAlerts,
     trends: (data.trends || []).length,
+    xtrends: (data.xTrends || []).length,
     entidades: (data.entities || []).length,
   };
 
@@ -571,6 +598,101 @@ function App() {
       <Drawer alert={openAlert} onClose={() => setOpenAlert(null)} />
       <Tweaks tweaks={tweaks} setTweak={setTweak} visible={tweaksVisible} />
     </>
+  );
+}
+
+/* ---------------- Sucesos view (capa editorial YMYL) ---------------- */
+function SucesosView({ data, onOpenAlert }) {
+  const raw = (data._raw || {});
+  // Entidades con topic=sucesos
+  const entities = (raw.entities || [])
+    .filter(e => (e.topic || '').toLowerCase() === 'sucesos' ||
+                 (e.category || '').toLowerCase().includes('sensitive'))
+    .slice(0, 20);
+  // Alertas con topic=sucesos (campo directo o dentro de alert)
+  const alerts = (raw.recentAlerts || [])
+    .filter(r => (r.topic === 'sucesos') || (r.alert && r.alert.topic === 'sucesos'))
+    .slice(0, 30);
+  // Huecos con topic=sucesos
+  const gaps = (raw.opportunities || [])
+    .filter(o => (o.topic || '').toLowerCase() === 'sucesos')
+    .slice(0, 10);
+
+  const hasSignal = entities.length + alerts.length + gaps.length > 0;
+
+  const row = (item, key) => (
+    <div key={key}
+         onClick={() => onOpenAlert && onOpenAlert(null)}
+         style={{
+           padding: 'var(--space-5) 0',
+           borderBottom: '1px solid var(--rule-2)',
+           fontFamily: 'var(--sans)',
+           fontSize: 'var(--text-base)',
+         }}>
+      <div style={{ fontWeight: 700, color: 'var(--ink)', marginBottom: 'var(--space-1)' }}>
+        {item.title || item.name || item.entity || '(sin título)'}
+      </div>
+      <div style={{ fontFamily: 'var(--mono)', fontSize: 'var(--text-sm)', color: 'var(--ink-3)' }}>
+        {item.detail || item.subtitle || ''}
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{
+      marginTop: 'var(--space-7)',
+      padding: 'var(--space-8) var(--space-9)',
+      border: '2px solid var(--warn)',
+      background: 'rgba(232, 145, 0, 0.04)',
+    }}>
+      <div style={{ marginBottom: 'var(--space-8)', fontFamily: 'var(--mono)', fontSize: 'var(--text-xs)', color: 'var(--warn)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>
+        ⚠ YMYL — Your Money Your Life
+      </div>
+      <p style={{ fontFamily: 'var(--sans)', fontSize: 'var(--text-lg)', lineHeight: 1.5, color: 'var(--ink-2)', margin: '0 0 var(--space-10)' }}>
+        Capa de sucesos (crímenes, desapariciones, emergencias, tribunales). Google
+        Discover aplica criterios más estrictos a este tipo de contenido.
+        <strong> Regla editorial:</strong> atribución obligatoria (Guardia Civil, Policía
+        Nacional, fuentes judiciales), lenguaje factual y sin hipérbole, sin clickbait
+        ni curiosity-gap. Las fórmulas sugeridas ya están filtradas por YMYL.
+      </p>
+
+      {!hasSignal && (
+        <div style={{ padding: 'var(--space-10)', textAlign: 'center', fontFamily: 'var(--mono)', fontSize: 'var(--text-sm)', color: 'var(--ink-4)' }}>
+          Sin señal de sucesos activa en este momento.<br/>
+          El clasificador sigue vigilando (keywords: asesinato, tiroteo, guardia civil, desaparecido, atraco…).
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-10)' }}>
+        {gaps.length > 0 && (
+          <div>
+            <div className="kicker">Huecos sucesos <span className="bar"></span> <span className="meta">{gaps.length} activos</span></div>
+            {gaps.map((g, i) => row({
+              title: g.title,
+              detail: `${(g.kind || '').replace('_', ' ')} · ${g.detail || ''}`,
+            }, 'g' + i))}
+          </div>
+        )}
+        {alerts.length > 0 && (
+          <div>
+            <div className="kicker">Alertas recientes <span className="bar"></span> <span className="meta">últimas 6h · topic=sucesos</span></div>
+            {alerts.map((a, i) => row({
+              title: a.title,
+              detail: `${a.type}${a.subtype ? '/' + a.subtype : ''} · ${a.detail || ''}`,
+            }, 'a' + i))}
+          </div>
+        )}
+        {entities.length > 0 && (
+          <div>
+            <div className="kicker">Entidades clasificadas <span className="bar"></span></div>
+            {entities.map((e, i) => row({
+              title: e.name,
+              detail: `score ${e.score} · pos #${e.position} · ${e.publications} pubs`,
+            }, 'e' + i))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

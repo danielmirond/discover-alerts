@@ -329,4 +329,72 @@ function TrendsPanel({ trends }) {
   );
 }
 
-Object.assign(window, { GapsPanel, EntitiesPanel, TopMediaPanel, SpikePanel, ConcordancePanel, FormulasPanel, PatternsPanel, WeeklyPanel, TrendsPanel });
+function XTrendsPanel({ xTrends }) {
+  const items = xTrends || [];
+  return (
+    <div className="panel">
+      <div className="kicker">
+        X / Twitter ES
+        <Help>
+          Top 50 trends de X/Twitter en España, extraídos de getdaytrends.com
+          cada 30 minutos.<br/><br/>
+          Solo disponemos del <strong>rank</strong> (1–50), no del volumen de
+          tweets detrás. Un rank bajo (1, 2, 3…) = tema dominante. Un topic que
+          cruza con Discover o Google Trends es la señal más fuerte (triple
+          match).
+        </Help>
+        <span className="bar"></span>
+        <span className="meta">{items.length} topics · ranking en vivo</span>
+      </div>
+      {items.length === 0 && (
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 'var(--text-sm)', color: 'var(--ink-4)', padding: 'var(--space-4)' }}>
+          Sin datos de X/Twitter en este momento.
+        </div>
+      )}
+      {items.map((t, i) => (
+        <a key={i} href={t.url} target="_blank" rel="noreferrer"
+           style={{
+             display: 'flex',
+             alignItems: 'center',
+             gap: 'var(--space-5)',
+             padding: 'var(--space-4) 0',
+             borderBottom: '1px solid var(--rule-2)',
+             textDecoration: 'none',
+             color: 'inherit',
+           }}>
+          <span style={{
+            fontFamily: 'var(--mono)',
+            fontSize: 'var(--text-sm)',
+            fontWeight: 700,
+            color: t.rank <= 3 ? 'var(--accent)' : t.rank <= 10 ? 'var(--ink-2)' : 'var(--ink-4)',
+            minWidth: 26,
+            textAlign: 'right',
+          }}>
+            {String(t.rank).padStart(2, '0')}
+          </span>
+          <span style={{
+            flex: 1,
+            fontFamily: t.topic.startsWith('#') ? 'var(--mono)' : 'var(--sans)',
+            fontSize: 'var(--text-base)',
+            fontWeight: t.rank <= 10 ? 600 : 400,
+            color: 'var(--ink)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}>
+            {t.topic}
+          </span>
+          <span style={{
+            fontFamily: 'var(--mono)',
+            fontSize: 'var(--text-2xs)',
+            color: 'var(--ink-4)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+          }}>↗ X</span>
+        </a>
+      ))}
+    </div>
+  );
+}
+
+Object.assign(window, { GapsPanel, EntitiesPanel, TopMediaPanel, SpikePanel, ConcordancePanel, FormulasPanel, PatternsPanel, WeeklyPanel, TrendsPanel, XTrendsPanel });
