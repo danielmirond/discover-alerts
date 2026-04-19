@@ -417,57 +417,166 @@ function App() {
     return c;
   }, [alerts]);
 
+  const kicker = (label, meta) => (
+    <>
+      <div className="kicker">{label} <span className="bar"></span>{meta ? <span className="meta">{meta}</span> : null}</div>
+    </>
+  );
+
+  const viewFeed = (
+    <>
+      <section className="main">
+        {kicker('Feed en vivo', `${filtered.length} alertas · orden por tiempo · actualiza cada 60s${loaded ? '' : ' · cargando…'}`)}
+        <h2 className="section-title">Lo que está pasando ahora mismo en la web hispanohablante</h2>
+        <FilterBar filter={filter} setFilter={setFilter} counts={counts} />
+        {filtered.map(a => (
+          <AlertRow key={a.id} alert={a} fresh={freshId === a.id} onOpen={setOpenAlert} />
+        ))}
+        {filtered.length === 0 && (
+          <div style={{ padding: '32px 0', textAlign: 'center', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>
+            Sin alertas con este filtro. Prueba otro tipo o espera al próximo poll.
+          </div>
+        )}
+        <div style={{ padding: '18px 0', textAlign: 'center', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.08em' }}>
+          — {loaded ? 'DATOS EN VIVO' : 'CARGANDO DATOS'} · REFRESCO AUTOMÁTICO CADA 60s —
+        </div>
+      </section>
+      <aside className="side">
+        <GapsPanel gaps={data.gaps || []} />
+        <EntitiesPanel entities={data.entities || []} />
+        {(data.spikes && data.spikes.length > 0) && <SpikePanel spikes={data.spikes} />}
+        {(data.concordances && data.concordances.length > 0) && <ConcordancePanel concordances={data.concordances} />}
+        <TopMediaPanel media={data.topMedia || []} />
+        <FormulasPanel formulas={data.formulas || []} />
+        {(data.headlinePatterns && data.headlinePatterns.length > 0) && <PatternsPanel patterns={data.headlinePatterns} />}
+        {(data.weekly && data.weekly.length > 0) && <WeeklyPanel weekly={data.weekly} />}
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', letterSpacing: '0.06em', padding: '14px 0', borderTop: '1px solid var(--rule)', textTransform: 'uppercase' }}>
+          © 2026 Discover Alerts · build 2026.04.19 · redacción · interno
+        </div>
+      </aside>
+    </>
+  );
+
+  const viewSinglePanel = (title, meta, content) => (
+    <section className="main" style={{ gridColumn: '1 / -1' }}>
+      {kicker(title, meta)}
+      {content}
+    </section>
+  );
+
+  let body = viewFeed;
+  if (activeNav === 'huecos') {
+    body = viewSinglePanel(
+      'Huecos activos AHORA',
+      (data.gaps || []).length + ' activos · oportunidades editoriales en tiempo real',
+      <GapsPanel gaps={data.gaps || []} />
+    );
+  } else if (activeNav === 'entidades') {
+    body = viewSinglePanel(
+      'Entidades en vivo',
+      (data.entities || []).length + ' entidades · momentum por acceleration (v1h / v3h)',
+      <EntitiesPanel entities={data.entities || []} />
+    );
+  } else if (activeNav === 'medios') {
+    body = viewSinglePanel(
+      'Top medios',
+      (data.topMedia || []).length + ' cabeceras · últimas 12h',
+      <TopMediaPanel media={data.topMedia || []} />
+    );
+  } else if (activeNav === 'formulas') {
+    body = viewSinglePanel(
+      'Fórmulas del último mes',
+      (data.formulas || []).length + ' reglas con uso registrado · ordenadas por audiencia media',
+      <FormulasPanel formulas={data.formulas || []} />
+    );
+  } else if (activeNav === 'patrones') {
+    body = viewSinglePanel(
+      'Patrones de titular',
+      (data.headlinePatterns || []).length + ' n-gramas · rolling 4 días',
+      <PatternsPanel patterns={data.headlinePatterns || []} />
+    );
+  } else if (activeNav === 'historico') {
+    body = viewSinglePanel(
+      'Histórico semanal',
+      (data.weekly || []).length + ' medios · últimas 7 semanas',
+      <WeeklyPanel weekly={data.weekly || []} />
+    );
+  } else if (activeNav === 'configuracion') {
+    body = viewSinglePanel(
+      'Configuración del sistema',
+      'estado actual · read-only',
+      <ConfigView data={data} />
+    );
+  }
+
   return (
     <>
       <Masthead activeNav={activeNav} setActiveNav={setActiveNav} clock={clock} />
       {tweaks.showTicker && <Ticker />}
       <Pollers pollers={data.pollers || []} />
-
-      <div className="shell">
-        <section className="main">
-          <div className="kicker">
-            Feed en vivo <span className="bar"></span>
-            <span className="meta">
-              {filtered.length} alertas · orden por tiempo · actualiza cada 60s {loaded ? '' : '· cargando…'}
-            </span>
-          </div>
-          <h2 className="section-title">Lo que está pasando ahora mismo en la web hispanohablante</h2>
-
-          <FilterBar filter={filter} setFilter={setFilter} counts={counts} />
-
-          {filtered.map(a => (
-            <AlertRow key={a.id} alert={a} fresh={freshId === a.id} onOpen={setOpenAlert} />
-          ))}
-
-          {filtered.length === 0 && (
-            <div style={{ padding: '32px 0', textAlign: 'center', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>
-              Sin alertas con este filtro. Prueba otro tipo o espera al próximo poll.
-            </div>
-          )}
-
-          <div style={{ padding: '18px 0', textAlign: 'center', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.08em' }}>
-            — {loaded ? 'DATOS EN VIVO' : 'CARGANDO DATOS'} · REFRESCO AUTOMÁTICO CADA 60s —
-          </div>
-        </section>
-
-        <aside className="side">
-          <GapsPanel gaps={data.gaps || []} />
-          <EntitiesPanel entities={data.entities || []} />
-          {(data.spikes && data.spikes.length > 0) && <SpikePanel spikes={data.spikes} />}
-          {(data.concordances && data.concordances.length > 0) && <ConcordancePanel concordances={data.concordances} />}
-          <TopMediaPanel media={data.topMedia || []} />
-          <FormulasPanel formulas={data.formulas || []} />
-          {(data.headlinePatterns && data.headlinePatterns.length > 0) && <PatternsPanel patterns={data.headlinePatterns} />}
-          {(data.weekly && data.weekly.length > 0) && <WeeklyPanel weekly={data.weekly} />}
-          <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', letterSpacing: '0.06em', padding: '14px 0', borderTop: '1px solid var(--rule)', textTransform: 'uppercase' }}>
-            © 2026 Discover Alerts · build 2026.04.19 · redacción · interno
-          </div>
-        </aside>
-      </div>
-
+      <div className="shell">{body}</div>
       <Drawer alert={openAlert} onClose={() => setOpenAlert(null)} />
       <Tweaks tweaks={tweaks} setTweak={setTweak} visible={tweaksVisible} />
     </>
+  );
+}
+
+/* ---------------- Config view (read-only system status) ---------------- */
+function ConfigView({ data }) {
+  const totals = data._totals || {};
+  const pollers = data.pollers || [];
+  const row = (label, value) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--rule-2)', fontFamily: 'var(--mono)', fontSize: 12 }}>
+      <span style={{ color: 'var(--ink-3)' }}>{label}</span>
+      <strong style={{ color: 'var(--ink)' }}>{value}</strong>
+    </div>
+  );
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 28, marginTop: 14 }}>
+      <div>
+        <div className="kicker">Pollers <span className="bar"></span></div>
+        {pollers.map(p => (
+          <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--rule-2)', fontFamily: 'var(--mono)', fontSize: 12 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.status === 'ok' ? 'var(--ok)' : 'var(--warn)' }} />
+            <strong style={{ minWidth: 120 }}>{p.label}</strong>
+            <span style={{ color: 'var(--ink-3)' }}>cada {Math.round(p.cadence / 60)}m</span>
+            <span style={{ marginLeft: 'auto', color: 'var(--ink-4)' }}>hace {p.last}s</span>
+          </div>
+        ))}
+      </div>
+      <div>
+        <div className="kicker">Estado del cache <span className="bar"></span></div>
+        {row('Entidades tracked', (totals.entitiesTracked || 0).toLocaleString())}
+        {row('Categorías tracked', (totals.categoriesTracked || 0).toLocaleString())}
+        {row('Google Trends cacheados', (totals.googleTrendsCached || 0).toLocaleString())}
+        {row('X trends cacheados', (totals.xTrendsCached || 0).toLocaleString())}
+        {row('Artículos RSS cacheados', (totals.mediaArticlesCached || 0).toLocaleString())}
+      </div>
+      <div>
+        <div className="kicker">Reglas editoriales activas <span className="bar"></span></div>
+        {row('Fórmulas con uso últimos 30d', (data.formulas || []).length)}
+        {row('Alertas en feed', (data.alerts || []).length)}
+        {row('Huecos activos', (data.gaps || []).length)}
+        {row('Concordancias', (data.concordances || []).length)}
+        {row('Patrones detectados', (data.headlinePatterns || []).length)}
+      </div>
+      <div>
+        <div className="kicker">Endpoints <span className="bar"></span></div>
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, lineHeight: 1.8, color: 'var(--ink-3)' }}>
+          <div><a href="/api/live-alerts" target="_blank" style={{ color: 'var(--accent)' }}>/api/live-alerts</a> — feed + paneles</div>
+          <div><a href="/api/historical-discover" target="_blank" style={{ color: 'var(--accent)' }}>/api/historical-discover</a> — histórico DS</div>
+          <div><a href="/api/weekly-history" target="_blank" style={{ color: 'var(--accent)' }}>/api/weekly-history</a> — agregado semanal</div>
+          <div><a href="/api/feeds" target="_blank" style={{ color: 'var(--accent)' }}>/api/feeds</a> — listado de feeds</div>
+          <div><a href="/api/routing" target="_blank" style={{ color: 'var(--accent)' }}>/api/routing</a> — rutas Slack</div>
+          <div><a href="/classic.html" target="_blank" style={{ color: 'var(--accent)' }}>/classic.html</a> — dashboard legacy</div>
+        </div>
+        <div style={{ marginTop: 14, padding: 10, background: 'var(--paper-3)', border: '1px solid var(--rule)', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>
+          Edición de thresholds, topics, fórmulas, feeds y routing: por ahora se hace por PR al repo
+          (ficheros <code>topics.json</code>, <code>headline-formulas.json</code>, <code>routing.json</code>, <code>feeds.json</code>).
+          Siguiente iteración: editores inline y <code>PATCH</code> a Upstash con override runtime.
+        </div>
+      </div>
+    </div>
   );
 }
 
