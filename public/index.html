@@ -40,11 +40,12 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 const D = window.DA_DATA;
 
 /* ---------------- Masthead ---------------- */
-function Masthead({ activeNav, setActiveNav, clock }) {
+function Masthead({ activeNav, setActiveNav, clock, counts = {} }) {
   const navs = [
-    { id: 'feed', label: 'Feed en vivo', count: 8 },
-    { id: 'huecos', label: 'Huecos' },
-    { id: 'entidades', label: 'Entidades' },
+    { id: 'feed', label: 'Feed en vivo', count: counts.feed },
+    { id: 'huecos', label: 'Huecos', count: counts.huecos },
+    { id: 'trends', label: 'Trends', count: counts.trends },
+    { id: 'entidades', label: 'Entidades', count: counts.entidades },
     { id: 'medios', label: 'Medios' },
     { id: 'formulas', label: 'Fórmulas' },
     { id: 'patrones', label: 'Patrones' },
@@ -90,30 +91,34 @@ function Pollers({ pollers }) {
         <div key={p.id} className={cx('poller', p.status !== 'ok' && p.status)}>
           <span className="pill"></span>
           <span className="label">{p.label}</span>
-          <span className="t">· {p.last}s · cada {Math.round(p.cadence/60)}m</span>
+          <span className="t">· {p.last > 0 ? `${p.last}s · ` : ''}cada {Math.round(p.cadence/60)}m</span>
         </div>
       ))}
-      <span style={{ marginLeft: 'auto', color: 'var(--ink-4)' }}>Próxima rotación en 00:13</span>
     </div>
   );
 }
 
 /* ---------------- Ticker ---------------- */
-function Ticker() {
-  const items = [
-    { t: 'Sánchez', v: 'score 94', up: true },
-    { t: 'Lamine Yamal', v: '+22%', up: true },
-    { t: 'DANA Valencia', v: 'trends +412%', up: true },
-    { t: 'Rosalía', v: 'wiki +820%', up: true },
-    { t: 'BCE', v: '2,25% sin cambios', up: false },
-    { t: 'OpenAI GPT-6', v: 'primicia', up: true },
-    { t: 'SpaceX→Marte', v: 'cabida ES', up: true },
-    { t: 'Ozempic', v: '-8', up: false },
-    { t: 'Eurovisión 2026', v: '+12', up: true },
-    { t: 'Feijóo', v: '-12', up: false },
-    { t: 'Real Madrid–City', v: 'hueco', up: true },
-    { t: 'Huelga transporte MAD', v: '47m sin cubrir', up: false },
-  ];
+function Ticker({ data }) {
+  const items = useMemo(() => {
+    const out = [];
+    // Top entities por velocity (rising/peaking)
+    for (const e of (data.entities || []).slice(0, 6)) {
+      const up = e.trend === 'up';
+      const label = e.trend === 'up' ? (e.delta || '↑') : e.trend === 'down' ? (e.delta || '↓') : e.delta || '—';
+      out.push({ t: e.name, v: label, up });
+    }
+    // Top trends por traffic
+    for (const t of (data.trends || []).slice(0, 4)) {
+      out.push({ t: t.title, v: `~${(t.traffic || 0).toLocaleString()}+`, up: true });
+    }
+    // Huecos activos
+    for (const g of (data.gaps || []).slice(0, 3)) {
+      out.push({ t: g.entity, v: `hueco · ${g.kind}`, up: true });
+    }
+    return out.length > 0 ? out : [{ t: 'Esperando primer poll', v: '…', up: true }];
+  }, [data.entities, data.trends, data.gaps]);
+
   const row = (k) => (
     <React.Fragment key={k}>
       {items.map((it, i) => (
@@ -126,7 +131,7 @@ function Ticker() {
   );
   return (
     <div className="ticker">
-      <div className="ticker-label">BREAKING</div>
+      <div className="ticker-label">LIVE</div>
       <div className="ticker-track">
         <div className="ticker-move">{row('a')}{row('b')}</div>
       </div>
@@ -136,8 +141,11 @@ function Ticker() {
 
 /* ---------------- Filter bar ---------------- */
 function FilterBar({ filter, setFilter, counts }) {
+  // Chip especial "own_media" agrupa own_media + own_media_absent.
+  // El matching de filter es por prefijo cuando id termina en ':*'.
   const chips = [
     { id: 'all', label: 'Todas', c: counts.all },
+    { id: 'own_media:*', label: 'Own media', c: (counts.own_media || 0) + (counts.own_media_absent || 0), style: 'own-media' },
     { id: 'triple_match', label: 'Triple match', c: counts.triple_match },
     { id: 'trends_without_discover', label: 'Hueco SEO', c: counts.trends_without_discover },
     { id: 'discover_1h', label: 'Discover 1h', c: counts.discover_1h },
@@ -150,7 +158,7 @@ function FilterBar({ filter, setFilter, counts }) {
     <div className="filter-bar">
       {chips.map(c => (
         <span key={c.id}
-              className={cx('chip', filter === c.id && 'active')}
+              className={cx('chip', filter === c.id && 'active', c.style === 'own-media' && 'chip-own-media')}
               onClick={() => setFilter(c.id)}>
           {c.label}{c.c != null ? <span className="c">{c.c}</span> : null}
         </span>
@@ -247,29 +255,7 @@ function Drawer({ alert, onClose }) {
             </div>
           </div>
 
-          <div className="drawer-section" style={{ display: 'flex', gap: 8 }}>
-            <button style={{
-              flex: 1, padding: '10px 14px', background: 'var(--accent)', color: '#fff',
-              border: 'none', fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 700,
-              letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer', borderRadius: 2
-            }}>
-              Abrir brief en Slack
-            </button>
-            <button style={{
-              flex: 1, padding: '10px 14px', background: 'var(--ink)', color: 'var(--paper)',
-              border: 'none', fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 700,
-              letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer', borderRadius: 2
-            }}>
-              Asignar redactor
-            </button>
-            <button style={{
-              padding: '10px 14px', background: 'transparent', color: 'var(--ink-3)',
-              border: '1px solid var(--rule)', fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 600,
-              letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer', borderRadius: 2
-            }}>
-              Silenciar
-            </button>
-          </div>
+          {/* botones de acción del drawer quitados hasta tener backend que los soporte */}
         </div>
       </aside>
     </>
@@ -406,11 +392,15 @@ function App() {
     });
   };
 
-  /* Filter alerts */
-  const filtered = useMemo(
-    () => filter === 'all' ? alerts : alerts.filter(a => a.type === filter),
-    [alerts, filter]
-  );
+  /* Filter alerts (supports prefix match via trailing ':*') */
+  const filtered = useMemo(() => {
+    if (filter === 'all') return alerts;
+    if (filter.endsWith(':*')) {
+      const prefix = filter.slice(0, -2);
+      return alerts.filter(a => (a.type || '').startsWith(prefix));
+    }
+    return alerts.filter(a => a.type === filter);
+  }, [alerts, filter]);
   const counts = useMemo(() => {
     const c = { all: alerts.length };
     for (const a of alerts) c[a.type] = (c[a.type] || 0) + 1;
@@ -444,6 +434,7 @@ function App() {
       <aside className="side">
         <GapsPanel gaps={data.gaps || []} />
         <EntitiesPanel entities={data.entities || []} />
+        <TrendsPanel trends={data.trends || []} />
         {(data.spikes && data.spikes.length > 0) && <SpikePanel spikes={data.spikes} />}
         {(data.concordances && data.concordances.length > 0) && <ConcordancePanel concordances={data.concordances} />}
         <TopMediaPanel media={data.topMedia || []} />
@@ -451,7 +442,7 @@ function App() {
         {(data.headlinePatterns && data.headlinePatterns.length > 0) && <PatternsPanel patterns={data.headlinePatterns} />}
         {(data.weekly && data.weekly.length > 0) && <WeeklyPanel weekly={data.weekly} />}
         <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', letterSpacing: '0.06em', padding: '14px 0', borderTop: '1px solid var(--rule)', textTransform: 'uppercase' }}>
-          © 2026 Discover Alerts · build 2026.04.19 · redacción · interno
+          Discover Alerts · redacción · interno
         </div>
       </aside>
     </>
@@ -476,6 +467,12 @@ function App() {
       'Entidades en vivo',
       (data.entities || []).length + ' entidades · momentum por acceleration (v1h / v3h)',
       <EntitiesPanel entities={data.entities || []} />
+    );
+  } else if (activeNav === 'trends') {
+    body = viewSinglePanel(
+      'Google Trends ES',
+      (data.trends || []).length + ' topics · lo que España busca ahora mismo',
+      <TrendsPanel trends={data.trends || []} />
     );
   } else if (activeNav === 'medios') {
     body = viewSinglePanel(
@@ -509,10 +506,17 @@ function App() {
     );
   }
 
+  const navCounts = {
+    feed: alerts.length,
+    huecos: (data.gaps || []).length,
+    trends: (data.trends || []).length,
+    entidades: (data.entities || []).length,
+  };
+
   return (
     <>
-      <Masthead activeNav={activeNav} setActiveNav={setActiveNav} clock={clock} />
-      {tweaks.showTicker && <Ticker />}
+      <Masthead activeNav={activeNav} setActiveNav={setActiveNav} clock={clock} counts={navCounts} />
+      {tweaks.showTicker && <Ticker data={data} />}
       <Pollers pollers={data.pollers || []} />
       <div className="shell">{body}</div>
       <Drawer alert={openAlert} onClose={() => setOpenAlert(null)} />

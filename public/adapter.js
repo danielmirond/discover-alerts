@@ -302,7 +302,24 @@
   }
 
   // ---------------- MAIN ADAPTER ----------------
-  window.adaptApiToDashboard = function (api) {
+  /** Transforma la respuesta de /api/trends a items listos para el panel. */
+  function transformTrendsRaw(payload) {
+    const items = (payload && payload.trends) || [];
+    return items.slice(0, 15).map(t => ({
+      title: t.title,
+      traffic: t.approxTraffic || 0,
+      link: t.link,
+      pubDate: t.pubDate,
+      picture: t.picture,
+      news: (t.newsItems || []).slice(0, 2).map(n => ({
+        title: n.title,
+        url: n.url,
+        source: n.source,
+      })),
+    })).sort((a, b) => b.traffic - a.traffic);
+  }
+
+  window.adaptApiToDashboard = function (api, trendsPayload) {
     if (!api) return null;
     return {
       now: new Date(),
@@ -324,6 +341,7 @@
       formulas: transformFormulas(api),
       headlinePatterns: transformPatterns(api),
       weekly: transformWeekly(api),
+      trends: transformTrendsRaw(trendsPayload),
       _totals: api.totals,
       _raw: api,
     };
@@ -335,10 +353,19 @@
    */
   window.refreshDashboardData = async function () {
     try {
-      const res = await fetch('/api/live-alerts?t=' + Date.now(), { cache: 'no-store' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const j = await res.json();
-      const mapped = window.adaptApiToDashboard(j);
+      const [liveRes, trendsRes] = await Promise.allSettled([
+        fetch('/api/live-alerts?t=' + Date.now(), { cache: 'no-store' }),
+        fetch('/api/trends?t=' + Date.now(), { cache: 'no-store' }),
+      ]);
+      if (liveRes.status !== 'fulfilled' || !liveRes.value.ok) {
+        throw new Error('live-alerts HTTP ' + (liveRes.value?.status || liveRes.reason));
+      }
+      const j = await liveRes.value.json();
+      let trendsPayload = null;
+      if (trendsRes.status === 'fulfilled' && trendsRes.value.ok) {
+        try { trendsPayload = await trendsRes.value.json(); } catch {}
+      }
+      const mapped = window.adaptApiToDashboard(j, trendsPayload);
       if (mapped) {
         window.DA_DATA = mapped;
         window.dispatchEvent(new CustomEvent('da-data-updated'));

@@ -2,16 +2,24 @@
 
 function GapsPanel({ gaps }) {
   const kindClass = { 'HUECO SEO': 'seo', 'NO CUBRIMOS': 'miss', 'TRIPLE MATCH': 'triple', 'USA→ES': 'us' };
+  const list = gaps || [];
   return (
     <div className="panel">
       <div className="kicker">
         Huecos activos AHORA
         <span className="bar"></span>
-        <span className="meta live" style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: 'pulse 1.4s infinite' }}></span>
-          6 activos
+        <span className="meta live" style={{ color: list.length > 0 ? 'var(--accent)' : 'var(--ink-4)', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+          {list.length > 0 && (
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: 'pulse 1.4s infinite' }}></span>
+          )}
+          {list.length} activos
         </span>
       </div>
+      {list.length === 0 && (
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)', padding: 8 }}>
+          Sin huecos detectados en este poll.
+        </div>
+      )}
       {gaps.map((g, i) => (
         <div key={i} className="gap-row">
           <span className={`gap-kind ${kindClass[g.kind]}`}>{g.kind}</span>
@@ -183,4 +191,48 @@ function WeeklyPanel({ weekly }) {
   );
 }
 
-Object.assign(window, { GapsPanel, EntitiesPanel, TopMediaPanel, SpikePanel, ConcordancePanel, FormulasPanel, PatternsPanel, WeeklyPanel });
+function TrendsPanel({ trends }) {
+  const items = trends || [];
+  const max = items.length > 0 ? Math.max(...items.map(t => t.traffic || 0), 1) : 1;
+  return (
+    <div className="panel">
+      <div className="kicker">
+        Google Trends ES <span className="bar"></span>
+        <span className="meta">{items.length} topics · aprox. búsquedas</span>
+      </div>
+      {items.length === 0 && (
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)', padding: 8 }}>
+          Sin datos de Trends en este momento.
+        </div>
+      )}
+      {items.map((t, i) => (
+        <div key={i} style={{ padding: '10px 0', borderBottom: '1px solid var(--rule-2)', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: 'var(--serif)', fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 3, lineHeight: 1.2 }}>
+              {t.title}
+            </div>
+            {(t.news && t.news.length > 0) && (
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', lineHeight: 1.4 }}>
+                {t.news.slice(0, 1).map((n, j) => (
+                  <a key={j} href={n.url} target="_blank" rel="noreferrer" style={{ color: 'var(--ink-3)', textDecoration: 'none' }}>
+                    ▸ {n.source ? n.source + ' · ' : ''}{(n.title || '').slice(0, 70)}{n.title && n.title.length > 70 ? '…' : ''}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            <div className="mini-bar" style={{ width: 50 }}>
+              <div className="fill" style={{ width: `${((t.traffic || 0) / max) * 100}%`, background: 'var(--accent)' }}></div>
+            </div>
+            <span className="mono xs" style={{ color: 'var(--ink)', fontWeight: 700, minWidth: 48, textAlign: 'right' }}>
+              {(t.traffic || 0).toLocaleString()}+
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+Object.assign(window, { GapsPanel, EntitiesPanel, TopMediaPanel, SpikePanel, ConcordancePanel, FormulasPanel, PatternsPanel, WeeklyPanel, TrendsPanel });

@@ -560,6 +560,16 @@ a { color: inherit; }
 .chip.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .chip .c { opacity: 0.6; margin-left: 4px; }
 
+.chip.chip-own-media {
+  background: var(--warn);
+  color: #1a1300;
+  border-color: var(--warn);
+  font-weight: 700;
+}
+.chip.chip-own-media:hover { background: #c57a00; border-color: #c57a00; color: #fff; }
+.chip.chip-own-media.active { background: #1a1300; color: var(--warn); border-color: var(--warn); }
+.chip.chip-own-media .c { color: inherit; opacity: 0.75; }
+
 /* pollers status row */
 .pollers {
   display: flex; gap: 14px; align-items: center;
