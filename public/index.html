@@ -526,31 +526,23 @@ function App() {
     </section>
   );
 
+  // Wrapper sin kicker para paneles que YA tienen su propio <div className="kicker">
+  // (evita cabecera duplicada).
+  const viewPanelOnly = (content) => (
+    <section className="main" style={{ gridColumn: '1 / -1' }}>
+      {content}
+    </section>
+  );
+
   let body = viewFeed;
   if (activeNav === 'huecos') {
-    body = viewSinglePanel(
-      'Huecos activos AHORA',
-      (data.gaps || []).length + ' activos · oportunidades editoriales en tiempo real',
-      <GapsPanel gaps={data.gaps || []} />
-    );
+    body = viewPanelOnly(<GapsPanel gaps={data.gaps || []} />);
   } else if (activeNav === 'entidades') {
-    body = viewSinglePanel(
-      'Entidades en vivo',
-      (data.entities || []).length + ' entidades · momentum por acceleration (v1h / v3h)',
-      <EntitiesPanel entities={data.entities || []} />
-    );
+    body = viewPanelOnly(<EntitiesPanel entities={data.entities || []} />);
   } else if (activeNav === 'trends') {
-    body = viewSinglePanel(
-      'Google Trends ES',
-      (data.trends || []).length + ' topics · lo que España busca ahora mismo',
-      <TrendsPanel trends={data.trends || []} />
-    );
+    body = viewPanelOnly(<TrendsPanel trends={data.trends || []} />);
   } else if (activeNav === 'xtrends') {
-    body = viewSinglePanel(
-      'X / Twitter ES',
-      (data.xTrends || []).length + ' topics · top 50 ranking en vivo',
-      <XTrendsPanel xTrends={data.xTrends || []} />
-    );
+    body = viewPanelOnly(<XTrendsPanel xTrends={data.xTrends || []} />);
   } else if (activeNav === 'sucesos') {
     body = viewSinglePanel(
       'Sucesos',
@@ -570,29 +562,13 @@ function App() {
       <PublishersView />
     );
   } else if (activeNav === 'medios') {
-    body = viewSinglePanel(
-      'Top medios',
-      (data.topMedia || []).length + ' cabeceras · últimas 12h',
-      <TopMediaPanel media={data.topMedia || []} />
-    );
+    body = viewPanelOnly(<TopMediaPanel media={data.topMedia || []} />);
   } else if (activeNav === 'formulas') {
-    body = viewSinglePanel(
-      'Fórmulas del último mes',
-      (data.formulas || []).length + ' reglas con uso registrado · ordenadas por audiencia media',
-      <FormulasPanel formulas={data.formulas || []} />
-    );
+    body = viewPanelOnly(<FormulasPanel formulas={data.formulas || []} />);
   } else if (activeNav === 'patrones') {
-    body = viewSinglePanel(
-      'Patrones de titular',
-      (data.headlinePatterns || []).length + ' n-gramas · rolling 4 días',
-      <PatternsPanel patterns={data.headlinePatterns || []} />
-    );
+    body = viewPanelOnly(<PatternsPanel patterns={data.headlinePatterns || []} />);
   } else if (activeNav === 'historico') {
-    body = viewSinglePanel(
-      'Histórico semanal',
-      (data.weekly || []).length + ' medios · últimas 7 semanas',
-      <WeeklyPanel weekly={data.weekly || []} />
-    );
+    body = viewPanelOnly(<WeeklyPanel weekly={data.weekly || []} />);
   } else if (activeNav === 'configuracion') {
     body = viewSinglePanel(
       'Configuración del sistema',
