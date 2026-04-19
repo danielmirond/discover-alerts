@@ -112,6 +112,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {} }) {
     { id: 'xtrends', label: 'X/Twitter', count: counts.xtrends },
     { id: 'entidades', label: 'Entidades', count: counts.entidades },
     { id: 'medios', label: 'Medios' },
+    { id: 'publishers', label: 'Publishers DS', count: counts.publishers },
     { id: 'formulas', label: 'Fórmulas' },
     { id: 'patrones', label: 'Patrones' },
     { id: 'historico', label: 'Histórico' },
@@ -562,6 +563,12 @@ function App() {
       (data.boe ? `${data.boe.totalItems} disposiciones hoy · ${(data.boe.sections||[]).length} secciones` : 'cargando…'),
       <BoeView boe={data.boe} rawEntities={data._raw?.entities} />
     );
+  } else if (activeNav === 'publishers') {
+    body = viewSinglePanel(
+      'Publishers DS · gap analysis',
+      'dominios que DiscoverSnoop está viendo · marca cuáles ya tienes con feed',
+      <PublishersView />
+    );
   } else if (activeNav === 'medios') {
     body = viewSinglePanel(
       'Top medios',
@@ -838,6 +845,93 @@ function BoeView({ boe, rawEntities }) {
 }
 
 /* ---------------- Config view (read-only system status) ---------------- */
+function PublishersView() {
+  const [state, setState] = useState({ loading: true, data: null, error: null });
+  const [filter, setFilter] = useState('notTracked'); // 'notTracked' | 'tracked' | 'all'
+  const [q, setQ] = useState('');
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/ds-publishers', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(d => { if (alive) setState({ loading: false, data: d, error: null }); })
+      .catch(e => { if (alive) setState({ loading: false, data: null, error: e.message }); });
+    return () => { alive = false; };
+  }, []);
+
+  if (state.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando dominios de DiscoverSnoop…</div>;
+  if (state.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {state.error}</div>;
+  const { summary = {}, notTracked = [], tracked = [] } = state.data || {};
+  let rows = filter === 'tracked' ? tracked : filter === 'all' ? [...notTracked, ...tracked] : notTracked;
+  const ql = q.trim().toLowerCase();
+  if (ql) rows = rows.filter(r => (r.domain || '').toLowerCase().includes(ql) || (r.sampleTitles || []).some(t => t.toLowerCase().includes(ql)));
+
+  const chip = (id, label, count) => (
+    <span key={id} onClick={() => setFilter(id)}
+          style={{
+            cursor: 'pointer', padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 11,
+            border: '1px solid var(--rule)', background: filter === id ? 'var(--ink)' : 'transparent',
+            color: filter === id ? 'var(--paper)' : 'var(--ink)', marginRight: 6,
+          }}>
+      {label} <strong>{count}</strong>
+    </span>
+  );
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
+        {chip('notTracked', 'Sin feed (gap)', summary.notTracked || 0)}
+        {chip('tracked', 'Con feed', summary.tracked || 0)}
+        {chip('all', 'Todos', (summary.tracked || 0) + (summary.notTracked || 0))}
+        <input value={q} onChange={e => setQ(e.target.value)} placeholder="filtrar dominio o título…"
+               style={{ marginLeft: 'auto', padding: '4px 8px', fontFamily: 'var(--mono)', fontSize: 11,
+                        border: '1px solid var(--rule)', background: 'var(--paper)', color: 'var(--ink)', minWidth: 220 }} />
+      </div>
+      <div style={{ padding: '8px 10px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>
+        DS ha visto <strong style={{ color: 'var(--ink)' }}>{(summary.tracked || 0) + (summary.notTracked || 0)}</strong> dominios en el último poll.
+        De ellos <strong style={{ color: 'var(--warn)' }}>{summary.notTracked || 0}</strong> no tienen feed todavía — candidatos a sumar en <code>feeds.json</code>.
+      </div>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--mono)', fontSize: 12 }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid var(--rule)' }}>
+              <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Dominio</th>
+              <th style={{ textAlign: 'right', padding: '6px 8px', color: 'var(--ink-3)' }}>Pages</th>
+              <th style={{ textAlign: 'right', padding: '6px 8px', color: 'var(--ink-3)' }}>Max score</th>
+              <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Estado</th>
+              <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Titular muestra</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.slice(0, 200).map(r => (
+              <tr key={r.domain} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                <td style={{ padding: '6px 8px' }}>
+                  <a href={`https://${r.domain}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--ink)' }}>{r.domain}</a>
+                </td>
+                <td style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--ink-2)' }}>{r.pageCount}</td>
+                <td style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--ink-2)' }}>{r.maxScore}</td>
+                <td style={{ padding: '6px 8px' }}>
+                  {r.tracked
+                    ? <span style={{ color: 'var(--ok)' }}>✓ tracked</span>
+                    : <span style={{ color: 'var(--warn)' }}>○ sin feed</span>}
+                </td>
+                <td style={{ padding: '6px 8px', color: 'var(--ink-3)', maxWidth: 440, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {(r.sampleTitles || [])[0] || '—'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {rows.length > 200 && (
+        <div style={{ marginTop: 10, color: 'var(--ink-4)', fontFamily: 'var(--mono)', fontSize: 11 }}>
+          Mostrando 200 de {rows.length}. Usa el filtro para acotar.
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ConfigView({ data }) {
   const totals = data._totals || {};
   const pollers = data.pollers || [];
@@ -883,6 +977,7 @@ function ConfigView({ data }) {
           <div><a href="/api/historical-discover" target="_blank" style={{ color: 'var(--accent)' }}>/api/historical-discover</a> — histórico DS</div>
           <div><a href="/api/weekly-history" target="_blank" style={{ color: 'var(--accent)' }}>/api/weekly-history</a> — agregado semanal</div>
           <div><a href="/api/feeds" target="_blank" style={{ color: 'var(--accent)' }}>/api/feeds</a> — listado de feeds</div>
+          <div><a href="/api/ds-publishers" target="_blank" style={{ color: 'var(--accent)' }}>/api/ds-publishers</a> — dominios DS vs feeds (gap analysis)</div>
           <div><a href="/api/routing" target="_blank" style={{ color: 'var(--accent)' }}>/api/routing</a> — rutas Slack</div>
           <div><a href="/classic.html" target="_blank" style={{ color: 'var(--accent)' }}>/classic.html</a> — dashboard legacy</div>
         </div>
