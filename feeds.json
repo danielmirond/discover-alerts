@@ -2254,6 +2254,11 @@
     { "name": "Directo al Paladar", "url": "https://feeds.weblogssl.com/directoalpaladar", "category": "lifestyle", "domain": "directoalpaladar.com", "scope": "nacional" },
     { "name": "Vitónica", "url": "https://feeds.weblogssl.com/vitonica", "category": "salud", "domain": "vitonica.com", "scope": "nacional" },
     { "name": "ConSalud", "url": "https://www.consalud.es/rss/portada.xml", "category": "salud", "domain": "consalud.es", "scope": "nacional" },
-    { "name": "Telva", "url": "https://www.telva.com/rss/portada.xml", "category": "lifestyle", "domain": "telva.com", "scope": "nacional" }
+    { "name": "Telva", "url": "https://www.telva.com/rss/portada.xml", "category": "lifestyle", "domain": "telva.com", "scope": "nacional" },
+
+    { "name": "La Voz de Galicia Sitemap News", "url": "https://www.lavozdegalicia.es/sitemap_news.xml", "category": "generalista", "domain": "lavozdegalicia.es", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "La Voz de Almería", "url": "https://www.lavozdealmeria.com/rss/", "category": "generalista", "domain": "lavozdealmeria.com", "scope": "nacional" },
+    { "name": "Tiempo.com", "url": "https://www.tiempo.com/feed/", "category": "meteorologia", "domain": "tiempo.com", "scope": "nacional" },
+    { "name": "Fotogramas Sitemap News", "url": "https://www.fotogramas.es/sitemap_google_news.xml", "category": "entretenimiento", "domain": "fotogramas.es", "scope": "nacional", "type": "news-sitemap" }
   ]
 }

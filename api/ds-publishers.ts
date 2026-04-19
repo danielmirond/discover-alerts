@@ -40,7 +40,9 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     for (const [url, snap] of Object.entries(pages)) {
       const rawDomain = extractDomain(url).toLowerCase();
       if (!rawDomain) continue;
-      const domain = rawDomain.replace(/^www\./, '');
+      // Normalizar: quitar www., amp. y subdominios tipo "noticias." si el
+      // dominio base está tracked. Ej: amp.elmundo.es → elmundo.es.
+      const domain = canonicalize(rawDomain, trackedDomains);
 
       let row = byDomain.get(domain);
       if (!row) {
@@ -75,6 +77,23 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
+}
+
+/**
+ * Reduce un dominio a su forma canónica buscando el sufijo más corto que
+ * esté en el set de `trackedDomains`. Si ninguno coincide, quita solo www.
+ * Así amp.elmundo.es → elmundo.es cuando elmundo.es está tracked.
+ */
+function canonicalize(domain: string, trackedDomains: Set<string>): string {
+  const d = domain.replace(/^www\./, '');
+  const parts = d.split('.');
+  // Probar sufijos crecientes: (n-1), (n-2)... buscando match en tracked
+  for (let i = 0; i < parts.length - 1; i++) {
+    const suffix = parts.slice(i).join('.');
+    if (trackedDomains.has(suffix)) return suffix;
+  }
+  // Quitar prefijos típicos de subdominio no-core si no hay match directo
+  return d.replace(/^(amp|m|mobile|noticias|news)\./, '');
 }
 
 function extractDomain(url?: string): string {
