@@ -147,7 +147,23 @@ export async function runDiscoverPoll(): Promise<void> {
 
     console.timeEnd('[discover] dispatch');
 
-    updateState({ lastPollDiscover: new Date().toISOString() });
+    // Persist page snapshots (keyed by URL) para análisis cross-poll
+    // (ej: /api/ds-publishers necesita saber qué dominios DS está viendo).
+    // Retención: últimas ~24h — limitamos por tamaño para no reventar Redis.
+    const PAGES_CAP = 500;
+    const now = new Date().toISOString();
+    const pageSnapshots: Record<string, { title: string; score: number; position: number; lastUpdated: string }> = {};
+    const sortedPag = [...pag].sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, PAGES_CAP);
+    for (const p of sortedPag) {
+      if (!p.url) continue;
+      pageSnapshots[p.url] = {
+        title: p.title || '',
+        score: p.score || 0,
+        position: p.position || 0,
+        lastUpdated: now,
+      };
+    }
+    updateState({ lastPollDiscover: now, pages: pageSnapshots });
 
     try {
       await saveState();
