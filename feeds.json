@@ -2217,6 +2217,43 @@
       "scope": "nacional",
       "type": "news-sitemap",
       "wire": true
-    }
+    },
+
+    { "name": "Europa Press", "url": "https://www.europapress.es/rss/rss.aspx", "category": "generalista", "domain": "europapress.es", "scope": "nacional", "wire": true },
+    { "name": "El Independiente", "url": "https://www.elindependiente.com/feed/", "category": "generalista", "domain": "elindependiente.com", "scope": "nacional" },
+    { "name": "Libertad Digital", "url": "https://feeds2.feedburner.com/libertaddigital/portada", "category": "generalista", "domain": "libertaddigital.com", "scope": "nacional" },
+    { "name": "Crónica Global", "url": "https://cronicaglobal.elespanol.com/rss/", "category": "generalista", "domain": "cronicaglobal.elespanol.com", "scope": "nacional" },
+    { "name": "COPE", "url": "https://www.cope.es/api/es/news/rss.xml", "category": "generalista", "domain": "cope.es", "scope": "nacional" },
+    { "name": "Diario de León", "url": "https://www.diariodeleon.es/rss/home.xml", "category": "generalista", "domain": "diariodeleon.es", "scope": "nacional" },
+
+    { "name": "Voz Pópuli Sitemap News", "url": "https://www.vozpopuli.com/sitemaps/google-news.xml", "category": "generalista", "domain": "vozpopuli.com", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "El Plural Sitemap News", "url": "https://www.elplural.com/uploads/feeds/google_sitemap_es.xml", "category": "generalista", "domain": "elplural.com", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "Onda Cero Sitemap News", "url": "https://www.ondacero.es/sitemaps/news.xml", "category": "generalista", "domain": "ondacero.es", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "Antena 3 Noticias Sitemap News", "url": "https://www.antena3.com/noticias/sitemaps/news.xml", "category": "generalista", "domain": "antena3.com", "scope": "nacional" , "type": "news-sitemap" },
+    { "name": "laSexta Sitemap News", "url": "https://www.lasexta.com/sitemaps/news.xml", "category": "generalista", "domain": "lasexta.com", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "elEconomista Sitemap News", "url": "https://www.eleconomista.es/sitemap_news_ssl.php", "category": "economia", "domain": "eleconomista.es", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "El Periódico Sitemap News", "url": "https://www.elperiodico.com/es/sitemapNews.xml", "category": "generalista", "domain": "elperiodico.com", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "Levante-EMV Sitemap News", "url": "https://www.levante-emv.com/sitemapNews.xml", "category": "generalista", "domain": "levante-emv.com", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "Información (Alicante) Sitemap News", "url": "https://www.informacion.es/sitemapNews.xml", "category": "generalista", "domain": "informacion.es", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "Faro de Vigo Sitemap News", "url": "https://www.farodevigo.es/sitemapNews.xml", "category": "generalista", "domain": "farodevigo.es", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "Diari de Girona Sitemap News", "url": "https://www.diaridegirona.cat/sitemapNews.xml", "category": "generalista", "domain": "diaridegirona.cat", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "La Provincia Sitemap News", "url": "https://www.laprovincia.es/sitemapNews.xml", "category": "generalista", "domain": "laprovincia.es", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "Diario de Mallorca Sitemap News", "url": "https://www.diariodemallorca.es/sitemapNews.xml", "category": "generalista", "domain": "diariodemallorca.es", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "El Correo Gallego Sitemap News", "url": "https://www.elcorreogallego.es/sitemapNews.xml", "category": "generalista", "domain": "elcorreogallego.es", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "Redacción Médica Sitemap News", "url": "https://www.redaccionmedica.com/sitemaps/sitemap-news.xml", "category": "salud", "domain": "redaccionmedica.com", "scope": "nacional", "type": "news-sitemap" },
+    { "name": "Mujer Hoy Sitemap", "url": "https://www.mujerhoy.com/sitemap.xml", "category": "lifestyle", "domain": "mujerhoy.com", "scope": "nacional", "type": "news-sitemap" },
+
+    { "name": "Expansión", "url": "https://e00-expansion.uecdn.es/rss/portada.xml", "category": "economia", "domain": "expansion.com", "scope": "nacional" },
+    { "name": "Genbeta", "url": "https://feeds.weblogssl.com/genbeta", "category": "tech", "domain": "genbeta.com", "scope": "nacional" },
+    { "name": "Hipertextual", "url": "https://hipertextual.com/feed", "category": "tech", "domain": "hipertextual.com", "scope": "nacional" },
+    { "name": "ADSLZone", "url": "https://www.adslzone.net/feed/", "category": "tech", "domain": "adslzone.net", "scope": "nacional" },
+    { "name": "Motorpasión", "url": "https://feeds.weblogssl.com/motorpasion", "category": "motor", "domain": "motorpasion.com", "scope": "nacional" },
+    { "name": "Diariomotor", "url": "https://www.diariomotor.com/feed/", "category": "motor", "domain": "diariomotor.com", "scope": "nacional" },
+    { "name": "Trendencias", "url": "https://feeds.weblogssl.com/trendencias", "category": "lifestyle", "domain": "trendencias.com", "scope": "nacional" },
+    { "name": "Espinof", "url": "https://feeds.weblogssl.com/espinof", "category": "entretenimiento", "domain": "espinof.com", "scope": "nacional" },
+    { "name": "Directo al Paladar", "url": "https://feeds.weblogssl.com/directoalpaladar", "category": "lifestyle", "domain": "directoalpaladar.com", "scope": "nacional" },
+    { "name": "Vitónica", "url": "https://feeds.weblogssl.com/vitonica", "category": "salud", "domain": "vitonica.com", "scope": "nacional" },
+    { "name": "ConSalud", "url": "https://www.consalud.es/rss/portada.xml", "category": "salud", "domain": "consalud.es", "scope": "nacional" },
+    { "name": "Telva", "url": "https://www.telva.com/rss/portada.xml", "category": "lifestyle", "domain": "telva.com", "scope": "nacional" }
   ]
 }
