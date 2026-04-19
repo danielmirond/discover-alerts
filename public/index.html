@@ -90,6 +90,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {} }) {
     { id: 'feed', label: 'Feed en vivo', count: counts.feed },
     { id: 'huecos', label: 'Huecos', count: counts.huecos },
     { id: 'sucesos', label: 'Sucesos', count: counts.sucesos },
+    { id: 'boe', label: 'BOE', count: counts.boe },
     { id: 'trends', label: 'Google Trends', count: counts.trends },
     { id: 'xtrends', label: 'X/Twitter', count: counts.xtrends },
     { id: 'entidades', label: 'Entidades', count: counts.entidades },
@@ -538,6 +539,12 @@ function App() {
       'capa editorial YMYL · tratamiento factual, atribución obligatoria, sin hipérbole',
       <SucesosView data={data} onOpenAlert={setOpenAlert} />
     );
+  } else if (activeNav === 'boe') {
+    body = viewSinglePanel(
+      'BOE',
+      (data.boe ? `${data.boe.totalItems} disposiciones hoy · ${(data.boe.sections||[]).length} secciones` : 'cargando…'),
+      <BoeView boe={data.boe} rawEntities={data._raw?.entities} />
+    );
   } else if (activeNav === 'medios') {
     body = viewSinglePanel(
       'Top medios',
@@ -584,6 +591,7 @@ function App() {
     feed: alerts.length,
     huecos: (data.gaps || []).length,
     sucesos: sucesosAlerts,
+    boe: (data.boe && data.boe.totalItems) || 0,
     trends: (data.trends || []).length,
     xtrends: (data.xTrends || []).length,
     entidades: (data.entities || []).length,
@@ -692,6 +700,122 @@ function SucesosView({ data, onOpenAlert }) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/* ---------------- BOE view (disposiciones oficiales hoy) ---------------- */
+function BoeView({ boe, rawEntities }) {
+  if (!boe) {
+    return (
+      <div style={{ padding: 'var(--space-10)', textAlign: 'center', fontFamily: 'var(--mono)', fontSize: 'var(--text-sm)', color: 'var(--ink-4)' }}>
+        Cargando BOE…
+      </div>
+    );
+  }
+  if (boe.totalItems === 0) {
+    return (
+      <div style={{ padding: 'var(--space-10)', textAlign: 'center', fontFamily: 'var(--mono)', fontSize: 'var(--text-sm)', color: 'var(--ink-4)' }}>
+        Hoy no se publica BOE (domingo o festivo).<br/>
+        Próxima publicación: siguiente día hábil a las 07:00.
+      </div>
+    );
+  }
+
+  // Normalizar nombres de entidades para cruzar con los items BOE
+  const entityNorms = (rawEntities || [])
+    .filter(e => e.name && e.name.length > 4)
+    .map(e => ({ name: e.name, norm: e.name.toLowerCase() }));
+
+  // Crossmatch: para cada item BOE, ver si contiene alguna entidad Discover
+  const crossmatch = (title) => {
+    const lo = (title || '').toLowerCase();
+    return entityNorms.filter(e => lo.includes(e.norm)).map(e => e.name).slice(0, 3);
+  };
+
+  return (
+    <div style={{ marginTop: 'var(--space-7)' }}>
+      <div style={{
+        padding: 'var(--space-5) var(--space-8)',
+        marginBottom: 'var(--space-9)',
+        background: 'var(--paper-3)',
+        borderLeft: '3px solid var(--info)',
+        fontFamily: 'var(--sans)',
+        fontSize: 'var(--text-base)',
+        color: 'var(--ink-2)',
+        lineHeight: 1.5,
+      }}>
+        <strong>BOE — Boletín Oficial del Estado.</strong> Disposiciones publicadas hoy,
+        agrupadas por sección. Fuente primaria editorial: normativa + nombramientos +
+        subvenciones + anuncios. Ventaja: lo leemos antes que se escriba sobre ello en
+        medios (media 15-60 min).
+      </div>
+
+      {(boe.sections || []).map((sec, si) => (
+        <div key={si} style={{ marginBottom: 'var(--space-10)' }}>
+          <div className="kicker" style={{ marginBottom: 'var(--space-5)' }}>
+            {sec.name}
+            <span className="bar"></span>
+            <span className="meta">{sec.count} disposiciones</span>
+          </div>
+          {sec.items.map((it, ii) => {
+            const matches = crossmatch(it.titulo || '');
+            return (
+              <div key={ii} style={{
+                padding: 'var(--space-5) 0',
+                borderBottom: '1px solid var(--rule-2)',
+              }}>
+                <div style={{
+                  fontFamily: 'var(--mono)',
+                  fontSize: 'var(--text-2xs)',
+                  color: 'var(--ink-4)',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  marginBottom: 'var(--space-1)',
+                }}>
+                  {it.departamento} · {it.epigrafe}
+                </div>
+                <div style={{
+                  fontFamily: 'var(--serif)',
+                  fontSize: 'var(--text-lg)',
+                  fontWeight: 600,
+                  color: 'var(--ink)',
+                  lineHeight: 1.35,
+                  marginBottom: 'var(--space-3)',
+                }}>
+                  {it.titulo}
+                </div>
+                <div style={{ display: 'flex', gap: 'var(--space-5)', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {matches.length > 0 && (
+                    <span style={{
+                      fontFamily: 'var(--mono)',
+                      fontSize: 'var(--text-xs)',
+                      color: 'var(--accent)',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                    }}>
+                      ✓ Cruza con Discover: {matches.join(', ')}
+                    </span>
+                  )}
+                  {it.urlHtml && (
+                    <a href={it.urlHtml} target="_blank" rel="noreferrer"
+                       style={{ fontFamily: 'var(--mono)', fontSize: 'var(--text-xs)', color: 'var(--ink-3)', textDecoration: 'none' }}>
+                      ↗ Ver en BOE
+                    </a>
+                  )}
+                  {it.urlPdf && (
+                    <a href={it.urlPdf} target="_blank" rel="noreferrer"
+                       style={{ fontFamily: 'var(--mono)', fontSize: 'var(--text-xs)', color: 'var(--ink-4)', textDecoration: 'none' }}>
+                      ↗ PDF
+                    </a>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

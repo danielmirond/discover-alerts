@@ -329,7 +329,21 @@
     }));
   }
 
-  window.adaptApiToDashboard = function (api, trendsPayload, xTrendsPayload) {
+  /** Transforma /api/boe a items BOE agrupados. */
+  function transformBoe(payload) {
+    if (!payload) return null;
+    return {
+      totalItems: payload.totalItems || 0,
+      sections: (payload.sections || []).map(s => ({
+        name: s.name,
+        count: s.count,
+        items: (s.items || []).slice(0, 20),
+      })),
+      fetchedAt: payload.fetchedAt,
+    };
+  }
+
+  window.adaptApiToDashboard = function (api, trendsPayload, xTrendsPayload, boePayload) {
     if (!api) return null;
     return {
       now: new Date(),
@@ -353,6 +367,7 @@
       weekly: transformWeekly(api),
       trends: transformTrendsRaw(trendsPayload),
       xTrends: transformXTrends(xTrendsPayload),
+      boe: transformBoe(boePayload),
       _totals: api.totals,
       _raw: api,
     };
@@ -364,10 +379,11 @@
    */
   window.refreshDashboardData = async function () {
     try {
-      const [liveRes, trendsRes, xRes] = await Promise.allSettled([
+      const [liveRes, trendsRes, xRes, boeRes] = await Promise.allSettled([
         fetch('/api/live-alerts?t=' + Date.now(), { cache: 'no-store' }),
         fetch('/api/trends?t=' + Date.now(), { cache: 'no-store' }),
         fetch('/api/x-trends?t=' + Date.now(), { cache: 'no-store' }),
+        fetch('/api/boe?t=' + Date.now(), { cache: 'no-store' }),
       ]);
       if (liveRes.status !== 'fulfilled' || !liveRes.value.ok) {
         throw new Error('live-alerts HTTP ' + (liveRes.value?.status || liveRes.reason));
@@ -381,7 +397,11 @@
       if (xRes.status === 'fulfilled' && xRes.value.ok) {
         try { xPayload = await xRes.value.json(); } catch {}
       }
-      const mapped = window.adaptApiToDashboard(j, trendsPayload, xPayload);
+      let boePayload = null;
+      if (boeRes.status === 'fulfilled' && boeRes.value.ok) {
+        try { boePayload = await boeRes.value.json(); } catch {}
+      }
+      const mapped = window.adaptApiToDashboard(j, trendsPayload, xPayload, boePayload);
       if (mapped) {
         window.DA_DATA = mapped;
         window.dispatchEvent(new CustomEvent('da-data-updated'));
