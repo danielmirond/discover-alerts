@@ -1,7 +1,7 @@
 import { getState, updateState } from '../state/store.js';
 import type { MediaArticle, WeeklyMediaStats, AppState } from '../types.js';
 
-const WEEKS_TO_KEEP = 8;
+const WEEKS_TO_KEEP = 60; // ≈14 meses — permite detectar recurrencia estacional año sobre año
 const MAX_ENTITIES_PER_FEED = 200;
 const MAX_PATTERNS_PER_FEED = 200;
 
