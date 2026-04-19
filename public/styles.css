@@ -43,6 +43,141 @@
   --accent-soft: #3B1414;
 }
 
+/* ============ TERMINAL — aspecto tech/data (Bloomberg-ish) ============
+ * Tema dark con paleta phosphor amber + cyan, mono dominante, scanlines
+ * sutiles. Override de CSS variables existentes, sin reescribir rules.
+ */
+[data-theme="terminal"] {
+  --accent: #36D1DC;             /* cyan plasma */
+  --accent-deep: #1E7B83;
+  --accent-soft: #0B2A2D;
+  --warn: #F5B301;               /* phosphor amber */
+  --ok: #22E37B;
+  --info: #4DA2FF;
+  --viral: #FF4FD8;
+  --ink: #E8ECEF;
+  --ink-2: #B9C3CC;
+  --ink-3: #7A8896;
+  --ink-4: #4B5663;
+  --rule: #22303F;
+  --rule-2: #16202C;
+  --paper: #05070A;
+  --paper-2: #0A0D12;
+  --paper-3: #0F1319;
+}
+body[data-theme="terminal"] {
+  font-family: var(--mono);
+  font-feature-settings: 'zero', 'ss02', 'cv11';
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(245,179,1,0.05), transparent 60%),
+    radial-gradient(ellipse at 110% 110%, rgba(54,209,220,0.04), transparent 60%),
+    var(--paper);
+}
+/* Scanlines sutiles sobre todo el viewport */
+body[data-theme="terminal"]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(to bottom,
+    rgba(255,255,255,0.025) 0,
+    rgba(255,255,255,0.025) 1px,
+    transparent 1px,
+    transparent 3px);
+}
+/* Titulares en mono para este tema (era serif) */
+body[data-theme="terminal"] .wordmark,
+body[data-theme="terminal"] .section-title,
+body[data-theme="terminal"] .alert-headline,
+body[data-theme="terminal"] .panel h3,
+body[data-theme="terminal"] .drawer-inner h1 {
+  font-family: var(--mono);
+  letter-spacing: -0.01em;
+}
+body[data-theme="terminal"] .wordmark { text-transform: uppercase; letter-spacing: 0.02em; }
+body[data-theme="terminal"] .alert-headline { font-weight: 600; }
+/* Acento glow en la live dot */
+body[data-theme="terminal"] .wordmark .dot {
+  box-shadow: 0 0 0.6em rgba(54,209,220,0.45);
+}
+/* Panel con borde fino cian por arriba */
+body[data-theme="terminal"] .panel {
+  border-top: 1px solid var(--rule);
+  background: linear-gradient(to bottom, var(--paper-2), transparent 40%);
+}
+/* Ticker más punchy */
+body[data-theme="terminal"] .ticker {
+  background: var(--paper-2);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+body[data-theme="terminal"] .ticker .ticker-item strong { color: var(--warn); }
+body[data-theme="terminal"] .ticker .ticker-item .up { color: var(--ok); }
+body[data-theme="terminal"] .ticker .ticker-item .dn { color: var(--accent); }
+/* Drawer con fondo tech */
+body[data-theme="terminal"] .drawer { background: var(--paper-2); border-left: 1px solid var(--rule); }
+/* Help tip en dark */
+body[data-theme="terminal"] .help-tip { background: var(--paper-3); border-color: var(--rule); color: var(--ink-3); }
+body[data-theme="terminal"] .help-tip:hover { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+body[data-theme="terminal"] .help-tip .tip-body { background: var(--paper-3); color: var(--ink); border: 1px solid var(--rule); }
+body[data-theme="terminal"] .help-tip .tip-body::before { border-bottom-color: var(--paper-3); }
+
+/* ============ RESPONSIVE — móvil / tablet ============ */
+@media (max-width: 960px) {
+  .shell {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    padding: 0 14px !important;
+  }
+  .masthead-row {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 8px 14px;
+  }
+  .datetime {
+    font-size: 10px !important;
+    gap: 6px !important;
+  }
+  .masthead-nav {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 0 14px 6px;
+    gap: 14px;
+    scrollbar-width: none;
+  }
+  .masthead-nav::-webkit-scrollbar { display: none; }
+  .pollers {
+    overflow-x: auto;
+    padding: 8px 14px;
+    white-space: nowrap;
+    gap: 12px;
+  }
+  .pollers::-webkit-scrollbar { display: none; }
+  .filter-bar {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .filter-bar > span:last-child { display: none; } /* Oculta el "ORDEN · TIEMPO REAL" meta en móvil */
+  .alert {
+    grid-template-columns: 54px 1fr !important;
+    gap: 10px;
+  }
+  .alert-right { display: none !important; } /* SourceLine + ImageCheck se pasan a drawer en móvil */
+  .alert-metrics { flex-wrap: wrap; gap: 8px 12px; }
+  .drawer { width: 100vw !important; max-width: 100vw !important; }
+  .side { padding-top: 12px; }
+  .panel { margin-bottom: 22px; }
+  .onboarding-card { padding: 22px 18px 18px; }
+  .onboarding-card h1 { font-size: 22px; }
+}
+@media (max-width: 560px) {
+  .wordmark { font-size: 18px !important; }
+  .datetime .live { font-size: 9px !important; }
+  .section-title { font-size: 22px !important; line-height: 1.2; }
+  .kicker { font-size: 10px; flex-wrap: wrap; }
+}
+
 /* ---------- Help tooltip (inline info icon) ---------- */
 .help-tip {
   display: inline-flex;

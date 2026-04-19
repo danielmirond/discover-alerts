@@ -39,6 +39,50 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 <script type="text/babel" data-presets="react">
 const D = window.DA_DATA;
 
+/* ---------------- Theme switch ---------------- */
+function ThemeSwitch() {
+  const [active, setActive] = useState(document.body.dataset.theme || 'light');
+  const themes = [
+    { id: 'light', label: 'Claro' },
+    { id: 'dark', label: 'Oscuro' },
+    { id: 'terminal', label: 'Terminal' },
+  ];
+  const pick = (id) => {
+    document.body.dataset.theme = id;
+    try { localStorage.setItem('da.theme', id); } catch (e) {}
+    setActive(id);
+  };
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('da.theme');
+      if (saved) { document.body.dataset.theme = saved; setActive(saved); }
+    } catch (e) {}
+  }, []);
+  return (
+    <div className="theme-switch" style={{ display: 'inline-flex', gap: 4, marginLeft: 12 }}>
+      {themes.map(t => (
+        <span key={t.id}
+              onClick={() => pick(t.id)}
+              title={`Tema: ${t.label}`}
+              style={{
+                cursor: 'pointer',
+                fontFamily: 'var(--mono)',
+                fontSize: 9,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                padding: '2px 6px',
+                border: '1px solid ' + (active === t.id ? 'var(--ink)' : 'var(--rule)'),
+                background: active === t.id ? 'var(--ink)' : 'transparent',
+                color: active === t.id ? 'var(--paper)' : 'var(--ink-3)',
+                borderRadius: 2,
+              }}>
+          {t.label.slice(0, 3)}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 /* ---------------- Masthead ---------------- */
 function Masthead({ activeNav, setActiveNav, clock, counts = {} }) {
   const navs = [
@@ -66,6 +110,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {} }) {
           <span>·</span>
           <span>{fmtTime} CET</span>
           <span className="live">LIVE</span>
+          <ThemeSwitch />
         </div>
       </div>
       <nav className="masthead-nav">
@@ -281,6 +326,7 @@ function Tweaks({ tweaks, setTweak, visible }) {
         <div className="seg">
           <button className={tweaks.theme === 'light' ? 'active' : ''} onClick={() => setTweak('theme','light')}>Claro</button>
           <button className={tweaks.theme === 'dark' ? 'active' : ''} onClick={() => setTweak('theme','dark')}>Oscuro</button>
+          <button className={tweaks.theme === 'terminal' ? 'active' : ''} onClick={() => setTweak('theme','terminal')}>Terminal</button>
         </div>
       </div>
       <div className="tweak-row">
@@ -328,14 +374,16 @@ function App() {
   const [tweaksVisible, setTweaksVisible] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  /* Apply tweaks to :root + body */
+  /* Apply tweaks to :root + body (no pisar theme del ThemeSwitch si ya hay localStorage) */
   useEffect(() => {
     document.body.dataset.density = tweaks.density;
-    document.body.dataset.theme = tweaks.theme;
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem('da.theme'); } catch (e) {}
+    if (!savedTheme) {
+      document.body.dataset.theme = tweaks.theme;
+    }
     document.documentElement.style.setProperty('--accent', tweaks.accent);
-    /* derive deep + soft */
-    const hex = tweaks.accent;
-    document.documentElement.style.setProperty('--accent-deep', hex);
+    document.documentElement.style.setProperty('--accent-deep', tweaks.accent);
   }, [tweaks]);
 
   /* live clock */
