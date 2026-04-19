@@ -31,3 +31,6 @@ jobs:
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
           OWN_MEDIA_DOMAINS: ${{ secrets.OWN_MEDIA_DOMAINS }}
+          # Top N entidades/páginas/dominios/categorías a pullar por poll.
+          # 100 (default) = demasiado estrecho; 300 captura la long-tail sin reventar Redis.
+          DISCOVER_LINES: '300'

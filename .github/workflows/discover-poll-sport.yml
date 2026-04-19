@@ -30,3 +30,4 @@ jobs:
           OWN_MEDIA_DOMAINS: ${{ secrets.OWN_MEDIA_DOMAINS }}
           FEEDS_PATH: feeds-sport.json
           OWN_MEDIA_ABSENT_CATEGORY_FILTER: Sport
+          DISCOVER_LINES: '300'
