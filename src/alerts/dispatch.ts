@@ -66,6 +66,10 @@ function alertPriority(alert: Alert) {
     case 'headline_pattern': return 30;
     case 'trends_new_topic': return 20;
     case 'boe_discover_correlation': return 15;
+    case 'schema_news_match':
+      // Sucesos con entidad DS = señal YMYL con tracción → alta prioridad.
+      // Legal sin tanto ruido → media.
+      return (alert as any).topic === 'sucesos' ? 91 : 78;
   }
 }
 

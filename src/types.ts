@@ -360,7 +360,8 @@ export type Alert =
   | MultiEntityArticleAlert
   | MeneameHotAlert
   | WikipediaSurgeAlert
-  | FirstMoverAlert;
+  | FirstMoverAlert
+  | SchemaNewsMatchAlert;
 
 // Media RSS types
 export interface MediaFeed {
@@ -541,6 +542,27 @@ export interface TripleMatchAlert {
  * que cruzamos con el estado Discover. Si no hay match con una entidad Discover,
  * es señal "viral upstream sin Discover aún" → oportunidad de ir primero.
  */
+/**
+ * Noticia que matchea schema editorial (sucesos/legal por keyword) Y cruza
+ * con entidad DS. Permite disparar a canal dedicado cuando un suceso ya es
+ * también una entidad trending en Discover.
+ */
+export interface SchemaNewsMatchAlert {
+  type: 'schema_news_match';
+  /** sucesos | legal */
+  topic: string;
+  entityName: string;
+  articleTitle: string;
+  articleLink: string;
+  feedName: string;
+  feedCategory?: string;
+  keywords: string[];
+  discoverScore?: number;
+  discoverPosition?: number;
+  /** categoría DS derivada de entityCategoryMap */
+  category?: string;
+}
+
 export interface MeneameHotAlert {
   type: 'meneame_hot';
   title: string;

@@ -55,13 +55,13 @@ export async function runMediaPoll(): Promise<void> {
 
   if (cachedEntities.length > 0 || cachedPages.length > 0) {
     alerts.push(
-      ...detectMediaDiscoverCorrelations(
+      ...(await detectMediaDiscoverCorrelations(
         articles,
         cachedEntities,
         cachedPages,
         state.entityCategoryMap,
         state.entityTopicMap,
-      ),
+      )),
     );
   } else {
     console.log('[media] No Discover data cached yet, skipping correlation');

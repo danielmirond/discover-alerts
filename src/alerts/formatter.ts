@@ -652,7 +652,27 @@ async function formatSingleAlert(alert: Alert) {
     case 'meneame_hot': return formatMeneameHot(alert);
     case 'wikipedia_surge': return formatWikipediaSurge(alert);
     case 'first_mover': return formatFirstMover(alert);
+    case 'schema_news_match': return formatSchemaNewsMatch(alert);
   }
+}
+
+function formatSchemaNewsMatch(a: Extract<Alert, { type: 'schema_news_match' }>): SlackBlock[] {
+  const icon = a.topic === 'sucesos' ? ':rotating_light:' : ':scales:';
+  const topicLabel = a.topic === 'sucesos' ? 'SUCESO' : 'LEGAL';
+  const dsTag = a.discoverScore != null
+    ? ` · Discover score ${a.discoverScore}${a.discoverPosition != null ? ' · pos #' + a.discoverPosition : ''}`
+    : '';
+  return [
+    header(`${icon} ${topicLabel} · ${a.entityName}`),
+    section(
+      `*${a.feedName}* publica sobre *${a.entityName}* con titular tipo *${a.topic}*:\n` +
+      `<${a.articleLink}|${a.articleTitle}>`,
+    ),
+    context(
+      `Keywords: ${a.keywords.join(', ')}${dsTag}${a.category ? ' · ' + a.category : ''}` +
+      ` · ${a.topic === 'sucesos' ? 'YMYL: atribución obligatoria + lenguaje factual' : 'YMYL: citar tribunal/sentencia y respetar presunción'}`
+    ),
+  ];
 }
 
 /**

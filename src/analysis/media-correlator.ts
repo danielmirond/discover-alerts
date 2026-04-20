@@ -9,7 +9,9 @@ import type {
   EntityCoverageAlert,
   MultiEntityArticleAlert,
   FirstMoverAlert,
+  SchemaNewsMatchAlert,
 } from '../types.js';
+import { loadTopicsDictionary } from './topic-classifier.js';
 
 function normalize(s: string): string {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -30,13 +32,13 @@ function articleAgeMs(pubDate: string | undefined, now: string): number {
  * Groups all matching articles by entity. Produces ONE alert per entity
  * (not per article) listing all outlets and titles covering it.
  */
-export function detectMediaDiscoverCorrelations(
+export async function detectMediaDiscoverCorrelations(
   articles: MediaArticle[],
   entities: DiscoverEntity[],
   _pages: DiscoverPage[],
   entityCategoryMap: Record<string, string> = {},
   entityTopicMap: Record<string, string> = {},
-): Array<EntityCoverageAlert | MultiEntityArticleAlert | FirstMoverAlert> {
+): Promise<Array<EntityCoverageAlert | MultiEntityArticleAlert | FirstMoverAlert | SchemaNewsMatchAlert>> {
   const state = getState();
   const now = new Date().toISOString();
   const nowMs = Date.now();
@@ -158,7 +160,45 @@ export function detectMediaDiscoverCorrelations(
   }
 
   // Build one alert per entity with matches
-  const alerts: Array<EntityCoverageAlert | MultiEntityArticleAlert | FirstMoverAlert> = [...multiEntityAlerts];
+  const alerts: Array<EntityCoverageAlert | MultiEntityArticleAlert | FirstMoverAlert | SchemaNewsMatchAlert> = [...multiEntityAlerts];
+
+  // === SCHEMA NEWS MATCH ALERTS ===============================================
+  // Para cada artículo NUEVO con match keyword schema (sucesos/legal) Y con
+  // al menos 1 entidad Discover detectada → disparar alert al canal dedicado.
+  try {
+    const topicsDict = await loadTopicsDictionary();
+    const scanTopics = topicsDict.topics.filter(t => t.id === 'sucesos' || t.id === 'legal');
+    if (scanTopics.length > 0 && entityArticles.size > 0) {
+      // Invertimos: por entidad, mirar cada artículo y ver si matchea schema
+      for (const [entityName, hits] of entityArticles) {
+        for (const h of hits) {
+          const titleNorm = normalize(h.title || '');
+          for (const topic of scanTopics) {
+            const matched = (topic.keywords || []).filter(kw => titleNorm.includes(normalize(kw)));
+            if (matched.length < (topic.minKeywords || 1)) continue;
+            // Score/position desde DS entity si existe
+            const dsEnt = entities.find(e => e.entity === entityName);
+            alerts.push({
+              type: 'schema_news_match',
+              topic: topic.id,
+              entityName,
+              articleTitle: h.title,
+              articleLink: h.link,
+              feedName: h.feedName,
+              feedCategory: h.feedCategory,
+              keywords: matched.slice(0, 5),
+              discoverScore: dsEnt?.score,
+              discoverPosition: dsEnt?.position,
+              category: entityCategoryMap[entityName],
+            });
+            break; // solo 1 topic por (entity, article)
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[media-correlator] schema news detector failed:', (err as Error).message);
+  }
   for (const [entityName, hits] of entityArticles) {
     if (hits.length === 0) continue;
 
