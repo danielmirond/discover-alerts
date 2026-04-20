@@ -187,6 +187,9 @@ interface LiveViewResponse {
   headlinePatterns4d: LiveHeadlinePattern4d[];
   recentAlerts: LiveRecentAlert[];
   topMedia: LiveTopMedia[];
+  cultural?: Array<any>;
+  culturalEntityHits?: Array<any>;
+  aemetEnriched?: Array<any>;
   weeklyHistorySummary: {
     availableWeeks: string[];
     feedNames: string[];
@@ -1168,11 +1171,97 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     return b.count - a.count;
   });
 
+  // === CORRELACIÓN CULTURAL × DISCOVER ==========================================
+  // Para cada item Netflix/FlixPatrol, marcar si el título matchea una entidad
+  // en state.entities (normalizada + substring + dice >= 0.7). Tag en ambas
+  // direcciones: cultural.inDiscover + entity.culturalHit.
+  type CulturalItem = { source: 'netflix' | 'flixpatrol'; rank: number; title: string; category: string; seasonTitle?: string; cumulativeWeeks?: number; inDiscover?: boolean; discoverScore?: number };
+  const stateAny = state as any;
+  const culturalItems: CulturalItem[] = [];
+  for (const n of (stateAny.netflixTop || [])) {
+    culturalItems.push({ source: 'netflix', rank: n.rank, title: n.title, category: n.category, seasonTitle: n.seasonTitle, cumulativeWeeks: n.cumulativeWeeks });
+  }
+  for (const f of (stateAny.flixpatrolTop || [])) {
+    culturalItems.push({ source: 'flixpatrol', rank: f.rank, title: f.title, category: f.category });
+  }
+  const entityNormMap = new Map<string, { name: string; score: number }>();
+  for (const [name, snap] of Object.entries(state.entities || {})) {
+    entityNormMap.set(normalize(name), { name, score: (snap as any).score || 0 });
+  }
+  // Mapa de entidades que han matcheado contenido cultural
+  const culturalEntityHits = new Map<string, Array<{ source: 'netflix' | 'flixpatrol'; rank: number; title: string }>>();
+  for (const ci of culturalItems) {
+    const tNorm = normalize(ci.title);
+    if (tNorm.length < 4) continue;
+    let bestMatch: { entityName: string; score: number } | null = null;
+    for (const [eNorm, info] of entityNormMap) {
+      if (tNorm.includes(eNorm) || eNorm.includes(tNorm) || diceCoefficient(tNorm, eNorm) >= 0.7) {
+        if (!bestMatch || info.score > bestMatch.score) bestMatch = { entityName: info.name, score: info.score };
+      }
+    }
+    if (bestMatch) {
+      ci.inDiscover = true;
+      ci.discoverScore = bestMatch.score;
+      if (!culturalEntityHits.has(bestMatch.entityName)) culturalEntityHits.set(bestMatch.entityName, []);
+      culturalEntityHits.get(bestMatch.entityName)!.push({ source: ci.source, rank: ci.rank, title: ci.title });
+    }
+  }
+
+  // === CORRELACIÓN AEMET × DISCOVER =============================================
+  // Por cada aviso, contar páginas Discover cuyo título mencione:
+  //   (a) la región, O
+  //   (b) el fenómeno en español (lluvia, tormenta, granizo, nieve, viento, calor...)
+  // Además: si nivel ≥ naranja y 0 matches → señal de "cobertura ausente".
+  const aemetAvisos = (stateAny.aemetAvisos || []) as Array<{ level: string; severity: string; region: string; phenomenon: string; expires?: string; url?: string }>;
+  const phenMap: Record<string, string[]> = {
+    rain: ['lluvia', 'lluvias', 'precipita'],
+    thunderstorm: ['tormenta', 'tormentas', 'granizo', 'rayo'],
+    snow: ['nieve', 'nevada', 'nieva'],
+    wind: ['viento', 'vendaval', 'rafaga'],
+    coastal: ['temporal', 'oleaje', 'mar'],
+    heat: ['calor', 'ola de calor'],
+    cold: ['frio', 'heladas', 'hielo'],
+    fog: ['niebla'],
+    avalanche: ['alud', 'avalancha'],
+  };
+  function phenomenonKeywords(p: string): string[] {
+    const k = (p || '').toLowerCase();
+    for (const key of Object.keys(phenMap)) {
+      if (k.includes(key)) return phenMap[key];
+    }
+    return [k];
+  }
+  const pageTitlesNorm: Array<{ url: string; title: string; titleNorm: string; score: number }> = [];
+  for (const [url, ps] of Object.entries(state.pages || {})) {
+    if (!ps.title) continue;
+    pageTitlesNorm.push({ url, title: ps.title, titleNorm: normalize(ps.title), score: (ps as any).score || 0 });
+  }
+  const aemetEnriched = aemetAvisos.map(a => {
+    const regionNorm = normalize(a.region || '');
+    const keys = phenomenonKeywords(a.phenomenon).map(k => normalize(k));
+    const matches: Array<{ url: string; title: string; score: number }> = [];
+    for (const p of pageTitlesNorm) {
+      const hitsRegion = regionNorm.length > 4 && p.titleNorm.includes(regionNorm);
+      const hitsPhen = keys.some(k => k.length > 3 && p.titleNorm.includes(k));
+      if (hitsRegion || hitsPhen) {
+        matches.push({ url: p.url, title: p.title, score: p.score });
+      }
+    }
+    matches.sort((a, b) => b.score - a.score);
+    const coverageCount = matches.length;
+    const isHighSeverity = a.level === 'naranja' || a.level === 'rojo';
+    const coverageGap = isHighSeverity && coverageCount === 0;
+    return { ...a, coverageCount, coverageGap, matchingPages: matches.slice(0, 3) };
+  });
+
   return {
     lastPollDiscover: state.lastPollDiscover,
     lastPollTrends: state.lastPollTrends,
     lastPollMedia: state.lastPollMedia,
     lastPollX: state.lastPollX,
+    cultural: culturalItems,
+    culturalEntityHits: Array.from(culturalEntityHits.entries()).map(([entity, hits]) => ({ entity, hits })),
+    aemetEnriched,
     entities: entities.slice(0, 100),
     categories: categories.slice(0, 50),
     concordances: concordances.slice(0, 50),

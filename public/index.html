@@ -857,11 +857,16 @@ function CulturalView() {
   }, []);
   if (state.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando…</div>;
   if (state.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {state.error}</div>;
-  const { netflixTop = [], flixpatrolTop = [], lastPoll } = state.data || {};
-  const nfFilms = netflixTop.filter(x => /film/i.test(x.category)).slice(0, 10);
-  const nfTv = netflixTop.filter(x => /tv/i.test(x.category)).slice(0, 10);
-  const fpTv = flixpatrolTop.filter(x => x.category === 'TV').slice(0, 10);
-  const fpMov = flixpatrolTop.filter(x => x.category === 'Movies').slice(0, 10);
+  const { netflixTop = [], flixpatrolTop = [], lastPoll, cultural = [], culturalEntityHits = [] } = state.data || {};
+  // Mapa título → { inDiscover, discoverScore }
+  const matchByTitle = new Map();
+  cultural.forEach(c => matchByTitle.set(`${c.source}::${c.title}`, c));
+  const enrichItem = (src, item) => ({ ...item, ...(matchByTitle.get(`${src}::${item.title}`) || {}) });
+  const nfFilms = netflixTop.filter(x => /film/i.test(x.category)).slice(0, 10).map(x => enrichItem('netflix', x));
+  const nfTv = netflixTop.filter(x => /tv/i.test(x.category)).slice(0, 10).map(x => enrichItem('netflix', x));
+  const fpTv = flixpatrolTop.filter(x => x.category === 'TV').slice(0, 10).map(x => enrichItem('flixpatrol', x));
+  const fpMov = flixpatrolTop.filter(x => x.category === 'Movies').slice(0, 10).map(x => enrichItem('flixpatrol', x));
+  const discoverHitCount = cultural.filter(c => c.inDiscover).length;
 
   const renderList = (items, label, extra) => (
     <div>
@@ -876,7 +881,15 @@ function CulturalView() {
             {items.map(i => (
               <tr key={`${i.rank}-${i.title}`} style={{ borderBottom: '1px solid var(--rule-2)' }}>
                 <td style={{ padding: '4px 6px', width: 32, textAlign: 'right', color: 'var(--accent)', fontWeight: 600 }}>#{i.rank}</td>
-                <td style={{ padding: '4px 6px', color: 'var(--ink)' }}>{i.title}</td>
+                <td style={{ padding: '4px 6px', color: 'var(--ink)' }}>
+                  {i.title}
+                  {i.inDiscover && (
+                    <span title={`Match en Discover · score ${i.discoverScore}`}
+                          style={{ marginLeft: 6, padding: '1px 5px', background: 'var(--ok)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '.05em' }}>
+                      DS · s{i.discoverScore}
+                    </span>
+                  )}
+                </td>
                 {i.seasonTitle && <td style={{ padding: '4px 6px', color: 'var(--ink-3)', fontSize: 10 }}>{i.seasonTitle}</td>}
                 {i.cumulativeWeeks != null && i.cumulativeWeeks > 0 && <td style={{ padding: '4px 6px', textAlign: 'right', color: 'var(--ink-4)', fontSize: 10 }}>{i.cumulativeWeeks}w</td>}
               </tr>
@@ -891,7 +904,26 @@ function CulturalView() {
     <div>
       <div style={{ padding: '8px 10px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>
         Último poll: <strong style={{ color: 'var(--ink)' }}>{lastPoll ? new Date(lastPoll).toLocaleString('es-ES') : '(nunca)'}</strong> · Netflix {netflixTop.length} · FlixPatrol {flixpatrolTop.length}
+        {discoverHitCount > 0 && (
+          <span style={{ marginLeft: 8, color: 'var(--ok)' }}>· {discoverHitCount} match(es) en Discover</span>
+        )}
       </div>
+      {culturalEntityHits.length > 0 && (
+        <div style={{ padding: 10, background: 'var(--paper-3)', border: '1px solid var(--ok)', marginBottom: 16, fontFamily: 'var(--mono)', fontSize: 11 }}>
+          <div style={{ color: 'var(--ok)', fontWeight: 600, marginBottom: 4 }}>▸ Entidades Discover con contenido en streaming</div>
+          {culturalEntityHits.map((h, i) => (
+            <div key={i} style={{ color: 'var(--ink-3)', marginTop: 2 }}>
+              <strong style={{ color: 'var(--ink)' }}>{h.entity}</strong>
+              {' · '}
+              {h.hits.map((x, j) => (
+                <span key={j} style={{ marginRight: 8 }}>
+                  {x.source === 'netflix' ? '🎬' : '📺'} {x.title} (#{x.rank})
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, marginBottom: 20 }}>
         {renderList(nfFilms, 'Netflix Top 10 · Películas ES', 'TSV oficial semanal')}
         {renderList(nfTv, 'Netflix Top 10 · TV ES', 'TSV oficial semanal')}
@@ -916,7 +948,7 @@ function AemetView() {
   }, []);
   if (state.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando…</div>;
   if (state.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {state.error}</div>;
-  const { avisos = [], lastPoll, total = 0, byLevel = {} } = state.data || {};
+  const { avisos = [], lastPoll, total = 0, byLevel = {}, gaps = 0 } = state.data || {};
   const levelColor = l => l === 'rojo' ? 'var(--danger)' : l === 'naranja' ? '#ff9e2c' : l === 'amarillo' ? 'var(--warn)' : 'var(--ink-4)';
   return (
     <div>
@@ -928,6 +960,11 @@ function AemetView() {
         <span style={{ color: '#ff9e2c' }}>naranja {byLevel.naranja || 0}</span>
         {' · '}
         <span style={{ color: 'var(--warn)' }}>amarillo {byLevel.amarillo || 0}</span>
+        {gaps > 0 && (
+          <span style={{ marginLeft: 8, color: 'var(--danger)', fontWeight: 600 }}>
+            · ⚠ {gaps} aviso(s) severo(s) sin cobertura editorial
+          </span>
+        )}
       </div>
       {avisos.length === 0 ? (
         <div style={{ padding: 16, fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-4)' }}>
@@ -940,18 +977,43 @@ function AemetView() {
               <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Nivel</th>
               <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Región</th>
               <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Fenómeno</th>
-              <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Texto raw</th>
+              <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Cobertura Discover</th>
+              <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Vigencia</th>
             </tr>
           </thead>
           <tbody>
-            {avisos.map((a, i) => (
-              <tr key={i} style={{ borderBottom: '1px solid var(--rule-2)' }}>
-                <td style={{ padding: '6px 8px', color: levelColor(a.level), fontWeight: 600 }}>{a.level}</td>
-                <td style={{ padding: '6px 8px', color: 'var(--ink-2)' }}>{a.region}</td>
-                <td style={{ padding: '6px 8px', color: 'var(--ink)' }}>{a.phenomenon}</td>
-                <td style={{ padding: '6px 8px', color: 'var(--ink-4)', fontSize: 11, maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.raw}</td>
-              </tr>
-            ))}
+            {avisos.map((a, i) => {
+              const cc = a.coverageCount || 0;
+              const gap = a.coverageGap;
+              const coverageLabel = gap
+                ? <span style={{ color: 'var(--danger)', fontWeight: 600 }}>⚠ 0 páginas (sever.)</span>
+                : cc === 0
+                  ? <span style={{ color: 'var(--ink-4)' }}>0</span>
+                  : <span style={{ color: 'var(--ok)' }}>{cc} pág.</span>;
+              return (
+                <tr key={i} style={{ borderBottom: '1px solid var(--rule-2)', background: gap ? 'rgba(255,0,0,.05)' : 'transparent' }}>
+                  <td style={{ padding: '6px 8px', color: levelColor(a.level), fontWeight: 600 }}>{a.level}</td>
+                  <td style={{ padding: '6px 8px', color: 'var(--ink-2)' }}>{a.region}</td>
+                  <td style={{ padding: '6px 8px', color: 'var(--ink)' }}>{a.phenomenon}</td>
+                  <td style={{ padding: '6px 8px', fontSize: 11 }}>
+                    {coverageLabel}
+                    {(a.matchingPages || []).length > 0 && (
+                      <div style={{ color: 'var(--ink-4)', marginTop: 2, fontSize: 10 }}>
+                        {a.matchingPages.slice(0, 2).map((p, j) => (
+                          <a key={j} href={p.url} target="_blank" rel="noreferrer"
+                             style={{ display: 'block', color: 'var(--ink-3)', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 280 }}>
+                            ▸ s{p.score} · {p.title.slice(0, 70)}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </td>
+                  <td style={{ padding: '6px 8px', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)' }}>
+                    {a.expires ? new Date(a.expires).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '—'}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

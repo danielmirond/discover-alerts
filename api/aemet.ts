@@ -15,6 +15,11 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
       const k = (a.level || 'desconocido') as keyof typeof byLevel;
       (byLevel[k] || byLevel.desconocido).push(a);
     }
+    // Enriquecer con coverage (matches Discover) vía live-view
+    const { buildLiveView } = await import('../src/analysis/live-view.js');
+    const lv = await buildLiveView();
+    const enriched = (lv as any).aemetEnriched || avisos;
+
     res.setHeader('Cache-Control', 's-maxage=300');
     res.json({
       lastPoll: s.lastPollAemet || null,
@@ -24,7 +29,8 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
         naranja: byLevel.naranja.length,
         amarillo: byLevel.amarillo.length,
       },
-      avisos,
+      gaps: (enriched as any[]).filter(a => a.coverageGap).length,
+      avisos: enriched,
     });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
