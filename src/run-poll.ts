@@ -6,8 +6,10 @@ import { runBoePoll } from './polling/boe-poll.js';
 import { runXPoll } from './polling/x-poll.js';
 import { runMeneamePoll } from './polling/meneame-poll.js';
 import { runWikipediaPoll } from './polling/wikipedia-poll.js';
+import { runCulturalPoll } from './polling/cultural-poll.js';
+import { runAemetPoll } from './polling/aemet-poll.js';
 
-const target = process.argv[2]; // discover | trends | media | boe | x | meneame | wikipedia | all
+const target = process.argv[2]; // discover | trends | media | boe | x | meneame | wikipedia | cultural | aemet | all
 
 async function main() {
   // 🔴 No dejar que Redis rompa el proceso
@@ -40,6 +42,12 @@ async function main() {
       case 'wikipedia':
         await runWikipediaPoll();
         break;
+      case 'cultural':
+        await runCulturalPoll();
+        break;
+      case 'aemet':
+        await runAemetPoll();
+        break;
       case 'all':
         await runDiscoverPoll();
         await runTrendsPoll();
@@ -48,9 +56,11 @@ async function main() {
         await runXPoll();
         await runMeneamePoll();
         await runWikipediaPoll();
+        await runCulturalPoll();
+        await runAemetPoll();
         break;
       default:
-        console.error(`Usage: run-poll.ts <discover|trends|media|boe|x|meneame|wikipedia|all>`);
+        console.error(`Usage: run-poll.ts <discover|trends|media|boe|x|meneame|wikipedia|cultural|aemet|all>`);
         return;
     }
   } catch (err) {

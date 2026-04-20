@@ -202,6 +202,11 @@ export interface AppState {
   lastPollMedia: string | null;
   lastPollBoe: string | null;
   lastPollX: string | null;
+  lastPollCultural?: string | null;
+  lastPollAemet?: string | null;
+  netflixTop?: Array<{ rank: number; category: string; title: string; seasonTitle?: string; cumulativeWeeks: number; week: string }>;
+  flixpatrolTop?: Array<{ rank: number; title: string; category: string }>;
+  aemetAvisos?: Array<{ level: string; region: string; phenomenon: string; raw: string }>;
 }
 
 // Alert types
