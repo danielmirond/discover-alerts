@@ -87,6 +87,7 @@ function getTopicForAlert(alert: Alert): string | undefined {
     case 'meneame_hot':
     case 'wikipedia_surge':
     case 'first_mover':
+    case 'schema_news_match':
       return (alert as any).topic;
     case 'category':
     case 'headline_cluster':
