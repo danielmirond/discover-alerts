@@ -94,10 +94,11 @@ export function detectHeadlinePatterns(pages: DiscoverPage[]): HeadlinePatternAl
     }
   }
 
-  // Append current poll patterns to the rolling history (4-day window)
+  // Append current poll patterns to the rolling history (30-day window).
+  // Cap a 50k entries; si se pasa, priorizamos los más recientes.
   const now = new Date().toISOString();
   const nowMs = Date.now();
-  const historyWindowMs = 4 * 24 * 3600_000;
+  const historyWindowMs = 30 * 24 * 3600_000;
   const prevHistory = state.headlinePatternsHistory ?? [];
   const prunedHistory = prevHistory.filter(
     h => nowMs - new Date(h.timestamp).getTime() <= historyWindowMs,
@@ -107,8 +108,7 @@ export function detectHeadlinePatterns(pages: DiscoverPage[]): HeadlinePatternAl
     count,
     timestamp: now,
   }));
-  // Cap total history at 10k entries to avoid unbounded Redis growth
-  const combinedHistory = [...prunedHistory, ...newEntries].slice(-10_000);
+  const combinedHistory = [...prunedHistory, ...newEntries].slice(-50_000);
 
   updateState({
     headlinePatterns: nextPatterns,

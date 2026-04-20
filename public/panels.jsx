@@ -246,6 +246,87 @@ function TopMediaPanel({ media }) {
   );
 }
 
+function CategoriesPanel({ categories }) {
+  const cats = [...(categories || [])]
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
+    .slice(0, 30);
+  return (
+    <div className="panel">
+      <div className="kicker">
+        Categorías DiscoverSnoop
+        <Help>
+          Taxonomía oficial de Google Discover. Cada categoría muestra sus 10 páginas
+          con mayor score ahora mismo + delta 24h + posición.
+        </Help>
+        <span className="bar"></span>
+        <span className="meta">top 30 · 10 noticias/categoría · orden por score</span>
+      </div>
+      {cats.length === 0 && (
+        <div style={{ padding: 12, fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-4)' }}>
+          Sin categorías.
+        </div>
+      )}
+      {cats.map(c => {
+        const topPages = c.topPages || [];
+        const delta = c.scoreDelta24h;
+        const deltaColor = delta == null ? 'var(--ink-4)' : delta > 0 ? 'var(--ok)' : delta < 0 ? 'var(--danger)' : 'var(--ink-4)';
+        return (
+          <div key={c.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--rule-2)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)', minWidth: 40 }}>#{c.position}</span>
+              <span style={{ fontWeight: 600, flex: 1, minWidth: 0 }}>{c.name || `Category ${c.id}`}</span>
+              <span className="meta">
+                score <strong style={{ color: 'var(--ink)' }}>{c.score}</strong>
+                {delta != null && (
+                  <span style={{ marginLeft: 6, color: deltaColor }}>
+                    {delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} {Math.abs(delta)}
+                  </span>
+                )}
+                {' · '}{c.publications} pubs · {topPages.length} pág.
+              </span>
+            </div>
+            {topPages.length > 0 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginLeft: 40 }}>
+                {topPages.map((p, i) => (
+                  <a key={p.url} href={p.url} target="_blank" rel="noreferrer"
+                     title={p.title}
+                     style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+                    <div style={{ position: 'relative' }}>
+                      {p.image ? (
+                        <img src={p.image} alt={p.title}
+                             style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />
+                      ) : (
+                        <div style={{ width: '100%', aspectRatio: '16/9', border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 9, fontFamily: 'var(--mono)' }}>
+                          sin img
+                        </div>
+                      )}
+                      <span style={{ position: 'absolute', top: 2, left: 2, padding: '1px 4px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
+                        #{i + 1} · s{p.score}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 10, color: 'var(--ink-3)', lineHeight: 1.25, maxHeight: '3em', overflow: 'hidden' }}>
+                      {(p.title || '').slice(0, 90)}
+                    </div>
+                    {p.domain && (
+                      <div style={{ fontSize: 9, color: 'var(--ink-4)', fontFamily: 'var(--mono)' }}>
+                        {p.domain.replace(/^www\./, '')}
+                      </div>
+                    )}
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <div style={{ marginLeft: 40, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
+                Sin páginas con esta categoría en el último poll.
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function SpikePanel({ spikes }) {
   const maxAbs = Math.max(...(spikes || []).map(s => Math.abs(s.delta)), 1);
   return (
@@ -530,4 +611,4 @@ function XTrendsPanel({ xTrends }) {
   );
 }
 
-Object.assign(window, { GapsPanel, EntitiesPanel, TopMediaPanel, SpikePanel, ConcordancePanel, FormulasPanel, PatternsPanel, WeeklyPanel, TrendsPanel, XTrendsPanel });
+Object.assign(window, { GapsPanel, EntitiesPanel, TopMediaPanel, SpikePanel, ConcordancePanel, FormulasPanel, PatternsPanel, WeeklyPanel, TrendsPanel, XTrendsPanel, CategoriesPanel });

@@ -143,6 +143,9 @@ export interface PageSnapshot {
   lastUpdated: string;
   image?: string;
   domain?: string;
+  /** DS category (numeric id o string name). Necesario para agrupar páginas por categoría DS. */
+  category?: string | number;
+  publisher?: string;
 }
 
 export interface DomainSnapshot {

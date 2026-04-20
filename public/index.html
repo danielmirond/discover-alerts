@@ -111,6 +111,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {} }) {
     { id: 'trends', label: 'Google Trends', count: counts.trends },
     { id: 'xtrends', label: 'X/Twitter', count: counts.xtrends },
     { id: 'entidades', label: 'Entidades', count: counts.entidades },
+    { id: 'categorias', label: 'Categorías DS', count: counts.categorias },
     { id: 'medios', label: 'Medios' },
     { id: 'publishers', label: 'Publishers DS', count: counts.publishers },
     { id: 'formulas', label: 'Fórmulas' },
@@ -561,6 +562,8 @@ function App() {
       'dominios que DiscoverSnoop está viendo · marca cuáles ya tienes con feed',
       <PublishersView />
     );
+  } else if (activeNav === 'categorias') {
+    body = viewPanelOnly(<CategoriesPanel categories={(data._raw && data._raw.categories) || []} />);
   } else if (activeNav === 'medios') {
     body = viewPanelOnly(<TopMediaPanel media={data.topMedia || []} />);
   } else if (activeNav === 'formulas') {
@@ -601,6 +604,7 @@ function App() {
     trends: (data.trends || []).length,
     xtrends: (data.xTrends || []).length,
     entidades: (data.entities || []).length,
+    categorias: (data._raw && data._raw.categories ? data._raw.categories.length : 0),
   };
 
   return (

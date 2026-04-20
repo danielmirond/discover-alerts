@@ -51,6 +51,15 @@ interface LiveCategory {
   scoreDelta24h: number | null;
   historyPoints: number;
   examplePages: Array<{ title: string; url: string; publisher?: string }>;
+  /** Top 10 páginas Discover con esta categoría, ordenadas por score, con imagen. */
+  topPages?: Array<{
+    url: string;
+    title: string;
+    image?: string;
+    score: number;
+    position?: number;
+    domain?: string;
+  }>;
 }
 
 interface LiveConcordance {
@@ -328,6 +337,22 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     return b.score - a.score;
   });
 
+  // Indexar state.pages por categoría DS (soporta id numérico y name string).
+  const pagesByCatId = new Map<number, Array<{ url: string; title: string; image?: string; score: number; position?: number; domain?: string }>>();
+  const pagesByCatName = new Map<string, Array<{ url: string; title: string; image?: string; score: number; position?: number; domain?: string }>>();
+  for (const [url, ps] of Object.entries(state.pages || {})) {
+    if (!ps.title) continue;
+    const item = { url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position, domain: ps.domain };
+    if (typeof ps.category === 'number') {
+      if (!pagesByCatId.has(ps.category)) pagesByCatId.set(ps.category, []);
+      pagesByCatId.get(ps.category)!.push(item);
+    } else if (typeof ps.category === 'string' && ps.category) {
+      const k = ps.category.toLowerCase();
+      if (!pagesByCatName.has(k)) pagesByCatName.set(k, []);
+      pagesByCatName.get(k)!.push(item);
+    }
+  }
+
   // Live categories with 24h delta + example URLs
   const categories: LiveCategory[] = [];
   for (const [idStr, snap] of Object.entries(state.categories)) {
@@ -337,6 +362,21 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     const delta = score24hAgo != null ? snap.score - score24hAgo : null;
     const id = Number(idStr);
     const examplePages = (state.categoryExamplePages[id] ?? []).slice(0, 5);
+
+    // Top 10 pages de state.pages en esta categoría (por id o por nombre)
+    const byId = pagesByCatId.get(id) || [];
+    const byName = pagesByCatName.get((snap.name || '').toLowerCase()) || [];
+    const combined = [...byId, ...byName];
+    // Dedupe por URL
+    const seen = new Set<string>();
+    const dedup: typeof combined = [];
+    for (const p of combined) {
+      if (seen.has(p.url)) continue;
+      seen.add(p.url);
+      dedup.push(p);
+    }
+    dedup.sort((a, b) => b.score - a.score);
+    const topPages = dedup.slice(0, 10);
 
     categories.push({
       id,
@@ -348,6 +388,7 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       scoreDelta24h: delta,
       historyPoints: history.length,
       examplePages,
+      topPages,
     });
   }
 
