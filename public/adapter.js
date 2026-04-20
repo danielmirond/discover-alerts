@@ -150,6 +150,12 @@
         image: null,
         formulas: [], // el backend aún no persiste formulas por alerta
         related: (r.examples || []).slice(0, 4).map(e => e.source || e.title || '').filter(Boolean).slice(0, 4),
+        // examples: lista de {title, url, source} — URLs clickables en la UI
+        examples: (r.examples || []).slice(0, 5).map(e => ({
+          title: e.title || '',
+          url: e.url || '',
+          source: e.source || '',
+        })).filter(e => e.url),
       };
     });
   }

@@ -79,6 +79,20 @@ function AlertRow({ alert, onOpen, fresh }) {
         </div>
         <h3 className="alert-headline">{alert.headline}</h3>
         <p className="alert-snippet">{alert.snippet}</p>
+        {(alert.examples || []).length > 0 && (
+          <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {alert.examples.slice(0, 5).map((ex, i) => (
+              <a key={i} href={ex.url} target="_blank" rel="noreferrer"
+                 onClick={(e) => e.stopPropagation()}
+                 title={ex.title}
+                 style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', textDecoration: 'none', lineHeight: 1.35, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ color: 'var(--accent)' }}>▸</span>
+                {ex.source ? <span style={{ color: 'var(--ink-2)', marginLeft: 4 }}>{ex.source}</span> : null}
+                <span style={{ marginLeft: 6 }}>{ex.title}</span>
+              </a>
+            ))}
+          </div>
+        )}
         <div className="alert-metrics">
           {alert.discoverScore != null && <span className="m">score <span className="score">{alert.discoverScore}</span></span>}
           {alert.feedPos != null && <span className="m">pos <strong>#{alert.feedPos}</strong></span>}
