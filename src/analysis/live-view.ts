@@ -271,12 +271,26 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       }
     }
 
+    // Buscar en state.pages la página con mayor score cuyo title mencione
+    // esta entidad (match case-insensitive). Esa es la foto "que Google muestra".
+    const nameLower = name.toLowerCase();
+    let topPage: { url: string; title: string; image?: string; score: number } | null = null;
+    for (const [url, ps] of Object.entries(state.pages || {})) {
+      if (!ps.title) continue;
+      if (ps.title.toLowerCase().includes(nameLower)) {
+        if (!topPage || (ps.score || 0) > topPage.score) {
+          topPage = { url, title: ps.title, image: ps.image, score: ps.score || 0 };
+        }
+      }
+    }
+
     entities.push({
       name,
       score: snap.score,
       position: snap.position,
       publications: snap.publications,
       category: state.entityCategoryMap[name],
+      topic: state.entityTopicMap?.[name],
       appearancesLastHour: c1,
       appearancesLast2h: c2,
       appearancesLast6h: c6,
@@ -286,7 +300,10 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       matchingXTrends: matchingXTrends.slice(0, 3),
       matchingArticles,
       velocity: computeVelocity(apps, nowMs),
-    });
+      imageUrl: topPage?.image,
+      topPageTitle: topPage?.title,
+      topPageUrl: topPage?.url,
+    } as any);
   }
 
   // Sort by severity: flash > longtail > ascending, then by score

@@ -152,7 +152,7 @@ export async function runDiscoverPoll(): Promise<void> {
     // Retención: últimas ~24h — limitamos por tamaño para no reventar Redis.
     const PAGES_CAP = 500;
     const now = new Date().toISOString();
-    const pageSnapshots: Record<string, { title: string; score: number; position: number; lastUpdated: string }> = {};
+    const pageSnapshots: Record<string, { title: string; score: number; position: number; lastUpdated: string; image?: string; domain?: string }> = {};
     const sortedPag = [...pag].sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, PAGES_CAP);
     for (const p of sortedPag) {
       if (!p.url) continue;
@@ -161,6 +161,8 @@ export async function runDiscoverPoll(): Promise<void> {
         score: p.score || 0,
         position: p.position || 0,
         lastUpdated: now,
+        image: p.image,
+        domain: p.domain,
       };
     }
     updateState({ lastPollDiscover: now, pages: pageSnapshots });

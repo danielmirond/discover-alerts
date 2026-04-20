@@ -64,19 +64,100 @@ function EntitiesPanel({ entities }) {
         <span className="meta">momentum · últimas 60 min</span>
       </div>
       {entities.map((e, i) => (
-        <div key={i} className="ent-row">
+        <EntityRow key={i} e={e} />
+      ))}
+    </div>
+  );
+}
+
+function EntityRow({ e }) {
+  const [analysis, setAnalysis] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState(null);
+  const imageUrl = e.imageUrl;
+
+  const analyze = async (ev) => {
+    ev.stopPropagation();
+    if (!imageUrl || loading) return;
+    setLoading(true); setErr(null);
+    try {
+      const params = new URLSearchParams({ url: imageUrl, entity: e.name });
+      if (e.topPageTitle) params.set('headline', e.topPageTitle);
+      const r = await fetch(`/api/image-analysis?${params}`, { credentials: 'same-origin' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      setAnalysis(await r.json());
+    } catch (ex) {
+      setErr(String(ex.message || ex));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="ent-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 6, padding: '10px 0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {imageUrl ? (
+          <img src={imageUrl} alt={e.name}
+               onClick={analyze}
+               style={{ width: 56, height: 56, objectFit: 'cover', border: '1px solid var(--rule)', cursor: 'pointer', flexShrink: 0 }} />
+        ) : (
+          <div style={{ width: 56, height: 56, border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)', flexShrink: 0 }}>
+            sin<br/>img
+          </div>
+        )}
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div className="ent-name">
             {e.name}
-            <span className="cat">{e.cat}</span>
+            {e.category ? <span className="cat">{e.category}</span> : null}
+            {e.topic ? <span className="cat" style={{ background: 'var(--warn)', color: 'var(--paper)', marginLeft: 4 }}>{e.topic}</span> : null}
           </div>
-          <div className="momentum-bar">
-            <div className="momentum-fill" style={{ width: `${e.momentum}%` }}></div>
+          <div style={{ fontSize: 11, color: 'var(--ink-3)', fontFamily: 'var(--mono)', marginTop: 2 }}>
+            score {e.score} · pos #{e.position} · 1h:{e.appearancesLastHour} · 2h:{e.appearancesLast2h} · 6h:{e.appearancesLast6h}
           </div>
-          <div className={`ent-delta ${e.trend}`}>
-            {e.trend === 'up' ? '▲' : e.trend === 'down' ? '▼' : '—'} {e.delta}
-          </div>
+          {e.topPageTitle && (
+            <div style={{ fontSize: 11, color: 'var(--ink-4)', fontStyle: 'italic', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={e.topPageTitle}>
+              top: {e.topPageTitle}
+            </div>
+          )}
         </div>
-      ))}
+        {imageUrl && (
+          <button onClick={analyze} disabled={loading} style={{
+            fontFamily: 'var(--mono)', fontSize: 10, padding: '4px 8px',
+            border: '1px solid var(--rule)', background: 'var(--paper-3)',
+            color: 'var(--ink)', cursor: 'pointer', flexShrink: 0, letterSpacing: '.05em',
+          }}>
+            {loading ? '...' : (analysis ? 'RE-ANALIZAR' : 'ANALIZAR')}
+          </button>
+        )}
+      </div>
+      {(analysis || err) && (
+        <div style={{
+          marginLeft: 66, padding: 8, background: 'var(--paper-3)',
+          border: '1px solid var(--rule-2)', fontFamily: 'var(--mono)', fontSize: 11,
+        }}>
+          {err && <div style={{ color: 'var(--danger)' }}>Error: {err}</div>}
+          {analysis && analysis.error && <div style={{ color: 'var(--warn)' }}>{analysis.error}</div>}
+          {analysis && !analysis.error && (
+            <div>
+              <div style={{ color: 'var(--ink)', marginBottom: 4 }}>{analysis.caption}</div>
+              <div style={{ color: 'var(--ink-3)' }}>
+                match <strong style={{ color: analysis.entityMatch >= 7 ? 'var(--ok)' : analysis.entityMatch >= 4 ? 'var(--warn)' : 'var(--danger)' }}>{analysis.entityMatch}/10</strong>
+                {' · '}
+                {analysis.brandSafe ? <span style={{ color: 'var(--ok)' }}>brand-safe</span> : <span style={{ color: 'var(--danger)' }}>⚠ brand-safety</span>}
+                {analysis.cached ? ' · cached' : ''}
+                {' · '}{analysis.model}
+              </div>
+              {(analysis.notes || []).length > 0 && (
+                <div style={{ color: 'var(--ink-4)', marginTop: 4 }}>
+                  {(analysis.notes || []).map((n, i) => (
+                    <span key={i} style={{ display: 'inline-block', marginRight: 6, padding: '1px 6px', background: 'var(--paper)', border: '1px solid var(--rule-2)' }}>{n}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

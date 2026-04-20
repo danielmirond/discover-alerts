@@ -141,6 +141,8 @@ export interface PageSnapshot {
   score: number;
   position: number;
   lastUpdated: string;
+  image?: string;
+  domain?: string;
 }
 
 export interface DomainSnapshot {
