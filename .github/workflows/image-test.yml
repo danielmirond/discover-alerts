@@ -1,0 +1,27 @@
+name: Image Test (Claude Haiku Vision)
+
+on:
+  workflow_dispatch:
+    inputs:
+      n:
+        description: 'Número de entidades a analizar'
+        required: false
+        default: '5'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --prefer-offline
+      - run: npx tsx src/run-image-test.ts ${{ github.event.inputs.n }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
