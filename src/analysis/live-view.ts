@@ -271,18 +271,22 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       }
     }
 
-    // Buscar en state.pages la página con mayor score cuyo title mencione
-    // esta entidad (match case-insensitive). Esa es la foto "que Google muestra".
+    // Buscar en state.pages las top 5 páginas (por score) cuyo title mencione
+    // la entidad y tengan imagen. Filtramos placeholders de X/Twitter y dominios
+    // no-editoriales para evitar thumbs basura.
     const nameLower = name.toLowerCase();
-    let topPage: { url: string; title: string; image?: string; score: number } | null = null;
+    const pageCandidates: Array<{ url: string; title: string; image: string; score: number }> = [];
     for (const [url, ps] of Object.entries(state.pages || {})) {
-      if (!ps.title) continue;
+      if (!ps.title || !ps.image) continue;
+      if (url.includes('x.com') || url.includes('twitter.com')) continue;
+      if (/placeholder/i.test(ps.image)) continue;
       if (ps.title.toLowerCase().includes(nameLower)) {
-        if (!topPage || (ps.score || 0) > topPage.score) {
-          topPage = { url, title: ps.title, image: ps.image, score: ps.score || 0 };
-        }
+        pageCandidates.push({ url, title: ps.title, image: ps.image, score: ps.score || 0 });
       }
     }
+    pageCandidates.sort((a, b) => b.score - a.score);
+    const topPages = pageCandidates.slice(0, 5);
+    const topPage = topPages[0];
 
     entities.push({
       name,
@@ -303,6 +307,7 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       imageUrl: topPage?.image,
       topPageTitle: topPage?.title,
       topPageUrl: topPage?.url,
+      topPages: topPages.map(p => ({ url: p.url, title: p.title, image: p.image, score: p.score })),
     } as any);
   }
 

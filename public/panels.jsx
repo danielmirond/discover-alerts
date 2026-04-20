@@ -71,40 +71,68 @@ function EntitiesPanel({ entities }) {
 }
 
 function EntityRow({ e }) {
-  const [analysis, setAnalysis] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState(null);
-  const imageUrl = e.imageUrl;
+  // state.analyses es un mapa imageUrl → { loading, error, result }
+  const [analyses, setAnalyses] = useState({});
+  const topPages = e.topPages && e.topPages.length > 0
+    ? e.topPages
+    : (e.imageUrl ? [{ url: e.topPageUrl, title: e.topPageTitle, image: e.imageUrl }] : []);
 
-  const analyze = async (ev) => {
+  const analyze = (page) => async (ev) => {
     ev.stopPropagation();
-    if (!imageUrl || loading) return;
-    setLoading(true); setErr(null);
+    const img = page.image;
+    if (!img) return;
+    const cur = analyses[img];
+    if (cur && cur.loading) return;
+    setAnalyses(a => ({ ...a, [img]: { loading: true, error: null, result: null } }));
     try {
-      const params = new URLSearchParams({ url: imageUrl, entity: e.name });
-      if (e.topPageTitle) params.set('headline', e.topPageTitle);
+      const params = new URLSearchParams({ url: img, entity: e.name });
+      if (page.title) params.set('headline', page.title);
       const r = await fetch(`/api/image-analysis?${params}`, { credentials: 'same-origin' });
       if (!r.ok) throw new Error('HTTP ' + r.status);
-      setAnalysis(await r.json());
+      const result = await r.json();
+      setAnalyses(a => ({ ...a, [img]: { loading: false, error: null, result } }));
     } catch (ex) {
-      setErr(String(ex.message || ex));
-    } finally {
-      setLoading(false);
+      setAnalyses(a => ({ ...a, [img]: { loading: false, error: String(ex.message || ex), result: null } }));
     }
   };
 
-  return (
-    <div className="ent-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 6, padding: '10px 0' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        {imageUrl ? (
-          <img src={imageUrl} alt={e.name}
-               onClick={analyze}
-               style={{ width: 56, height: 56, objectFit: 'cover', border: '1px solid var(--rule)', cursor: 'pointer', flexShrink: 0 }} />
-        ) : (
-          <div style={{ width: 56, height: 56, border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)', flexShrink: 0 }}>
-            sin<br/>img
+  const analyzeAll = async (ev) => {
+    ev.stopPropagation();
+    for (const p of topPages) await analyze(p)(ev);
+  };
+
+  const renderAnalysis = (img) => {
+    const a = analyses[img];
+    if (!a) return null;
+    if (a.loading) return <span style={{ color: 'var(--ink-4)' }}>…</span>;
+    if (a.error) return <span style={{ color: 'var(--danger)' }}>err {a.error}</span>;
+    const r = a.result;
+    if (r.error) return <span style={{ color: 'var(--warn)' }}>{r.error}</span>;
+    const color = r.entityMatch >= 7 ? 'var(--ok)' : r.entityMatch >= 4 ? 'var(--warn)' : 'var(--danger)';
+    return (
+      <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>
+        <div style={{ color: 'var(--ink)', fontSize: 11, lineHeight: 1.3 }}>{r.caption}</div>
+        <div style={{ marginTop: 2 }}>
+          <span style={{ color }}>{r.entityMatch}/10</span>
+          {' · '}
+          {r.brandSafe ? <span style={{ color: 'var(--ok)' }}>safe</span> : <span style={{ color: 'var(--danger)' }}>⚠</span>}
+          {r.cached ? ' · cached' : ''}
+        </div>
+        {(r.notes || []).length > 0 && (
+          <div style={{ color: 'var(--ink-4)', marginTop: 2, lineHeight: 1.4 }}>
+            {(r.notes || []).map((n, i) => (
+              <span key={i} style={{ display: 'inline-block', marginRight: 4, padding: '0 4px', background: 'var(--paper)', border: '1px solid var(--rule-2)' }}>{n}</span>
+            ))}
           </div>
         )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="ent-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8, padding: '12px 0' }}>
+      {/* Header: nombre + tags + stats */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="ent-name">
             {e.name}
@@ -112,50 +140,41 @@ function EntityRow({ e }) {
             {e.topic ? <span className="cat" style={{ background: 'var(--warn)', color: 'var(--paper)', marginLeft: 4 }}>{e.topic}</span> : null}
           </div>
           <div style={{ fontSize: 11, color: 'var(--ink-3)', fontFamily: 'var(--mono)', marginTop: 2 }}>
-            score {e.score} · pos #{e.position} · 1h:{e.appearancesLastHour} · 2h:{e.appearancesLast2h} · 6h:{e.appearancesLast6h}
+            score {e.score} · pos #{e.position} · 1h:{e.appearancesLastHour} · 2h:{e.appearancesLast2h} · 6h:{e.appearancesLast6h} · {topPages.length} foto{topPages.length === 1 ? '' : 's'}
           </div>
-          {e.topPageTitle && (
-            <div style={{ fontSize: 11, color: 'var(--ink-4)', fontStyle: 'italic', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={e.topPageTitle}>
-              top: {e.topPageTitle}
-            </div>
-          )}
         </div>
-        {imageUrl && (
-          <button onClick={analyze} disabled={loading} style={{
+        {topPages.length > 0 && (
+          <button onClick={analyzeAll} style={{
             fontFamily: 'var(--mono)', fontSize: 10, padding: '4px 8px',
             border: '1px solid var(--rule)', background: 'var(--paper-3)',
             color: 'var(--ink)', cursor: 'pointer', flexShrink: 0, letterSpacing: '.05em',
-          }}>
-            {loading ? '...' : (analysis ? 'RE-ANALIZAR' : 'ANALIZAR')}
-          </button>
+          }}>ANALIZAR TODO</button>
         )}
       </div>
-      {(analysis || err) && (
-        <div style={{
-          marginLeft: 66, padding: 8, background: 'var(--paper-3)',
-          border: '1px solid var(--rule-2)', fontFamily: 'var(--mono)', fontSize: 11,
-        }}>
-          {err && <div style={{ color: 'var(--danger)' }}>Error: {err}</div>}
-          {analysis && analysis.error && <div style={{ color: 'var(--warn)' }}>{analysis.error}</div>}
-          {analysis && !analysis.error && (
-            <div>
-              <div style={{ color: 'var(--ink)', marginBottom: 4 }}>{analysis.caption}</div>
-              <div style={{ color: 'var(--ink-3)' }}>
-                match <strong style={{ color: analysis.entityMatch >= 7 ? 'var(--ok)' : analysis.entityMatch >= 4 ? 'var(--warn)' : 'var(--danger)' }}>{analysis.entityMatch}/10</strong>
-                {' · '}
-                {analysis.brandSafe ? <span style={{ color: 'var(--ok)' }}>brand-safe</span> : <span style={{ color: 'var(--danger)' }}>⚠ brand-safety</span>}
-                {analysis.cached ? ' · cached' : ''}
-                {' · '}{analysis.model}
+      {/* Grid de 5 thumbnails */}
+      {topPages.length > 0 ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+          {topPages.map((p, i) => (
+            <div key={p.image} style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+              <div style={{ position: 'relative' }}>
+                <img src={p.image} alt={p.title}
+                     onClick={analyze(p)}
+                     title={p.title}
+                     style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', cursor: 'pointer', display: 'block' }} />
+                <span style={{ position: 'absolute', top: 2, left: 2, padding: '1px 4px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
+                  #{i + 1} · s{p.score}
+                </span>
               </div>
-              {(analysis.notes || []).length > 0 && (
-                <div style={{ color: 'var(--ink-4)', marginTop: 4 }}>
-                  {(analysis.notes || []).map((n, i) => (
-                    <span key={i} style={{ display: 'inline-block', marginRight: 6, padding: '1px 6px', background: 'var(--paper)', border: '1px solid var(--rule-2)' }}>{n}</span>
-                  ))}
-                </div>
-              )}
+              <div title={p.title} style={{ fontSize: 10, color: 'var(--ink-4)', fontFamily: 'var(--mono)', lineHeight: 1.3, maxHeight: '2.6em', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {(p.title || '').slice(0, 80)}
+              </div>
+              <div>{renderAnalysis(p.image)}</div>
             </div>
-          )}
+          ))}
+        </div>
+      ) : (
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>
+          Sin imágenes para esta entidad en el último poll.
         </div>
       )}
     </div>
