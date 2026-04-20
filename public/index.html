@@ -245,19 +245,57 @@ function FilterBar({ filter, setFilter, counts }) {
 function Drawer({ alert, onClose, data }) {
   if (!alert) return null;
 
-  // Enriquecimiento: buscar la entidad en data._raw.entities para obtener topPages,
-  // matchingArticles, matchingGoogleTrends, matchingXTrends, imageUrl, etc.
+  // Enriquecimiento: primero probamos a resolver por entidad. Si no hay match,
+  // caemos al resolver por TIPO (category, trends_*, headline_pattern, etc.)
+  // para rellenar SIEMPRE la tarjeta con contexto relevante, no solo cuando
+  // hay entidad asociada.
   const raw = (data && data._raw) || {};
   const ent = alert.entity && alert.entity !== '—'
     ? (raw.entities || []).find(e => e.name === alert.entity)
     : null;
-  const topPages = (ent && ent.topPages) || [];
+
+  // Resolver por tipo cuando no hay entidad
+  let typeContext = null;
+  const alertType = alert.type || '';
+  // Category alert → busca en data._raw.categories por nombre
+  if (!ent && (alertType === 'category' || /^\/.+/.test(alert.headline || ''))) {
+    const name = alert.headline || alert.category;
+    const cat = (raw.categories || []).find(c => c.name === name || c.name === alert.category);
+    if (cat) typeContext = { kind: 'category', cat };
+  }
+  // Trends-related alert → busca en raw.trends (depende de adapter, puede estar en raw o _raw)
+  if (!ent && !typeContext && (alertType.startsWith('trends_') || /trend/i.test(alertType))) {
+    // raw.trends shape puede ser Record<title, snap> (desde state directamente)
+    const trendTitle = alert.headline || alert.entity;
+    const trendsData = raw.trends || {};
+    let trend = null;
+    if (trendsData[trendTitle]) trend = { title: trendTitle, ...trendsData[trendTitle] };
+    else {
+      // buscar substring match
+      for (const [t, snap] of Object.entries(trendsData)) {
+        if (t.toLowerCase().includes(String(trendTitle).toLowerCase()) || String(trendTitle).toLowerCase().includes(t.toLowerCase())) {
+          trend = { title: t, ...(snap || {}) };
+          break;
+        }
+      }
+    }
+    if (trend) typeContext = { kind: 'trend', trend };
+  }
+  // Headline pattern → el title suele ser el ngram
+  if (!ent && !typeContext && alertType === 'headline_pattern') {
+    const ngram = alert.headline;
+    const patterns = raw.headlinePatterns || [];
+    const pat = patterns.find(p => p.ngram === ngram);
+    if (pat || ngram) typeContext = { kind: 'headline_pattern', ngram, pattern: pat };
+  }
+
+  const topPages = (ent && ent.topPages) || (typeContext?.kind === 'category' ? (typeContext.cat.topPages || []) : []);
   const matchingArticles = (ent && ent.matchingArticles) || [];
   const googleTrends = (ent && ent.matchingGoogleTrends) || [];
   const xTrends = (ent && ent.matchingXTrends) || [];
   const examples = alert.examples || [];
   const topImage = (topPages.find(p => p.image) || {}).image || alert.imageUrl;
-  // Entidades relacionadas: misma categoría, mismo topic, o con articles compartidos
+  // Entidades relacionadas: misma categoría, mismo topic, o entidades del typeContext
   const related = ent
     ? (raw.entities || [])
         .filter(e => e.name !== ent.name && (
@@ -265,7 +303,7 @@ function Drawer({ alert, onClose, data }) {
           (ent.topic && e.topic === ent.topic)
         ))
         .slice(0, 8)
-    : [];
+    : (typeContext?.kind === 'category' ? (typeContext.cat.topEntities || []).slice(0, 12) : []);
 
   return (
     <>
@@ -320,6 +358,81 @@ function Drawer({ alert, onClose, data }) {
               {topPages[0] && (
                 <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', marginTop: 6 }}>
                   Fuente: {(topPages[0].domain || '').replace(/^www\./, '')} · score {topPages[0].score}
+                </div>
+              )}
+            </div>
+          )}
+
+          {typeContext && typeContext.kind === 'trend' && (
+            <div className="drawer-section">
+              <h3>Google Trend · {typeContext.trend.title}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 8 }}>
+                <div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '0.06em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>Tráfico aprox</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 800, color: 'var(--accent)' }}>
+                    {typeContext.trend.approxTraffic ? '~' + typeContext.trend.approxTraffic.toLocaleString() : '—'}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '0.06em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>Visto</div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 12 }}>
+                    {typeContext.trend.firstSeen ? new Date(typeContext.trend.firstSeen).toLocaleString('es-ES') : '—'}
+                  </div>
+                </div>
+              </div>
+              {(typeContext.trend.newsItems || []).length > 0 && (
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 4 }}>Noticias asociadas al trend</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {typeContext.trend.newsItems.slice(0, 8).map((n, i) => (
+                      <a key={i} href={n.url} target="_blank" rel="noreferrer"
+                         style={{ textDecoration: 'none', color: 'inherit', padding: '4px 0', borderBottom: '1px solid var(--rule-2)', display: 'flex', gap: 6 }}>
+                        <span style={{ color: 'var(--accent)' }}>▸</span>
+                        {n.source && <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', minWidth: 120, flexShrink: 0 }}>{n.source}</span>}
+                        <span style={{ flex: 1, fontSize: 12, color: 'var(--ink-2)', lineHeight: 1.35 }}>{n.title}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginTop: 8 }}>
+                Fuente: Google Trends ES · actualización cada 30 min
+              </div>
+            </div>
+          )}
+
+          {typeContext && typeContext.kind === 'category' && (
+            <div className="drawer-section">
+              <h3>Categoría DiscoverSnoop · {typeContext.cat.name}</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                <div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '0.06em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>Score</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 800, color: 'var(--accent)' }}>{typeContext.cat.score}</div>
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '0.06em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>Δ 24h</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 800, color: typeContext.cat.scoreDelta24h > 0 ? 'var(--ok)' : typeContext.cat.scoreDelta24h < 0 ? 'var(--danger)' : 'var(--ink)' }}>
+                    {typeContext.cat.scoreDelta24h != null ? (typeContext.cat.scoreDelta24h > 0 ? '+' : '') + typeContext.cat.scoreDelta24h : '—'}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '0.06em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>Publicaciones</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 800 }}>{typeContext.cat.publications}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {typeContext && typeContext.kind === 'headline_pattern' && (
+            <div className="drawer-section">
+              <h3>Patrón de titular · "{typeContext.ngram}"</h3>
+              {typeContext.pattern ? (
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-2)' }}>
+                  Aparece <strong>{typeContext.pattern.count}</strong> veces · {typeContext.pattern.words} palabras
+                </div>
+              ) : (
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>
+                  Patrón detectado en el poll actual. Revisar tab "Patrones" para histórico.
                 </div>
               )}
             </div>
