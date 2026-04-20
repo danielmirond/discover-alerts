@@ -24,49 +24,52 @@ async function fetchPlatform(platform: string): Promise<string> {
   return r.text();
 }
 
-/** Parsea el HTML buscando bloques de Top 10 por categoría (TV/Movies). */
-function parseHtml(html: string, platform: string): FlixPatrolItem[] {
-  const out: FlixPatrolItem[] = [];
-  // Las entries suelen venir como:
-  //   <td>1</td><td><a href="/title/...">Título</a></td>
-  // dentro de tablas con class "card-table". Capturamos pairs rank+title.
-  // Nos apoyamos en el path para diferenciar TV vs Movies: /title/... con meta.
+/**
+ * Parser v2: FlixPatrol ya no usa <td rank><td title>. Los titles vienen como
+ * <a href="/title/…">Titulo</a> dentro de una sección TV Shows o Movies.
+ *
+ * Estrategia: dividir el HTML en dos regiones (TV Shows / Movies) por los
+ * h3 con ese texto, y extraer los primeros 10 <a href="/title/…"> de cada una.
+ */
+function parseHtml(html: string, _platform: string): FlixPatrolItem[] {
+  // Encuentra índices de los headings
+  const tvIdx = html.search(/>TV Shows</i);
+  const mvIdx = html.search(/>Movies</i);
 
-  // Estrategia simple: regex sobre <a href="/title/xxx/">TITULO</a> precedidos de <td class="table-td">N</td>
-  const re = /<td[^>]*>\s*(\d{1,2})\s*<\/td>\s*<td[^>]*>\s*<a[^>]*href="\/title\/[^"]+"[^>]*>([^<]+)<\/a>/g;
-  let m: RegExpExecArray | null;
-  const seen = new Set<string>();
-  // Detectar secciones TV / Movies por su heading cercano
-  // Buscar ocurrencias de "TV Shows" y "Movies" y acotar las regiones
-  const tvIdx = html.search(/TV Shows/i);
-  const moviesIdx = html.search(/Movies/i);
   const sections: Array<{ start: number; end: number; category: 'TV' | 'Movies' }> = [];
-  if (tvIdx >= 0) {
-    sections.push({ start: tvIdx, end: moviesIdx > tvIdx ? moviesIdx : html.length, category: 'TV' });
-  }
-  if (moviesIdx >= 0) {
-    sections.push({ start: moviesIdx, end: moviesIdx < tvIdx ? tvIdx : html.length, category: 'Movies' });
-  }
-  if (sections.length === 0) {
-    // Fallback: todo el documento como unknown
+  if (tvIdx < 0 && mvIdx < 0) {
     sections.push({ start: 0, end: html.length, category: 'Movies' });
-  }
-
-  for (const sec of sections) {
-    const region = html.slice(sec.start, sec.end);
-    re.lastIndex = 0;
-    while ((m = re.exec(region))) {
-      const rank = parseInt(m[1], 10);
-      const title = m[2].trim();
-      if (!title || rank < 1 || rank > 10) continue;
-      const key = `${sec.category}:${rank}:${title}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      out.push({ rank, title, category: sec.category });
+  } else {
+    // Orden natural: la sección que empieza primero acaba donde empieza la siguiente.
+    const marks = [
+      tvIdx >= 0 ? { idx: tvIdx, cat: 'TV' as const } : null,
+      mvIdx >= 0 ? { idx: mvIdx, cat: 'Movies' as const } : null,
+    ].filter(Boolean) as Array<{ idx: number; cat: 'TV' | 'Movies' }>;
+    marks.sort((a, b) => a.idx - b.idx);
+    for (let i = 0; i < marks.length; i++) {
+      const start = marks[i].idx;
+      const end = i + 1 < marks.length ? marks[i + 1].idx : html.length;
+      sections.push({ start, end, category: marks[i].cat });
     }
   }
 
-  return out.filter(i => i.rank <= 10).slice(0, 50);
+  const re = /<a[^>]*href="\/title\/[^"]+"[^>]*>([^<]{2,120})<\/a>/g;
+  const out: FlixPatrolItem[] = [];
+  for (const sec of sections) {
+    const region = html.slice(sec.start, sec.end);
+    re.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    let rank = 1;
+    const seen = new Set<string>();
+    while ((m = re.exec(region)) && rank <= 10) {
+      const title = m[1].replace(/&amp;/g, '&').trim();
+      if (!title || seen.has(title)) continue;
+      seen.add(title);
+      out.push({ rank, title, category: sec.category });
+      rank++;
+    }
+  }
+  return out;
 }
 
 export async function fetchFlixPatrolNetflixES(): Promise<FlixPatrolItem[]> {
