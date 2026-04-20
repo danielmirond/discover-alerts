@@ -191,6 +191,8 @@ interface LiveViewResponse {
   culturalEntityHits?: Array<any>;
   aemetEnriched?: Array<any>;
   schemaNews?: Record<string, Array<any>>;
+  pagesSlim?: Array<any>;
+  mediaArticlesSlim?: Array<any>;
   weeklyHistorySummary: {
     availableWeeks: string[];
     feedNames: string[];
@@ -1334,6 +1336,23 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     culturalEntityHits: Array.from(culturalEntityHits.entries()).map(([entity, hits]) => ({ entity, hits })),
     aemetEnriched,
     schemaNews,
+    // Páginas DS slim para fallback del Drawer (sólo metadata necesaria)
+    pagesSlim: Object.entries(state.pages || {})
+      .map(([url, ps]) => ({ url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position, domain: ps.domain }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 200),
+    // Artículos RSS slim (últimas 12h) para fallback del Drawer
+    mediaArticlesSlim: (() => {
+      const ageMsCutoff = Date.now() - 12 * 3600_000;
+      const out: Array<{ title: string; link: string; feedName: string; firstSeen: string; domain?: string }> = [];
+      for (const art of Object.values(state.mediaArticles || {})) {
+        const ts = Date.parse((art as any).firstSeen || '') || 0;
+        if (!ts || ts < ageMsCutoff) continue;
+        if (!art.title || !art.link) continue;
+        out.push({ title: art.title, link: art.link, feedName: art.feedName || '', firstSeen: art.firstSeen as any });
+      }
+      return out.sort((a, b) => (b.firstSeen || '').localeCompare(a.firstSeen || '')).slice(0, 400);
+    })(),
     entities: entities.slice(0, 100),
     categories: categories.slice(0, 50),
     concordances: concordances.slice(0, 50),

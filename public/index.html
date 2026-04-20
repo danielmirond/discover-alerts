@@ -289,11 +289,38 @@ function Drawer({ alert, onClose, data }) {
     if (pat || ngram) typeContext = { kind: 'headline_pattern', ngram, pattern: pat };
   }
 
-  const topPages = (ent && ent.topPages) || (typeContext?.kind === 'category' ? (typeContext.cat.topPages || []) : []);
-  const matchingArticles = (ent && ent.matchingArticles) || [];
+  // Fallback search: si no hay topPages del ent, buscar en raw.pagesSlim por substring.
+  function searchSlimPages(query) {
+    if (!query) return [];
+    const q = String(query).toLowerCase();
+    if (q.length < 3) return [];
+    return (raw.pagesSlim || [])
+      .filter(p => (p.title || '').toLowerCase().includes(q))
+      .slice(0, 5);
+  }
+  function searchSlimArticles(query) {
+    if (!query) return [];
+    const q = String(query).toLowerCase();
+    if (q.length < 3) return [];
+    return (raw.mediaArticlesSlim || [])
+      .filter(a => (a.title || '').toLowerCase().includes(q))
+      .slice(0, 10);
+  }
+
+  let topPages = (ent && ent.topPages) || (typeContext?.kind === 'category' ? (typeContext.cat.topPages || []) : []);
+  if (topPages.length === 0 && alert.entity && alert.entity !== '—') {
+    topPages = searchSlimPages(alert.entity);
+  }
+  let matchingArticles = (ent && ent.matchingArticles) || [];
+  if (matchingArticles.length === 0 && alert.entity && alert.entity !== '—') {
+    matchingArticles = searchSlimArticles(alert.entity).map(a => ({ title: a.title, link: a.link, feedName: a.feedName }));
+  }
   const googleTrends = (ent && ent.matchingGoogleTrends) || [];
   const xTrends = (ent && ent.matchingXTrends) || [];
-  const examples = alert.examples || [];
+  // Si alert.examples viene vacío y tenemos matchingArticles del fallback, usar esos como enlaces
+  const examples = (alert.examples && alert.examples.length > 0)
+    ? alert.examples
+    : (matchingArticles.slice(0, 4).map(a => ({ title: a.title, url: a.link, source: a.feedName })));
   const topImage = (topPages.find(p => p.image) || {}).image || alert.imageUrl;
   // Entidades relacionadas: misma categoría, mismo topic, o entidades del typeContext
   const related = ent
