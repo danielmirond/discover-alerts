@@ -1186,7 +1186,11 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
   }
   const entityNormMap = new Map<string, { name: string; score: number }>();
   for (const [name, snap] of Object.entries(state.entities || {})) {
-    entityNormMap.set(normalize(name), { name, score: (snap as any).score || 0 });
+    const n = normalize(name);
+    // Requerir entidad de ≥4 chars para evitar falsos positivos como "OL"/"EU"
+    // matcheando substrings aleatorios de títulos culturales.
+    if (n.length < 4) continue;
+    entityNormMap.set(n, { name, score: (snap as any).score || 0 });
   }
   // Mapa de entidades que han matcheado contenido cultural
   const culturalEntityHits = new Map<string, Array<{ source: 'netflix' | 'flixpatrol'; rank: number; title: string }>>();
