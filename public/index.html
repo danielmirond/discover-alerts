@@ -116,6 +116,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {} }) {
     { id: 'formulas', label: 'Fórmulas' },
     { id: 'patrones', label: 'Patrones' },
     { id: 'historico', label: 'Histórico' },
+    { id: 'predicciones', label: 'Predicciones' },
     { id: 'configuracion', label: 'Config' },
   ];
   const fmtDate = clock.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
@@ -568,6 +569,12 @@ function App() {
     body = viewPanelOnly(<PatternsPanel patterns={data.headlinePatterns || []} />);
   } else if (activeNav === 'historico') {
     body = viewPanelOnly(<WeeklyPanel weekly={data.weekly || []} />);
+  } else if (activeNav === 'predicciones') {
+    body = viewSinglePanel(
+      'Predicciones estacionales YoY',
+      'entidades/categorías/patrones que explotaron esta misma semana ISO en años anteriores',
+      <PredictionsView />
+    );
   } else if (activeNav === 'configuracion') {
     body = viewSinglePanel(
       'Configuración del sistema',
@@ -820,6 +827,100 @@ function BoeView({ boe, rawEntities }) {
 }
 
 /* ---------------- Config view (read-only system status) ---------------- */
+function PredictionsView() {
+  const [state, setState] = useState({ loading: true, data: null, error: null });
+  const [kindFilter, setKindFilter] = useState('entity');
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/predictions', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(d => { if (alive) setState({ loading: false, data: d, error: null }); })
+      .catch(e => { if (alive) setState({ loading: false, data: null, error: e.message }); });
+    return () => { alive = false; };
+  }, []);
+
+  if (state.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Calculando predicciones…</div>;
+  if (state.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {state.error}</div>;
+  const { summary = {}, predictions = [], targetWeek } = state.data || {};
+
+  const filtered = predictions.filter(p => p.kind === kindFilter);
+  const confColor = c => c === 'high' ? 'var(--ok)' : c === 'medium' ? 'var(--warn)' : 'var(--ink-4)';
+
+  const chip = (id, label, count) => (
+    <span key={id} onClick={() => setKindFilter(id)}
+          style={{
+            cursor: 'pointer', padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 11,
+            border: '1px solid var(--rule)', background: kindFilter === id ? 'var(--ink)' : 'transparent',
+            color: kindFilter === id ? 'var(--paper)' : 'var(--ink)', marginRight: 6,
+          }}>
+      {label} <strong>{count}</strong>
+    </span>
+  );
+
+  const countEnt = predictions.filter(p => p.kind === 'entity').length;
+  const countCat = predictions.filter(p => p.kind === 'category').length;
+  const countPat = predictions.filter(p => p.kind === 'pattern').length;
+
+  const lowData = (summary.yearsInHistory || []).length < 2;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
+        {chip('entity', 'Entidades', countEnt)}
+        {chip('category', 'Categorías', countCat)}
+        {chip('pattern', 'Patrones', countPat)}
+      </div>
+      <div style={{ padding: '8px 10px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>
+        Semana target: <strong style={{ color: 'var(--ink)' }}>{targetWeek}</strong> · histórico: {summary.weeksInHistory || 0} semanas · años: {(summary.yearsInHistory || []).join(', ') || '(ninguno previo)'} · {(summary.byConfidence && summary.byConfidence.high) || 0} high-conf · {(summary.byConfidence && summary.byConfidence.medium) || 0} medium · {(summary.byConfidence && summary.byConfidence.low) || 0} low
+        {lowData && (
+          <div style={{ marginTop: 8, color: 'var(--warn)' }}>
+            ⚠ Se necesita al menos 1 año de weeklyHistory acumulado para predicciones fiables. Hoy hay {(summary.yearsInHistory || []).length} año(s) en memoria. Se puede sembrar con backfill de DS histórico (pendiente).
+          </div>
+        )}
+      </div>
+      {filtered.length === 0 ? (
+        <div style={{ padding: 16, fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-4)' }}>
+          Sin predicciones de tipo {kindFilter}. {lowData ? 'Acumulando histórico…' : 'Prueba a bajar el threshold o ampliar tolerance.'}
+        </div>
+      ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--mono)', fontSize: 12 }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--rule)' }}>
+                <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Término</th>
+                <th style={{ textAlign: 'right', padding: '6px 8px', color: 'var(--ink-3)' }}>Avg menciones</th>
+                <th style={{ textAlign: 'right', padding: '6px 8px', color: 'var(--ink-3)' }}>Años</th>
+                <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Confianza</th>
+                <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Semanas pasadas</th>
+                <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Top feeds</th>
+                <th style={{ textAlign: 'left', padding: '6px 8px', color: 'var(--ink-3)' }}>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.slice(0, 60).map((p, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                  <td style={{ padding: '6px 8px', color: 'var(--ink)' }}>{p.term}</td>
+                  <td style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--ink-2)' }}>{p.pastMentionsAvg}</td>
+                  <td style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--ink-2)' }}>{p.nYears}</td>
+                  <td style={{ padding: '6px 8px', color: confColor(p.confidence) }}>{p.confidence}</td>
+                  <td style={{ padding: '6px 8px', color: 'var(--ink-3)', fontSize: 11 }}>{(p.pastWeeks || []).join(', ')}</td>
+                  <td style={{ padding: '6px 8px', color: 'var(--ink-3)', fontSize: 11, maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(p.pastTopFeeds || []).join(', ') || '—'}</td>
+                  <td style={{ padding: '6px 8px' }}>
+                    {p.currentlyHot
+                      ? <span style={{ color: 'var(--warn)' }}>ya caliente</span>
+                      : <span style={{ color: 'var(--ok)' }}>latente</span>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PublishersView() {
   const [state, setState] = useState({ loading: true, data: null, error: null });
   const [filter, setFilter] = useState('notTracked'); // 'notTracked' | 'tracked' | 'all'
@@ -953,6 +1054,7 @@ function ConfigView({ data }) {
           <div><a href="/api/weekly-history" target="_blank" style={{ color: 'var(--accent)' }}>/api/weekly-history</a> — agregado semanal</div>
           <div><a href="/api/feeds" target="_blank" style={{ color: 'var(--accent)' }}>/api/feeds</a> — listado de feeds</div>
           <div><a href="/api/ds-publishers" target="_blank" style={{ color: 'var(--accent)' }}>/api/ds-publishers</a> — dominios DS vs feeds (gap analysis)</div>
+          <div><a href="/api/predictions" target="_blank" style={{ color: 'var(--accent)' }}>/api/predictions</a> — predicciones estacionales YoY</div>
           <div><a href="/api/routing" target="_blank" style={{ color: 'var(--accent)' }}>/api/routing</a> — rutas Slack</div>
           <div><a href="/classic.html" target="_blank" style={{ color: 'var(--accent)' }}>/classic.html</a> — dashboard legacy</div>
         </div>

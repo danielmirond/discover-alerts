@@ -89,13 +89,16 @@ export async function loadState(): Promise<void> {
       r.get<AppState['pages']>(PAGES_KEY).catch(e => { console.error('[store] load pages failed:', e); return null; }),
       r.get<AppState['recentAlerts']>(RECENT_KEY).catch(e => { console.error('[store] load recent failed:', e); return null; }),
     ]);
+    // Migración: si un shard nuevo viene vacío pero el core antiguo (pre-sharding)
+    // tenía ese campo, usamos el del core para no perder histórico.
+    const coreAny = (core || {}) as any;
     state = {
       ...emptyState(),
       ...(core || {}),
-      mediaArticles: mediaArticles || {},
-      weeklyHistory: weeklyHistory || {},
-      pages: pages || {},
-      recentAlerts: recentAlerts || [],
+      mediaArticles: (mediaArticles && Object.keys(mediaArticles).length > 0) ? mediaArticles : (coreAny.mediaArticles || {}),
+      weeklyHistory: (weeklyHistory && Object.keys(weeklyHistory).length > 0) ? weeklyHistory : (coreAny.weeklyHistory || {}),
+      pages: (pages && Object.keys(pages).length > 0) ? pages : (coreAny.pages || {}),
+      recentAlerts: (recentAlerts && recentAlerts.length > 0) ? recentAlerts : (coreAny.recentAlerts || []),
     };
     console.log(`[store] State loaded from Redis (sharded) · media=${Object.keys(state.mediaArticles).length} weekly=${Object.keys(state.weeklyHistory).length} pages=${Object.keys(state.pages).length} recent=${state.recentAlerts.length}`);
   } catch (err) {
