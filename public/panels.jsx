@@ -268,6 +268,7 @@ function CategoriesPanel({ categories }) {
       )}
       {cats.map(c => {
         const topPages = c.topPages || [];
+        const topEntities = c.topEntities || [];
         const delta = c.scoreDelta24h;
         const deltaColor = delta == null ? 'var(--ink-4)' : delta > 0 ? 'var(--ok)' : delta < 0 ? 'var(--danger)' : 'var(--ink-4)';
         return (
@@ -282,9 +283,30 @@ function CategoriesPanel({ categories }) {
                     {delta > 0 ? '▲' : delta < 0 ? '▼' : '—'} {Math.abs(delta)}
                   </span>
                 )}
-                {' · '}{c.publications} pubs · {topPages.length} pág.
+                {' · '}{c.publications} pubs · {topPages.length} pág · {topEntities.length} ent
               </span>
             </div>
+            {topEntities.length > 0 && (
+              <div style={{ marginLeft: 40, marginBottom: 8, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {topEntities.map(e => (
+                  <span key={e.name}
+                        title={`score ${e.score} · pos #${e.position} · ${e.publications} pubs${e.topic ? ' · topic: ' + e.topic : ''}`}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 4,
+                          fontFamily: 'var(--mono)', fontSize: 10,
+                          padding: '2px 6px',
+                          background: e.topic ? 'var(--warn)' : 'var(--paper-3)',
+                          color: e.topic ? 'var(--paper)' : 'var(--ink-2)',
+                          border: '1px solid var(--rule-2)',
+                        }}>
+                    {e.name}
+                    <span style={{ color: e.topic ? 'var(--paper)' : 'var(--ink-4)', fontSize: 9 }}>
+                      s{e.score}
+                    </span>
+                  </span>
+                ))}
+              </div>
+            )}
             {topPages.length > 0 ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginLeft: 40 }}>
                 {topPages.map((p, i) => (

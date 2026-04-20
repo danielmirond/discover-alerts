@@ -60,6 +60,14 @@ interface LiveCategory {
     position?: number;
     domain?: string;
   }>;
+  /** Top entidades que DS mapea a esta categoría (vía state.entityCategoryMap). */
+  topEntities?: Array<{
+    name: string;
+    score: number;
+    position: number;
+    publications: number;
+    topic?: string;
+  }>;
 }
 
 interface LiveConcordance {
@@ -337,6 +345,23 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     return b.score - a.score;
   });
 
+  // Indexar entities por categoría (via state.entityCategoryMap).
+  // La key del map es el NOMBRE de la categoría (string), no el id.
+  const entitiesByCatName = new Map<string, Array<{ name: string; score: number; position: number; publications: number; topic?: string }>>();
+  for (const [name, snap] of Object.entries(state.entities || {})) {
+    const catName = (state.entityCategoryMap || {})[name];
+    if (!catName) continue;
+    const key = catName.toLowerCase();
+    if (!entitiesByCatName.has(key)) entitiesByCatName.set(key, []);
+    entitiesByCatName.get(key)!.push({
+      name,
+      score: snap.score || 0,
+      position: snap.position || 0,
+      publications: snap.publications || 0,
+      topic: (state.entityTopicMap || {})[name],
+    });
+  }
+
   // Indexar state.pages por categoría DS (soporta id numérico y name string).
   const pagesByCatId = new Map<number, Array<{ url: string; title: string; image?: string; score: number; position?: number; domain?: string }>>();
   const pagesByCatName = new Map<string, Array<{ url: string; title: string; image?: string; score: number; position?: number; domain?: string }>>();
@@ -378,6 +403,9 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     dedup.sort((a, b) => b.score - a.score);
     const topPages = dedup.slice(0, 10);
 
+    const catEnts = entitiesByCatName.get((snap.name || '').toLowerCase()) || [];
+    const topEntities = [...catEnts].sort((a, b) => b.score - a.score).slice(0, 10);
+
     categories.push({
       id,
       name: snap.name,
@@ -389,6 +417,7 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       historyPoints: history.length,
       examplePages,
       topPages,
+      topEntities,
     });
   }
 
