@@ -695,6 +695,70 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     };
   });
 
+  // === TITULARES CON SCHEMA SUCESOS/LEGAL =======================================
+  // Escanea titulares de DS pages + RSS articles recientes buscando keywords
+  // del topic dictionary (sucesos, legal, ...). Genera entradas sintéticas que
+  // aparecen en el Feed con topic ya asignado. Permite detectar sucesos aunque
+  // la entidad no esté clasificada.
+  try {
+    const topicsDict2 = await loadTopicsDictionary();
+    const sucesosDef = topicsDict2.topics.find(t => t.id === 'sucesos');
+    const legalDef = topicsDict2.topics.find(t => t.id === 'legal');
+    const scanTopics = [sucesosDef, legalDef].filter(Boolean);
+
+    if (scanTopics.length > 0) {
+      // Indexar fuentes a escanear
+      type ScanItem = { title: string; url: string; source: string; kind: 'ds' | 'rss'; ts: number };
+      const items: ScanItem[] = [];
+      for (const [url, ps] of Object.entries(state.pages || {})) {
+        if (!ps.title) continue;
+        items.push({ title: ps.title, url, source: (ps.domain || '').replace(/^www\./, ''), kind: 'ds', ts: Date.parse(ps.lastUpdated || '') || Date.now() });
+      }
+      // RSS media articles de las últimas 6h
+      const maxAgeMs = 6 * 3600_000;
+      const nowT = Date.now();
+      for (const art of Object.values(state.mediaArticles || {})) {
+        const ts = Date.parse((art as any).pubDate || (art as any).firstSeen || '') || 0;
+        if (!ts || nowT - ts > maxAgeMs) continue;
+        if (!art.title || !art.link) continue;
+        items.push({ title: art.title, url: art.link, source: art.feedName || '', kind: 'rss', ts });
+      }
+
+      const seenUrls = new Set<string>();
+      const synth: LiveRecentAlert[] = [];
+      for (const it of items) {
+        if (seenUrls.has(it.url)) continue;
+        const titleNorm = normalize(it.title);
+        for (const topic of scanTopics) {
+          const hits = (topic!.keywords || []).filter(kw => titleNorm.includes(normalize(kw)));
+          if (hits.length < (topic!.minKeywords || 1)) continue;
+          seenUrls.add(it.url);
+          synth.push({
+            type: 'headline_pattern' as any,
+            subtype: `${topic!.id}_schema` as any,
+            title: it.title,
+            detail: `${it.source} · keywords: ${hits.slice(0, 3).join(', ')}`,
+            timestamp: new Date(it.ts).toISOString(),
+            routeName: topic!.id,
+            examples: [{ title: it.title, url: it.url, source: it.source }],
+            // propagar topic como campo suelto (atoms.jsx ya lo mira via r.alert.topic)
+            ...( { topic: topic!.id } as any),
+          } as any);
+          break; // un solo topic por titular (sucesos gana si matches en ambos)
+        }
+      }
+
+      // Ordenar por ts desc y tomar top 80
+      synth.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+      const synthTop = synth.slice(0, 80);
+      // Merge evitando duplicar por url (las alerts originales ya pueden contener examples con esas urls, pero título está dedup-safe aquí porque source diferente)
+      recentAlerts.push(...synthTop);
+      console.log(`[live-view] schema-match feed injections: ${synthTop.length}`);
+    }
+  } catch (err) {
+    console.warn('[live-view] schema scan failed:', (err as Error).message);
+  }
+
   // Headline patterns (3+ words, 3+ occurrences)
   const headlinePatterns: LiveHeadlinePattern[] = Object.entries(state.headlinePatterns)
     .map(([ngram, count]) => ({ ngram, count, words: ngram.split(' ').length }))
