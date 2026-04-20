@@ -242,10 +242,11 @@
   function transformTopMedia(api) {
     const media = api.topMedia || [];
     const total = media.reduce((s, m) => s + (m.articleCount || 0), 0) || 1;
-    return media.slice(0, 10).map(m => ({
+    return media.slice(0, 30).map(m => ({
       name: m.feedName,
       pubs: m.articleCount,
       share: Math.round((m.articleCount / total) * 100),
+      topDiscoverPages: m.topDiscoverPages || [],
     }));
   }
 

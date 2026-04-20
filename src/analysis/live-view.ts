@@ -147,6 +147,13 @@ interface LiveTopMedia {
   feedName: string;
   articleCount: number;
   entities: LiveTopMediaEntity[];
+  topDiscoverPages?: Array<{
+    url: string;
+    title: string;
+    image?: string;
+    score: number;
+    position?: number;
+  }>;
 }
 
 interface LiveViewResponse {
@@ -694,6 +701,40 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     }
   }
 
+  // Construir mapa feedName → dominios vistos (extraídos de article.link).
+  // Necesario para enganchar cada medio con sus pages de Discover por dominio.
+  const feedDomains: Record<string, Set<string>> = {};
+  for (const art of mediaArticlesArr) {
+    if (!art.feedName || !art.link) continue;
+    try {
+      const host = new URL(art.link).hostname.replace(/^www\./, '').toLowerCase();
+      if (!feedDomains[art.feedName]) feedDomains[art.feedName] = new Set();
+      feedDomains[art.feedName].add(host);
+    } catch { /* noop */ }
+  }
+
+  // Top 5 páginas Discover por medio (por score).
+  function topDiscoverPagesForFeed(feedName: string): Array<{ url: string; title: string; image?: string; score: number; position?: number }> {
+    const domains = feedDomains[feedName];
+    if (!domains || domains.size === 0) return [];
+    const candidates: Array<{ url: string; title: string; image?: string; score: number; position?: number }> = [];
+    for (const [url, ps] of Object.entries(state.pages || {})) {
+      if (!ps.title) continue;
+      // Normalizar el dominio de la page (amp.x.com → x.com)
+      let pdom = (ps.domain || '').toLowerCase().replace(/^www\./, '');
+      if (!pdom) {
+        try { pdom = new URL(url).hostname.replace(/^www\./, '').toLowerCase(); } catch {}
+      }
+      // Aceptar si la page está en uno de los dominios del medio O es subdominio
+      const match = [...domains].some(d => pdom === d || pdom.endsWith('.' + d));
+      if (match) {
+        candidates.push({ url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position });
+      }
+    }
+    candidates.sort((a, b) => b.score - a.score);
+    return candidates.slice(0, 5);
+  }
+
   const topMedia: LiveTopMedia[] = Object.entries(perFeed)
     .map(([feedName, info]) => {
       const entities: LiveTopMediaEntity[] = Array.from(info.entityCounts.entries())
@@ -709,10 +750,15 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
         })
         .sort((a, b) => b.count - a.count)
         .slice(0, 15);
-      return { feedName, articleCount: info.articleCount, entities };
+      return {
+        feedName,
+        articleCount: info.articleCount,
+        entities,
+        topDiscoverPages: topDiscoverPagesForFeed(feedName),
+      } as LiveTopMedia;
     })
     .sort((a, b) => b.articleCount - a.articleCount)
-    .slice(0, 10);
+    .slice(0, 30);
 
   // === OPPORTUNITIES ("Huecos activos") =======================================
   // Computed directly from cached state, independent of the dedup window.

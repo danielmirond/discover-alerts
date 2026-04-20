@@ -188,25 +188,58 @@ function TopMediaPanel({ media }) {
       <div className="kicker">
         Medios más activos
         <Help>
-          Cabeceras RSS con más artículos publicados en las últimas 12h. Son
-          <strong> medios</strong> (ABC, El País, Marca…), no entidades de Discover.
-          El ranking solo refleja volumen de publicación, no calidad editorial.
+          Cabeceras RSS con más artículos publicados en las últimas 12h + sus top 5 páginas
+          en Discover ahora mismo (ordenadas por score). Son <strong>medios</strong>
+          (ABC, El País, Marca…), no entidades.
         </Help>
         <span className="bar"></span>
-        <span className="meta">últimas 12h</span>
+        <span className="meta">últimas 12h · top 5 Discover/medio</span>
       </div>
       {media.map((m, i) => (
-        <div key={i} className="simple-row">
-          <div className="left">
-            <span className="rank">{String(i + 1).padStart(2, '0')}</span>
-            <span className="label">{m.name}</span>
-          </div>
-          <div className="left" style={{ gap: 8 }}>
+        <div key={i} style={{ padding: '12px 0', borderBottom: '1px solid var(--rule-2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <span className="rank" style={{ minWidth: 28 }}>{String(i + 1).padStart(2, '0')}</span>
+            <span className="label" style={{ flex: 1, fontWeight: 600 }}>{m.name}</span>
             <div className="mini-bar" style={{ width: 60 }}>
               <div className="fill" style={{ width: `${(m.pubs / max) * 100}%` }}></div>
             </div>
-            <span className="meta"><strong style={{ color: 'var(--ink)' }}>{m.pubs}</strong> · {m.share}%</span>
+            <span className="meta">
+              <strong style={{ color: 'var(--ink)' }}>{m.pubs}</strong> pubs · {m.share}%
+              {(m.topDiscoverPages || []).length > 0 && (
+                <span style={{ marginLeft: 8, color: 'var(--accent)' }}>· {m.topDiscoverPages.length} en Discover</span>
+              )}
+            </span>
           </div>
+          {(m.topDiscoverPages || []).length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6, marginLeft: 38 }}>
+              {m.topDiscoverPages.map((p, j) => (
+                <a key={p.url} href={p.url} target="_blank" rel="noreferrer"
+                   title={p.title}
+                   style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+                  <div style={{ position: 'relative' }}>
+                    {p.image ? (
+                      <img src={p.image} alt={p.title}
+                           style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />
+                    ) : (
+                      <div style={{ width: '100%', aspectRatio: '16/9', border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)' }}>
+                        sin img
+                      </div>
+                    )}
+                    <span style={{ position: 'absolute', top: 2, left: 2, padding: '1px 4px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
+                      s{p.score}{p.position ? ` · #${p.position}` : ''}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 10, color: 'var(--ink-3)', fontFamily: 'var(--sans)', lineHeight: 1.25, maxHeight: '3em', overflow: 'hidden' }}>
+                    {(p.title || '').slice(0, 90)}
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div style={{ marginLeft: 38, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
+              Sin páginas en Discover ahora mismo.
+            </div>
+          )}
         </div>
       ))}
     </div>
