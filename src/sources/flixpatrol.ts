@@ -84,7 +84,7 @@ export const FLIXPATROL_TARGETS: Array<{ platform: string; country: string; labe
   { platform: 'netflix',      country: 'spain',         label: 'Netflix ES' },
   { platform: 'amazon-prime', country: 'spain',         label: 'Prime Video ES' },
   { platform: 'disney',       country: 'spain',         label: 'Disney+ ES' },
-  { platform: 'hbo',          country: 'spain',         label: 'HBO Max ES' },
+  { platform: 'hbo-max',      country: 'spain',         label: 'HBO Max ES' },
   { platform: 'netflix',      country: 'world',         label: 'Netflix World' },
   { platform: 'netflix',      country: 'united-states', label: 'Netflix US' },
   { platform: 'netflix',      country: 'united-kingdom',label: 'Netflix UK' },
