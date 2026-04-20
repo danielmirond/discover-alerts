@@ -487,11 +487,18 @@ function App() {
     </>
   );
 
+  const schemaNews = (data._raw && data._raw.schemaNews) || {};
+  const sucNews = schemaNews.sucesos || [];
+  const legNews = schemaNews.legal || [];
+
   const viewFeed = (
     <>
       <section className="main">
         {kicker('Feed en vivo', `${filtered.length} alertas · orden por tiempo · actualiza cada 60s${loaded ? '' : ' · cargando…'}`)}
         <FilterBar filter={filter} setFilter={setFilter} counts={counts} />
+        {(sucNews.length > 0 || legNews.length > 0) && (
+          <SchemaNewsBlock sucesos={sucNews} legal={legNews} />
+        )}
         {filtered.map(a => (
           <AlertRow key={a.id} alert={a} fresh={freshId === a.id} onOpen={setOpenAlert} />
         ))}
@@ -634,6 +641,64 @@ function App() {
 }
 
 /* ---------------- Sucesos view (capa editorial YMYL) ---------------- */
+function SchemaNewsBlock({ sucesos = [], legal = [] }) {
+  const [active, setActive] = useState(sucesos.length >= legal.length ? 'sucesos' : 'legal');
+  const items = active === 'sucesos' ? sucesos : legal;
+  const accentColor = active === 'sucesos' ? 'var(--warn)' : 'var(--accent)';
+
+  const tab = (id, label, count) => (
+    <span key={id} onClick={() => setActive(id)}
+          style={{
+            cursor: 'pointer', padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 11,
+            border: '1px solid var(--rule)',
+            background: active === id ? 'var(--ink)' : 'transparent',
+            color: active === id ? 'var(--paper)' : 'var(--ink)',
+            marginRight: 6, letterSpacing: '.05em', textTransform: 'uppercase',
+          }}>
+      {label} <strong>{count}</strong>
+    </span>
+  );
+
+  return (
+    <div style={{ border: `1px solid ${accentColor}`, padding: 12, marginBottom: 14, background: 'var(--paper-3)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <span style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--ink-2)' }}>
+          ▸ Noticias por schema editorial
+        </span>
+        <span style={{ marginLeft: 'auto' }}>
+          {tab('sucesos', 'Sucesos', sucesos.length)}
+          {tab('legal', 'Legal', legal.length)}
+        </span>
+      </div>
+      {items.length === 0 ? (
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)', padding: 8 }}>
+          Sin noticias en este esquema ahora mismo.
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 360, overflowY: 'auto' }}>
+          {items.slice(0, 30).map((n, i) => (
+            <a key={i} href={n.url} target="_blank" rel="noreferrer"
+               style={{ textDecoration: 'none', color: 'inherit', padding: '6px 8px', display: 'flex', gap: 8, borderBottom: '1px solid var(--rule-2)', fontFamily: 'var(--sans)' }}>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: n.kind === 'ds' ? 'var(--accent)' : 'var(--ink-4)', flexShrink: 0, minWidth: 30, paddingTop: 2 }}>
+                {n.kind === 'ds' ? 'DS' : 'RSS'}
+              </span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', flexShrink: 0, minWidth: 120, paddingTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {n.source}
+              </span>
+              <span style={{ flex: 1, fontSize: 13, color: 'var(--ink)', lineHeight: 1.35 }}>
+                {n.title}
+              </span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: accentColor, flexShrink: 0, paddingTop: 2 }}>
+                {(n.keywords || []).slice(0, 2).join(' · ')}
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SucesosView({ data, onOpenAlert }) {
   const raw = (data._raw || {});
   // Entidades con topic=sucesos

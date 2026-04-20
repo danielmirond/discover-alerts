@@ -190,6 +190,7 @@ interface LiveViewResponse {
   cultural?: Array<any>;
   culturalEntityHits?: Array<any>;
   aemetEnriched?: Array<any>;
+  schemaNews?: Record<string, Array<any>>;
   weeklyHistorySummary: {
     availableWeeks: string[];
     feedNames: string[];
@@ -695,26 +696,31 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     };
   });
 
-  // === TITULARES CON SCHEMA SUCESOS/LEGAL =======================================
-  // Escanea titulares de DS pages + RSS articles recientes buscando keywords
-  // del topic dictionary (sucesos, legal, ...). Genera entradas sintéticas que
-  // aparecen en el Feed con topic ya asignado. Permite detectar sucesos aunque
-  // la entidad no esté clasificada.
+  // === NOTICIAS CON SCHEMA SUCESOS/LEGAL ========================================
+  // Escanea RSS articles + DS pages buscando keywords de topics.json.
+  // NO son alertas sintéticas — son el listado crudo de noticias publicadas
+  // que matchean el esquema editorial "sucesos"/"legal". Se muestran en el
+  // Feed como listado separado.
+  type SchemaMatchNews = {
+    topic: string;
+    title: string;
+    url: string;
+    source: string;
+    kind: 'ds' | 'rss';
+    timestamp: string;
+    keywords: string[];
+  };
+  const schemaNews: Record<string, SchemaMatchNews[]> = {};
   try {
     const topicsDict2 = await loadTopicsDictionary();
-    const sucesosDef = topicsDict2.topics.find(t => t.id === 'sucesos');
-    const legalDef = topicsDict2.topics.find(t => t.id === 'legal');
-    const scanTopics = [sucesosDef, legalDef].filter(Boolean);
-
+    const scanTopics = topicsDict2.topics.filter(t => t.id === 'sucesos' || t.id === 'legal');
     if (scanTopics.length > 0) {
-      // Indexar fuentes a escanear
       type ScanItem = { title: string; url: string; source: string; kind: 'ds' | 'rss'; ts: number };
       const items: ScanItem[] = [];
       for (const [url, ps] of Object.entries(state.pages || {})) {
         if (!ps.title) continue;
         items.push({ title: ps.title, url, source: (ps.domain || '').replace(/^www\./, ''), kind: 'ds', ts: Date.parse(ps.lastUpdated || '') || Date.now() });
       }
-      // RSS media articles de las últimas 6h
       const maxAgeMs = 6 * 3600_000;
       const nowT = Date.now();
       for (const art of Object.values(state.mediaArticles || {})) {
@@ -724,36 +730,33 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
         items.push({ title: art.title, url: art.link, source: art.feedName || '', kind: 'rss', ts });
       }
 
-      const seenUrls = new Set<string>();
-      const synth: LiveRecentAlert[] = [];
+      for (const topic of scanTopics) schemaNews[topic.id] = [];
+      const seenUrlPerTopic = new Map<string, Set<string>>();
       for (const it of items) {
-        if (seenUrls.has(it.url)) continue;
         const titleNorm = normalize(it.title);
         for (const topic of scanTopics) {
-          const hits = (topic!.keywords || []).filter(kw => titleNorm.includes(normalize(kw)));
-          if (hits.length < (topic!.minKeywords || 1)) continue;
-          seenUrls.add(it.url);
-          synth.push({
-            type: 'headline_pattern' as any,
-            subtype: `${topic!.id}_schema` as any,
+          const hits = (topic.keywords || []).filter(kw => titleNorm.includes(normalize(kw)));
+          if (hits.length < (topic.minKeywords || 1)) continue;
+          if (!seenUrlPerTopic.has(topic.id)) seenUrlPerTopic.set(topic.id, new Set());
+          const seen = seenUrlPerTopic.get(topic.id)!;
+          if (seen.has(it.url)) continue;
+          seen.add(it.url);
+          schemaNews[topic.id].push({
+            topic: topic.id,
             title: it.title,
-            detail: `${it.source} · keywords: ${hits.slice(0, 3).join(', ')}`,
+            url: it.url,
+            source: it.source,
+            kind: it.kind,
             timestamp: new Date(it.ts).toISOString(),
-            routeName: topic!.id,
-            examples: [{ title: it.title, url: it.url, source: it.source }],
-            // propagar topic como campo suelto (atoms.jsx ya lo mira via r.alert.topic)
-            ...( { topic: topic!.id } as any),
-          } as any);
-          break; // un solo topic por titular (sucesos gana si matches en ambos)
+            keywords: hits.slice(0, 3),
+          });
         }
       }
-
-      // Ordenar por ts desc y tomar top 80
-      synth.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
-      const synthTop = synth.slice(0, 80);
-      // Merge evitando duplicar por url (las alerts originales ya pueden contener examples con esas urls, pero título está dedup-safe aquí porque source diferente)
-      recentAlerts.push(...synthTop);
-      console.log(`[live-view] schema-match feed injections: ${synthTop.length}`);
+      for (const id of Object.keys(schemaNews)) {
+        schemaNews[id].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+        schemaNews[id] = schemaNews[id].slice(0, 80);
+      }
+      console.log(`[live-view] schema news: ${Object.entries(schemaNews).map(([k,v]) => `${k}=${v.length}`).join(' ')}`);
     }
   } catch (err) {
     console.warn('[live-view] schema scan failed:', (err as Error).message);
@@ -1330,6 +1333,7 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     cultural: culturalItems,
     culturalEntityHits: Array.from(culturalEntityHits.entries()).map(([entity, hits]) => ({ entity, hits })),
     aemetEnriched,
+    schemaNews,
     entities: entities.slice(0, 100),
     categories: categories.slice(0, 50),
     concordances: concordances.slice(0, 50),
