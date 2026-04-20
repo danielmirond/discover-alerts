@@ -24,6 +24,8 @@ const MEDIA_KEY = 'discover-alerts:media';
 const WEEKLY_KEY = 'discover-alerts:weekly';
 const PAGES_KEY = 'discover-alerts:pages';
 const RECENT_KEY = 'discover-alerts:recent';
+const PATTERNS_HIST_KEY = 'discover-alerts:patterns-hist';
+const DEDUP_KEY = 'discover-alerts:dedup';
 
 function emptyState(): AppState {
   return {
@@ -71,8 +73,8 @@ function getRedis(): Redis | null {
 
 /** Separa del state completo los campos pesados para que core quepa. */
 function splitShards(s: AppState) {
-  const { mediaArticles, weeklyHistory, pages, recentAlerts, ...core } = s;
-  return { core, mediaArticles, weeklyHistory, pages, recentAlerts };
+  const { mediaArticles, weeklyHistory, pages, recentAlerts, headlinePatternsHistory, dedupHashes, ...core } = s;
+  return { core, mediaArticles, weeklyHistory, pages, recentAlerts, headlinePatternsHistory, dedupHashes };
 }
 
 export async function loadState(): Promise<void> {
@@ -82,12 +84,14 @@ export async function loadState(): Promise<void> {
     return;
   }
   try {
-    const [core, mediaArticles, weeklyHistory, pages, recentAlerts] = await Promise.all([
+    const [core, mediaArticles, weeklyHistory, pages, recentAlerts, patternsHist, dedupH] = await Promise.all([
       r.get<Partial<AppState>>(CORE_KEY).catch(e => { console.error('[store] load core failed:', e); return null; }),
       r.get<AppState['mediaArticles']>(MEDIA_KEY).catch(e => { console.error('[store] load media failed:', e); return null; }),
       r.get<AppState['weeklyHistory']>(WEEKLY_KEY).catch(e => { console.error('[store] load weekly failed:', e); return null; }),
       r.get<AppState['pages']>(PAGES_KEY).catch(e => { console.error('[store] load pages failed:', e); return null; }),
       r.get<AppState['recentAlerts']>(RECENT_KEY).catch(e => { console.error('[store] load recent failed:', e); return null; }),
+      r.get<AppState['headlinePatternsHistory']>(PATTERNS_HIST_KEY).catch(e => { console.error('[store] load patterns failed:', e); return null; }),
+      r.get<AppState['dedupHashes']>(DEDUP_KEY).catch(e => { console.error('[store] load dedup failed:', e); return null; }),
     ]);
     // Migración: si un shard nuevo viene vacío pero el core antiguo (pre-sharding)
     // tenía ese campo, usamos el del core para no perder histórico.
@@ -99,6 +103,8 @@ export async function loadState(): Promise<void> {
       weeklyHistory: (weeklyHistory && Object.keys(weeklyHistory).length > 0) ? weeklyHistory : (coreAny.weeklyHistory || {}),
       pages: (pages && Object.keys(pages).length > 0) ? pages : (coreAny.pages || {}),
       recentAlerts: (recentAlerts && recentAlerts.length > 0) ? recentAlerts : (coreAny.recentAlerts || []),
+      headlinePatternsHistory: (patternsHist && patternsHist.length > 0) ? patternsHist : (coreAny.headlinePatternsHistory || []),
+      dedupHashes: (dedupH && Object.keys(dedupH).length > 0) ? dedupH : (coreAny.dedupHashes || {}),
     };
     console.log(`[store] State loaded from Redis (sharded) · media=${Object.keys(state.mediaArticles).length} weekly=${Object.keys(state.weeklyHistory).length} pages=${Object.keys(state.pages).length} recent=${state.recentAlerts.length}`);
   } catch (err) {
@@ -110,7 +116,7 @@ export async function loadState(): Promise<void> {
 export async function saveState(): Promise<void> {
   const r = getRedis();
   if (!r) return;
-  const { core, mediaArticles, weeklyHistory, pages, recentAlerts } = splitShards(state);
+  const { core, mediaArticles, weeklyHistory, pages, recentAlerts, headlinePatternsHistory, dedupHashes } = splitShards(state);
 
   // Sizes para diagnóstico (JSON.stringify bytes aprox)
   const sizes = {
@@ -119,8 +125,10 @@ export async function saveState(): Promise<void> {
     weekly: JSON.stringify(weeklyHistory).length,
     pages: JSON.stringify(pages).length,
     recent: JSON.stringify(recentAlerts).length,
+    patterns: JSON.stringify(headlinePatternsHistory || []).length,
+    dedup: JSON.stringify(dedupHashes || {}).length,
   };
-  console.log(`[store] save sizes (bytes): core=${sizes.core} media=${sizes.media} weekly=${sizes.weekly} pages=${sizes.pages} recent=${sizes.recent}`);
+  console.log(`[store] save sizes (bytes): core=${sizes.core} media=${sizes.media} weekly=${sizes.weekly} pages=${sizes.pages} recent=${sizes.recent} patterns=${sizes.patterns} dedup=${sizes.dedup}`);
 
   const results = await Promise.allSettled([
     r.set(CORE_KEY, core),
@@ -128,8 +136,10 @@ export async function saveState(): Promise<void> {
     r.set(WEEKLY_KEY, weeklyHistory),
     r.set(PAGES_KEY, pages),
     r.set(RECENT_KEY, recentAlerts),
+    r.set(PATTERNS_HIST_KEY, headlinePatternsHistory || []),
+    r.set(DEDUP_KEY, dedupHashes || {}),
   ]);
-  const names = ['core', 'media', 'weekly', 'pages', 'recent'];
+  const names = ['core', 'media', 'weekly', 'pages', 'recent', 'patterns', 'dedup'];
   results.forEach((res, i) => {
     if (res.status === 'rejected') {
       console.error(`[store] save ${names[i]} failed (size=${sizes[names[i] as keyof typeof sizes]}):`, res.reason);
