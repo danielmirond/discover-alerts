@@ -8,10 +8,12 @@ export interface FlixPatrolItem {
   rank: number;
   title: string;
   category: 'TV' | 'Movies';
+  platform: string;
+  country: string;
 }
 
-async function fetchPlatform(platform: string): Promise<string> {
-  const url = `https://flixpatrol.com/top10/${platform}/spain/today/`;
+async function fetchPlatform(platform: string, country = 'spain'): Promise<string> {
+  const url = `https://flixpatrol.com/top10/${platform}/${country}/today/`;
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 15_000);
   const r = await fetch(url, {
@@ -20,7 +22,7 @@ async function fetchPlatform(platform: string): Promise<string> {
     headers: { 'user-agent': 'Mozilla/5.0 (compatible; discover-alerts-flixpatrol)' },
   });
   clearTimeout(t);
-  if (!r.ok) throw new Error(`FlixPatrol ${platform} HTTP ${r.status}`);
+  if (!r.ok) throw new Error(`FlixPatrol ${platform}/${country} HTTP ${r.status}`);
   return r.text();
 }
 
@@ -31,7 +33,7 @@ async function fetchPlatform(platform: string): Promise<string> {
  * Estrategia: dividir el HTML en dos regiones (TV Shows / Movies) por los
  * h3 con ese texto, y extraer los primeros 10 <a href="/title/…"> de cada una.
  */
-function parseHtml(html: string, _platform: string): FlixPatrolItem[] {
+function parseHtml(html: string, platform: string, country: string): FlixPatrolItem[] {
   // Encuentra índices de los headings
   const tvIdx = html.search(/>TV Shows</i);
   const mvIdx = html.search(/>Movies</i);
@@ -65,7 +67,7 @@ function parseHtml(html: string, _platform: string): FlixPatrolItem[] {
       const title = m[1].replace(/&amp;/g, '&').trim();
       if (!title || seen.has(title)) continue;
       seen.add(title);
-      out.push({ rank, title, category: sec.category });
+      out.push({ rank, title, category: sec.category, platform, country });
       rank++;
     }
   }
@@ -73,6 +75,35 @@ function parseHtml(html: string, _platform: string): FlixPatrolItem[] {
 }
 
 export async function fetchFlixPatrolNetflixES(): Promise<FlixPatrolItem[]> {
-  const html = await fetchPlatform('netflix');
-  return parseHtml(html, 'netflix');
+  const html = await fetchPlatform('netflix', 'spain');
+  return parseHtml(html, 'netflix', 'spain');
+}
+
+/** Matriz platform×country a monitorizar. Mantener corta para no reventar cadencia. */
+export const FLIXPATROL_TARGETS: Array<{ platform: string; country: string; label: string }> = [
+  { platform: 'netflix',      country: 'spain',         label: 'Netflix ES' },
+  { platform: 'amazon-prime', country: 'spain',         label: 'Prime Video ES' },
+  { platform: 'disney',       country: 'spain',         label: 'Disney+ ES' },
+  { platform: 'hbo',          country: 'spain',         label: 'HBO Max ES' },
+  { platform: 'netflix',      country: 'world',         label: 'Netflix World' },
+  { platform: 'netflix',      country: 'united-states', label: 'Netflix US' },
+  { platform: 'netflix',      country: 'united-kingdom',label: 'Netflix UK' },
+  { platform: 'netflix',      country: 'mexico',        label: 'Netflix MX' },
+  { platform: 'netflix',      country: 'argentina',     label: 'Netflix AR' },
+  { platform: 'netflix',      country: 'france',        label: 'Netflix FR' },
+];
+
+export async function fetchFlixPatrolMulti(targets: typeof FLIXPATROL_TARGETS = FLIXPATROL_TARGETS): Promise<FlixPatrolItem[]> {
+  const results = await Promise.allSettled(
+    targets.map(async t => {
+      const html = await fetchPlatform(t.platform, t.country);
+      return parseHtml(html, t.platform, t.country);
+    })
+  );
+  const all: FlixPatrolItem[] = [];
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled') all.push(...r.value);
+    else console.warn(`[flixpatrol] ${targets[i].platform}/${targets[i].country} error:`, (r.reason as Error).message);
+  });
+  return all;
 }

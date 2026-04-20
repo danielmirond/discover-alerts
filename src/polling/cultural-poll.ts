@@ -1,6 +1,6 @@
 import { getState, updateState, saveState, loadState } from '../state/store.js';
 import { fetchNetflixTopES } from '../sources/netflix.js';
-import { fetchFlixPatrolNetflixES } from '../sources/flixpatrol.js';
+import { fetchFlixPatrolMulti } from '../sources/flixpatrol.js';
 
 /**
  * Poll semanal-ish de fuentes culturales (Netflix Top 10 ES + FlixPatrol ES).
@@ -12,7 +12,7 @@ export async function runCulturalPoll(): Promise<void> {
 
   const [nf, fp] = await Promise.allSettled([
     fetchNetflixTopES(),
-    fetchFlixPatrolNetflixES(),
+    fetchFlixPatrolMulti(),
   ]);
 
   const netflix = nf.status === 'fulfilled' ? nf.value : [];
@@ -21,8 +21,15 @@ export async function runCulturalPoll(): Promise<void> {
   if (nf.status === 'rejected') console.error('[cultural] Netflix error:', nf.reason);
   if (fp.status === 'rejected') console.error('[cultural] FlixPatrol error:', fp.reason);
 
-  console.log(`[cultural] Netflix Top 10 ES: ${netflix.length} items`);
-  console.log(`[cultural] FlixPatrol ES: ${flixpatrol.length} items`);
+  // Contar por (platform, country)
+  const byTarget = new Map<string, number>();
+  for (const f of flixpatrol) {
+    const k = `${f.platform}/${f.country}`;
+    byTarget.set(k, (byTarget.get(k) || 0) + 1);
+  }
+  console.log(`[cultural] Netflix TSV ES: ${netflix.length} items`);
+  console.log(`[cultural] FlixPatrol: ${flixpatrol.length} items across ${byTarget.size} targets`);
+  for (const [k, n] of byTarget) console.log(`  · ${k}: ${n}`);
 
   updateState({
     lastPollCultural: new Date().toISOString(),
