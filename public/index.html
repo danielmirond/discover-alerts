@@ -715,12 +715,44 @@ function SucesosView({ data, onOpenAlert }) {
           </div>
         )}
         {entities.length > 0 && (
-          <div>
-            <div className="kicker">Entidades clasificadas <span className="bar"></span></div>
-            {entities.map((e, i) => row({
-              title: e.name,
-              detail: `score ${e.score} · pos #${e.position} · ${e.publications} pubs`,
-            }, 'e' + i))}
+          <div style={{ gridColumn: '1 / -1' }}>
+            <div className="kicker">Entidades clasificadas · con publicaciones <span className="bar"></span> <span className="meta">{entities.length} entidades</span></div>
+            {entities.map((e, i) => (
+              <div key={'e' + i} style={{ padding: 'var(--space-6) 0', borderBottom: '1px solid var(--rule-2)' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 6 }}>
+                  <span style={{ fontFamily: 'var(--sans)', fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--ink)' }}>{e.name}</span>
+                  {e.category && <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>{e.category}</span>}
+                  <span style={{ marginLeft: 'auto', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>
+                    score {e.score} · pos #{e.position} · {e.publications} pubs
+                  </span>
+                </div>
+                {/* Publicaciones: RSS articles + Discover pages */}
+                {(() => {
+                  const rssItems = (e.matchingArticles || []).map(a => ({ kind: 'rss', title: a.title, url: a.link, source: a.feedName }));
+                  const dsItems = (e.topPages || []).map(p => ({ kind: 'ds', title: p.title, url: p.url, source: (p.domain || '').replace(/^www\./, ''), score: p.score }));
+                  const all = [...rssItems, ...dsItems].slice(0, 8);
+                  if (all.length === 0) return <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)', marginLeft: 10 }}>sin publicaciones asociadas</div>;
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginLeft: 10 }}>
+                      {all.map((p, j) => (
+                        <a key={j} href={p.url} target="_blank" rel="noreferrer"
+                           style={{ fontFamily: 'var(--sans)', fontSize: 'var(--text-sm)', color: 'var(--ink-2)', textDecoration: 'none', lineHeight: 1.35, display: 'flex', gap: 6 }}>
+                          <span style={{ color: p.kind === 'ds' ? 'var(--accent)' : 'var(--ink-4)', fontFamily: 'var(--mono)', fontSize: 10, flexShrink: 0, minWidth: 30 }}>
+                            {p.kind === 'ds' ? 'DS' : 'RSS'}
+                          </span>
+                          <span style={{ color: 'var(--ink-3)', fontSize: 10, flexShrink: 0, minWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {p.source || ''}
+                          </span>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {p.title}
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
+            ))}
           </div>
         )}
       </div>
