@@ -253,6 +253,7 @@
       pubs: m.articleCount,
       share: Math.round((m.articleCount / total) * 100),
       topDiscoverPages: m.topDiscoverPages || [],
+      entities: m.entities || [],
     }));
   }
 

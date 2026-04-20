@@ -208,8 +208,38 @@ function TopMediaPanel({ media }) {
               {(m.topDiscoverPages || []).length > 0 && (
                 <span style={{ marginLeft: 8, color: 'var(--accent)' }}>· {m.topDiscoverPages.length} en Discover</span>
               )}
+              {(m.entities || []).length > 0 && (
+                <span style={{ marginLeft: 8, color: 'var(--ink-3)' }}>· {m.entities.length} entidades</span>
+              )}
             </span>
           </div>
+          {(m.entities || []).length > 0 && (
+            <div style={{ marginLeft: 38, marginBottom: 8, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {m.entities.slice(0, 12).map((e, j) => {
+                // Señales DS/Trends/X que vienen del backend
+                const signals = [];
+                if (e.inGoogleTrends) signals.push('T');
+                if (e.inXTrends) signals.push('X');
+                const bg = e.inGoogleTrends || e.inXTrends ? 'var(--accent)' : 'var(--paper-3)';
+                const fg = e.inGoogleTrends || e.inXTrends ? 'var(--paper)' : 'var(--ink-2)';
+                return (
+                  <span key={j}
+                        title={`${e.name} · ${e.count} menciones${signals.length ? ' · cruza: ' + signals.join('+') : ''}`}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 3,
+                          fontFamily: 'var(--mono)', fontSize: 10,
+                          padding: '2px 6px',
+                          background: bg, color: fg,
+                          border: '1px solid var(--rule-2)',
+                        }}>
+                    {e.name}
+                    <span style={{ opacity: 0.7 }}>×{e.count}</span>
+                    {signals.length > 0 && <span style={{ opacity: 0.9, letterSpacing: 1 }}>{signals.join('')}</span>}
+                  </span>
+                );
+              })}
+            </div>
+          )}
           {(m.topDiscoverPages || []).length > 0 ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6, marginLeft: 38 }}>
               {m.topDiscoverPages.map((p, j) => (
