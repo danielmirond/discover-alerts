@@ -39,6 +39,9 @@ interface LiveEntity {
   matchingXTrends: Array<{ topic: string; rank: number }>;
   matchingArticles: Array<{ title: string; link: string; feedName: string }>;
   velocity?: VelocityMetrics;
+  /** Primera vez que DS vio esta entidad (desde EntitySnapshot.firstSeen) */
+  firstSeen?: string;
+  lastUpdated?: string;
 }
 
 interface LiveCategory {
@@ -59,6 +62,8 @@ interface LiveCategory {
     score: number;
     position?: number;
     domain?: string;
+    firstSeen?: string;
+    lastUpdated?: string;
   }>;
   /** Top entidades que DS mapea a esta categoría (vía state.entityCategoryMap). */
   topEntities?: Array<{
@@ -336,6 +341,8 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       matchingXTrends: matchingXTrends.slice(0, 3),
       matchingArticles,
       velocity: computeVelocity(apps, nowMs),
+      firstSeen: (snap as any).firstSeen,
+      lastUpdated: (snap as any).lastUpdated,
       imageUrl: topPage?.image,
       topPageTitle: topPage?.title,
       topPageUrl: topPage?.url,
@@ -371,11 +378,12 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
   }
 
   // Indexar state.pages por categoría DS (soporta id numérico y name string).
-  const pagesByCatId = new Map<number, Array<{ url: string; title: string; image?: string; score: number; position?: number; domain?: string }>>();
-  const pagesByCatName = new Map<string, Array<{ url: string; title: string; image?: string; score: number; position?: number; domain?: string }>>();
+  type CatPageItem = { url: string; title: string; image?: string; score: number; position?: number; domain?: string; firstSeen?: string; lastUpdated?: string };
+  const pagesByCatId = new Map<number, CatPageItem[]>();
+  const pagesByCatName = new Map<string, CatPageItem[]>();
   for (const [url, ps] of Object.entries(state.pages || {})) {
     if (!ps.title) continue;
-    const item = { url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position, domain: ps.domain };
+    const item: CatPageItem = { url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position, domain: ps.domain, firstSeen: (ps as any).firstSeen, lastUpdated: ps.lastUpdated };
     if (typeof ps.category === 'number') {
       if (!pagesByCatId.has(ps.category)) pagesByCatId.set(ps.category, []);
       pagesByCatId.get(ps.category)!.push(item);
@@ -1338,7 +1346,7 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     schemaNews,
     // Páginas DS slim para fallback del Drawer (sólo metadata necesaria)
     pagesSlim: Object.entries(state.pages || {})
-      .map(([url, ps]) => ({ url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position, domain: ps.domain }))
+      .map(([url, ps]) => ({ url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position, domain: ps.domain, firstSeen: (ps as any).firstSeen, lastUpdated: ps.lastUpdated }))
       .sort((a, b) => b.score - a.score)
       .slice(0, 200),
     // Artículos RSS slim (últimas 12h) para fallback del Drawer

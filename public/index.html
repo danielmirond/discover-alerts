@@ -330,6 +330,16 @@ function Drawer({ alert, onClose, data }) {
           <h1>{alert.headline}</h1>
           <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', letterSpacing: '0.04em', marginBottom: 4 }}>
             {alert.ts} · {alert.ago} · entidad ▸ <strong style={{ color: 'var(--ink)' }}>{alert.entity}</strong>
+            {ent && ent.firstSeen && (
+              <span style={{ marginLeft: 8, color: 'var(--accent)' }}>
+                · en Discover desde {(() => {
+                  const diffH = (Date.now() - new Date(ent.firstSeen).getTime()) / 3600_000;
+                  if (diffH < 1) return `${Math.round(diffH * 60)}m`;
+                  if (diffH < 24) return `${Math.round(diffH)}h`;
+                  return `${Math.round(diffH / 24)}d`;
+                })()}
+              </span>
+            )}
           </div>
           <p style={{ fontFamily: 'var(--serif)', fontSize: 15, lineHeight: 1.5, color: 'var(--ink-2)', margin: '10px 0 4px' }}>{alert.snippet}</p>
 

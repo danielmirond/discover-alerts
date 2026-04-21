@@ -393,33 +393,47 @@ function CategoriesPanel({ categories }) {
             )}
             {topPages.length > 0 ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12, marginLeft: 40 }}>
-                {topPages.map((p, i) => (
-                  <a key={p.url} href={p.url} target="_blank" rel="noreferrer"
-                     title={p.title}
-                     style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
-                    <div style={{ position: 'relative' }}>
-                      {p.image ? (
-                        <img src={p.image} alt={p.title}
-                             style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />
-                      ) : (
-                        <div style={{ width: '100%', aspectRatio: '16/9', border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)' }}>
-                          sin imagen
+                {topPages.map((p, i) => {
+                  const ts = p.firstSeen || p.lastUpdated;
+                  let ago = '';
+                  if (ts) {
+                    const diffH = Math.max(0, (Date.now() - new Date(ts).getTime()) / 3600_000);
+                    ago = diffH < 1 ? `${Math.round(diffH * 60)}m` : diffH < 24 ? `${Math.round(diffH)}h` : `${Math.round(diffH / 24)}d`;
+                  }
+                  return (
+                    <a key={p.url} href={p.url} target="_blank" rel="noreferrer"
+                       title={p.title}
+                       style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
+                      <div style={{ position: 'relative' }}>
+                        {p.image ? (
+                          <img src={p.image} alt={p.title}
+                               style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />
+                        ) : (
+                          <div style={{ width: '100%', aspectRatio: '16/9', border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)' }}>
+                            sin imagen
+                          </div>
+                        )}
+                        <span style={{ position: 'absolute', top: 4, left: 4, padding: '2px 6px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.05em' }}>
+                          #{i + 1} · s{p.score}
+                        </span>
+                        {ago && (
+                          <span title={`Primera vista en Discover hace ${ago}`}
+                                style={{ position: 'absolute', top: 4, right: 4, padding: '2px 6px', background: 'var(--accent)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 10 }}>
+                            {ago}
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.35, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: 500 }}>
+                        {p.title}
+                      </div>
+                      {p.domain && (
+                        <div style={{ fontSize: 10, color: 'var(--ink-3)', fontFamily: 'var(--mono)', textTransform: 'lowercase' }}>
+                          {p.domain.replace(/^www\./, '')}
                         </div>
                       )}
-                      <span style={{ position: 'absolute', top: 4, left: 4, padding: '2px 6px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.05em' }}>
-                        #{i + 1} · s{p.score}
-                      </span>
-                    </div>
-                    <div style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.35, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: 500 }}>
-                      {p.title}
-                    </div>
-                    {p.domain && (
-                      <div style={{ fontSize: 10, color: 'var(--ink-3)', fontFamily: 'var(--mono)', textTransform: 'lowercase' }}>
-                        {p.domain.replace(/^www\./, '')}
-                      </div>
-                    )}
-                  </a>
-                ))}
+                    </a>
+                  );
+                })}
               </div>
             ) : (
               <div style={{ marginLeft: 40, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
