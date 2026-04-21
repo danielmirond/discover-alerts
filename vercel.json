@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/**/*.ts": {
+      "includeFiles": "{feeds.json,topics.json,routing.json,headline-formulas.json,feeds-sport.json}"
+    }
+  }
+}
