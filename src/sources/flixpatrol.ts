@@ -79,18 +79,44 @@ export async function fetchFlixPatrolNetflixES(): Promise<FlixPatrolItem[]> {
   return parseHtml(html, 'netflix', 'spain');
 }
 
-/** Matriz platform×country a monitorizar. Mantener corta para no reventar cadencia. */
+/**
+ * Matriz platform×country a monitorizar.
+ *  - ES: todas las plataformas disponibles (bloque principal para redacción ES)
+ *  - Netflix en más países: detectar trending que llegará a ES en días/semanas
+ *  - Prime/Disney/Apple TV+ en US/UK: referencias globales de contenido que
+ *    saltan a España con lag.
+ * Cadencia 6h → ~20 requests paralelos HTTP. FlixPatrol tolera bien con
+ * User-Agent estándar.
+ */
 export const FLIXPATROL_TARGETS: Array<{ platform: string; country: string; label: string }> = [
+  // === ES: todas las plataformas ===
   { platform: 'netflix',      country: 'spain',         label: 'Netflix ES' },
   { platform: 'amazon-prime', country: 'spain',         label: 'Prime Video ES' },
   { platform: 'disney',       country: 'spain',         label: 'Disney+ ES' },
   { platform: 'hbo-max',      country: 'spain',         label: 'HBO Max ES' },
+  { platform: 'apple-tv',     country: 'spain',         label: 'Apple TV+ ES' },
+  { platform: 'skyshowtime',  country: 'spain',         label: 'SkyShowtime ES' },
+  // === Netflix global + referencias culturales ===
   { platform: 'netflix',      country: 'world',         label: 'Netflix World' },
   { platform: 'netflix',      country: 'united-states', label: 'Netflix US' },
   { platform: 'netflix',      country: 'united-kingdom',label: 'Netflix UK' },
+  { platform: 'netflix',      country: 'france',        label: 'Netflix FR' },
+  { platform: 'netflix',      country: 'italy',         label: 'Netflix IT' },
+  { platform: 'netflix',      country: 'germany',       label: 'Netflix DE' },
+  { platform: 'netflix',      country: 'portugal',      label: 'Netflix PT' },
+  // === Netflix LatAm (mismo idioma, contenido propio fuerte) ===
   { platform: 'netflix',      country: 'mexico',        label: 'Netflix MX' },
   { platform: 'netflix',      country: 'argentina',     label: 'Netflix AR' },
-  { platform: 'netflix',      country: 'france',        label: 'Netflix FR' },
+  { platform: 'netflix',      country: 'colombia',      label: 'Netflix CO' },
+  { platform: 'netflix',      country: 'chile',         label: 'Netflix CL' },
+  { platform: 'netflix',      country: 'brazil',        label: 'Netflix BR' },
+  // === Netflix Asia (series que saltan a Occidente) ===
+  { platform: 'netflix',      country: 'south-korea',   label: 'Netflix KR' },
+  { platform: 'netflix',      country: 'japan',         label: 'Netflix JP' },
+  // === Plataformas US (señales globales pre-ES) ===
+  { platform: 'amazon-prime', country: 'united-states', label: 'Prime US' },
+  { platform: 'disney',       country: 'united-states', label: 'Disney+ US' },
+  { platform: 'apple-tv',     country: 'united-states', label: 'Apple TV+ US' },
 ];
 
 export async function fetchFlixPatrolMulti(targets: typeof FLIXPATROL_TARGETS = FLIXPATROL_TARGETS): Promise<FlixPatrolItem[]> {
