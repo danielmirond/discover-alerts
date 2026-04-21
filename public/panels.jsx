@@ -188,12 +188,12 @@ function TopMediaPanel({ media }) {
       <div className="kicker">
         Medios más activos
         <Help>
-          Cabeceras RSS con más artículos publicados en las últimas 12h + sus top 5 páginas
-          en Discover ahora mismo (ordenadas por score). Son <strong>medios</strong>
-          (ABC, El País, Marca…), no entidades.
+          Cabeceras RSS con más artículos en las últimas 12h + hasta 10 páginas suyas
+          que entraron en Discover en las últimas 48h (ventana rolling). Son
+          <strong> medios</strong> (ABC, El País, Marca…), no entidades.
         </Help>
         <span className="bar"></span>
-        <span className="meta">últimas 12h · top 5 Discover/medio</span>
+        <span className="meta">RSS 12h · Discover rolling 48h · hasta 10 cards/medio</span>
       </div>
       {media.map((m, i) => (
         <div key={i} style={{ padding: '12px 0', borderBottom: '1px solid var(--rule-2)' }}>
@@ -241,29 +241,43 @@ function TopMediaPanel({ media }) {
             </div>
           )}
           {(m.topDiscoverPages || []).length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6, marginLeft: 38 }}>
-              {m.topDiscoverPages.map((p, j) => (
-                <a key={p.url} href={p.url} target="_blank" rel="noreferrer"
-                   title={p.title}
-                   style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-                  <div style={{ position: 'relative' }}>
-                    {p.image ? (
-                      <img src={p.image} alt={p.title}
-                           style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />
-                    ) : (
-                      <div style={{ width: '100%', aspectRatio: '16/9', border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)' }}>
-                        sin img
-                      </div>
-                    )}
-                    <span style={{ position: 'absolute', top: 2, left: 2, padding: '1px 4px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
-                      s{p.score}{p.position ? ` · #${p.position}` : ''}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 10, color: 'var(--ink-3)', fontFamily: 'var(--sans)', lineHeight: 1.25, maxHeight: '3em', overflow: 'hidden' }}>
-                    {(p.title || '').slice(0, 90)}
-                  </div>
-                </a>
-              ))}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10, marginLeft: 38 }}>
+              {m.topDiscoverPages.map((p, j) => {
+                // "hace Xh" desde firstSeen o lastUpdated
+                const ts = p.firstSeen || p.lastUpdated;
+                let ago = '';
+                if (ts) {
+                  const diffH = Math.max(0, (Date.now() - new Date(ts).getTime()) / 3600_000);
+                  ago = diffH < 1 ? `${Math.round(diffH * 60)}m` : `${Math.round(diffH)}h`;
+                }
+                return (
+                  <a key={p.url} href={p.url} target="_blank" rel="noreferrer"
+                     title={p.title}
+                     style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: 5, minWidth: 0 }}>
+                    <div style={{ position: 'relative' }}>
+                      {p.image ? (
+                        <img src={p.image} alt={p.title}
+                             style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />
+                      ) : (
+                        <div style={{ width: '100%', aspectRatio: '16/9', border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)' }}>
+                          sin imagen
+                        </div>
+                      )}
+                      <span style={{ position: 'absolute', top: 3, left: 3, padding: '1px 5px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
+                        #{j + 1} · s{p.score}
+                      </span>
+                      {ago && (
+                        <span style={{ position: 'absolute', top: 3, right: 3, padding: '1px 5px', background: 'var(--accent)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
+                          {ago}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--ink)', fontFamily: 'var(--sans)', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: 500 }}>
+                      {p.title}
+                    </div>
+                  </a>
+                );
+              })}
             </div>
           ) : (
             <div style={{ marginLeft: 38, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
@@ -277,23 +291,63 @@ function TopMediaPanel({ media }) {
 }
 
 function CategoriesPanel({ categories }) {
-  const cats = [...(categories || [])]
-    .sort((a, b) => (b.score || 0) - (a.score || 0))
-    .slice(0, 30);
+  const all = [...(categories || [])].sort((a, b) => (b.score || 0) - (a.score || 0));
+  // Agrupar por primer segmento del path DS (e.g. "/Sports/Team Sports/Soccer" → "Sports")
+  const groups = React.useMemo(() => {
+    const g = {};
+    for (const c of all) {
+      const name = c.name || '';
+      const parts = name.split('/').filter(Boolean);
+      const root = parts[0] || 'Otros';
+      if (!g[root]) g[root] = [];
+      g[root].push(c);
+    }
+    return g;
+  }, [all]);
+  const groupNames = React.useMemo(() => Object.keys(groups).sort((a, b) => {
+    const sA = (groups[a][0]?.score || 0);
+    const sB = (groups[b][0]?.score || 0);
+    return sB - sA;
+  }), [groups]);
+  const [activeGroup, setActiveGroup] = useState(groupNames[0] || 'Otros');
+  // Cuando cambia la lista (nuevo poll), seguir en activo si sigue existiendo
+  useEffect(() => {
+    if (!groupNames.includes(activeGroup) && groupNames[0]) setActiveGroup(groupNames[0]);
+  }, [groupNames]);
+
+  const cats = (groups[activeGroup] || []).slice(0, 20);
+
   return (
     <div className="panel">
       <div className="kicker">
         Categorías DiscoverSnoop
         <Help>
-          Taxonomía oficial de Google Discover. Cada categoría muestra sus 10 páginas
-          con mayor score ahora mismo + delta 24h + posición.
+          Taxonomía oficial de Google Discover. Agrupadas por categoría raíz. Cada
+          subcategoría muestra foto + titular de sus 10 páginas con mayor score + delta 24h.
         </Help>
         <span className="bar"></span>
-        <span className="meta">top 30 · 10 noticias/categoría · orden por score</span>
+        <span className="meta">{all.length} total · {groupNames.length} ejes</span>
       </div>
+
+      {/* Subtabs por grupo raíz */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 14, borderBottom: '1px solid var(--rule-2)', paddingBottom: 8 }}>
+        {groupNames.map(g => (
+          <span key={g} onClick={() => setActiveGroup(g)}
+                style={{
+                  cursor: 'pointer', padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 11,
+                  border: '1px solid var(--rule)',
+                  background: activeGroup === g ? 'var(--ink)' : 'transparent',
+                  color: activeGroup === g ? 'var(--paper)' : 'var(--ink)',
+                  letterSpacing: '.04em',
+                }}>
+            {g} <strong style={{ opacity: 0.7 }}>{groups[g].length}</strong>
+          </span>
+        ))}
+      </div>
+
       {cats.length === 0 && (
         <div style={{ padding: 12, fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-4)' }}>
-          Sin categorías.
+          Sin subcategorías en "{activeGroup}".
         </div>
       )}
       {cats.map(c => {
@@ -338,29 +392,29 @@ function CategoriesPanel({ categories }) {
               </div>
             )}
             {topPages.length > 0 ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginLeft: 40 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12, marginLeft: 40 }}>
                 {topPages.map((p, i) => (
                   <a key={p.url} href={p.url} target="_blank" rel="noreferrer"
                      title={p.title}
-                     style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+                     style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
                     <div style={{ position: 'relative' }}>
                       {p.image ? (
                         <img src={p.image} alt={p.title}
                              style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />
                       ) : (
-                        <div style={{ width: '100%', aspectRatio: '16/9', border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 9, fontFamily: 'var(--mono)' }}>
-                          sin img
+                        <div style={{ width: '100%', aspectRatio: '16/9', border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)' }}>
+                          sin imagen
                         </div>
                       )}
-                      <span style={{ position: 'absolute', top: 2, left: 2, padding: '1px 4px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
+                      <span style={{ position: 'absolute', top: 4, left: 4, padding: '2px 6px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.05em' }}>
                         #{i + 1} · s{p.score}
                       </span>
                     </div>
-                    <div style={{ fontSize: 10, color: 'var(--ink-3)', lineHeight: 1.25, maxHeight: '3em', overflow: 'hidden' }}>
-                      {(p.title || '').slice(0, 90)}
+                    <div style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.35, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: 500 }}>
+                      {p.title}
                     </div>
                     {p.domain && (
-                      <div style={{ fontSize: 9, color: 'var(--ink-4)', fontFamily: 'var(--mono)' }}>
+                      <div style={{ fontSize: 10, color: 'var(--ink-3)', fontFamily: 'var(--mono)', textTransform: 'lowercase' }}>
                         {p.domain.replace(/^www\./, '')}
                       </div>
                     )}

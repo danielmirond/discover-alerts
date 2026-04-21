@@ -170,6 +170,8 @@ interface LiveTopMedia {
     image?: string;
     score: number;
     position?: number;
+    lastUpdated?: string;
+    firstSeen?: string;
   }>;
 }
 
@@ -855,26 +857,24 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     } catch { /* noop */ }
   }
 
-  // Top 5 páginas Discover por medio (por score).
-  function topDiscoverPagesForFeed(feedName: string): Array<{ url: string; title: string; image?: string; score: number; position?: number }> {
+  // Top 10 páginas Discover por medio (ventana rolling 48h, ordenadas por score).
+  function topDiscoverPagesForFeed(feedName: string): Array<{ url: string; title: string; image?: string; score: number; position?: number; lastUpdated?: string; firstSeen?: string }> {
     const domains = feedDomains[feedName];
     if (!domains || domains.size === 0) return [];
-    const candidates: Array<{ url: string; title: string; image?: string; score: number; position?: number }> = [];
+    const candidates: Array<{ url: string; title: string; image?: string; score: number; position?: number; lastUpdated?: string; firstSeen?: string }> = [];
     for (const [url, ps] of Object.entries(state.pages || {})) {
       if (!ps.title) continue;
-      // Normalizar el dominio de la page (amp.x.com → x.com)
       let pdom = (ps.domain || '').toLowerCase().replace(/^www\./, '');
       if (!pdom) {
         try { pdom = new URL(url).hostname.replace(/^www\./, '').toLowerCase(); } catch {}
       }
-      // Aceptar si la page está en uno de los dominios del medio O es subdominio
       const match = [...domains].some(d => pdom === d || pdom.endsWith('.' + d));
       if (match) {
-        candidates.push({ url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position });
+        candidates.push({ url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position, lastUpdated: ps.lastUpdated, firstSeen: (ps as any).firstSeen });
       }
     }
     candidates.sort((a, b) => b.score - a.score);
-    return candidates.slice(0, 5);
+    return candidates.slice(0, 10);
   }
 
   const topMedia: LiveTopMedia[] = Object.entries(perFeed)

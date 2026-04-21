@@ -141,6 +141,8 @@ export interface PageSnapshot {
   score: number;
   position: number;
   lastUpdated: string;
+  /** Primer poll donde se vio la page. Se preserva al mergear. */
+  firstSeen?: string;
   image?: string;
   domain?: string;
   /** DS category (numeric id o string name). Necesario para agrupar páginas por categoría DS. */

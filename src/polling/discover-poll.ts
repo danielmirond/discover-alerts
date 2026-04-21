@@ -147,27 +147,47 @@ export async function runDiscoverPoll(): Promise<void> {
 
     console.timeEnd('[discover] dispatch');
 
-    // Persist page snapshots (keyed by URL) para análisis cross-poll
-    // (ej: /api/ds-publishers necesita saber qué dominios DS está viendo).
-    // Retención: últimas ~24h — limitamos por tamaño para no reventar Redis.
-    const PAGES_CAP = 500;
+    // Persist page snapshots (keyed by URL) con ventana rolling 48h.
+    // Merge: preservamos pages anteriores que aún están dentro de 48h, añadimos
+    // las nuevas del poll actual (sobrescribe las que ya existían). Esto permite
+    // a /api/ds-publishers y tab Medios ver qué publicaciones de cada medio
+    // entraron a Discover en los últimos 2 días, no solo en el poll actual.
+    const PAGES_MAX = 2000;
+    const RETENTION_MS = 48 * 3600_000;
     const now = new Date().toISOString();
-    const pageSnapshots: Record<string, { title: string; score: number; position: number; lastUpdated: string; image?: string; domain?: string; category?: string | number; publisher?: string }> = {};
-    const sortedPag = [...pag].sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, PAGES_CAP);
-    for (const p of sortedPag) {
+    const nowMs = Date.now();
+    const prev = getState().pages || {};
+    const pageSnapshots: Record<string, { title: string; score: number; position: number; lastUpdated: string; firstSeen?: string; image?: string; domain?: string; category?: string | number; publisher?: string }> = {};
+    // Carry-over: pages anteriores dentro de 48h
+    for (const [url, ps] of Object.entries(prev)) {
+      const ts = Date.parse((ps as any).lastUpdated || '') || 0;
+      if (ts && (nowMs - ts) <= RETENTION_MS) {
+        pageSnapshots[url] = ps as any;
+      }
+    }
+    // Merge con nuevas (actualiza lastUpdated y score pero mantiene firstSeen)
+    for (const p of pag) {
       if (!p.url) continue;
+      const existing = pageSnapshots[p.url];
       pageSnapshots[p.url] = {
-        title: p.title || '',
+        title: p.title || existing?.title || '',
         score: p.score || 0,
         position: p.position || 0,
         lastUpdated: now,
-        image: p.image,
-        domain: p.domain,
-        category: p.category,
-        publisher: p.publisher,
+        firstSeen: existing?.firstSeen || existing?.lastUpdated || now,
+        image: p.image || existing?.image,
+        domain: p.domain || existing?.domain,
+        category: p.category ?? existing?.category,
+        publisher: p.publisher || existing?.publisher,
       };
     }
-    updateState({ lastPollDiscover: now, pages: pageSnapshots });
+    // Cap duro por tamaño: si hay >PAGES_MAX, quedarse con los de mayor score
+    let finalPages = pageSnapshots;
+    if (Object.keys(finalPages).length > PAGES_MAX) {
+      const sorted = Object.entries(finalPages).sort(([, a], [, b]) => ((b as any).score || 0) - ((a as any).score || 0));
+      finalPages = Object.fromEntries(sorted.slice(0, PAGES_MAX));
+    }
+    updateState({ lastPollDiscover: now, pages: finalPages });
 
     try {
       await saveState();
