@@ -217,6 +217,21 @@ function normalize(s: string): string {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
+/** Decodifica entities HTML numéricas (&#34;) y las named comunes. Usado en
+ * fuentes como Menéame que publican titulares con HTML encoded. */
+function decodeEntities(s: string | undefined | null): string {
+  if (!s) return '';
+  return String(s)
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ');
+}
+
 function diceCoefficient(a: string, b: string): number {
   const aN = normalize(a);
   const bN = normalize(b);
@@ -664,17 +679,22 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
         examples = [{ title: a.title, url: a.link, source: a.feedName }];
         break;
       case 'wikipedia_surge':
-        title = a.title;
+        title = decodeEntities(a.title);
         detail = `${a.editCount} edits de ${a.uniqueEditors} editores en ${a.windowMinutes}min${a.discoverAbsent ? ' (aun no en Discover)' : ''}`;
-        examples = [{ title: a.title, url: a.url, source: 'es.wikipedia.org' }];
+        examples = [{ title: decodeEntities(a.title), url: a.url, source: 'es.wikipedia.org' }];
         break;
       case 'meneame_hot':
-        title = a.title;
+        title = decodeEntities(a.title);
         detail = `karma ${a.karma} · votos ${a.votes} · ${a.comments} comentarios${a.discoverAbsent ? ' · aun no en Discover' : ''}`;
         examples = [
-          { title: a.title, url: a.storyUrl, source: 'meneame.net' },
+          { title: decodeEntities(a.title), url: a.storyUrl, source: 'meneame.net' },
           ...(a.externalUrl && a.externalUrl !== a.storyUrl ? [{ title: 'Fuente original', url: a.externalUrl }] : []),
         ];
+        break;
+      case 'schema_news_match':
+        title = a.entityName || decodeEntities(a.articleTitle);
+        detail = `${a.topic === 'sucesos' ? '🚨' : '⚖'} ${a.feedName}: ${decodeEntities(a.articleTitle)} · keywords: ${(a.keywords || []).slice(0, 3).join(', ')}${a.discoverScore != null ? ` · DS s${a.discoverScore}` : ''}`;
+        examples = [{ title: decodeEntities(a.articleTitle), url: a.articleLink, source: a.feedName }];
         break;
     }
     // Derive category for filtering:
