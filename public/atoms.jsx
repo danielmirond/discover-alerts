@@ -14,11 +14,20 @@ function Tag({ children, kind = 'default', small }) {
 }
 
 function VelocityBadge({ velocity, ratio }) {
-  const arrows = { rising: '▲', peaking: '●', fading: '▼', steady: '—' };
-  const labels = { rising: 'rising', peaking: 'peaking', fading: 'fading', steady: 'steady' };
+  const arrows = { rising: '▲', peaking: '●', fading: '▼', steady: '—', new: '✦' };
+  const labels = { rising: 'rising', peaking: 'peaking', fading: 'fading', steady: 'steady', new: 'new' };
+  const v = (velocity && arrows[velocity]) ? velocity : 'steady';
+  const r = typeof ratio === 'number' && isFinite(ratio) ? Math.max(0, Math.min(10, ratio)) : 1;
+  const tooltip = {
+    rising: 'Acelerando: v1h / v3h ≥ 1.5',
+    peaking: 'Pico sostenido: acelera y lleva ≥12h con actividad',
+    fading: 'Bajando: v1h / v3h ≤ 0.5',
+    steady: 'Estable',
+    new: 'Burst nuevo: aparece en la última hora sin historial previo',
+  }[v];
   return (
-    <span className={`velocity ${velocity}`}>
-      <span>{arrows[velocity]}</span> {labels[velocity]} <span style={{ opacity: 0.7, marginLeft: 2 }}>×{ratio.toFixed(1)}</span>
+    <span className={`velocity ${v}`} title={tooltip}>
+      <span>{arrows[v]}</span> {labels[v]} <span style={{ opacity: 0.7, marginLeft: 2 }}>×{r.toFixed(1)}</span>
     </span>
   );
 }

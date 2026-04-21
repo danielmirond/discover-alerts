@@ -350,13 +350,48 @@ function Drawer({ alert, onClose, data }) {
               </div>
               <div>
                 <div style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '0.06em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>Velocidad</div>
-                <div style={{ fontFamily: 'var(--serif)', fontSize: 26, fontWeight: 800 }}>×{alert.velocityRatio.toFixed(1)}</div>
+                <div style={{ fontFamily: 'var(--serif)', fontSize: 26, fontWeight: 800 }}>×{(Math.max(0, Math.min(10, Number(alert.velocityRatio) || 1))).toFixed(1)}</div>
               </div>
             </div>
             <div style={{ marginTop: 12 }}>
               <SourceLine sources={alert.sources} />
             </div>
           </div>
+
+          {ent && ent.velocity && (
+            <div className="drawer-section">
+              <h3>Desglose de velocidad</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 8 }}>
+                <div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '0.06em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>Últ. 1h</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 700 }}>{ent.velocity.v1h ?? ent.appearancesLastHour ?? 0}</div>
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '0.06em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>Ratio 3h</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 700 }}>{(ent.velocity.v3hRate ?? 0).toFixed(2)}/h</div>
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '0.06em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>Ratio 12h</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 700 }}>{(ent.velocity.v12hRate ?? 0).toFixed(2)}/h</div>
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, letterSpacing: '0.06em', color: 'var(--ink-4)', textTransform: 'uppercase' }}>Aceleración</div>
+                  <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 700, color: (ent.velocity.acceleration ?? 1) >= 1.5 ? 'var(--ok)' : (ent.velocity.acceleration ?? 1) <= 0.5 ? 'var(--danger)' : 'var(--ink)' }}>
+                    ×{Math.max(0, Math.min(10, Number(ent.velocity.acceleration) || 1)).toFixed(2)}
+                  </div>
+                </div>
+              </div>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', lineHeight: 1.5 }}>
+                <strong style={{ color: 'var(--ink)' }}>{(ent.velocity.momentum || 'steady').toUpperCase()}</strong>
+                {' — '}
+                {ent.velocity.momentum === 'rising' && 'acelerando (v1h/v3h ≥ 1.5). Publicar ahora antes del pico.'}
+                {ent.velocity.momentum === 'peaking' && 'pico sostenido. Cobertura ya saturada en otros medios.'}
+                {ent.velocity.momentum === 'fading' && 'cayendo (v1h/v3h ≤ 0.5). Oportunidad pasada.'}
+                {ent.velocity.momentum === 'new' && 'burst nuevo sin historial previo — alta prioridad si coincide con otra señal.'}
+                {(!ent.velocity.momentum || ent.velocity.momentum === 'steady') && 'estable, sin cambios bruscos.'}
+              </div>
+            </div>
+          )}
 
           {topImage && (
             <div className="drawer-section">
