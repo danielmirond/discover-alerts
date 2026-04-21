@@ -1196,7 +1196,7 @@ function CulturalView() {
   }, []);
   if (state.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando…</div>;
   if (state.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {state.error}</div>;
-  const { netflixTop = [], flixpatrolTop = [], lastPoll, cultural = [], culturalEntityHits = [] } = state.data || {};
+  const { netflixTop = [], flixpatrolTop = [], applePodcastsTop = [], steamTop = [], lastPoll, cultural = [], culturalEntityHits = [] } = state.data || {};
   // Mapa título → { inDiscover, discoverScore }
   const matchByTitle = new Map();
   cultural.forEach(c => matchByTitle.set(`${c.source}::${c.title}`, c));
@@ -1267,9 +1267,72 @@ function CulturalView() {
         {renderList(nfFilms, 'Netflix Top 10 · Películas ES', 'TSV oficial semanal')}
         {renderList(nfTv, 'Netflix Top 10 · TV ES', 'TSV oficial semanal')}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, marginBottom: 20 }}>
         {renderList(fpTv, 'FlixPatrol · Netflix TV ES', 'scraping diario')}
         {renderList(fpMov, 'FlixPatrol · Netflix Movies ES', 'scraping diario')}
+      </div>
+
+      {/* Apple Podcasts ES + Steam Top Played */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
+        <div>
+          <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>
+            Apple Podcasts ES<span className="bar"></span>
+            <span className="meta">{applePodcastsTop.length} top · Apple Marketing Tools API</span>
+          </div>
+          {applePodcastsTop.length === 0 ? (
+            <div style={{ padding: 8, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin datos — poll pendiente.</div>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+              <tbody>
+                {applePodcastsTop.slice(0, 20).map(p => (
+                  <tr key={p.rank} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                    <td style={{ padding: '4px 6px', width: 32, textAlign: 'right', color: 'var(--accent)', fontWeight: 600 }}>#{p.rank}</td>
+                    <td style={{ padding: '4px 6px', width: 40 }}>
+                      {p.artworkUrl && <img src={p.artworkUrl} alt="" style={{ width: 32, height: 32, objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />}
+                    </td>
+                    <td style={{ padding: '4px 6px' }}>
+                      <a href={p.url || '#'} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)', textDecoration: 'none', fontWeight: 500 }}>
+                        {p.name}
+                      </a>
+                      {p.artistName && <div style={{ fontSize: 10, color: 'var(--ink-3)', fontFamily: 'var(--mono)' }}>{p.artistName}</div>}
+                    </td>
+                    {p.genre && <td style={{ padding: '4px 6px', textAlign: 'right', color: 'var(--ink-4)', fontSize: 10 }}>{p.genre}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+        <div>
+          <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>
+            Steam · más jugados<span className="bar"></span>
+            <span className="meta">{steamTop.length} top · concurrent peak</span>
+          </div>
+          {steamTop.length === 0 ? (
+            <div style={{ padding: 8, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin datos — poll pendiente.</div>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+              <tbody>
+                {steamTop.slice(0, 15).map(g => (
+                  <tr key={g.rank} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                    <td style={{ padding: '4px 6px', width: 32, textAlign: 'right', color: 'var(--accent)', fontWeight: 600 }}>#{g.rank}</td>
+                    <td style={{ padding: '4px 6px', width: 80 }}>
+                      {g.headerImage && <img src={g.headerImage} alt="" style={{ width: 72, height: 34, objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />}
+                    </td>
+                    <td style={{ padding: '4px 6px' }}>
+                      <a href={g.url || '#'} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)', textDecoration: 'none', fontWeight: 500 }}>
+                        {g.name}
+                      </a>
+                      <div style={{ fontSize: 10, color: 'var(--ink-3)', fontFamily: 'var(--mono)' }}>
+                        peak {g.peakInGame.toLocaleString()}{g.previousRank ? ` · antes #${g.previousRank}` : ''}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
     </div>
   );

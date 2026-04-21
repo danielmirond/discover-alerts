@@ -2259,6 +2259,10 @@
     { "name": "La Voz de Galicia Sitemap News", "url": "https://www.lavozdegalicia.es/sitemap_news.xml", "category": "generalista", "domain": "lavozdegalicia.es", "scope": "nacional", "type": "news-sitemap" },
     { "name": "La Voz de Almería", "url": "https://www.lavozdealmeria.com/rss/", "category": "generalista", "domain": "lavozdealmeria.com", "scope": "nacional" },
     { "name": "Tiempo.com", "url": "https://www.tiempo.com/feed/", "category": "meteorologia", "domain": "tiempo.com", "scope": "nacional" },
-    { "name": "Fotogramas Sitemap News", "url": "https://www.fotogramas.es/sitemap_google_news.xml", "category": "entretenimiento", "domain": "fotogramas.es", "scope": "nacional", "type": "news-sitemap" }
+    { "name": "Fotogramas Sitemap News", "url": "https://www.fotogramas.es/sitemap_google_news.xml", "category": "entretenimiento", "domain": "fotogramas.es", "scope": "nacional", "type": "news-sitemap" },
+
+    { "name": "La Butaca", "url": "https://www.labutaca.net/feed/", "category": "entretenimiento", "domain": "labutaca.net", "scope": "nacional" },
+    { "name": "Fuera de Series", "url": "https://fueradeseries.com/feed/", "category": "entretenimiento", "domain": "fueradeseries.com", "scope": "nacional" },
+    { "name": "FormulaTV", "url": "https://www.formulatv.com/rss/noticias.xml", "category": "entretenimiento", "domain": "formulatv.com", "scope": "nacional" }
   ]
 }

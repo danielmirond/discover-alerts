@@ -209,6 +209,8 @@ export interface AppState {
   netflixTop?: Array<{ rank: number; category: string; title: string; seasonTitle?: string; cumulativeWeeks: number; week: string }>;
   flixpatrolTop?: Array<{ rank: number; title: string; category: string }>;
   aemetAvisos?: Array<{ level: string; region: string; phenomenon: string; raw: string }>;
+  applePodcastsTop?: Array<{ rank: number; name: string; artistName?: string; artworkUrl?: string; url?: string; genre?: string }>;
+  steamTop?: Array<{ rank: number; appid: number; name: string; peakInGame: number; previousRank?: number; headerImage?: string; url?: string }>;
 }
 
 // Alert types

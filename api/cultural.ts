@@ -20,6 +20,8 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
       lastPoll: s.lastPollCultural || null,
       netflixTop: s.netflixTop || [],
       flixpatrolTop: s.flixpatrolTop || [],
+      applePodcastsTop: s.applePodcastsTop || [],
+      steamTop: s.steamTop || [],
       cultural,
       culturalEntityHits,
     });

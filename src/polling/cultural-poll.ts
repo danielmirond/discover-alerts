@@ -1,6 +1,8 @@
 import { getState, updateState, saveState, loadState } from '../state/store.js';
 import { fetchNetflixTopES } from '../sources/netflix.js';
 import { fetchFlixPatrolMulti } from '../sources/flixpatrol.js';
+import { fetchApplePodcastsES } from '../sources/apple-podcasts.js';
+import { fetchSteamTopPlayed } from '../sources/steam-charts.js';
 
 /**
  * Poll semanal-ish de fuentes culturales (Netflix Top 10 ES + FlixPatrol ES).
@@ -10,16 +12,22 @@ export async function runCulturalPoll(): Promise<void> {
   await loadState();
   console.log('[cultural] Starting poll...');
 
-  const [nf, fp] = await Promise.allSettled([
+  const [nf, fp, ap, st] = await Promise.allSettled([
     fetchNetflixTopES(),
     fetchFlixPatrolMulti(),
+    fetchApplePodcastsES(),
+    fetchSteamTopPlayed(15),
   ]);
 
   const netflix = nf.status === 'fulfilled' ? nf.value : [];
   const flixpatrol = fp.status === 'fulfilled' ? fp.value : [];
+  const applePodcasts = ap.status === 'fulfilled' ? ap.value : [];
+  const steamTop = st.status === 'fulfilled' ? st.value : [];
 
   if (nf.status === 'rejected') console.error('[cultural] Netflix error:', nf.reason);
   if (fp.status === 'rejected') console.error('[cultural] FlixPatrol error:', fp.reason);
+  if (ap.status === 'rejected') console.error('[cultural] Apple Podcasts error:', ap.reason);
+  if (st.status === 'rejected') console.error('[cultural] Steam error:', st.reason);
 
   // Contar por (platform, country)
   const byTarget = new Map<string, number>();
@@ -30,11 +38,15 @@ export async function runCulturalPoll(): Promise<void> {
   console.log(`[cultural] Netflix TSV ES: ${netflix.length} items`);
   console.log(`[cultural] FlixPatrol: ${flixpatrol.length} items across ${byTarget.size} targets`);
   for (const [k, n] of byTarget) console.log(`  · ${k}: ${n}`);
+  console.log(`[cultural] Apple Podcasts ES: ${applePodcasts.length} items`);
+  console.log(`[cultural] Steam Top Played: ${steamTop.length} items`);
 
   updateState({
     lastPollCultural: new Date().toISOString(),
     netflixTop: netflix,
     flixpatrolTop: flixpatrol,
+    applePodcastsTop: applePodcasts,
+    steamTop: steamTop,
   });
 
   try { await saveState(); } catch (err) { console.error('[cultural] saveState:', err); }
