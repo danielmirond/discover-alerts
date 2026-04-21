@@ -113,12 +113,75 @@ export async function loadState(): Promise<void> {
   }
 }
 
+// Límite seguro por shard (Upstash free tier ≈1 MB por request).
+// Si un shard se pasa, truncamos las entradas más antiguas antes de guardar.
+const SHARD_MAX_BYTES = 900_000;
+
+function trimByRecency<T extends { firstSeen?: string; pubDate?: string; lastUpdated?: string; timestamp?: string }>(
+  obj: Record<string, T>,
+  maxBytes: number,
+): Record<string, T> {
+  const json = JSON.stringify(obj);
+  if (json.length <= maxBytes) return obj;
+  // Ordenar por tiempo (más reciente primero) y añadir hasta llenar
+  const entries = Object.entries(obj);
+  const ts = (v: T) => Date.parse(v.lastUpdated || v.firstSeen || v.pubDate || v.timestamp || '') || 0;
+  entries.sort(([, a], [, b]) => ts(b) - ts(a));
+  const out: Record<string, T> = {};
+  let acc = 2; // '{}'
+  for (const [k, v] of entries) {
+    const chunk = JSON.stringify({ [k]: v });
+    if (acc + chunk.length > maxBytes) break;
+    out[k] = v;
+    acc += chunk.length;
+  }
+  return out;
+}
+
 export async function saveState(): Promise<void> {
   const r = getRedis();
   if (!r) return;
-  const { core, mediaArticles, weeklyHistory, pages, recentAlerts, headlinePatternsHistory, dedupHashes } = splitShards(state);
+  let { core, mediaArticles, weeklyHistory, pages, recentAlerts, headlinePatternsHistory, dedupHashes } = splitShards(state);
 
-  // Sizes para diagnóstico (JSON.stringify bytes aprox)
+  // Auto-trim shards que excedan límite. Mejor guardar parcial que no guardar nada.
+  const before = {
+    media: Object.keys(mediaArticles || {}).length,
+    pages: Object.keys(pages || {}).length,
+    weekly: Object.keys(weeklyHistory || {}).length,
+    dedup: Object.keys(dedupHashes || {}).length,
+  };
+  if (JSON.stringify(mediaArticles).length > SHARD_MAX_BYTES) {
+    mediaArticles = trimByRecency(mediaArticles, SHARD_MAX_BYTES);
+    state.mediaArticles = mediaArticles; // reflejar en memoria
+    console.warn(`[store] trimmed mediaArticles: ${before.media} → ${Object.keys(mediaArticles).length}`);
+  }
+  if (JSON.stringify(pages).length > SHARD_MAX_BYTES) {
+    pages = trimByRecency(pages as any, SHARD_MAX_BYTES) as any;
+    state.pages = pages;
+    console.warn(`[store] trimmed pages: ${before.pages} → ${Object.keys(pages).length}`);
+  }
+  if (JSON.stringify(dedupHashes).length > SHARD_MAX_BYTES) {
+    dedupHashes = trimByRecency(dedupHashes as any, SHARD_MAX_BYTES) as any;
+    state.dedupHashes = dedupHashes;
+    console.warn(`[store] trimmed dedupHashes: ${before.dedup} → ${Object.keys(dedupHashes).length}`);
+  }
+  // weekly truncamos diferente: por weekKey alfabético (más reciente mantenidas)
+  if (JSON.stringify(weeklyHistory).length > SHARD_MAX_BYTES) {
+    const wks = Object.keys(weeklyHistory).sort().reverse();
+    const trimmed: typeof weeklyHistory = {};
+    let acc = 2;
+    for (const wk of wks) {
+      const chunk = JSON.stringify({ [wk]: weeklyHistory[wk] });
+      if (acc + chunk.length > SHARD_MAX_BYTES) break;
+      trimmed[wk] = weeklyHistory[wk];
+      acc += chunk.length;
+    }
+    weeklyHistory = trimmed;
+    state.weeklyHistory = trimmed;
+    console.warn(`[store] trimmed weeklyHistory: ${before.weekly} → ${Object.keys(trimmed).length} weeks`);
+  }
+
+  // Sizes para diagnóstico (post-trim)
   const sizes = {
     core: JSON.stringify(core).length,
     media: JSON.stringify(mediaArticles).length,
