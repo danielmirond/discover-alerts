@@ -15,19 +15,21 @@ export function Header() {
     : locale === "de" ? "Über"
     : "About";
 
-  const paths: Record<string, { supplements: string; protocols: string; beauty: string }> = {
-    es: { supplements: "suplementos", protocols: "protocolos", beauty: "belleza" },
-    en: { supplements: "supplements", protocols: "protocols", beauty: "beauty" },
-    fr: { supplements: "supplements", protocols: "protocols", beauty: "beaute" },
-    de: { supplements: "supplements", protocols: "protocols", beauty: "schoenheit" },
+  const paths: Record<string, Record<string, string>> = {
+    es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners" },
+    en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners" },
+    fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners" },
+    de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners" },
   };
   const p = paths[locale] || paths.en;
 
   const links = [
-    { href: `/${locale}/wearables`, label: t("wearables") },
-    { href: `/${locale}/${p.supplements}`, label: t("supplements") },
     { href: `/${locale}/${p.protocols}`, label: t("protocols") },
-    { href: `/${locale}/${p.beauty}`, label: t("beauty") },
+    { href: `/${locale}/${p.skin}`, label: t("skin") },
+    { href: `/${locale}/${p.mind}`, label: t("mind") },
+    { href: `/${locale}/${p.tribe}`, label: t("tribe") },
+    { href: `/${locale}/${p.rest}`, label: t("rest") },
+    { href: `/${locale}/${p.practitioners}`, label: t("practitioners") },
     { href: `/${locale}/about`, label: aboutLabel },
   ];
 

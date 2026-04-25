@@ -6,10 +6,12 @@
   },
   "nav": {
     "home": "Accueil",
-    "wearables": "Biomarqueurs",
-    "supplements": "Suppléments",
     "protocols": "Protocoles",
-    "beauty": "Beauté",
+    "skin": "Skin Longevity",
+    "mind": "Esprit",
+    "tribe": "Tribu",
+    "rest": "Repos",
+    "practitioners": "Practitioners",
     "newsletter": "Briefing"
   },
   "home": {
@@ -50,21 +52,29 @@
     "allRights": "Tous droits réservés."
   },
   "categories": {
-    "wearables": {
-      "title": "Biomarqueurs & Suivi",
-      "description": "Dispositifs de surveillance, bagues connectées et systèmes de mesure pour quantifier votre biologie et prendre des décisions basées sur les données."
-    },
-    "supplements": {
-      "title": "Supplémentation & Longévité",
-      "description": "NMN, NR, resvératrol, magnésium et précurseurs de NAD+. Preuves scientifiques réelles, sans claims exagérés."
-    },
     "protocols": {
       "title": "Protocoles & Science",
-      "description": "Guides basés sur les preuves pour optimiser sommeil, récupération, cognition et healthspan."
+      "description": "Sommeil, cortisol, peptides, NAD+, nerf vague. Chaque protocole est une question clinique répondue avec des preuves, dosages, risques et fournisseurs premium."
     },
-    "beauty": {
-      "title": "Skin Longevity & Cosmétique Premium",
-      "description": "Le nouveau paradigme en cosmétique : santé et rajeunissement de la peau depuis la biologie cellulaire."
+    "skin": {
+      "title": "Skin Longevity",
+      "description": "Peptides cosmétiques, rétinoïdes, exosomes. La science derrière la cosmétique haute performance, avec de vrais critères dermatologiques."
+    },
+    "mind": {
+      "title": "Esprit & Cognition",
+      "description": "Friction maxxing, loisirs analogiques, lecture, longévité cognitive. L'attention comme ressource non renouvelable."
+    },
+    "tribe": {
+      "title": "Tribu & Connexion",
+      "description": "Tiers-lieux, solitude et mortalité, coaches de longévité, Aevum Salons. La connexion sociale comme variable de longévité."
+    },
+    "rest": {
+      "title": "Repos & Récupération",
+      "description": "Retraites de longévité, retraites anti-burnout, voyages restaurateurs. Le repos comme investissement, pas comme luxe."
+    },
+    "practitioners": {
+      "title": "Practitioners",
+      "description": "Répertoire sélectionné de professionnels : médecins de longévité, coaches, nutritionnistes, dermatologues. Vérifiés en qualifications et approche fondée sur les preuves."
     }
   }
 }

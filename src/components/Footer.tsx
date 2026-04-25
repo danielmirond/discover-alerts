@@ -6,11 +6,11 @@ export function Footer() {
   const t = useTranslations("footer");
   const locale = useLocale();
 
-  const paths: Record<string, { supplements: string; protocols: string; beauty: string }> = {
-    es: { supplements: "suplementos", protocols: "protocolos", beauty: "belleza" },
-    en: { supplements: "supplements", protocols: "protocols", beauty: "beauty" },
-    fr: { supplements: "supplements", protocols: "protocols", beauty: "beaute" },
-    de: { supplements: "supplements", protocols: "protocols", beauty: "schoenheit" },
+  const paths: Record<string, Record<string, string>> = {
+    es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners" },
+    en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners" },
+    fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners" },
+    de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners" },
   };
   const p = paths[locale] || paths.en;
 
@@ -36,24 +36,6 @@ export function Footer() {
             <div className="eyebrow mb-5">{t("categories")}</div>
             <div className="flex flex-col gap-3">
               <Link
-                href={`/${locale}/wearables`}
-                className="text-[13px] text-slate hover:text-emerald transition-colors"
-              >
-                {locale === "es" ? "Biomarcadores & Tracking"
-                  : locale === "fr" ? "Biomarqueurs & Suivi"
-                  : locale === "de" ? "Biomarker & Tracking"
-                  : "Biomarkers & Tracking"}
-              </Link>
-              <Link
-                href={`/${locale}/${p.supplements}`}
-                className="text-[13px] text-slate hover:text-emerald transition-colors"
-              >
-                {locale === "es" ? "Suplementación"
-                  : locale === "fr" ? "Supplémentation"
-                  : locale === "de" ? "Supplementierung"
-                  : "Supplementation"}
-              </Link>
-              <Link
                 href={`/${locale}/${p.protocols}`}
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
@@ -63,13 +45,43 @@ export function Footer() {
                   : "Protocols & Science"}
               </Link>
               <Link
-                href={`/${locale}/${p.beauty}`}
+                href={`/${locale}/${p.skin}`}
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
-                {locale === "es" ? "Skin Longevity"
-                  : locale === "fr" ? "Beauté & Longévité"
-                  : locale === "de" ? "Hautalterung"
-                  : "Skin Longevity"}
+                Skin Longevity
+              </Link>
+              <Link
+                href={`/${locale}/${p.mind}`}
+                className="text-[13px] text-slate hover:text-emerald transition-colors"
+              >
+                {locale === "es" ? "Mente & Cognición"
+                  : locale === "fr" ? "Esprit & Cognition"
+                  : locale === "de" ? "Geist & Kognition"
+                  : "Mind & Cognition"}
+              </Link>
+              <Link
+                href={`/${locale}/${p.tribe}`}
+                className="text-[13px] text-slate hover:text-emerald transition-colors"
+              >
+                {locale === "es" ? "Tribu & Conexión"
+                  : locale === "fr" ? "Tribu & Connexion"
+                  : locale === "de" ? "Gemeinschaft & Verbindung"
+                  : "Tribe & Connection"}
+              </Link>
+              <Link
+                href={`/${locale}/${p.rest}`}
+                className="text-[13px] text-slate hover:text-emerald transition-colors"
+              >
+                {locale === "es" ? "Reposo & Recuperación"
+                  : locale === "fr" ? "Repos & Récupération"
+                  : locale === "de" ? "Erholung & Regeneration"
+                  : "Rest & Recovery"}
+              </Link>
+              <Link
+                href={`/${locale}/${p.practitioners}`}
+                className="text-[13px] text-slate hover:text-emerald transition-colors"
+              >
+                Practitioners
               </Link>
             </div>
           </div>

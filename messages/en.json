@@ -6,10 +6,12 @@
   },
   "nav": {
     "home": "Home",
-    "wearables": "Biomarkers",
-    "supplements": "Supplements",
     "protocols": "Protocols",
-    "beauty": "Beauty",
+    "skin": "Skin Longevity",
+    "mind": "Mind",
+    "tribe": "Tribe",
+    "rest": "Rest",
+    "practitioners": "Practitioners",
     "newsletter": "Briefing"
   },
   "home": {
@@ -50,21 +52,29 @@
     "allRights": "All rights reserved."
   },
   "categories": {
-    "wearables": {
-      "title": "Biomarkers & Tracking",
-      "description": "Monitoring devices, smart rings and measurement systems to quantify your biology and make data-driven decisions."
-    },
-    "supplements": {
-      "title": "Supplementation & Longevity",
-      "description": "NMN, NR, resveratrol, magnesium and NAD+ precursors. Real scientific evidence, no exaggerated claims."
-    },
     "protocols": {
       "title": "Protocols & Science",
-      "description": "Evidence-based guides to optimize sleep, recovery, cognition and healthspan. What works and what doesn't."
+      "description": "Sleep, cortisol, peptides, NAD+, vagus nerve. Each protocol is a clinical question answered with evidence, dosing, risks and premium providers."
     },
-    "beauty": {
-      "title": "Skin Longevity & Premium Cosmetics",
-      "description": "The new paradigm in cosmetics: skin health and rejuvenation from cellular biology. Augustinus Bader, La Prairie, evidence-backed ingredients."
+    "skin": {
+      "title": "Skin Longevity",
+      "description": "Cosmetic peptides, retinoids, exosomes. The science behind high-performance cosmetics, with real dermatological criteria."
+    },
+    "mind": {
+      "title": "Mind & Cognition",
+      "description": "Friction maxxing, analog leisure, reading, cognitive longevity. Attention as a non-renewable resource."
+    },
+    "tribe": {
+      "title": "Tribe & Connection",
+      "description": "Third places, loneliness and mortality, longevity coaches, Aevum Salons. Social connection as a longevity variable."
+    },
+    "rest": {
+      "title": "Rest & Recovery",
+      "description": "Longevity retreats, burnout retreats, restorative travel. Rest as an investment, not a luxury."
+    },
+    "practitioners": {
+      "title": "Practitioners",
+      "description": "Curated directory of professionals: longevity doctors, coaches, nutritionists, dermatologists. Verified credentials and evidence-based approach."
     }
   }
 }

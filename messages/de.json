@@ -6,10 +6,12 @@
   },
   "nav": {
     "home": "Start",
-    "wearables": "Biomarker",
-    "supplements": "Supplemente",
     "protocols": "Protokolle",
-    "beauty": "Schönheit",
+    "skin": "Skin Longevity",
+    "mind": "Geist",
+    "tribe": "Gemeinschaft",
+    "rest": "Erholung",
+    "practitioners": "Practitioners",
     "newsletter": "Briefing"
   },
   "home": {
@@ -50,21 +52,29 @@
     "allRights": "Alle Rechte vorbehalten."
   },
   "categories": {
-    "wearables": {
-      "title": "Biomarker & Tracking",
-      "description": "Überwachungsgeräte, Smart Rings und Messsysteme zur Quantifizierung deiner Biologie und für datenbasierte Entscheidungen."
-    },
-    "supplements": {
-      "title": "Supplementierung & Langlebigkeit",
-      "description": "NMN, NR, Resveratrol, Magnesium und NAD+-Vorläufer. Echte wissenschaftliche Evidenz, keine übertriebenen Claims."
-    },
     "protocols": {
       "title": "Protokolle & Wissenschaft",
-      "description": "Evidenzbasierte Leitfäden zur Optimierung von Schlaf, Erholung, Kognition und Healthspan."
+      "description": "Schlaf, Cortisol, Peptide, NAD+, Vagusnerv. Jedes Protokoll ist eine klinische Frage, beantwortet mit Evidenz, Dosierung, Risiken und Premium-Anbietern."
     },
-    "beauty": {
-      "title": "Skin Longevity & Premium-Kosmetik",
-      "description": "Das neue Paradigma in der Kosmetik: Hautgesundheit und Verjüngung aus der Zellbiologie."
+    "skin": {
+      "title": "Skin Longevity",
+      "description": "Kosmetische Peptide, Retinoide, Exosomen. Die Wissenschaft hinter Hochleistungskosmetik, mit echten dermatologischen Kriterien."
+    },
+    "mind": {
+      "title": "Geist & Kognition",
+      "description": "Friction Maxxing, analoges Freizeitvergnügen, Lesen, kognitive Langlebigkeit. Aufmerksamkeit als nicht erneuerbare Ressource."
+    },
+    "tribe": {
+      "title": "Gemeinschaft & Verbindung",
+      "description": "Dritte Orte, Einsamkeit und Sterblichkeit, Longevity-Coaches, Aevum Salons. Soziale Verbindung als Langlebigkeitsvariable."
+    },
+    "rest": {
+      "title": "Erholung & Regeneration",
+      "description": "Langlebigkeits-Retreats, Burnout-Retreats, restaurative Reisen. Erholung als Investition, nicht als Luxus."
+    },
+    "practitioners": {
+      "title": "Practitioners",
+      "description": "Kuratiertes Verzeichnis von Fachleuten: Langlebigkeitsärzte, Coaches, Ernährungsberater, Dermatologen. Verifizierte Qualifikationen und evidenzbasierter Ansatz."
     }
   }
 }

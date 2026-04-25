@@ -4,15 +4,36 @@ import { getArticlesByCategory } from "@/lib/content";
 import { ArticleCard } from "@/components/ArticleCard";
 
 const categoryMap: Record<string, string> = {
-  wearables: "wearables",
-  suplementos: "supplements",
-  supplements: "supplements",
+  // ES
   protocolos: "protocols",
+  skin: "skin",
+  mente: "mind",
+  tribu: "tribe",
+  reposo: "rest",
+  practitioners: "practitioners",
+  journal: "journal",
+  // EN
   protocols: "protocols",
-  belleza: "beauty",
-  beauty: "beauty",
-  beaute: "beauty",
-  schoenheit: "beauty",
+  mind: "mind",
+  tribe: "tribe",
+  rest: "rest",
+  // FR
+  protocoles: "protocols",
+  esprit: "mind",
+  repos: "rest",
+  // DE
+  protokolle: "protocols",
+  geist: "mind",
+  gemeinschaft: "tribe",
+  erholung: "rest",
+  // Legacy (keep for backwards compat)
+  wearables: "protocols",
+  suplementos: "protocols",
+  supplements: "protocols",
+  belleza: "skin",
+  beauty: "skin",
+  beaute: "skin",
+  schoenheit: "skin",
 };
 
 export default async function CategoryPage({

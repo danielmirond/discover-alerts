@@ -6,16 +6,19 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { NewsletterEmbed } from "@/components/NewsletterEmbed";
 
 const categoryHrefs: Record<string, Record<string, string>> = {
-  es: { wearables: "wearables", supplements: "suplementos", protocols: "protocolos", beauty: "belleza" },
-  en: { wearables: "wearables", supplements: "supplements", protocols: "protocols", beauty: "beauty" },
-  fr: { wearables: "wearables", supplements: "supplements", protocols: "protocols", beauty: "beaute" },
-  de: { wearables: "wearables", supplements: "supplements", protocols: "protocols", beauty: "schoenheit" },
+  es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners" },
+  en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners" },
+  fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners" },
+  de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners" },
 };
 
 const categoryConfig = [
-  { key: "wearables", number: "01" },
-  { key: "supplements", number: "02" },
-  { key: "protocols", number: "03" },
+  { key: "protocols", number: "I" },
+  { key: "skin", number: "II" },
+  { key: "mind", number: "III" },
+  { key: "tribe", number: "IV" },
+  { key: "rest", number: "V" },
+  { key: "practitioners", number: "VI" },
 ] as const;
 
 export default async function HomePage({
@@ -60,7 +63,7 @@ function HomeContent({ locale }: { locale: string }) {
           </p>
 
           <div className="flex items-center gap-6 flex-wrap">
-            <Link href={`/${locale}/wearables`} className="btn-primary">
+            <Link href={`/${locale}/${(categoryHrefs[locale] || categoryHrefs.en).protocols}`} className="btn-primary">
               {t("home.readMore")}
             </Link>
             <Link
@@ -96,11 +99,11 @@ function HomeContent({ locale }: { locale: string }) {
             <h2 className="display-lg">{t("home.categories")}</h2>
           </div>
           <span className="font-serif italic text-stone text-[14px] hidden md:inline">
-            Three pillars of longevity
+            Six pillars of longevity
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-line">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[1px] bg-line">
           {categoryConfig.map(({ key, number }) => (
             <Link
               key={key}
@@ -158,17 +161,17 @@ function HomeContent({ locale }: { locale: string }) {
         </section>
       )}
 
-      {/* FOUR PILLARS */}
+      {/* SIX PILLARS */}
       <section className="bg-ivory py-24 px-8 border-y border-hairline">
         <div className="max-w-[1200px] mx-auto">
           <div className="flex items-baseline justify-between mb-12">
             <div>
               <div className="eyebrow mb-3">Framework</div>
               <h2 className="display-lg">
-                {locale === "es" ? "Los cuatro pilares"
-                  : locale === "fr" ? "Les quatre piliers"
-                  : locale === "de" ? "Die vier Säulen"
-                  : "The four pillars"}
+                {locale === "es" ? "Los seis pilares"
+                  : locale === "fr" ? "Les six piliers"
+                  : locale === "de" ? "Die sechs Säulen"
+                  : "The six pillars"}
               </h2>
             </div>
             <span className="font-serif italic text-stone text-[14px] hidden md:inline">
@@ -179,40 +182,23 @@ function HomeContent({ locale }: { locale: string }) {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[1px] bg-line">
-            {[
-              {
-                n: "I",
-                title: locale === "es" ? "Sueño" : locale === "fr" ? "Sommeil" : locale === "de" ? "Schlaf" : "Sleep",
-                desc: locale === "es" ? "El multiplicador maestro. Ritmos circadianos, arquitectura del sueño profundo y regulación nerviosa." : locale === "fr" ? "Le multiplicateur maître. Rythmes circadiens, architecture du sommeil profond et régulation nerveuse." : locale === "de" ? "Der Meistermultiplikator. Zirkadiane Rhythmen, Tiefschlafarchitektur und Nervenregulation." : "The master multiplier. Circadian rhythms, deep sleep architecture and nervous regulation."
-              },
-              {
-                n: "II",
-                title: locale === "es" ? "Nutrición" : locale === "fr" ? "Nutrition" : locale === "de" ? "Ernährung" : "Nutrition",
-                desc: locale === "es" ? "Más allá de comer sano. Cronobiología alimentaria, flexibilidad metabólica y composición corporal." : locale === "fr" ? "Au-delà du bien manger. Chronobiologie alimentaire, flexibilité métabolique et composition corporelle." : locale === "de" ? "Mehr als gesundes Essen. Ernährungschronobiologie, metabolische Flexibilität und Körperzusammensetzung." : "Beyond healthy eating. Chrono-nutrition, metabolic flexibility and body composition."
-              },
-              {
-                n: "III",
-                title: locale === "es" ? "Longevidad molecular" : locale === "fr" ? "Longévité moléculaire" : locale === "de" ? "Molekulare Langlebigkeit" : "Molecular longevity",
-                desc: locale === "es" ? "NAD+, sirtuinas, senolíticos. Intervenciones específicas para marcadores biológicos del envejecimiento." : locale === "fr" ? "NAD+, sirtuines, sénolytiques. Interventions spécifiques pour les marqueurs biologiques du vieillissement." : locale === "de" ? "NAD+, Sirtuine, Senolytika. Spezifische Interventionen für biologische Altersmarker." : "NAD+, sirtuins, senolytics. Specific interventions for biological aging markers."
-              },
-              {
-                n: "IV",
-                title: locale === "es" ? "Entorno" : locale === "fr" ? "Environnement" : locale === "de" ? "Umgebung" : "Environment",
-                desc: locale === "es" ? "Luz, aire, temperatura y agua. Los factores externos que modulan tu biología invisible." : locale === "fr" ? "Lumière, air, température et eau. Les facteurs externes qui modulent votre biologie invisible." : locale === "de" ? "Licht, Luft, Temperatur und Wasser. Externe Faktoren, die deine unsichtbare Biologie regulieren." : "Light, air, temperature and water. External factors that modulate your invisible biology."
-              }
-            ].map((pillar, i) => (
-              <div key={i} className="bg-bg p-8 hover:bg-pearl transition-colors">
-                <div className="font-serif italic text-[56px] font-extralight text-bronze/40 mb-5 leading-none">
-                  {pillar.n}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[1px] bg-line">
+            {categoryConfig.map(({ key, number }) => (
+              <Link
+                key={key}
+                href={`/${locale}/${(categoryHrefs[locale] || categoryHrefs.en)[key]}`}
+                className="bg-bg group p-8 hover:bg-pearl transition-colors"
+              >
+                <div className="font-serif italic text-[56px] font-extralight text-bronze/40 mb-5 leading-none group-hover:text-emerald transition-colors">
+                  {number}
                 </div>
-                <h3 className="font-serif text-[20px] font-normal text-charcoal mb-3">
-                  {pillar.title}
+                <h3 className="font-serif text-[20px] font-normal text-charcoal mb-3 group-hover:text-emerald transition-colors">
+                  {t(`categories.${key}.title`)}
                 </h3>
                 <p className="text-stone text-[13px] leading-[1.7]">
-                  {pillar.desc}
+                  {t(`categories.${key}.description`)}
                 </p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
