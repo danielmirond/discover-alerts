@@ -104,10 +104,10 @@
 /* MDX prose — editorial magazine style */
 .prose-editorial {
   @apply text-slate leading-[1.8];
-  max-width: 640px;
+  max-width: 680px;
 }
 .prose-editorial > p:first-of-type {
-  @apply text-[17px] text-charcoal leading-[1.65] mb-6;
+  @apply text-[18px] text-charcoal leading-[1.72] mb-7;
 }
 .prose-editorial > p:first-of-type::first-letter {
   font-family: var(--font-serif);
@@ -125,7 +125,8 @@
   @apply font-serif text-[20px] font-normal text-charcoal mt-10 mb-3;
 }
 .prose-editorial p {
-  @apply mb-5 text-[16px] leading-[1.8];
+  @apply mb-6 text-[17px] leading-[1.85];
+  letter-spacing: -0.003em;
 }
 .prose-editorial a {
   @apply text-emerald underline decoration-emerald/30 underline-offset-[3px] hover:decoration-emerald transition-all;

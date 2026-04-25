@@ -8,9 +8,9 @@ const config: Config = {
         // Base surfaces
         bg: "#ffffff",
         ivory: "#ffffff",
-        pearl: "#fafaf7",
-        sand: "#f4f2ec",
-        cream: "#f4f2ec",
+        pearl: "#ffffff",
+        sand: "#f7f7f5",
+        cream: "#f7f7f5",
 
         // Text
         charcoal: "#1a1a1a",

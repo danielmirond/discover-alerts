@@ -5,7 +5,7 @@ interface EvidenceBadgeProps {
 
 const config = {
   3: {
-    stars: "★★★",
+    icons: "●●●",
     label: "Evidencia fuerte",
     labelEn: "Strong evidence",
     sublabel: "RCT / Meta-análisis",
@@ -14,7 +14,7 @@ const config = {
     border: "border-emerald/20",
   },
   2: {
-    stars: "★★☆",
+    icons: "●●○",
     label: "Evidencia moderada",
     labelEn: "Moderate evidence",
     sublabel: "Estudios observacionales",
@@ -23,7 +23,7 @@ const config = {
     border: "border-bronze/20",
   },
   1: {
-    stars: "★☆☆",
+    icons: "●○○",
     label: "Evidencia limitada",
     labelEn: "Limited evidence",
     sublabel: "Anecdótica / Preliminar",
@@ -39,7 +39,7 @@ export function EvidenceBadge({ level, label }: EvidenceBadgeProps) {
   return (
     <div className={`inline-flex items-center gap-3 ${c.bg} border ${c.border} px-4 py-2.5 my-4`}>
       <span className={`${c.color} text-[16px] tracking-wider`}>
-        {c.stars}
+        {c.icons}
       </span>
       <div className="border-l border-current/20 pl-3">
         <div className={`${c.color} text-[11px] tracking-[0.15em] uppercase font-medium`}>
