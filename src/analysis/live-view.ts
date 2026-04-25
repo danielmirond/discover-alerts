@@ -328,18 +328,20 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     // la entidad y tengan imagen. Filtramos placeholders de X/Twitter y dominios
     // no-editoriales para evitar thumbs basura.
     const nameLower = name.toLowerCase();
-    const pageCandidates: Array<{ url: string; title: string; image: string; score: number }> = [];
+    // No exigimos imagen para que cualquier entidad con menciones tenga noticias
+    // visibles aunque la page DS no traiga foto.
+    const pageCandidates: Array<{ url: string; title: string; image?: string; score: number }> = [];
     for (const [url, ps] of Object.entries(state.pages || {})) {
-      if (!ps.title || !ps.image) continue;
+      if (!ps.title) continue;
       if (url.includes('x.com') || url.includes('twitter.com')) continue;
-      if (/placeholder/i.test(ps.image)) continue;
+      if (ps.image && /placeholder/i.test(ps.image)) continue;
       if (ps.title.toLowerCase().includes(nameLower)) {
         pageCandidates.push({ url, title: ps.title, image: ps.image, score: ps.score || 0 });
       }
     }
     pageCandidates.sort((a, b) => b.score - a.score);
     const topPages = pageCandidates.slice(0, 5);
-    const topPage = topPages[0];
+    const topPage = topPages.find(p => p.image) || topPages[0];
 
     entities.push({
       name,

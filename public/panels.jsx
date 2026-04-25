@@ -73,9 +73,35 @@ function EntitiesPanel({ entities }) {
 function EntityRow({ e }) {
   // state.analyses es un mapa imageUrl → { loading, error, result }
   const [analyses, setAnalyses] = useState({});
-  const topPages = e.topPages && e.topPages.length > 0
-    ? e.topPages
-    : (e.imageUrl ? [{ url: e.topPageUrl, title: e.topPageTitle, image: e.imageUrl }] : []);
+
+  // Construir lista unificada de hasta 5 noticias asociadas:
+  //   1) topPages (Discover, con imagen y score)
+  //   2) si quedan slots, completar con matchingArticles (RSS) marcadas como kind:'rss'
+  //   3) deduplicar por URL
+  const newsList = (() => {
+    const out = [];
+    const seen = new Set();
+    for (const p of (e.topPages || [])) {
+      if (!p || !p.url || seen.has(p.url)) continue;
+      seen.add(p.url);
+      out.push({ kind: 'ds', url: p.url, title: p.title, image: p.image, score: p.score, source: 'Discover' });
+      if (out.length >= 5) break;
+    }
+    if (out.length < 5 && e.imageUrl && e.topPageUrl && !seen.has(e.topPageUrl)) {
+      seen.add(e.topPageUrl);
+      out.push({ kind: 'ds', url: e.topPageUrl, title: e.topPageTitle, image: e.imageUrl, source: 'Discover' });
+    }
+    for (const a of (e.matchingArticles || [])) {
+      if (out.length >= 5) break;
+      if (!a || !a.link || seen.has(a.link)) continue;
+      seen.add(a.link);
+      out.push({ kind: 'rss', url: a.link, title: a.title, image: undefined, source: a.feedName });
+    }
+    return out;
+  })();
+
+  // Mantener topPages para el botón "ANALIZAR TODO" sobre las que tienen imagen
+  const topPages = newsList.filter(n => n.image);
 
   const analyze = (page) => async (ev) => {
     ev.stopPropagation();
@@ -140,7 +166,7 @@ function EntityRow({ e }) {
             {e.topic ? <span className="cat" style={{ background: 'var(--warn)', color: 'var(--paper)', marginLeft: 4 }}>{e.topic}</span> : null}
           </div>
           <div style={{ fontSize: 11, color: 'var(--ink-3)', fontFamily: 'var(--mono)', marginTop: 2 }}>
-            score {e.score} · pos #{e.position} · 1h:{e.appearancesLastHour} · 2h:{e.appearancesLast2h} · 6h:{e.appearancesLast6h} · {topPages.length} foto{topPages.length === 1 ? '' : 's'}
+            score {e.score} · pos #{e.position} · 1h:{e.appearancesLastHour} · 2h:{e.appearancesLast2h} · 6h:{e.appearancesLast6h} · {newsList.length} noticia{newsList.length === 1 ? '' : 's'}
           </div>
         </div>
         {topPages.length > 0 && (
@@ -151,11 +177,11 @@ function EntityRow({ e }) {
           }}>ANALIZAR TODO</button>
         )}
       </div>
-      {/* Grid de 5 noticias con thumbnail + titular clickable */}
-      {topPages.length > 0 ? (
+      {/* Grid de hasta 5 noticias mezclando Discover + RSS */}
+      {newsList.length > 0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
-          {topPages.map((p, i) => (
-            <div key={p.image || p.url || i} style={{ display: 'flex', flexDirection: 'column', gap: 5, minWidth: 0 }}>
+          {newsList.map((p, i) => (
+            <div key={p.url || i} style={{ display: 'flex', flexDirection: 'column', gap: 5, minWidth: 0 }}>
               <a href={p.url || '#'} target="_blank" rel="noreferrer"
                  onClick={(ev) => ev.stopPropagation()}
                  style={{ position: 'relative', textDecoration: 'none', color: 'inherit' }}>
@@ -165,11 +191,11 @@ function EntityRow({ e }) {
                        style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />
                 ) : (
                   <div style={{ width: '100%', aspectRatio: '16/9', border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)' }}>
-                    sin imagen
+                    {p.kind === 'rss' ? 'RSS' : 'sin imagen'}
                   </div>
                 )}
-                <span style={{ position: 'absolute', top: 3, left: 3, padding: '1px 5px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
-                  #{i + 1} · s{p.score}
+                <span style={{ position: 'absolute', top: 3, left: 3, padding: '1px 5px', background: p.kind === 'rss' ? 'var(--ink-3)' : 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
+                  {p.kind === 'rss' ? 'RSS' : `#${i + 1}${p.score != null ? ' · s' + p.score : ''}`}
                 </span>
               </a>
               <a href={p.url || '#'} target="_blank" rel="noreferrer"
@@ -178,6 +204,9 @@ function EntityRow({ e }) {
                  style={{ fontSize: 12, color: 'var(--ink)', fontFamily: 'var(--sans)', lineHeight: 1.3, fontWeight: 500, textDecoration: 'none', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                 {p.title}
               </a>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'lowercase' }}>
+                {p.source || (p.kind === 'rss' ? 'rss' : 'discover')}
+              </div>
               {p.image && (
                 <button onClick={analyze(p)} title="Analizar imagen con IA"
                         style={{ fontFamily: 'var(--mono)', fontSize: 9, padding: '2px 5px', border: '1px solid var(--rule-2)', background: 'transparent', color: 'var(--ink-3)', cursor: 'pointer', alignSelf: 'flex-start' }}>
@@ -186,25 +215,6 @@ function EntityRow({ e }) {
               )}
               <div>{renderAnalysis(p.image)}</div>
             </div>
-          ))}
-        </div>
-      ) : (e.matchingArticles && e.matchingArticles.length > 0) ? (
-        // Fallback: si no hay topPages DS, mostrar artículos RSS asociados
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 2 }}>
-            Cobertura RSS · sin pages Discover ahora mismo
-          </div>
-          {e.matchingArticles.slice(0, 5).map((a, i) => (
-            <a key={i} href={a.link} target="_blank" rel="noreferrer"
-               onClick={(ev) => ev.stopPropagation()}
-               style={{ textDecoration: 'none', color: 'inherit', padding: '4px 0', borderBottom: '1px solid var(--rule-2)', display: 'flex', gap: 6 }}>
-              <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', minWidth: 120, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {a.feedName}
-              </span>
-              <span style={{ flex: 1, fontSize: 12, color: 'var(--ink-2)', lineHeight: 1.35 }}>
-                {a.title}
-              </span>
-            </a>
           ))}
         </div>
       ) : (
