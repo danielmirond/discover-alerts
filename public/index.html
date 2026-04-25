@@ -197,17 +197,23 @@ function Ticker({ data }) {
 function FilterBar({ filter, setFilter, counts }) {
   // Chip especial "own_media" agrupa own_media + own_media_absent.
   // El matching de filter es por prefijo cuando id termina en ':*'.
+  // Counts agregados: agrupar tipos relacionados (entity subtypes, trends_*, schemas)
+  const sumKeys = (...keys) => keys.reduce((a, k) => a + (counts[k] || 0), 0);
+  // id 'group:k1+k2+k3' permite agrupar varios types en un mismo chip.
   const chips = [
     { id: 'all', label: 'Todas', c: counts.all },
-    { id: 'own_media:*', label: 'Own media', c: (counts.own_media || 0) + (counts.own_media_absent || 0), style: 'own-media' },
-    { id: 'triple_match', label: 'Triple match', c: counts.triple_match },
-    { id: 'trends_without_discover', label: 'Hueco SEO', c: counts.trends_without_discover },
-    { id: 'discover_1h', label: 'Discover 1h', c: counts.discover_1h },
-    { id: 'wikipedia_surge', label: 'Wikipedia surge', c: counts.wikipedia_surge },
+    { id: 'group:own_media+own_media_absent', label: 'Own media', c: sumKeys('own_media','own_media_absent'), style: 'own-media' },
+    { id: 'group:flash+longtail+ascending+rising+discover_1h+discover_3h+discover_12h+discover_page', label: 'Discover', c: sumKeys('flash','longtail','ascending','rising','discover_1h','discover_3h','discover_12h','discover_page') },
+    { id: 'group:trends_new_topic+trends_correlation+trends_news', label: 'Trends', c: sumKeys('trends_new_topic','trends_correlation','trends_news') },
+    { id: 'schema_news_match', label: 'Sucesos/Legal', c: counts.schema_news_match },
     { id: 'meneame_hot', label: 'Menéame hot', c: counts.meneame_hot },
-    { id: 'us_relevant', label: 'USA→ES', c: counts.us_relevant },
-    { id: 'headline_pattern', label: 'Patrón titular', c: counts.headline_pattern },
-  ];
+    { id: 'wikipedia_surge', label: 'Wikipedia surge', c: counts.wikipedia_surge },
+    { id: 'first_mover', label: 'First mover', c: counts.first_mover },
+    { id: 'headline_cluster', label: 'Cluster titular', c: counts.headline_cluster },
+    { id: 'coverage_join', label: 'Cobertura', c: counts.coverage_join },
+    { id: 'trends_without_discover', label: 'Hueco SEO', c: counts.trends_without_discover },
+    { id: 'triple_match', label: 'Triple match', c: counts.triple_match },
+  ].filter(c => c.id === 'all' || c.c > 0);
   return (
     <div className="filter-bar">
       {chips.map(c => (
@@ -753,9 +759,18 @@ function App() {
     });
   };
 
-  /* Filter alerts (supports prefix match via trailing ':*') */
+  /* Filter alerts:
+   *   'all'           → todas
+   *   'group:a+b+c'   → tipos en lista
+   *   'foo:*'         → prefix match (legacy)
+   *   'foo'           → exact type match
+   */
   const filtered = useMemo(() => {
     if (filter === 'all') return alerts;
+    if (filter.startsWith('group:')) {
+      const types = new Set(filter.slice(6).split('+'));
+      return alerts.filter(a => types.has(a.type));
+    }
     if (filter.endsWith(':*')) {
       const prefix = filter.slice(0, -2);
       return alerts.filter(a => (a.type || '').startsWith(prefix));

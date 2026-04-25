@@ -115,7 +115,7 @@
     const entitiesByName = {};
     for (const e of api.entities || []) entitiesByName[e.name] = e;
 
-    return recent.slice(0, 60).map((r, idx) => {
+    return recent.slice(0, 200).map((r, idx) => {
       const headline = fallbackTitle(r);
       // Intentamos extraer entidad del title, o del detail si no hay
       const entityName = r.title || '';
