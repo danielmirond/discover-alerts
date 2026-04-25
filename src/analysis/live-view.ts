@@ -276,10 +276,11 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     if (c2 >= longtailMin) statuses.push('longtail');
     if (c6 >= ascendingMin) statuses.push('ascending');
 
-    if (statuses.length === 0) continue;
-
-    // Primary status = highest severity (flash > longtail > ascending)
-    const status: LiveEntity['status'] = statuses[0];
+    // Si no pasa ningún threshold pero tiene buen score DS, marcamos 'normal'
+    // y dejamos la entidad en la lista — así la tab "Entidades en vivo" siempre
+    // tiene contenido (sobre todo tras un wipe o startup, cuando aún no hay
+    // suficientes apariciones acumuladas para flash/longtail/ascending).
+    const status: LiveEntity['status'] = statuses[0] || 'normal';
 
     // Compute enrichment matches
     const nameNorm = normalize(name);
