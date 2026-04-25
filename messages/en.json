@@ -75,6 +75,22 @@
     "practitioners": {
       "title": "Practitioners",
       "description": "Curated directory of professionals: longevity doctors, coaches, nutritionists, dermatologists. Verified credentials and evidence-based approach."
+    },
+    "wearables": {
+      "title": "Wearables & Tracking",
+      "description": "Monitoring devices, smart rings and measurement systems to quantify your biology and make data-driven decisions."
+    },
+    "supplements": {
+      "title": "Supplements & Longevity",
+      "description": "NMN, NR, magnesium, creatine and NAD+ precursors. Real scientific evidence, no exaggerated claims."
+    },
+    "beauty": {
+      "title": "Beauty & Premium Cosmetics",
+      "description": "High-performance cosmetics from cellular biology. Augustinus Bader, La Prairie, evidence-backed ingredients."
+    },
+    "journal": {
+      "title": "Journal",
+      "description": "Essays, interviews, paper reviews and profiles. The editorial voice of Aevum."
     }
   }
 }

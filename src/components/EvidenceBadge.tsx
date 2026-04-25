@@ -34,7 +34,7 @@ const config = {
 };
 
 export function EvidenceBadge({ level, label }: EvidenceBadgeProps) {
-  const c = config[level];
+  const c = config[Number(level) as 1 | 2 | 3] || config[2];
 
   return (
     <div className={`inline-flex items-center gap-3 ${c.bg} border ${c.border} px-4 py-2.5 my-4`}>

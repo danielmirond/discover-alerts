@@ -4,7 +4,7 @@ import { getArticlesByCategory } from "@/lib/content";
 import { ArticleCard } from "@/components/ArticleCard";
 
 const categoryMap: Record<string, string> = {
-  // ES
+  // New pillars - ES
   protocolos: "protocols",
   skin: "skin",
   mente: "mind",
@@ -12,28 +12,28 @@ const categoryMap: Record<string, string> = {
   reposo: "rest",
   practitioners: "practitioners",
   journal: "journal",
-  // EN
+  // New pillars - EN
   protocols: "protocols",
   mind: "mind",
   tribe: "tribe",
   rest: "rest",
-  // FR
+  // New pillars - FR
   protocoles: "protocols",
   esprit: "mind",
   repos: "rest",
-  // DE
+  // New pillars - DE
   protokolle: "protocols",
   geist: "mind",
   gemeinschaft: "tribe",
   erholung: "rest",
-  // Legacy (keep for backwards compat)
-  wearables: "protocols",
-  suplementos: "protocols",
-  supplements: "protocols",
-  belleza: "skin",
-  beauty: "skin",
-  beaute: "skin",
-  schoenheit: "skin",
+  // Legacy categories (keep with own keys so titles display correctly)
+  wearables: "wearables",
+  suplementos: "supplements",
+  supplements: "supplements",
+  belleza: "beauty",
+  beauty: "beauty",
+  beaute: "beauty",
+  schoenheit: "beauty",
 };
 
 export default async function CategoryPage({

@@ -98,7 +98,7 @@ export function ProductCard({
         </p>
 
         <div className="flex items-center gap-5 mb-7 flex-wrap">
-          <StarRating rating={rating} />
+          <StarRating rating={Number(rating) || 0} />
           {testedFor && (
             <>
               <span className="w-px h-4 bg-line" />
@@ -142,7 +142,7 @@ export function ProductCard({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2">
-            {ctas.map((cta, i) => (
+            {(ctas || []).map((cta, i) => (
               <a
                 key={i}
                 href={cta.url}

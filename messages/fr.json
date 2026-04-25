@@ -75,6 +75,22 @@
     "practitioners": {
       "title": "Practitioners",
       "description": "Répertoire sélectionné de professionnels : médecins de longévité, coaches, nutritionnistes, dermatologues. Vérifiés en qualifications et approche fondée sur les preuves."
+    },
+    "wearables": {
+      "title": "Wearables & Suivi",
+      "description": "Dispositifs de monitoring, bagues intelligentes et systèmes de mesure pour quantifier votre biologie."
+    },
+    "supplements": {
+      "title": "Supplémentation & Longévité",
+      "description": "NMN, NR, magnésium, créatine et précurseurs de NAD+. Preuves scientifiques réelles."
+    },
+    "beauty": {
+      "title": "Beauté & Cosmétique Premium",
+      "description": "Cosmétique haute performance depuis la biologie cellulaire."
+    },
+    "journal": {
+      "title": "Journal",
+      "description": "Essais, interviews, analyses de publications et profils. La voix éditoriale d'Aevum."
     }
   }
 }

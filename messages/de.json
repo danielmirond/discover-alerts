@@ -75,6 +75,22 @@
     "practitioners": {
       "title": "Practitioners",
       "description": "Kuratiertes Verzeichnis von Fachleuten: Langlebigkeitsärzte, Coaches, Ernährungsberater, Dermatologen. Verifizierte Qualifikationen und evidenzbasierter Ansatz."
+    },
+    "wearables": {
+      "title": "Wearables & Tracking",
+      "description": "Überwachungsgeräte, Smart Rings und Messsysteme zur Quantifizierung deiner Biologie."
+    },
+    "supplements": {
+      "title": "Supplementierung & Langlebigkeit",
+      "description": "NMN, NR, Magnesium, Kreatin und NAD+-Vorstufen. Echte wissenschaftliche Evidenz."
+    },
+    "beauty": {
+      "title": "Schönheit & Premium-Kosmetik",
+      "description": "Hochleistungskosmetik auf Basis der Zellbiologie."
+    },
+    "journal": {
+      "title": "Journal",
+      "description": "Essays, Interviews, Paper-Reviews und Profile. Die redaktionelle Stimme von Aevum."
     }
   }
 }

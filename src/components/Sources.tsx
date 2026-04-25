@@ -20,7 +20,7 @@ export function Sources({ items }: SourcesProps) {
       </div>
 
       <ol className="space-y-3 list-none pl-0">
-        {items.map((source, i) => (
+        {(items || []).map((source, i) => (
           <li key={i} className="flex items-start gap-3 text-[13px]">
             <span className="font-serif text-emerald text-[12px] mt-0.5 shrink-0 w-5">
               {i + 1}.

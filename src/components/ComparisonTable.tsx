@@ -37,7 +37,7 @@ export function ComparisonTable({
               <th className="text-left p-5 text-[10px] tracking-[0.2em] uppercase text-stone font-medium border-b border-line w-[160px]">
                 {/* empty */}
               </th>
-              {products.map((p, i) => (
+              {(products || []).map((p, i) => (
                 <th
                   key={i}
                   className="text-center p-5 border-b border-line border-l border-l-line align-top"
@@ -58,12 +58,12 @@ export function ComparisonTable({
             </tr>
           </thead>
           <tbody>
-            {attributes.map((attr) => (
+            {(attributes || []).map((attr) => (
               <tr key={attr} className="hover:bg-pearl/50">
                 <td className="p-4 text-[11px] tracking-[0.12em] uppercase text-stone border-b border-hairline">
                   {attr}
                 </td>
-                {products.map((p, i) => (
+                {(products || []).map((p, i) => (
                   <td
                     key={i}
                     className="p-4 text-[13px] text-charcoal text-center border-b border-hairline border-l border-l-line"
@@ -78,7 +78,7 @@ export function ComparisonTable({
               <td className="p-4 text-[11px] tracking-[0.12em] uppercase text-bronze font-medium border-b border-hairline">
                 Precio
               </td>
-              {products.map((p, i) => (
+              {(products || []).map((p, i) => (
                 <td
                   key={i}
                   className="p-4 text-center border-b border-hairline border-l border-l-line"
@@ -92,7 +92,7 @@ export function ComparisonTable({
             {/* CTA row */}
             <tr>
               <td className="p-4" />
-              {products.map((p, i) => (
+              {(products || []).map((p, i) => (
                 <td
                   key={i}
                   className="p-4 text-center border-l border-l-line"
@@ -117,7 +117,7 @@ export function ComparisonTable({
 
       {/* Mobile: stacked cards */}
       <div className="md:hidden grid gap-4">
-        {products.map((p, i) => (
+        {(products || []).map((p, i) => (
           <div key={i} className="bg-bg border border-line p-6">
             <div className="flex items-start gap-4 mb-4">
               <div className="text-[40px] leading-none font-serif text-bronze/30">
@@ -138,7 +138,7 @@ export function ComparisonTable({
               </div>
             </div>
             <div className="space-y-2 mb-5 text-[13px]">
-              {attributes.map((attr) => (
+              {(attributes || []).map((attr) => (
                 <div key={attr} className="flex justify-between border-b border-hairline pb-2">
                   <span className="text-stone text-[11px] tracking-[0.1em] uppercase">{attr}</span>
                   <span className="text-charcoal text-right">{p.attributes[attr] || "—"}</span>
