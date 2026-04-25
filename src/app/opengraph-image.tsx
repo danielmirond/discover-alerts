@@ -84,38 +84,19 @@ export default async function OpengraphImage() {
           </div>
         </div>
 
-        {/* byAEVUM wordmark */}
+        {/* AEVUM wordmark */}
         <div
           style={{
-            display: "flex",
-            alignItems: "baseline",
+            fontSize: 180,
+            fontWeight: 500,
+            letterSpacing: "0.12em",
             color: "#a8865d",
+            textTransform: "uppercase",
+            fontFamily: "serif",
             marginBottom: 20,
           }}
         >
-          <span
-            style={{
-              fontSize: 90,
-              fontStyle: "italic",
-              fontWeight: 300,
-              fontFamily: "serif",
-              textTransform: "lowercase",
-              marginRight: 16,
-            }}
-          >
-            by
-          </span>
-          <span
-            style={{
-              fontSize: 180,
-              fontWeight: 500,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              fontFamily: "serif",
-            }}
-          >
-            Aevum
-          </span>
+          Aevum
         </div>
 
         {/* Italic subtitle */}

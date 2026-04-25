@@ -21,7 +21,7 @@ const content: Record<Locale, {
         heading: "Qué son las cookies",
         body: [
           "Las cookies son pequeños archivos de texto que los sitios web almacenan en tu navegador. Permiten recordar preferencias, analizar el tráfico y mejorar la experiencia de navegación.",
-          "byAevum utiliza cookies de forma limitada y transparente, priorizando siempre tu privacidad.",
+          "Aevum utiliza cookies de forma limitada y transparente, priorizando siempre tu privacidad.",
         ],
       },
       {
@@ -52,7 +52,7 @@ const content: Record<Locale, {
         heading: "Base legal",
         body: [
           "Las cookies estrictamente necesarias se procesan bajo la base legal de interés legítimo (Art. 6.1.f RGPD). Las cookies analíticas y de afiliación requieren tu consentimiento previo (Art. 6.1.a RGPD), que puedes retirar en cualquier momento.",
-          "byAevum cumple con el Reglamento General de Protección de Datos (RGPD), la Directiva ePrivacy (2002/58/CE) y la Ley 34/2002 de Servicios de la Sociedad de la Información (LSSI-CE) española.",
+          "Aevum cumple con el Reglamento General de Protección de Datos (RGPD), la Directiva ePrivacy (2002/58/CE) y la Ley 34/2002 de Servicios de la Sociedad de la Información (LSSI-CE) española.",
         ],
       },
       {
@@ -74,7 +74,7 @@ const content: Record<Locale, {
         heading: "What are cookies",
         body: [
           "Cookies are small text files that websites store in your browser. They allow sites to remember preferences, analyze traffic and improve the browsing experience.",
-          "byAevum uses cookies in a limited and transparent way, always prioritizing your privacy.",
+          "Aevum uses cookies in a limited and transparent way, always prioritizing your privacy.",
         ],
       },
       {
@@ -105,7 +105,7 @@ const content: Record<Locale, {
         heading: "Legal basis",
         body: [
           "Strictly necessary cookies are processed under the legal basis of legitimate interest (Art. 6.1.f GDPR). Analytics and affiliate cookies require your prior consent (Art. 6.1.a GDPR), which you can withdraw at any time.",
-          "byAevum complies with the General Data Protection Regulation (GDPR) and the ePrivacy Directive (2002/58/EC).",
+          "Aevum complies with the General Data Protection Regulation (GDPR) and the ePrivacy Directive (2002/58/EC).",
         ],
       },
       {
@@ -127,7 +127,7 @@ const content: Record<Locale, {
         heading: "Qu'est-ce qu'un cookie",
         body: [
           "Les cookies sont de petits fichiers texte stockés dans votre navigateur par les sites web. Ils permettent de mémoriser vos préférences, d'analyser le trafic et d'améliorer l'expérience de navigation.",
-          "byAevum utilise les cookies de manière limitée et transparente, en privilégiant toujours votre vie privée.",
+          "Aevum utilise les cookies de manière limitée et transparente, en privilégiant toujours votre vie privée.",
         ],
       },
       {
@@ -157,7 +157,7 @@ const content: Record<Locale, {
         heading: "Base légale",
         body: [
           "Les cookies strictement nécessaires sont traités sur la base de l'intérêt légitime (Art. 6.1.f RGPD). Les cookies analytiques et d'affiliation requièrent votre consentement préalable (Art. 6.1.a RGPD).",
-          "byAevum respecte le Règlement Général sur la Protection des Données (RGPD) et la Directive ePrivacy (2002/58/CE).",
+          "Aevum respecte le Règlement Général sur la Protection des Données (RGPD) et la Directive ePrivacy (2002/58/CE).",
         ],
       },
       {
@@ -179,7 +179,7 @@ const content: Record<Locale, {
         heading: "Was sind Cookies",
         body: [
           "Cookies sind kleine Textdateien, die Websites in deinem Browser speichern. Sie ermöglichen es, Einstellungen zu speichern, den Datenverkehr zu analysieren und das Nutzererlebnis zu verbessern.",
-          "byAevum verwendet Cookies in begrenztem und transparentem Umfang und priorisiert stets deine Privatsphäre.",
+          "Aevum verwendet Cookies in begrenztem und transparentem Umfang und priorisiert stets deine Privatsphäre.",
         ],
       },
       {
@@ -209,7 +209,7 @@ const content: Record<Locale, {
         heading: "Rechtsgrundlage",
         body: [
           "Unbedingt erforderliche Cookies werden auf Grundlage des berechtigten Interesses verarbeitet (Art. 6 Abs. 1 lit. f DSGVO). Analyse- und Affiliate-Cookies erfordern deine vorherige Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).",
-          "byAevum hält die Datenschutz-Grundverordnung (DSGVO) und die ePrivacy-Richtlinie (2002/58/EG) ein.",
+          "Aevum hält die Datenschutz-Grundverordnung (DSGVO) und die ePrivacy-Richtlinie (2002/58/EG) ein.",
         ],
       },
       {

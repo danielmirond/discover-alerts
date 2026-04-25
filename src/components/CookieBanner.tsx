@@ -18,7 +18,7 @@ const text: Record<
   es: {
     title: "Privacidad y cookies",
     message:
-      "byAevum usa cookies estrictamente necesarias y analítica anónima (sin rastreo personal). Puedes aceptar o rechazar — ambas opciones tienen el mismo peso.",
+      "Aevum usa cookies estrictamente necesarias y analítica anónima (sin rastreo personal). Puedes aceptar o rechazar — ambas opciones tienen el mismo peso.",
     accept: "Aceptar todas",
     reject: "Rechazar",
     more: "Leer política",
@@ -27,7 +27,7 @@ const text: Record<
   en: {
     title: "Privacy & cookies",
     message:
-      "byAevum uses strictly necessary cookies and anonymous analytics (no personal tracking). You can accept or reject — both options carry equal weight.",
+      "Aevum uses strictly necessary cookies and anonymous analytics (no personal tracking). You can accept or reject — both options carry equal weight.",
     accept: "Accept all",
     reject: "Reject",
     more: "Read policy",
@@ -36,7 +36,7 @@ const text: Record<
   fr: {
     title: "Confidentialité & cookies",
     message:
-      "byAevum utilise des cookies strictement nécessaires et des analyses anonymes (aucun suivi personnel). Vous pouvez accepter ou refuser — les deux options ont le même poids.",
+      "Aevum utilise des cookies strictement nécessaires et des analyses anonymes (aucun suivi personnel). Vous pouvez accepter ou refuser — les deux options ont le même poids.",
     accept: "Tout accepter",
     reject: "Refuser",
     more: "Lire la politique",
@@ -45,7 +45,7 @@ const text: Record<
   de: {
     title: "Datenschutz & Cookies",
     message:
-      "byAevum verwendet unbedingt erforderliche Cookies und anonyme Analysen (kein persönliches Tracking). Du kannst akzeptieren oder ablehnen — beide Optionen sind gleichwertig.",
+      "Aevum verwendet unbedingt erforderliche Cookies und anonyme Analysen (kein persönliches Tracking). Du kannst akzeptieren oder ablehnen — beide Optionen sind gleichwertig.",
     accept: "Alle akzeptieren",
     reject: "Ablehnen",
     more: "Richtlinie lesen",

@@ -23,7 +23,7 @@ const content: Record<Locale, {
       {
         heading: "Responsable del tratamiento",
         body: [
-          "byAevum es un proyecto editorial independiente. Responsable: Daniel Mirón. Contacto: privacidad@byaevum.com",
+          "Aevum es un proyecto editorial independiente. Responsable: Daniel Mirón. Contacto: privacidad@byaevum.com",
           "Domicilio fiscal: España. El tratamiento de datos se realiza conforme al Reglamento General de Protección de Datos (RGPD) UE 2016/679.",
         ],
       },
@@ -74,13 +74,13 @@ const content: Record<Locale, {
       {
         heading: "Seguridad",
         body: [
-          "byAevum implementa medidas técnicas y organizativas para proteger tus datos: hosting HTTPS, cifrado en tránsito, acceso restringido a datos y proveedores con certificaciones de seguridad.",
+          "Aevum implementa medidas técnicas y organizativas para proteger tus datos: hosting HTTPS, cifrado en tránsito, acceso restringido a datos y proveedores con certificaciones de seguridad.",
         ],
       },
       {
         heading: "Menores",
         body: [
-          "byAevum no está dirigido a menores de 16 años. No recopilamos conscientemente datos de menores.",
+          "Aevum no está dirigido a menores de 16 años. No recopilamos conscientemente datos de menores.",
         ],
       },
     ],
@@ -96,7 +96,7 @@ const content: Record<Locale, {
       {
         heading: "Data controller",
         body: [
-          "byAevum is an independent editorial project. Controller: Daniel Mirón. Contact: privacy@byaevum.com",
+          "Aevum is an independent editorial project. Controller: Daniel Mirón. Contact: privacy@byaevum.com",
           "Registered in Spain. Data processing is carried out in accordance with the General Data Protection Regulation (GDPR) EU 2016/679.",
         ],
       },
@@ -147,13 +147,13 @@ const content: Record<Locale, {
       {
         heading: "Security",
         body: [
-          "byAevum implements technical and organizational measures to protect your data: HTTPS hosting, encryption in transit, restricted data access and security-certified providers.",
+          "Aevum implements technical and organizational measures to protect your data: HTTPS hosting, encryption in transit, restricted data access and security-certified providers.",
         ],
       },
       {
         heading: "Minors",
         body: [
-          "byAevum is not directed at minors under 16. We do not knowingly collect data from minors.",
+          "Aevum is not directed at minors under 16. We do not knowingly collect data from minors.",
         ],
       },
     ],
@@ -169,7 +169,7 @@ const content: Record<Locale, {
       {
         heading: "Responsable du traitement",
         body: [
-          "byAevum est un projet éditorial indépendant. Responsable : Daniel Mirón. Contact : privacy@byaevum.com",
+          "Aevum est un projet éditorial indépendant. Responsable : Daniel Mirón. Contact : privacy@byaevum.com",
           "Enregistré en Espagne. Le traitement des données est effectué conformément au RGPD (UE 2016/679).",
         ],
       },
@@ -198,7 +198,7 @@ const content: Record<Locale, {
       {
         heading: "Sécurité",
         body: [
-          "byAevum met en œuvre des mesures techniques et organisationnelles pour protéger vos données : hébergement HTTPS, chiffrement en transit, accès restreint.",
+          "Aevum met en œuvre des mesures techniques et organisationnelles pour protéger vos données : hébergement HTTPS, chiffrement en transit, accès restreint.",
         ],
       },
     ],
@@ -214,7 +214,7 @@ const content: Record<Locale, {
       {
         heading: "Verantwortlicher",
         body: [
-          "byAevum ist ein unabhängiges redaktionelles Projekt. Verantwortlicher: Daniel Mirón. Kontakt: privacy@byaevum.com",
+          "Aevum ist ein unabhängiges redaktionelles Projekt. Verantwortlicher: Daniel Mirón. Kontakt: privacy@byaevum.com",
           "Registriert in Spanien. Die Datenverarbeitung erfolgt gemäß der DSGVO (EU 2016/679).",
         ],
       },
@@ -243,7 +243,7 @@ const content: Record<Locale, {
       {
         heading: "Sicherheit",
         body: [
-          "byAevum setzt technische und organisatorische Maßnahmen zum Schutz deiner Daten um: HTTPS-Hosting, Verschlüsselung, eingeschränkter Zugriff.",
+          "Aevum setzt technische und organisatorische Maßnahmen zum Schutz deiner Daten um: HTTPS-Hosting, Verschlüsselung, eingeschränkter Zugriff.",
         ],
       },
     ],

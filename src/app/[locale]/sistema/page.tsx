@@ -12,8 +12,8 @@ import { AffiliateLink } from "@/components/AffiliateLink";
 import { Logo } from "@/components/Logo";
 
 export const metadata: Metadata = {
-  title: "byAevum — Design System",
-  description: "Sistema de diseño de byAevum — marca, notación, tokens, tipografía, componentes.",
+  title: "Aevum — Design System",
+  description: "Sistema de diseño de Aevum — marca, notación, tokens, tipografía, componentes.",
 };
 
 const colors = [
@@ -54,11 +54,11 @@ export default async function DesignSystemPage({
       <section className="max-w-[1200px] mx-auto px-8 pt-20 pb-16 border-b border-hairline">
         <div className="eyebrow mb-6">Design System · v2.0</div>
         <h1 className="display-xl mb-6">
-          byAevum <em className="italic text-bronze font-light">Sistema</em>
+          Aevum <em className="italic text-bronze font-light">Sistema</em>
         </h1>
         <p className="text-[18px] text-slate leading-[1.6] max-w-[620px] font-light">
           Marca, notación, tokens cromáticos, tipografía, componentes y principios
-          editoriales que articulan la identidad de byAevum — estudio de longevidad
+          editoriales que articulan la identidad de Aevum — estudio de longevidad
           de precisión con estética letterpress clásica.
         </p>
 
@@ -602,7 +602,7 @@ export default async function DesignSystemPage({
             {
               n: "II",
               title: "Whitespace como valor",
-              desc: "El espacio vacío no es ausencia — es jerarquía. Una página cargada señala desesperación. byAevum transmite autoridad tranquila a través del respiro visual.",
+              desc: "El espacio vacío no es ausencia — es jerarquía. Una página cargada señala desesperación. Aevum transmite autoridad tranquila a través del respiro visual.",
             },
             {
               n: "III",
@@ -660,7 +660,7 @@ export default async function DesignSystemPage({
           </span>
         </div>
         <p className="text-stone text-[11px] mt-6 italic font-serif">
-          byAevum Design System · v2.0 · Actualizado abril 2026
+          Aevum Design System · v2.0 · Actualizado abril 2026
         </p>
       </section>
     </div>
