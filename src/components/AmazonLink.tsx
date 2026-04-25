@@ -18,7 +18,7 @@ const storeLabel: Record<Locale, string> = {
 
 function getTagForLocale(locale: Locale): string {
   const envKey = `NEXT_PUBLIC_AMAZON_TAG_${locale.toUpperCase()}`;
-  return process.env[envKey] || "aevum-21";
+  return process.env[envKey] || "nuus-21";
 }
 
 interface AmazonLinkProps {
