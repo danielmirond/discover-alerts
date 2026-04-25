@@ -7,9 +7,10 @@ const config: Config = {
       colors: {
         // Base surfaces
         bg: "#ffffff",
-        ivory: "#f8f5f0",
-        pearl: "#faf8f4",
-        sand: "#f0ebe2",
+        ivory: "#ffffff",
+        pearl: "#fafaf7",
+        sand: "#f4f2ec",
+        cream: "#f4f2ec",
 
         // Text
         charcoal: "#1a1a1a",
@@ -25,6 +26,7 @@ const config: Config = {
         },
         bronze: {
           DEFAULT: "#a8865d",
+          deep: "#8a6a44",
           light: "#e8dcc8",
           tint: "#f5ede0",
         },

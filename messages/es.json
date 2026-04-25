@@ -6,10 +6,12 @@
   },
   "nav": {
     "home": "Inicio",
-    "wearables": "Biomarcadores",
-    "supplements": "Suplementos",
     "protocols": "Protocolos",
-    "beauty": "Belleza",
+    "skin": "Skin Longevity",
+    "mind": "Mente",
+    "tribe": "Tribu",
+    "rest": "Reposo",
+    "practitioners": "Practitioners",
     "newsletter": "Briefing"
   },
   "home": {
@@ -50,21 +52,29 @@
     "allRights": "Todos los derechos reservados."
   },
   "categories": {
-    "wearables": {
-      "title": "Biomarcadores & Tracking",
-      "description": "Dispositivos de monitorización, anillos inteligentes y sistemas de medición para cuantificar tu biología y tomar decisiones basadas en datos."
-    },
-    "supplements": {
-      "title": "Suplementación & Longevidad",
-      "description": "NMN, NR, resveratrol, magnesio y precursores de NAD+. Evidencia científica real, sin claims exagerados."
-    },
     "protocols": {
       "title": "Protocolos & Ciencia",
-      "description": "Guías basadas en evidencia para optimizar sueño, recuperación, cognición y healthspan. Lo que funciona y lo que no."
+      "description": "Sueño, cortisol, péptidos, NAD+, nervio vago. Cada protocolo es una pregunta clínica respondida con evidencia, dosis, riesgos y proveedores premium."
     },
-    "beauty": {
-      "title": "Skin Longevity & Cosmética Premium",
-      "description": "El nuevo paradigma en cosmética: salud y rejuvenecimiento de la piel desde la biología celular. Augustinus Bader, La Prairie, ingredientes con evidencia."
+    "skin": {
+      "title": "Skin Longevity",
+      "description": "Péptidos cosméticos, retinoides, exosomas. La ciencia detrás de la cosmética de alto rendimiento, con criterio dermatológico real."
+    },
+    "mind": {
+      "title": "Mente & Cognición",
+      "description": "Friction maxxing, ocio analógico, lectura, longevidad cognitiva. Atención como recurso no renovable."
+    },
+    "tribe": {
+      "title": "Tribu & Conexión",
+      "description": "Tercer lugar, soledad y mortalidad, longevity coaches, Aevum Salons. La conexión social como variable de longevidad."
+    },
+    "rest": {
+      "title": "Reposo & Recuperación",
+      "description": "Retiros de longevidad, burnout retreats, viajes restorativos. El descanso como inversión, no como lujo."
+    },
+    "practitioners": {
+      "title": "Practitioners",
+      "description": "Directorio curado de profesionales: médicos de longevidad, coaches, nutricionistas, dermatólogos. Verificados en credenciales y enfoque basado en evidencia."
     }
   }
 }

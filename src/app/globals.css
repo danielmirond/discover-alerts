@@ -5,6 +5,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,200;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap');
 
 @layer base {
+  :root {
+    --ink: #1a1a1a;
+    --ink-70: rgba(26, 26, 26, 0.72);
+    --ink-50: rgba(26, 26, 26, 0.52);
+    --ink-30: rgba(26, 26, 26, 0.32);
+    --ink-15: rgba(26, 26, 26, 0.16);
+    --ink-08: rgba(26, 26, 26, 0.08);
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -15,8 +24,8 @@
   }
 
   ::selection {
-    background: #d4e8de;
-    color: #0a4d3c;
+    background: #a8865d;
+    color: #ffffff;
   }
 }
 
@@ -49,7 +58,7 @@
   .display-brand {
     @apply font-wordmark text-charcoal uppercase leading-[1.05];
     font-weight: 400;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.18em;
     font-size: clamp(38px, 6.5vw, 68px);
   }
 
@@ -101,7 +110,13 @@
   @apply text-[17px] text-charcoal leading-[1.65] mb-6;
 }
 .prose-editorial > p:first-of-type::first-letter {
-  @apply font-serif text-[56px] font-normal float-left leading-[0.9] mr-3 mt-1 text-emerald;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 5.4rem;
+  float: left;
+  line-height: 0.85;
+  margin: 0.15em 0.12em 0 0;
+  color: #8a6a44;
 }
 .prose-editorial h2 {
   @apply font-serif text-[28px] font-light text-charcoal tracking-[-0.01em] mt-14 mb-5;
