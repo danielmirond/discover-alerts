@@ -75,6 +75,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <head>
+        <meta name="google-site-verification" content="wQCuOhQfn_HNZ-63sjmv3R8B4SbHzBMto8fBF7jlK-M" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         {locales.map((l) => (
           <link
