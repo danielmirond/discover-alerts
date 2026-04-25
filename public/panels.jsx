@@ -151,30 +151,65 @@ function EntityRow({ e }) {
           }}>ANALIZAR TODO</button>
         )}
       </div>
-      {/* Grid de 5 thumbnails */}
+      {/* Grid de 5 noticias con thumbnail + titular clickable */}
       {topPages.length > 0 ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
           {topPages.map((p, i) => (
-            <div key={p.image} style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-              <div style={{ position: 'relative' }}>
-                <img src={p.image} alt={p.title}
-                     onClick={analyze(p)}
-                     title={p.title}
-                     style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', cursor: 'pointer', display: 'block' }} />
-                <span style={{ position: 'absolute', top: 2, left: 2, padding: '1px 4px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
+            <div key={p.image || p.url || i} style={{ display: 'flex', flexDirection: 'column', gap: 5, minWidth: 0 }}>
+              <a href={p.url || '#'} target="_blank" rel="noreferrer"
+                 onClick={(ev) => ev.stopPropagation()}
+                 style={{ position: 'relative', textDecoration: 'none', color: 'inherit' }}>
+                {p.image ? (
+                  <img src={p.image} alt={p.title}
+                       title={p.title}
+                       style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', border: '1px solid var(--rule)', display: 'block' }} />
+                ) : (
+                  <div style={{ width: '100%', aspectRatio: '16/9', border: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontSize: 10, fontFamily: 'var(--mono)' }}>
+                    sin imagen
+                  </div>
+                )}
+                <span style={{ position: 'absolute', top: 3, left: 3, padding: '1px 5px', background: 'var(--ink)', color: 'var(--paper)', fontFamily: 'var(--mono)', fontSize: 9 }}>
                   #{i + 1} · s{p.score}
                 </span>
-              </div>
-              <div title={p.title} style={{ fontSize: 10, color: 'var(--ink-4)', fontFamily: 'var(--mono)', lineHeight: 1.3, maxHeight: '2.6em', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {(p.title || '').slice(0, 80)}
-              </div>
+              </a>
+              <a href={p.url || '#'} target="_blank" rel="noreferrer"
+                 onClick={(ev) => ev.stopPropagation()}
+                 title={p.title}
+                 style={{ fontSize: 12, color: 'var(--ink)', fontFamily: 'var(--sans)', lineHeight: 1.3, fontWeight: 500, textDecoration: 'none', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                {p.title}
+              </a>
+              {p.image && (
+                <button onClick={analyze(p)} title="Analizar imagen con IA"
+                        style={{ fontFamily: 'var(--mono)', fontSize: 9, padding: '2px 5px', border: '1px solid var(--rule-2)', background: 'transparent', color: 'var(--ink-3)', cursor: 'pointer', alignSelf: 'flex-start' }}>
+                  analizar
+                </button>
+              )}
               <div>{renderAnalysis(p.image)}</div>
             </div>
           ))}
         </div>
+      ) : (e.matchingArticles && e.matchingArticles.length > 0) ? (
+        // Fallback: si no hay topPages DS, mostrar artículos RSS asociados
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 2 }}>
+            Cobertura RSS · sin pages Discover ahora mismo
+          </div>
+          {e.matchingArticles.slice(0, 5).map((a, i) => (
+            <a key={i} href={a.link} target="_blank" rel="noreferrer"
+               onClick={(ev) => ev.stopPropagation()}
+               style={{ textDecoration: 'none', color: 'inherit', padding: '4px 0', borderBottom: '1px solid var(--rule-2)', display: 'flex', gap: 6 }}>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', minWidth: 120, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {a.feedName}
+              </span>
+              <span style={{ flex: 1, fontSize: 12, color: 'var(--ink-2)', lineHeight: 1.35 }}>
+                {a.title}
+              </span>
+            </a>
+          ))}
+        </div>
       ) : (
         <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>
-          Sin imágenes para esta entidad en el último poll.
+          Sin noticias asociadas en este momento.
         </div>
       )}
     </div>
