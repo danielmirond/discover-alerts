@@ -598,25 +598,48 @@ function FormulasPanel({ formulas }) {
 }
 
 function PatternsPanel({ patterns }) {
+  const list = patterns || [];
+  // max polls para escalar las barras de "veces visto"
+  const maxPolls = Math.max(...list.map(p => p.polls || 0), 1);
   return (
     <div className="panel">
       <div className="kicker">
         Patrones de titular
         <Help>
-          N-gramas (secuencias de palabras) que aparecen repetidamente en titulares de Discover.
-          Señal de que varios medios están usando la misma fórmula — útil para detectar
+          N-gramas (3+ palabras) que se repiten en titulares de Discover en la
+          ventana rolling de 30 días. Filtramos los que aparecen en ≥2 polls
+          distintos para descartar ruido de un único snapshot. Señal de que
+          varios medios están usando la misma fórmula — útil para detectar
           saturación editorial y pivotar con un ángulo distinto.
         </Help>
         <span className="bar"></span>
-        <span className="meta">poll actual</span>
+        <span className="meta">{list.length} ngramas · ventana 30d · ≥2 polls</span>
       </div>
-      {patterns.map((p, i) => (
-        <div key={i} className="pattern-row">
-          <span style={{ fontFamily: 'var(--serif)' }}>{p.pattern}</span>
-          <div className="mini-bar"><div className="fill" style={{ width: `${(p.share / 25) * 100}%` }}></div></div>
-          <span className="mono xs" style={{ textAlign: 'right', color: p.delta.startsWith('+') ? 'var(--ok)' : p.delta.startsWith('-') ? 'var(--accent)' : 'var(--ink-4)' }}>
-            {p.share}%
+      {list.length === 0 && (
+        <div style={{ padding: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>
+          Sin patrones consolidados todavía. Necesita acumulación de varios polls.
+        </div>
+      )}
+      {list.map((p, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: '1px solid var(--rule-2)' }}>
+          <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', minWidth: 24, textAlign: 'right' }}>{i + 1}</span>
+          <span style={{ flex: 1, fontFamily: 'var(--serif)', fontSize: 14, color: 'var(--ink)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {p.pattern}
           </span>
+          <div className="mini-bar" style={{ width: 56, flexShrink: 0 }}>
+            <div className="fill" style={{ width: `${(p.polls / maxPolls) * 100}%` }}></div>
+          </div>
+          <span className="mono xs" title="polls en los que apareció" style={{ minWidth: 36, textAlign: 'right', color: 'var(--ink-3)' }}>
+            ×{p.polls}
+          </span>
+          <span className="mono xs" title="apariciones totales acumuladas" style={{ minWidth: 36, textAlign: 'right', color: 'var(--ink-2)' }}>
+            {p.count}
+          </span>
+          {p.firstSeenLabel && (
+            <span className="mono xs" title="primera vez visto" style={{ minWidth: 36, textAlign: 'right', color: 'var(--ink-4)' }}>
+              {p.firstSeenLabel}
+            </span>
+          )}
         </div>
       ))}
     </div>

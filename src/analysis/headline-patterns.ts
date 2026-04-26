@@ -110,21 +110,36 @@ export function detectHeadlinePatterns(pages: DiscoverPage[]): HeadlinePatternAl
   const alerts: HeadlinePatternAlert[] = [];
   const nextPatterns: Record<string, number> = {};
 
+  // Threshold dinámico: el de config (default 3) decide CUÁNDO se persiste el
+  // ngram en state.headlinePatterns. Para emitir ALERTA de patrón usamos un
+  // umbral más permisivo (alertMin=2): así detectamos n-gramas que aparecen
+  // en ≥2 titulares aunque el config base esté en 3. Y eliminamos la condición
+  // 'count > prevCount' (era restrictiva: si un patrón se mantiene estable
+  // poll tras poll no disparaba alerta nueva, perdíamos señal de saturación).
+  const minPersist = config.thresholds.headlineMinFrequency;
+  const minAlert = Math.max(2, Math.min(minPersist, 2));
+
   for (const [ngram, { count, titles }] of ngramData) {
-    if (count < config.thresholds.headlineMinFrequency) continue;
-
+    if (count < minPersist) continue;
     nextPatterns[ngram] = count;
-    const prevCount = prevPatterns[ngram] ?? 0;
+  }
 
-    if (count > prevCount) {
-      alerts.push({
-        type: 'headline_pattern',
-        ngram,
-        count,
-        prevCount,
-        matchingTitles: [...titles].slice(0, 5),
-      });
-    }
+  // Alertas: emitimos cuando count >= minAlert AND es nuevo (no estaba en prev)
+  // o ha crecido al menos 1 unidad. Esto captura tanto ngramas emergentes
+  // como saturación editorial activa.
+  for (const [ngram, { count, titles }] of ngramData) {
+    if (count < minAlert) continue;
+    const prevCount = prevPatterns[ngram] ?? 0;
+    const isNew = prevCount === 0;
+    const grew = count > prevCount;
+    if (!isNew && !grew) continue;
+    alerts.push({
+      type: 'headline_pattern',
+      ngram,
+      count,
+      prevCount,
+      matchingTitles: [...titles].slice(0, 5),
+    });
   }
 
   // Append current poll patterns to the rolling history (30-day window).

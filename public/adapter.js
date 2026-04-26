@@ -287,12 +287,27 @@
   function transformPatterns(api) {
     const patterns = api.headlinePatterns4d || api.headlinePatterns || [];
     const total = patterns.reduce((s, p) => s + (p.totalCount || p.count || 1), 0) || 1;
-    return patterns.slice(0, 10).map(p => {
+    return patterns.slice(0, 30).map(p => {
       const count = p.totalCount || p.count || 0;
       const share = Math.round((count / total) * 100);
+      // Days since firstSeen + recency tag
+      let days = null;
+      let agoLabel = '';
+      if (p.firstSeen) {
+        const ms = Date.now() - new Date(p.firstSeen).getTime();
+        days = Math.max(0, Math.round(ms / (24 * 3600_000)));
+        const hours = Math.round(ms / 3600_000);
+        if (hours < 24) agoLabel = `${hours}h`;
+        else agoLabel = `${days}d`;
+      }
       return {
         pattern: p.ngram || p.pattern,
         share,
+        count,
+        polls: p.polls || 1,
+        words: p.words,
+        firstSeenDays: days,
+        firstSeenLabel: agoLabel,
         delta: '+0',
       };
     });
