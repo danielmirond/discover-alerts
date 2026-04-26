@@ -100,7 +100,7 @@ function HomeContent({ locale }: { locale: string }) {
             <h2 className="display-lg">{t("home.categories")}</h2>
           </div>
           <span className="font-serif italic text-stone text-[14px] hidden md:inline">
-            Six pillars of longevity
+            Seven pillars of longevity
           </span>
         </div>
 
@@ -169,10 +169,10 @@ function HomeContent({ locale }: { locale: string }) {
             <div>
               <div className="eyebrow mb-3">Framework</div>
               <h2 className="display-lg">
-                {locale === "es" ? "Los seis pilares"
-                  : locale === "fr" ? "Les six piliers"
-                  : locale === "de" ? "Die sechs Säulen"
-                  : "The six pillars"}
+                {locale === "es" ? "Los siete pilares"
+                  : locale === "fr" ? "Les sept piliers"
+                  : locale === "de" ? "Die sieben Säulen"
+                  : "The seven pillars"}
               </h2>
             </div>
             <span className="font-serif italic text-stone text-[14px] hidden md:inline">
