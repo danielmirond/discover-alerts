@@ -78,7 +78,7 @@ function CategoryContent({
       {/* ARTICLES GRID */}
       <section className="max-w-[1200px] mx-auto px-8 py-16">
         {articles.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-line">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             {articles.map((article) => (
               <div key={article.slug} className="bg-bg">
                 <ArticleCard article={article} locale={locale} />

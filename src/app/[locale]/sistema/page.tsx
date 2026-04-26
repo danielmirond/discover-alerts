@@ -88,7 +88,7 @@ export default async function DesignSystemPage({
         <div className="eyebrow mb-3">01</div>
         <h2 className="display-lg mb-12">Marca</h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-[1px] bg-line border border-line">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 border border-line">
           {/* Full logo */}
           <div className="bg-bg p-16 flex flex-col items-center justify-center min-h-[280px]">
             <Logo variant="full" size={44} />
@@ -169,7 +169,7 @@ export default async function DesignSystemPage({
           <div className="eyebrow mb-3">02</div>
           <h2 className="display-lg mb-12">Notación editorial</h2>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-[1px] bg-line border border-line mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-0 border border-line mb-12">
             {/* Signature block */}
             <div className="bg-bg p-12 md:p-16 relative overflow-hidden">
               {/* Architectural grid SVG */}
@@ -292,7 +292,7 @@ export default async function DesignSystemPage({
           <div className="eyebrow mb-3">03</div>
           <h2 className="display-lg mb-12">Paleta cromática</h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-[1px] bg-line border border-line mb-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-0 border border-line mb-10">
             {colors.map((c) => (
               <div key={c.name} className="bg-bg">
                 <div
@@ -347,7 +347,7 @@ export default async function DesignSystemPage({
           <h2 className="display-lg mb-12">Tipografía</h2>
 
         {/* Font families */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-line border border-line mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-line mb-16">
           <div className="bg-bg p-10">
             <div className="eyebrow mb-4">Display</div>
             <div className="font-serif text-[48px] font-light text-charcoal leading-[1] mb-4 tracking-tight">

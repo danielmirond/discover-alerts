@@ -246,7 +246,7 @@ export default async function AboutPage({
         <div className="max-w-[1200px] mx-auto">
           <div className="eyebrow mb-3">01</div>
           <h2 className="display-md mb-12">{c.methodologyTitle}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-line">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             {c.methodology.map((item, i) => (
               <div key={i} className="bg-bg p-10">
                 <div className="font-serif italic text-[32px] font-extralight text-bronze/60 mb-4">

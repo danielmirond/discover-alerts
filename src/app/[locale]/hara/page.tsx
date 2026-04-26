@@ -74,7 +74,7 @@ function HaraContent({ locale }: { locale: string }) {
 
       {/* THREE PILLARS */}
       <section className="max-w-[1200px] mx-auto px-8 py-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-line">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
           {pillarConfig.map(({ key, number }) => (
             <Link
               key={key}
@@ -107,7 +107,7 @@ function HaraContent({ locale }: { locale: string }) {
             <h2 className="display-lg mb-12">
               {locale === "es" ? "Últimas publicaciones" : locale === "fr" ? "Dernières publications" : locale === "de" ? "Neueste Artikel" : "Latest articles"}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-line">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
               {articles.slice(0, 6).map((article) => (
                 <div key={article.slug} className="bg-bg">
                   <ArticleCard article={article} locale={locale} />

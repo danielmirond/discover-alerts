@@ -12,7 +12,7 @@ interface ProsConsProps {
 export function ProsCons({ pros, cons, verdict, cta }: ProsConsProps) {
   return (
     <div className="my-12 not-prose">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-line border border-line">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-line">
         {/* Pros */}
         <div className="bg-emerald-tint/40 p-7">
           <div className="flex items-center gap-3 mb-5">

@@ -103,7 +103,7 @@ function HomeContent({ locale }: { locale: string }) {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[1px] bg-line">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0">
           {categoryConfig.map(({ key, number }) => (
             <Link
               key={key}
@@ -135,11 +135,11 @@ function HomeContent({ locale }: { locale: string }) {
             <div className="eyebrow mb-3">Editor&rsquo;s pick</div>
             <h2 className="display-lg mb-12">{t("home.latestArticles")}</h2>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-[1px] bg-line">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-0">
               <div className="lg:col-span-3 bg-bg">
                 <ArticleCard article={featured} locale={locale} featured />
               </div>
-              <div className="lg:col-span-2 flex flex-col bg-line gap-[1px]">
+              <div className="lg:col-span-2 flex flex-col gap-0">
                 {rest.slice(0, 3).map((article) => (
                   <div key={article.slug} className="bg-bg flex-1">
                     <ArticleCard article={article} locale={locale} />
@@ -149,7 +149,7 @@ function HomeContent({ locale }: { locale: string }) {
             </div>
 
             {rest.length > 3 && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-line mt-[1px]">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
                 {rest.slice(3).map((article) => (
                   <div key={article.slug} className="bg-bg">
                     <ArticleCard article={article} locale={locale} />
@@ -182,7 +182,7 @@ function HomeContent({ locale }: { locale: string }) {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[1px] bg-line">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0">
             {categoryConfig.map(({ key, number }) => (
               <Link
                 key={key}

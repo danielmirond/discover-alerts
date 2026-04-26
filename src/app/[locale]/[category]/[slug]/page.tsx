@@ -220,7 +220,7 @@ export default async function ArticlePage({
           <div className="max-w-[1200px] mx-auto">
             <div className="eyebrow mb-3">Further reading</div>
             <h2 className="display-md mb-10">{t("related")}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px] bg-line">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
               {related.map((a) => (
                 <div key={a.slug} className="bg-bg">
                   <ArticleCard article={a} locale={locale} />
