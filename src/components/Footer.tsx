@@ -17,8 +17,8 @@ export function Footer() {
   return (
     <footer className="bg-ivory border-t border-hairline mt-24">
       <div className="max-w-[1200px] mx-auto px-8 py-20">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
-          <div className="md:col-span-5">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-16">
+          <div className="md:col-span-4">
             <div className="mb-7">
               <Logo variant="full" size={36} />
             </div>
@@ -32,7 +32,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="md:col-span-3">
+          <div className="md:col-span-4">
             <div className="eyebrow mb-5">{t("categories")}</div>
             <div className="flex flex-col gap-3">
               <Link
@@ -95,7 +95,46 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="md:col-span-4">
+          <div className="md:col-span-2">
+            <div className="eyebrow mb-5" style={{ color: "#a0392a" }}>Hara</div>
+            <div className="flex flex-col gap-3">
+              <Link
+                href={`/${locale}/hara`}
+                className="text-[13px] text-slate hover:text-bengara transition-colors"
+              >
+                {locale === "es" ? "Wellness asiático"
+                  : locale === "fr" ? "Bien-être asiatique"
+                  : locale === "de" ? "Asiatisches Wellness"
+                  : "Asian wellness"}
+              </Link>
+              <Link
+                href={`/${locale}/hara/k-beauty`}
+                className="text-[13px] text-slate hover:text-bengara transition-colors"
+              >
+                K-Beauty
+              </Link>
+              <Link
+                href={`/${locale}/hara/${locale === "es" ? "bebidas-funcionales" : locale === "fr" ? "boissons-fonctionnelles" : locale === "de" ? "funktionale-getraenke" : "functional-drinks"}`}
+                className="text-[13px] text-slate hover:text-bengara transition-colors"
+              >
+                {locale === "es" ? "Bebidas Funcionales"
+                  : locale === "fr" ? "Boissons Fonctionnelles"
+                  : locale === "de" ? "Funktionale Getränke"
+                  : "Functional Drinks"}
+              </Link>
+              <Link
+                href={`/${locale}/hara/${locale === "es" ? "healthspan-asiatico" : locale === "fr" ? "sante-asiatique" : locale === "de" ? "asiatische-gesundheit" : "asian-healthspan"}`}
+                className="text-[13px] text-slate hover:text-bengara transition-colors"
+              >
+                {locale === "es" ? "Healthspan Asiático"
+                  : locale === "fr" ? "Santé Asiatique"
+                  : locale === "de" ? "Asiatischer Healthspan"
+                  : "Asian Healthspan"}
+              </Link>
+            </div>
+          </div>
+
+          <div className="md:col-span-2">
             <div className="eyebrow mb-5">{t("legal")}</div>
             <div className="flex flex-col gap-3">
               <Link

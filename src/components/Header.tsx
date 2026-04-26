@@ -25,16 +25,20 @@ export function Header() {
   };
   const p = paths[locale] || paths.en;
 
-  const links = [
+  const desktopLinks = [
     { href: `/${locale}/${p.protocols}`, label: t("protocols") },
     { href: `/${locale}/${p.skin}`, label: t("skin") },
     { href: `/${locale}/${p.mind}`, label: t("mind") },
     { href: `/${locale}/${p.tribe}`, label: t("tribe") },
     { href: `/${locale}/${p.rest}`, label: t("rest") },
     { href: `/${locale}/${p.ingredients}`, label: t("ingredients") },
-    { href: `/${locale}/hara`, label: t("hara") },
     { href: `/${locale}/${p.practitioners}`, label: t("practitioners") },
     { href: `/${locale}/about`, label: aboutLabel },
+  ];
+
+  const mobileLinks = [
+    ...desktopLinks,
+    { href: `/${locale}/hara`, label: "Hara", accent: true },
   ];
 
   return (
@@ -52,7 +56,7 @@ export function Header() {
         </Link>
 
         <nav className="hidden lg:flex items-center gap-8">
-          {links.map(({ href, label }) => (
+          {desktopLinks.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
@@ -79,12 +83,16 @@ export function Header() {
       {open && (
         <nav className="lg:hidden border-t border-hairline bg-bg/95 backdrop-blur-md">
           <div className="max-w-[1200px] mx-auto px-8 py-6 flex flex-col gap-1">
-            {links.map(({ href, label }) => (
+            {mobileLinks.map(({ href, label, accent }: { href: string; label: string; accent?: boolean }) => (
               <Link
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className="text-[12px] tracking-[0.12em] uppercase text-stone hover:text-emerald transition-colors font-medium py-3 border-b border-hairline last:border-0"
+                className={`text-[12px] tracking-[0.12em] uppercase font-medium py-3 border-b border-hairline last:border-0 transition-colors ${
+                  accent
+                    ? "text-bengara hover:text-azuki"
+                    : "text-stone hover:text-emerald"
+                }`}
               >
                 {label}
               </Link>
