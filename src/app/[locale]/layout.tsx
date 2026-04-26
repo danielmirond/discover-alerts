@@ -88,6 +88,34 @@ export default async function LocaleLayout({
         <link rel="alternate" hrefLang="x-default" href="/en" />
       </head>
       <body className="min-h-screen flex flex-col bg-bg">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Aevum",
+            url: SITE_URL,
+            logo: `${SITE_URL}/favicon.svg`,
+            description: "Precision longevity editorial. Protocolos, biomarcadores y tecnología de optimización humana.",
+            sameAs: [],
+            contactPoint: {
+              "@type": "ContactPoint",
+              email: "privacy@byaevum.com",
+              contactType: "customer service",
+            },
+          }) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Aevum",
+            url: SITE_URL,
+            inLanguage: ["es", "en", "fr", "de"],
+            publisher: { "@type": "Organization", name: "Aevum" },
+          }) }}
+        />
         <NextIntlClientProvider messages={messages}>
           <Header />
           <main className="flex-1">{children}</main>
