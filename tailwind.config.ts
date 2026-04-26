@@ -30,6 +30,16 @@ const config: Config = {
           light: "#e8dcc8",
           tint: "#f5ede0",
         },
+        bengara: {
+          DEFAULT: "#A0392A",
+          light: "#e8c5c0",
+          tint: "#f5e8e6",
+        },
+        matcha: {
+          DEFAULT: "#5C7148",
+          light: "#d4dece",
+          tint: "#edf1ea",
+        },
 
         // Borders
         line: "#e8e4de",

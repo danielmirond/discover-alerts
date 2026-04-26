@@ -13,6 +13,7 @@
     "rest": "Erholung",
     "practitioners": "Practitioners",
     "ingredients": "Inhaltsstoffe",
+    "hara": "Hara",
     "newsletter": "Briefing"
   },
   "home": {
@@ -96,6 +97,16 @@
     "ingredients": {
       "title": "Longevity-Inhaltsstoffe",
       "description": "Eine Verbindung, ein Artikel. Urolithin A, Spermidin, Akkermansia, Berberin, Fisetin. Der definitive Leitfaden zu jedem Langlebigkeitsmolekül."
+    }
+  },
+  "hara": {
+    "title": "Hara",
+    "tagline": "Asiatisches Wellness, entschlüsselt",
+    "description": "K-Beauty, funktionelle Getränke und asiatischer Healthspan — durch die Linse der Langlebigkeit betrachtet.",
+    "categories": {
+      "k-beauty": { "title": "K-Beauty", "description": "Koreanische Hautpflege-Rituale, medizinische Inhaltsstoffe und Protokolle für Haut-Langlebigkeit." },
+      "functional-drinks": { "title": "Funktionale Getränke", "description": "Matcha, Kombucha, Adaptogene, GABA-Getränke. Mit Evidenz analysiert." },
+      "asian-healthspan": { "title": "Asiatischer Healthspan", "description": "Asiatische Blaue Zonen, traditionelle Medizin und Beauty-Ingestibles." }
     }
   }
 }

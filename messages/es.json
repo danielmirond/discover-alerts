@@ -13,6 +13,7 @@
     "rest": "Reposo",
     "practitioners": "Practitioners",
     "ingredients": "Ingredientes",
+    "hara": "Hara",
     "newsletter": "Briefing"
   },
   "home": {
@@ -96,6 +97,25 @@
     "ingredients": {
       "title": "Ingredientes Longevity",
       "description": "Un compuesto, un artículo. Urolitina A, espermidina, akkermansia, berberina, fisetina. La guía definitiva de cada molécula de longevidad: mecanismo, evidencia, dosis y dónde comprar en España."
+    }
+  },
+  "hara": {
+    "title": "Hara",
+    "tagline": "Wellness asiático con base científica",
+    "description": "K-Beauty, bebidas funcionales y healthspan asiático — examinados desde una lente de longevidad. Ingredientes, protocolos y productos del este de Asia, con evidencia real.",
+    "categories": {
+      "k-beauty": {
+        "title": "K-Beauty",
+        "description": "Rituales de skincare coreano, ingredientes médicos y protocolos para la longevidad de tu piel. PDRN, exosomas, EGF y la ciencia detrás del glass skin."
+      },
+      "functional-drinks": {
+        "title": "Bebidas Funcionales",
+        "description": "Matcha, kombucha, adaptógenos, GABA drinks. Bebidas funcionales asiáticas analizadas con evidencia."
+      },
+      "asian-healthspan": {
+        "title": "Healthspan Asiático",
+        "description": "Zonas azules asiáticas, medicina tradicional, ingestibles de belleza y el cruce GLP-1 × skincare. Longevidad desde Oriente."
+      }
     }
   }
 }

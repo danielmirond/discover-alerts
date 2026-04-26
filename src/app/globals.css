@@ -189,6 +189,20 @@
   @apply text-charcoal font-medium;
 }
 
+/* Hara vertical — bengara/matcha accent overrides */
+.hara-vertical .eyebrow { color: #A0392A; }
+.hara-vertical .eyebrow-emerald { color: #5C7148; }
+.hara-vertical .btn-primary { background-color: #1a1a1a; }
+.hara-vertical .btn-primary:hover { background-color: #A0392A; }
+.hara-vertical .prose-editorial a { color: #5C7148; text-decoration-color: rgba(92, 113, 72, 0.3); }
+.hara-vertical .prose-editorial a:hover { text-decoration-color: #5C7148; }
+.hara-vertical .prose-editorial > p:first-of-type::first-letter { color: #A0392A; }
+.hara-vertical .prose-editorial ul li::before { background: #A0392A; }
+.hara-vertical .prose-editorial ol li::before { color: #5C7148; }
+.hara-vertical .prose-editorial blockquote { border-color: #A0392A; }
+.hara-vertical .card-soft:hover { border-color: rgba(160, 57, 42, 0.3); box-shadow: 0 2px 24px rgba(160, 57, 42, 0.05); }
+.hara-vertical ::selection { background: #A0392A; }
+
 /* Animations */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }

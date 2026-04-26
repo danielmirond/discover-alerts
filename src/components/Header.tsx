@@ -32,6 +32,7 @@ export function Header() {
     { href: `/${locale}/${p.tribe}`, label: t("tribe") },
     { href: `/${locale}/${p.rest}`, label: t("rest") },
     { href: `/${locale}/${p.ingredients}`, label: t("ingredients") },
+    { href: `/${locale}/hara`, label: t("hara") },
     { href: `/${locale}/${p.practitioners}`, label: t("practitioners") },
     { href: `/${locale}/about`, label: aboutLabel },
   ];

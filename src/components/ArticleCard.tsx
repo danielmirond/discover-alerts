@@ -10,7 +10,7 @@ interface ArticleCardProps {
 export function ArticleCard({ article, locale, featured }: ArticleCardProps) {
   return (
     <Link
-      href={`/${locale}/${article.category}/${article.slug}`}
+      href={article.vertical ? `/${locale}/${article.vertical}/${article.category}/${article.slug}` : `/${locale}/${article.category}/${article.slug}`}
       className={`group card-soft block ${
         featured ? "p-10 md:p-14" : "p-7"
       }`}
