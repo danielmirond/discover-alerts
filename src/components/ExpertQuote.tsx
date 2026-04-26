@@ -3,9 +3,10 @@ interface ExpertQuoteProps {
   author: string;
   role: string;
   org?: string;
+  source?: string;
 }
 
-export function ExpertQuote({ quote, author, role, org }: ExpertQuoteProps) {
+export function ExpertQuote({ quote, author, role, org, source }: ExpertQuoteProps) {
   return (
     <figure className="my-10 bg-ivory border border-hairline p-8 md:p-10 relative">
       <div className="absolute top-6 right-8 font-serif italic text-[64px] text-bronze/15 leading-none select-none">
@@ -23,7 +24,14 @@ export function ExpertQuote({ quote, author, role, org }: ExpertQuoteProps) {
           </span>
         </div>
         <div>
-          <div className="text-[13px] text-charcoal font-medium">{author}</div>
+          <div className="text-[13px] text-charcoal font-medium">
+            {source ? (
+              <a href={source} target="_blank" rel="noopener noreferrer" className="hover:text-emerald transition-colors">
+                {author}
+                <span className="text-[10px] text-bronze ml-1">↗</span>
+              </a>
+            ) : author}
+          </div>
           <div className="text-[11px] text-stone">
             {role}
             {org && <span className="text-bronze"> · {org}</span>}
