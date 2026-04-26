@@ -3,6 +3,7 @@ import { getState, updateState } from '../state/store.js';
 import type { DiscoverPage, HeadlinePatternAlert } from '../types.js';
 
 const SPANISH_STOPWORDS = new Set([
+  // Artículos + preposiciones + conjunciones core
   'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas', 'al', 'del',
   'de', 'en', 'y', 'o', 'que', 'es', 'por', 'con', 'para', 'como',
   'se', 'su', 'sus', 'le', 'les', 'lo', 'mas', 'ya', 'no', 'si',
@@ -10,6 +11,8 @@ const SPANISH_STOPWORDS = new Set([
   'esa', 'esos', 'esas', 'pero', 'sin', 'sobre', 'entre', 'hasta',
   'desde', 'muy', 'todo', 'toda', 'todos', 'todas', 'otro', 'otra',
   'otros', 'otras', 'cual', 'cuando', 'donde', 'quien', 'hay', 'ser',
+
+  // Verbos comunes (todas las formas)
   'estar', 'tener', 'hacer', 'poder', 'decir', 'ir', 'ver', 'dar',
   'saber', 'querer', 'llegar', 'pasar', 'deber', 'poner', 'parecer',
   'quedar', 'creer', 'hablar', 'llevar', 'dejar', 'seguir', 'encontrar',
@@ -21,13 +24,43 @@ const SPANISH_STOPWORDS = new Set([
   'servir', 'sacar', 'necesitar', 'mantener', 'resultar', 'leer',
   'caer', 'cambiar', 'presentar', 'crear', 'abrir', 'considerar',
   'ofrecer', 'partir', 'acabar', 'ganar', 'formar', 'traer',
+
+  // Verbos editoriales (curado de titulares Discover ES)
+  'tras', 'porque', 'según', 'segun', 'aunque', 'mientras', 'pese',
+  'supone', 'señala', 'senala', 'asegura', 'apunta', 'considera',
+  'avisa', 'advierte', 'desvela', 'revela', 'descubre', 'explica',
+  'cuenta', 'admite', 'reconoce', 'confiesa', 'critica', 'defiende',
+  'opina', 'propone', 'plantea', 'cree', 'habla',
+
+  // Verbos clickbait/curiosity-gap
+  'arrasa', 'estalla', 'explota', 'desata', 'sacude', 'revoluciona',
+  'sorprende', 'impacta', 'conmociona', 'enfada', 'enciende',
+
+  // Pronombres / cuantificadores
   'nos', 'me', 'te', 'les', 'mi', 'tu', 'ella', 'ellos', 'ellas',
-  'nos', 'vos', 'nosotros', 'vosotros', 'usted', 'ustedes',
+  'vos', 'nosotros', 'vosotros', 'usted', 'ustedes',
   'aqui', 'ahi', 'alli', 'asi', 'bien', 'mal', 'mejor', 'peor',
   'mucho', 'poco', 'antes', 'despues', 'ahora', 'hoy', 'ayer',
   'manana', 'siempre', 'nunca', 'tambien', 'solo', 'mas', 'menos',
+  'algo', 'alguno', 'alguna', 'ningun', 'nadie', 'nada', 'cada',
+  'qué', 'cómo', 'dónde', 'cuándo', 'cuánto', 'cuánta', 'qué',
+
+  // Connectores discurso editorial
+  'porqué', 'porque', 'mientras', 'aunque', 'pese', 'cabe', 'caben',
+  'tampoco', 'incluso', 'casi', 'apenas', 'cerca', 'fuera',
+  'dentro', 'frente', 'durante', 'antes', 'detrás', 'detras',
+
+  // Genéricos sin valor + locuciones comunes
+  'gente', 'persona', 'personas', 'cosa', 'cosas', 'forma', 'formas',
+  'parte', 'partes', 'caso', 'casos', 'tema', 'temas', 'vez', 'veces',
+  'lado', 'lados', 'tipo', 'tipos', 'manera', 'maneras',
+  'momento', 'momentos', 'hora', 'horas', 'día', 'dia', 'días', 'dias',
+  'año', 'ano', 'años', 'anos',
+
+  // Inglés que aparece en titulares ES (Lo + Trump etc.)
   'the', 'and', 'for', 'that', 'with', 'this', 'from', 'are', 'was',
   'has', 'have', 'not', 'but', 'its', 'his', 'her', 'they', 'been',
+  'will', 'would', 'should', 'could', 'about', 'after', 'over',
 ]);
 
 function normalize(text: string): string[] {
