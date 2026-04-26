@@ -16,6 +16,7 @@ export function ArticleHero({ src, alt, credit }: ArticleHeroProps) {
         className="object-cover"
         sizes="100vw"
         priority
+        unoptimized
       />
       <div className="absolute inset-0 bg-gradient-to-t from-bg/40 via-transparent to-transparent" />
       {credit && (
