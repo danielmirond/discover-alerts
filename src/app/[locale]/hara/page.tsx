@@ -45,14 +45,17 @@ function HaraContent({ locale }: { locale: string }) {
             </span>
           </div>
 
-          <h1 className="font-serif font-light text-charcoal tracking-[-0.02em] leading-[1.02] mb-10" style={{ fontSize: "clamp(52px, 8vw, 96px)" }}>
-            Hara
+          <h1 className="font-hara-display font-normal text-charcoal tracking-[-0.03em] leading-[1] mb-4" style={{ fontSize: "clamp(64px, 10vw, 120px)" }}>
+            Hara<span className="text-bengara">.</span>
           </h1>
-          <p className="text-[10px] tracking-[0.35em] uppercase text-stone mb-10">
-            腹 · {locale === "es" ? "El centro vital" : locale === "fr" ? "Le centre vital" : locale === "de" ? "Das vitale Zentrum" : "The vital center"}
+          <p className="font-hara-mono text-[11px] tracking-[0.16em] uppercase text-ash mb-3">
+            腹 · ハラ · 복부
+          </p>
+          <p className="font-hara-display italic text-[15px] text-ash mb-10">
+            a Byaevum publication
           </p>
 
-          <p className="font-serif italic text-[22px] md:text-[26px] text-stone leading-[1.4] max-w-[640px] font-light tracking-[-0.005em]">
+          <p className="font-hara-body text-[17px] text-charcoal/80 leading-[1.65] max-w-[640px]">
             {t("hara.description")}
           </p>
         </div>

@@ -31,15 +31,20 @@ const config: Config = {
           tint: "#f5ede0",
         },
         bengara: {
-          DEFAULT: "#A0392A",
+          DEFAULT: "#a0392a",
           light: "#e8c5c0",
           tint: "#f5e8e6",
         },
+        azuki: {
+          DEFAULT: "#7c3030",
+        },
         matcha: {
-          DEFAULT: "#5C7148",
+          DEFAULT: "#5c7148",
           light: "#d4dece",
           tint: "#edf1ea",
         },
+        washi: "#fafaf7",
+        ash: "#606060",
 
         // Borders
         line: "#e8e4de",
@@ -50,6 +55,9 @@ const config: Config = {
         serif: ["Fraunces", "Georgia", "serif"],
         sans: ["Inter", "system-ui", "sans-serif"],
         mono: ["DM Mono", "Menlo", "monospace"],
+        "hara-display": ["'Instrument Serif'", "Georgia", "serif"],
+        "hara-body": ["'IBM Plex Sans'", "Inter", "system-ui", "sans-serif"],
+        "hara-mono": ["'IBM Plex Mono'", "'DM Mono'", "'Courier New'", "monospace"],
       },
     },
   },

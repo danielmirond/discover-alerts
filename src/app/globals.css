@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,200;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,200;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@300;400&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap');
 
 @layer base {
   :root {
@@ -189,19 +189,34 @@
   @apply text-charcoal font-medium;
 }
 
-/* Hara vertical — bengara/matcha accent overrides */
-.hara-vertical .eyebrow { color: #A0392A; }
-.hara-vertical .eyebrow-emerald { color: #5C7148; }
+/* Hara vertical — Instrument Serif + IBM Plex + bengara/matcha */
+.hara-vertical { background: #fafaf7; }
+.hara-vertical .font-serif,
+.hara-vertical .display-lg,
+.hara-vertical .display-md,
+.hara-vertical .display-sm,
+.hara-vertical .display-xl,
+.hara-vertical .display-brand { font-family: 'Instrument Serif', Georgia, serif; }
+.hara-vertical .font-sans,
+.hara-vertical p,
+.hara-vertical li { font-family: 'IBM Plex Sans', Inter, system-ui, sans-serif; }
+.hara-vertical .eyebrow,
+.hara-vertical .mono { font-family: 'IBM Plex Mono', 'DM Mono', monospace; color: #606060; }
+.hara-vertical .eyebrow { color: #a0392a; }
+.hara-vertical .eyebrow-emerald { color: #5c7148; }
 .hara-vertical .btn-primary { background-color: #1a1a1a; }
-.hara-vertical .btn-primary:hover { background-color: #A0392A; }
-.hara-vertical .prose-editorial a { color: #5C7148; text-decoration-color: rgba(92, 113, 72, 0.3); }
-.hara-vertical .prose-editorial a:hover { text-decoration-color: #5C7148; }
-.hara-vertical .prose-editorial > p:first-of-type::first-letter { color: #A0392A; }
-.hara-vertical .prose-editorial ul li::before { background: #A0392A; }
-.hara-vertical .prose-editorial ol li::before { color: #5C7148; }
-.hara-vertical .prose-editorial blockquote { border-color: #A0392A; }
+.hara-vertical .btn-primary:hover { background-color: #a0392a; }
+.hara-vertical .prose-editorial { font-family: 'IBM Plex Sans', Inter, sans-serif; }
+.hara-vertical .prose-editorial a { color: #5c7148; text-decoration-color: rgba(92, 113, 72, 0.3); }
+.hara-vertical .prose-editorial a:hover { text-decoration-color: #5c7148; }
+.hara-vertical .prose-editorial h2,
+.hara-vertical .prose-editorial h3 { font-family: 'Instrument Serif', Georgia, serif; }
+.hara-vertical .prose-editorial > p:first-of-type::first-letter { color: #a0392a; font-family: 'Instrument Serif', Georgia, serif; }
+.hara-vertical .prose-editorial ul li::before { background: #a0392a; }
+.hara-vertical .prose-editorial ol li::before { color: #5c7148; }
+.hara-vertical .prose-editorial blockquote { border-color: #a0392a; font-family: 'Instrument Serif', Georgia, serif; }
 .hara-vertical .card-soft:hover { border-color: rgba(160, 57, 42, 0.3); box-shadow: 0 2px 24px rgba(160, 57, 42, 0.05); }
-.hara-vertical ::selection { background: #A0392A; }
+.hara-vertical ::selection { background: #a0392a; color: #fff; }
 
 /* Animations */
 @keyframes fadeUp {
