@@ -91,6 +91,10 @@
     "journal": {
       "title": "Journal",
       "description": "Essays, interviews, paper reviews and profiles. The editorial voice of Aevum."
+    },
+    "ingredients": {
+      "title": "Longevity Ingredients",
+      "description": "One compound, one article. Urolithin A, spermidine, Akkermansia, berberine, fisetin. The definitive guide to every longevity molecule: mechanism, evidence, dosing and where to buy."
     }
   }
 }

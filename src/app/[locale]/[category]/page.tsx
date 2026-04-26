@@ -26,6 +26,10 @@ const categoryMap: Record<string, string> = {
   geist: "mind",
   gemeinschaft: "tribe",
   erholung: "rest",
+  // Ingredients vertical
+  ingredientes: "ingredients",
+  ingredients: "ingredients",
+  inhaltsstoffe: "ingredients",
   // Legacy categories (keep with own keys so titles display correctly)
   wearables: "wearables",
   suplementos: "supplements",

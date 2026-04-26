@@ -91,6 +91,10 @@
     "journal": {
       "title": "Journal",
       "description": "Essays, Interviews, Paper-Reviews und Profile. Die redaktionelle Stimme von Aevum."
+    },
+    "ingredients": {
+      "title": "Longevity-Inhaltsstoffe",
+      "description": "Eine Verbindung, ein Artikel. Urolithin A, Spermidin, Akkermansia, Berberin, Fisetin. Der definitive Leitfaden zu jedem Langlebigkeitsmolekül."
     }
   }
 }

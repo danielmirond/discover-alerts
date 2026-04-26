@@ -91,6 +91,10 @@
     "journal": {
       "title": "Journal",
       "description": "Essais, interviews, analyses de publications et profils. La voix éditoriale d'Aevum."
+    },
+    "ingredients": {
+      "title": "Ingrédients Longévité",
+      "description": "Un composé, un article. Urolithine A, spermidine, Akkermansia, berbérine, fisétine. Le guide définitif de chaque molécule de longévité."
     }
   }
 }
