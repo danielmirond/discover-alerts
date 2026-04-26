@@ -71,10 +71,11 @@ export function ProductCard({
               src={image}
               alt={name}
               fill
-              className="object-cover"
+              className="object-cover saturate-[0.88] contrast-[1.04]"
               sizes="(max-width: 768px) 100vw, 50vw"
               unoptimized
             />
+            <div className="absolute inset-0 bg-bronze/[0.05] mix-blend-multiply" />
             <div className="absolute inset-0 bg-gradient-to-t from-bg/30 via-transparent to-transparent" />
           </div>
         ) : (
