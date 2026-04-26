@@ -16,10 +16,10 @@ export function Header() {
     : "About";
 
   const paths: Record<string, Record<string, string>> = {
-    es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners" },
-    en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners" },
-    fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners" },
-    de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners" },
+    es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners", ingredients: "ingredientes" },
+    en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners", ingredients: "ingredients" },
+    fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners", ingredients: "ingredients" },
+    de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners", ingredients: "inhaltsstoffe" },
   };
   const p = paths[locale] || paths.en;
 
@@ -29,6 +29,7 @@ export function Header() {
     { href: `/${locale}/${p.mind}`, label: t("mind") },
     { href: `/${locale}/${p.tribe}`, label: t("tribe") },
     { href: `/${locale}/${p.rest}`, label: t("rest") },
+    { href: `/${locale}/${p.ingredients}`, label: t("ingredients") },
     { href: `/${locale}/${p.practitioners}`, label: t("practitioners") },
     { href: `/${locale}/about`, label: aboutLabel },
   ];

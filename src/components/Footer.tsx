@@ -7,10 +7,10 @@ export function Footer() {
   const locale = useLocale();
 
   const paths: Record<string, Record<string, string>> = {
-    es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners" },
-    en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners" },
-    fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners" },
-    de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners" },
+    es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners", ingredients: "ingredientes" },
+    en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners", ingredients: "ingredients" },
+    fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners", ingredients: "ingredients" },
+    de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners", ingredients: "inhaltsstoffe" },
   };
   const p = paths[locale] || paths.en;
 
@@ -76,6 +76,15 @@ export function Footer() {
                   : locale === "fr" ? "Repos & Récupération"
                   : locale === "de" ? "Erholung & Regeneration"
                   : "Rest & Recovery"}
+              </Link>
+              <Link
+                href={`/${locale}/${p.ingredients}`}
+                className="text-[13px] text-slate hover:text-emerald transition-colors"
+              >
+                {locale === "es" ? "Ingredientes Longevity"
+                  : locale === "fr" ? "Ingrédients Longévité"
+                  : locale === "de" ? "Longevity-Inhaltsstoffe"
+                  : "Longevity Ingredients"}
               </Link>
               <Link
                 href={`/${locale}/${p.practitioners}`}

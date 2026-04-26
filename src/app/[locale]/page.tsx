@@ -6,10 +6,10 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { NewsletterEmbed } from "@/components/NewsletterEmbed";
 
 const categoryHrefs: Record<string, Record<string, string>> = {
-  es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners" },
-  en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners" },
-  fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners" },
-  de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners" },
+  es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners", ingredients: "ingredientes" },
+  en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners", ingredients: "ingredients" },
+  fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners", ingredients: "ingredients" },
+  de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners", ingredients: "inhaltsstoffe" },
 };
 
 const categoryConfig = [
@@ -19,6 +19,7 @@ const categoryConfig = [
   { key: "tribe", number: "IV" },
   { key: "rest", number: "V" },
   { key: "practitioners", number: "VI" },
+  { key: "ingredients", number: "VII" },
 ] as const;
 
 export default async function HomePage({
