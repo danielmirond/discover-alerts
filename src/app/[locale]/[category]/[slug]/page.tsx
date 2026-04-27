@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import { getArticle, getArticlesByCategory } from "@/lib/content";
 import { locales } from "@/i18n/routing";
 import { NewsletterEmbed } from "@/components/NewsletterEmbed";
@@ -205,7 +206,7 @@ export default async function ArticlePage({
       {/* BODY */}
       <div className="max-w-[640px] mx-auto px-8 py-16">
         <div className="prose-editorial">
-          <MDXRemote source={article.content} components={mdxComponents} />
+          <MDXRemote source={article.content} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
         </div>
       </div>
 
