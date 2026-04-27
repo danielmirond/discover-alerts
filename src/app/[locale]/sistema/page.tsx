@@ -12,7 +12,7 @@ import { AffiliateLink } from "@/components/AffiliateLink";
 import { Logo } from "@/components/Logo";
 
 export const metadata: Metadata = {
-  title: "Aevum — Design System",
+  title: "Aevum | Design System",
   description: "Sistema de diseño de Aevum — marca, notación, tokens, tipografía, componentes.",
 };
 

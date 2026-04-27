@@ -32,10 +32,10 @@ export async function generateMetadata({
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://byaevum.com";
 
   return {
-    title: `Aevum — ${t("site.tagline")}`,
+    title: `Aevum | ${t("site.tagline")}`,
     description: t("site.description"),
     openGraph: {
-      title: `Aevum — ${t("site.tagline")}`,
+      title: `Aevum | ${t("site.tagline")}`,
       description: t("site.description"),
       url: `${SITE_URL}/${locale}`,
       type: "website",

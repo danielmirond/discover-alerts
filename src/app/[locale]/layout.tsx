@@ -40,13 +40,13 @@ export async function generateMetadata({
       type: "website",
       locale,
       url: `${SITE_URL}/${locale}`,
-      title: `${site.name} — ${site.tagline}`,
+      title: `${site.name} | ${site.tagline}`,
       description: site.description,
       siteName: site.name,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${site.name} — ${site.tagline}`,
+      title: `${site.name} | ${site.tagline}`,
       description: site.description,
     },
     robots: {

@@ -144,7 +144,7 @@ const content: Record<Locale, {
       { title: "Niveaux de preuve", desc: "Chaque intervention classée en 3 niveaux : ★★★ ECR et méta-analyses, ★★ études observationnelles, ★ preuves préliminaires." },
       { title: "Sources primaires", desc: "Nous citons PubMed, Cochrane, institutions médicales (Cleveland Clinic, Mayo) et revues à comité de lecture." },
       { title: "Tests réels", desc: "Les produits recommandés sont testés pendant au moins 30 jours en usage réel." },
-      { title: "Révision semestrielle", desc: "Nous mettons à jour les tests tous les 6 mois. La science avance — nos recommandations suivent." }
+      { title: "Révision semestrielle", desc: "Nous mettons à jour les tests tous les 6 mois. La science avance | nos recommandations suivent." }
     ],
     principlesTitle: "Principes éditoriaux",
     principles: [
@@ -176,7 +176,7 @@ const content: Record<Locale, {
       { title: "Evidenzstufen", desc: "Jede Intervention in 3 Stufen klassifiziert: ★★★ RCTs und Metaanalysen, ★★ Beobachtungsstudien, ★ vorläufige Evidenz." },
       { title: "Primärquellen", desc: "Wir zitieren PubMed, Cochrane, medizinische Institutionen (Cleveland Clinic, Mayo) und peer-reviewte Zeitschriften." },
       { title: "Echte Tests", desc: "Empfohlene Produkte werden mindestens 30 Tage in realer Anwendung getestet." },
-      { title: "Halbjährliche Überprüfung", desc: "Wir aktualisieren Tests alle 6 Monate. Die Wissenschaft schreitet voran — unsere Empfehlungen folgen." }
+      { title: "Halbjährliche Überprüfung", desc: "Wir aktualisieren Tests alle 6 Monate. Die Wissenschaft schreitet voran | unsere Empfehlungen folgen." }
     ],
     principlesTitle: "Editoriale Prinzipien",
     principles: [

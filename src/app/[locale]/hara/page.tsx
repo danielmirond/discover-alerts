@@ -28,10 +28,10 @@ export async function generateMetadata({
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://byaevum.com";
 
   return {
-    title: `Hara — ${t("hara.tagline")}`,
+    title: `Hara | ${t("hara.tagline")}`,
     description: t("hara.description"),
     openGraph: {
-      title: `Hara — ${t("hara.tagline")}`,
+      title: `Hara | ${t("hara.tagline")}`,
       description: t("hara.description"),
       url: `${SITE_URL}/${locale}/hara`,
       type: "website",
