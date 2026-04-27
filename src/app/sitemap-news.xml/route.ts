@@ -22,8 +22,8 @@ interface NewsEntry {
 function getRecentArticles(): NewsEntry[] {
   const contentDir = path.join(process.cwd(), "content");
   const entries: NewsEntry[] = [];
-  const twoDaysAgo = new Date();
-  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 30);
 
   for (const locale of locales) {
     const localeDir = path.join(contentDir, locale);
@@ -34,9 +34,37 @@ function getRecentArticles(): NewsEntry[] {
       .filter((d) => d.isDirectory())
       .map((d) => d.name);
 
+    const VERTICALS = ["hara"];
+
     for (const category of categories) {
       const catDir = path.join(localeDir, category);
       if (!fs.existsSync(catDir)) continue;
+
+      if (VERTICALS.includes(category)) {
+        const subCats = fs.readdirSync(catDir, { withFileTypes: true })
+          .filter((d) => d.isDirectory()).map((d) => d.name);
+        for (const subCat of subCats) {
+          const subDir = path.join(catDir, subCat);
+          const files = fs.readdirSync(subDir).filter((f) => f.endsWith(".mdx"));
+          for (const file of files) {
+            try {
+              const raw = fs.readFileSync(path.join(subDir, file), "utf-8");
+              const { data } = matter(raw);
+              const pubDate = new Date(data.date);
+              if (pubDate >= cutoff) {
+                const slug = file.replace(".mdx", "");
+                entries.push({
+                  url: `${BASE_URL}/${locale}/${category}/${subCat}/${slug}`,
+                  title: data.title || slug,
+                  date: pubDate.toISOString(),
+                  language: langMap[locale] || "es",
+                });
+              }
+            } catch {}
+          }
+        }
+        continue;
+      }
 
       const files = fs.readdirSync(catDir).filter((f) => f.endsWith(".mdx"));
 
@@ -46,7 +74,7 @@ function getRecentArticles(): NewsEntry[] {
           const { data } = matter(raw);
           const pubDate = new Date(data.date);
 
-          if (pubDate >= twoDaysAgo) {
+          if (pubDate >= cutoff) {
             const slug = file.replace(".mdx", "");
             entries.push({
               url: `${BASE_URL}/${locale}/${category}/${slug}`,

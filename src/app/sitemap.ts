@@ -59,7 +59,42 @@ export default function sitemap(): MetadataRoute.Sitemap {
         .filter((d) => d.isDirectory())
         .map((d) => d.name);
 
+      const VERTICALS = ["hara"];
+
       for (const category of categories) {
+        const catDir = path.join(localeDir, category);
+
+        if (VERTICALS.includes(category)) {
+          entries.push({
+            url: `${BASE_URL}/${locale}/${category}`,
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 0.7,
+          });
+          const subCats = fs.readdirSync(catDir, { withFileTypes: true })
+            .filter((d) => d.isDirectory()).map((d) => d.name);
+          for (const subCat of subCats) {
+            entries.push({
+              url: `${BASE_URL}/${locale}/${category}/${subCat}`,
+              lastModified: new Date(),
+              changeFrequency: "weekly",
+              priority: 0.7,
+            });
+            const subDir = path.join(catDir, subCat);
+            const files = fs.readdirSync(subDir).filter((f) => f.endsWith(".mdx"));
+            for (const file of files) {
+              const slug = file.replace(".mdx", "");
+              entries.push({
+                url: `${BASE_URL}/${locale}/${category}/${subCat}/${slug}`,
+                lastModified: getArticleDate(path.join(subDir, file)),
+                changeFrequency: "monthly",
+                priority: 0.8,
+              });
+            }
+          }
+          continue;
+        }
+
         entries.push({
           url: `${BASE_URL}/${locale}/${category}`,
           lastModified: new Date(),
@@ -67,7 +102,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
           priority: 0.7,
         });
 
-        const catDir = path.join(localeDir, category);
         const files = fs
           .readdirSync(catDir)
           .filter((f) => f.endsWith(".mdx"));
