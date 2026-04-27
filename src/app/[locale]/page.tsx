@@ -1,5 +1,6 @@
+import { Metadata } from "next";
 import { useTranslations } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { getArticlesByLocale } from "@/lib/content";
 import { ArticleCard } from "@/components/ArticleCard";
@@ -20,6 +21,32 @@ const categoryConfig = [
   { key: "rest", number: "V" },
   { key: "practitioners", number: "VI" },
 ] as const;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale });
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://byaevum.com";
+
+  return {
+    title: `Aevum — ${t("site.tagline")}`,
+    description: t("site.description"),
+    openGraph: {
+      title: `Aevum — ${t("site.tagline")}`,
+      description: t("site.description"),
+      url: `${SITE_URL}/${locale}`,
+      type: "website",
+      locale,
+      siteName: "Aevum",
+    },
+    alternates: {
+      canonical: `${SITE_URL}/${locale}`,
+    },
+  };
+}
 
 export default async function HomePage({
   params,

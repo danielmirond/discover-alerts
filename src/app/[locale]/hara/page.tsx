@@ -1,5 +1,6 @@
+import { Metadata } from "next";
 import { useTranslations } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { getHaraAllArticles } from "@/lib/content";
 import { ArticleCard } from "@/components/ArticleCard";
@@ -16,6 +17,31 @@ const pillarConfig = [
   { key: "functional-drinks", number: "二" },
   { key: "asian-healthspan", number: "三" },
 ] as const;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale });
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://byaevum.com";
+
+  return {
+    title: `Hara — ${t("hara.tagline")}`,
+    description: t("hara.description"),
+    openGraph: {
+      title: `Hara — ${t("hara.tagline")}`,
+      description: t("hara.description"),
+      url: `${SITE_URL}/${locale}/hara`,
+      type: "website",
+      locale,
+    },
+    alternates: {
+      canonical: `${SITE_URL}/${locale}/hara`,
+    },
+  };
+}
 
 export default async function HaraPage({
   params,

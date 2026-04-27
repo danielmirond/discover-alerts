@@ -1,5 +1,6 @@
+import { Metadata } from "next";
 import { useTranslations } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getHaraArticlesByCategory } from "@/lib/content";
 import { ArticleCard } from "@/components/ArticleCard";
 
@@ -14,6 +15,35 @@ const categoryMap: Record<string, string> = {
   "sante-asiatique": "asian-healthspan",
   "asiatische-gesundheit": "asian-healthspan",
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; category: string }>;
+}): Promise<Metadata> {
+  const { locale, category } = await params;
+  const categoryKey = categoryMap[category] || category;
+  const t = await getTranslations({ locale });
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://byaevum.com";
+
+  const title = `${t(`hara.categories.${categoryKey}.title`)} — Hara by Aevum`;
+  const description = t(`hara.categories.${categoryKey}.description`);
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/${locale}/hara/${category}`,
+      type: "website",
+      locale,
+    },
+    alternates: {
+      canonical: `${SITE_URL}/${locale}/hara/${category}`,
+    },
+  };
+}
 
 export default async function HaraCategoryPage({
   params,
