@@ -226,11 +226,111 @@ Dieta supervisada por su nutricionista Tristin Kennedy: pollo, salmón, ternera,
 
 ---
 
-## Apéndice — Otros casos mencionados
+## 16. Tadej Pogačar (ciclismo)
+
+**Su nutricionista** (Olympics.com, Tour de France 2025) explica que su dieta en etapas de montaña ronda los **120 g de carbohidratos por hora** sobre la bici, con bidones a sabor mango.
+
+**Su compañero Domen Novak** (Cyclingnews):
+> "Tadej won his first Tour de France eating pizza, drinking beer and playing Playstation."
+
+**Bonk en el Tour 2023**: su nutricionista explicó que *"it wasn't that he hadn't eaten enough — his stomach simply shut down. He couldn't digest the food."*
+
+Pogačar es descrito por su equipo como "the most straightforward" en nutrición: *"You'll tell him 'You've got to eat this' and he'll eat it."*
+
+---
+
+## 17. Simone Biles (gimnasia)
+
+**Filosofía** (entrevista con Women's Health, 2020):
+> "I wake up so early before practice, which is at seven, so sometimes I'll grab a quick bite and sometimes I won't."
+
+> "On the weekends, I'll have some protein waffles with chocolate chips, some eggs, or even make cinnamon rolls."
+
+**Sobre no contar calorías**:
+> "I eat what I feel good with and try not to overeat or stuff myself, because I'm always at the gym."
+
+> Tracking "can lead to health problems and eating issues, so I just eat what I know I can and should."
+
+---
+
+## 18. Kylian Mbappé (fútbol)
+
+Bajo seguimiento de su nutricionista, Mbappé ha eliminado de su dieta **azúcar, pizza y harinas blancas**. Incluye superalimentos como avena, semillas, granada y algas.
+
+**Plato favorito reportado**: pasta con salmón y carpaccio de ternera con queso azul.
+
+Su dieta es alta en carbohidratos y proteína, repartida en varias comidas a lo largo del día. Combina dieta estricta con sesiones de crioterapia.
+
+---
+
+## 19. Vinicius Jr. (fútbol)
+
+**Base de su dieta** (entrevista con The New York Times):
+- Frijoles negros, arroz, filete (raíces brasileñas).
+- Huevos, pollo, pescado (salmón, atún, sardina).
+- Verduras, legumbres y frutas (melón, sandía, plátano, frutos rojos, peras, manzanas, cítricos).
+- **Açaí** como esencial desde su infancia en Brasil.
+
+**Antojos nocturnos** (entrevista con Ibai Llanos):
+> Suele recurrir a piña o uvas para combatir las ganas de dulce tras la cena.
+
+> "Ceno, paso dos horas jugando a la play y ya vuelvo a tener hambre. Ahí es cuando me apetece un dulce." (Entrevista a El Español, 2026)
+
+Tiene **chef francés personal** que prepara sus comidas.
+
+---
+
+## 20. Pau Gasol (NBA)
+
+**Sobre el desayuno**:
+> "Es muy importante desayunar bien y más si durante la mañana tienes que hacer ejercicio como yo."
+
+**Filosofía** (Gasol Foundation): la dieta mediterránea no es una lista de alimentos, sino un estilo de vida ligado a comida fresca, cocina en casa, tiempo en familia y actividad física regular.
+
+**Ritual nocturno** (El Español, marzo 2026):
+> "Tengo la misma rutina antes de irme a la cama: intento que la habitación esté en silencio y leo un libro."
+
+Es embajador e inversor en **INDYA** y trabaja con la Gasol Foundation contra la obesidad infantil.
+
+---
+
+## 21. Iker Casillas (fútbol)
+
+Inversor (a través de **SportBoost**) y embajador en **INDYA**, app de Valencia que usa IA para personalizar dietas a deportistas profesionales y amateur (más de 20.000 usuarios). Junto con Rudy Fernández, Pau Gasol, André Ramalho y Álex Rins.
+
+INDYA adapta automáticamente la dieta según métricas del cuerpo, descanso y entrenamiento.
+
+---
+
+## 22. Mireia Belmonte (natación)
+
+**Filosofía nutricional** (Glamour):
+- Dieta equilibrada con hidratos antes, durante y después de los entrenamientos.
+- Pescado y pollo a la plancha, sopas, caldos, verduras y frutas.
+- Pasta sin gluten por la tarde.
+- Tres veces por semana: zumo de frutas del bosque.
+- **No consume alcohol ni refrescos.**
+
+Trabaja con un equipo de nutricionistas privados que han optimizado su rendimiento. Suplementación con cobre, zinc, magnesio y vitamina D.
+
+> "Algunos días, pero no muy a menudo, tengo un resbalón y empiezo a comer guarrerías."
+
+---
+
+## 23. Carolina Marín (bádminton)
+
+**Filosofía** (entrevista con El Español, enero 2026):
+> "El secreto es entrenar duro, pero también una dieta sana y equilibrada y una cabeza en calma."
+
+> "Una receta rápida y sencilla."
+
+Su plato típico: verduras de temporada en preparaciones simples. Embajadora de la campaña "Orgullo de Origen". Defiende la consistencia y los pequeños gestos repetidos sobre las dietas extremas.
+
+---
+
+## Apéndice — Otros casos
 
 - **Ilia Topuria (UFC)**: alimentación basada en productos orgánicos.
-- **Iker Casillas y Pau Gasol**: embajadores e inversores en INDYA, app que personaliza planes nutricionales con IA para deportistas.
-- **Mireia Belmonte (natación)** y **Carolina Marín (bádminton)**: defienden una dieta equilibrada como base del rendimiento.
 
 ---
 
@@ -265,3 +365,15 @@ Dieta supervisada por su nutricionista Tristin Kennedy: pollo, salmón, ternera,
 - Infobae: [Esta es la dieta de Rafa Nadal](https://www.infobae.com/espana/deportes/2024/11/19/esta-es-la-dieta-de-rafa-nadal-ni-carne-ni-embutidos-ni-queso/)
 - Olympics.com: [Djokovic — life-changing gluten-free diet](https://www.olympics.com/en/news/novak-djokovic-gluten-free-diet)
 - TB12 Sports: [So, What Does Tom Brady Eat?](https://tb12sports.com/blogs/tb12/what-does-tom-brady-eat)
+- Olympics.com: [Pogačar — mountain stage food strategy](https://www.olympics.com/en/news/cycling-nutrition-strategy-pogacar-mountain-stages-tour-de-france)
+- Cyclingnews: [Pogačar — pizza, beer and Playstation (Domen Novak)](https://www.cyclingnews.com/pro-cycling/teams-riders/tadej-pogacar-won-his-first-tour-de-france-eating-pizza-drinking-beer-and-playing-playstation-teammate-sees-big-difference-with-paul-seixas/)
+- Eat This Not That: [Simone Biles — Women's Health interview](https://www.eatthis.com/news-olympics-simone-biles-exact-diet/)
+- El Economista: [Mbappé — la dieta para mejorar su rendimiento](https://www.eleconomista.es/salud-bienestar/nutricion/noticias/13070763/11/24/la-dieta-de-kylian-mbappe-que-todo-deportista-deberia-seguir-para-mejorar-su-rendimiento.html)
+- El Español: [Vinicius — entrevista 2026 antojos nocturnos](https://www.elespanol.com/deportes/futbol/20260310/vinicius-anos-ceno-paso-horas-jugando-play-vuelvo-tener-hambre-ahi-apetece-dulce-dt/1003744161650_0.html)
+- Merca2: [Vinicius Jr. — estrategia alimentaria](https://www.merca2.es/2024/09/23/la-clave-de-vinicius-que-tonifica-1911900/)
+- El Español: [Pau Gasol — rutina antes de dormir](https://www.elespanol.com/deportes/baloncesto/20260312/pau-gasol-anos-misma-rutina-irme-cama-intento-habitacion-silencio-leo-libro-dt/1003744165852_0.html)
+- Infobae: [INDYA con Casillas y Gasol](https://www.infobae.com/espana/agencias/2024/03/30/indya-con-gasol-y-casillas-de-embajadores-usa-ia-para-personalizar-dietas-a-deportistas/)
+- Valencia Plaza: [Casillas y Rudy Fernández invierten en INDYA](https://valenciaplaza.com/valenciaplaza/iker-casillas-inversion-indya)
+- Infobae: [Mireia Belmonte — método nutricional](https://www.infobae.com/espana/deportes/2024/10/20/el-eficaz-metodo-nutricional-de-mireia-belmonte-que-reduce-los-deficits-de-la-edad/)
+- Sportlife: [Mireia Belmonte — los trucos](https://www.sportlife.es/entrenar/los-trucos-de-mireia-belmonte_194820_102.html)
+- El Español: [Carolina Marín — receta rápida y sencilla](https://www.elespanol.com/deportes/otros-deportes/20260109/carolina-marin-jugadora-badminton-plato-mantiene-forma-receta-rapida-sencilla/1003744082502_0.html)
