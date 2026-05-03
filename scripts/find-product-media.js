@@ -12,7 +12,7 @@
  *   - Custom Search Engine ID (crear en https://programmablesearchengine.google.com/)
  */
 
-const API_KEY = "AIzaSyDec9LYUxDcSwuXfeihdD9aeiSLchIfB9U";
+const API_KEY = "AIzaSyAeguQVJxjylfo7CuTGruYPqAMDTmsq9ko";
 // IMPORTANTE: Necesitas crear un Custom Search Engine y poner su ID aquí
 // Ve a https://programmablesearchengine.google.com/ → crear → copiar cx
 const SEARCH_ENGINE_ID = "91fbd78710af34abb";
