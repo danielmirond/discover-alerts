@@ -15,7 +15,7 @@
 const API_KEY = "AIzaSyDec9LYUxDcSwuXfeihdD9aeiSLchIfB9U";
 // IMPORTANTE: Necesitas crear un Custom Search Engine y poner su ID aquí
 // Ve a https://programmablesearchengine.google.com/ → crear → copiar cx
-const SEARCH_ENGINE_ID = "TU_SEARCH_ENGINE_ID_AQUI";
+const SEARCH_ENGINE_ID = "91fbd78710af34abb";
 
 const PRODUCTS = [
   { name: "Oura Ring 4", query: "Oura Ring 4 product photo", category: "wearables" },
