@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.cloudfront.net" },
       { protocol: "https", hostname: "marissacollections.com" },
       { protocol: "https", hostname: "cdn.shopify.com" },
+      { protocol: "https", hostname: "ourahealth.imgix.net" },
+      { protocol: "https", hostname: "media.augustinusbader.com" },
+      { protocol: "https", hostname: "www.cosrx.com" },
+      { protocol: "https", hostname: "cdn-yotpo-images-production.yotpo.com" },
+      { protocol: "https", hostname: "**.spermidinelife.com" },
     ],
   },
 };
