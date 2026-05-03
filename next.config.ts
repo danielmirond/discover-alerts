@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "www.cosrx.com" },
       { protocol: "https", hostname: "cdn-yotpo-images-production.yotpo.com" },
       { protocol: "https", hostname: "**.spermidinelife.com" },
+      { protocol: "https", hostname: "i.ytimg.com" },
     ],
   },
 };

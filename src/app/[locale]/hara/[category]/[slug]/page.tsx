@@ -17,6 +17,7 @@ import { ProsCons } from "@/components/ProsCons";
 import { DealBox } from "@/components/DealBox";
 import { StickyBuyBar } from "@/components/StickyBuyBar";
 import { AmazonLink } from "@/components/AmazonLink";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { ArticleHero } from "@/components/ArticleHero";
 
 const mdxComponents = {
@@ -30,6 +31,7 @@ const mdxComponents = {
   ProsCons,
   DealBox,
   AmazonLink,
+  YouTubeEmbed,
 };
 
 export async function generateMetadata({
