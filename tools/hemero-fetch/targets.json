@@ -1,0 +1,312 @@
+{
+  "_comment": "Lista priorizada de partidos clave del Clásico para buscar en hemerotecas. Las fechas se buscarán en la edición del DÍA SIGUIENTE al partido, que es donde aparecen las crónicas y declaraciones.",
+  "_papers": {
+    "abc_madrid": "https://hemeroteca.abc.es/nav/Navigate.exe/hemeroteca/madrid/abc",
+    "abc_sevilla": "https://hemeroteca.abc.es/nav/Navigate.exe/hemeroteca/sevilla/abc",
+    "lavanguardia": "https://www.lavanguardia.com/hemeroteca",
+    "mundodeportivo": "https://www.mundodeportivo.com/hemeroteca",
+    "bne": "https://hemerotecadigital.bne.es"
+  },
+  "targets": [
+    {
+      "id": "1902-05-13",
+      "match_date": "1902-05-13",
+      "search_dates": ["1902-05-14", "1902-05-15"],
+      "result": "Madrid FC 1 - 3 FC Barcelona",
+      "competition": "Copa de la Coronación, semifinal",
+      "venue": "Hipódromo (Madrid)",
+      "priority": "alta",
+      "notes": "Primer Clásico de la historia. Buscar en ABC Madrid (1903+ no cubre todavía 1902); buscar en La Vanguardia."
+    },
+    {
+      "id": "1929-02-17",
+      "match_date": "1929-02-17",
+      "search_dates": ["1929-02-18", "1929-02-19"],
+      "result": "FC Barcelona 1 - 2 Real Madrid",
+      "competition": "Liga (1ª temporada)",
+      "venue": "Les Corts",
+      "priority": "alta",
+      "notes": "Primer Clásico de Liga de la historia."
+    },
+    {
+      "id": "1943-06-13",
+      "match_date": "1943-06-13",
+      "search_dates": ["1943-06-14", "1943-06-15", "1943-06-16"],
+      "result": "Real Madrid 11 - 1 FC Barcelona",
+      "competition": "Copa del Generalísimo, semifinal vuelta",
+      "venue": "Chamartín",
+      "priority": "máxima",
+      "notes": "El 11-1. Buscar relatos del partido y la versión oficial del régimen. Diario Ya, ABC, La Vanguardia."
+    },
+    {
+      "id": "1953-10-25",
+      "match_date": "1953-10-25",
+      "search_dates": ["1953-10-26", "1953-10-27"],
+      "result": "FC Barcelona vs Real Madrid",
+      "competition": "Liga",
+      "venue": "Les Corts",
+      "priority": "alta",
+      "notes": "Primer Clásico Di Stéfano vs Kubala. Buscar Marca y La Vanguardia."
+    },
+    {
+      "id": "1953-07-24",
+      "match_date": "1953-07-24",
+      "search_dates": ["1953-07-24", "1953-07-25"],
+      "result": "N/A",
+      "competition": "N/A — declaración a Marca",
+      "venue": "N/A",
+      "priority": "alta",
+      "notes": "Declaración famosa de Di Stéfano: 'He venido a España para jugar en el Barcelona'. Buscar en Marca."
+    },
+    {
+      "id": "1965-09-26",
+      "match_date": "1965-09-26",
+      "search_dates": ["1965-09-27", "1965-09-28"],
+      "result": "Real Madrid 4 - 1 FC Barcelona",
+      "competition": "Liga",
+      "venue": "Bernabéu",
+      "priority": "media",
+      "notes": "Era Puskás-Gento."
+    },
+    {
+      "id": "1974-02-17",
+      "match_date": "1974-02-17",
+      "search_dates": ["1974-02-18", "1974-02-19"],
+      "result": "Real Madrid 0 - 5 FC Barcelona",
+      "competition": "Liga",
+      "venue": "Bernabéu",
+      "priority": "máxima",
+      "notes": "El 0-5 de Cruyff que silenció el Bernabéu. Buscar crónicas en ABC, La Vanguardia, Mundo Deportivo, Marca."
+    },
+    {
+      "id": "1980-02-17",
+      "match_date": "1980-02-17",
+      "search_dates": ["1980-02-18", "1980-02-19"],
+      "result": "FC Barcelona 2 - 0 Real Madrid",
+      "competition": "Liga",
+      "venue": "Camp Nou",
+      "priority": "media",
+      "notes": "Era Quini."
+    },
+    {
+      "id": "1983-06-26",
+      "match_date": "1983-06-26",
+      "search_dates": ["1983-06-27", "1983-06-28"],
+      "result": "Real Madrid 2 - 2 FC Barcelona",
+      "competition": "Final Copa de la Liga, ida",
+      "venue": "Bernabéu",
+      "priority": "alta",
+      "notes": "Maradona ovacionado en el Bernabéu por el gol regateando al portero y Juan José."
+    },
+    {
+      "id": "1983-09-24",
+      "match_date": "1983-09-24",
+      "search_dates": ["1983-09-25", "1983-09-26"],
+      "result": "FC Barcelona vs Athletic Club",
+      "competition": "Liga",
+      "venue": "Camp Nou",
+      "priority": "máxima",
+      "notes": "Patada de Goikoetxea a Maradona (no es Clásico per se pero define la era). Buscar declaraciones de Menotti, Clemente, Goikoetxea."
+    },
+    {
+      "id": "1988-08",
+      "match_date": "1988-07-01",
+      "search_dates": ["1988-07-01", "1988-07-15"],
+      "result": "N/A — fichaje",
+      "competition": "Mercado de fichajes",
+      "venue": "N/A",
+      "priority": "alta",
+      "notes": "Schuster ficha gratis del Barça por el Madrid. Buscar declaraciones de Mendoza, Núñez, Schuster."
+    },
+    {
+      "id": "1994-01-08",
+      "match_date": "1994-01-08",
+      "search_dates": ["1994-01-09", "1994-01-10"],
+      "result": "FC Barcelona 5 - 0 Real Madrid",
+      "competition": "Liga",
+      "venue": "Camp Nou",
+      "priority": "máxima",
+      "notes": "La 'manita' del Dream Team. Triplete de Romario. Cruyff entrenador. Buscar Mundo Deportivo y Sport."
+    },
+    {
+      "id": "1995-01-07",
+      "match_date": "1995-01-07",
+      "search_dates": ["1995-01-08", "1995-01-09"],
+      "result": "Real Madrid 5 - 0 FC Barcelona",
+      "competition": "Liga",
+      "venue": "Bernabéu",
+      "priority": "máxima",
+      "notes": "El 5-0 de la venganza. Laudrup ya en el Madrid (único jugador moderno que ganó 5-0 con ambos)."
+    },
+    {
+      "id": "2000-07-24",
+      "match_date": "2000-07-24",
+      "search_dates": ["2000-07-24", "2000-07-26"],
+      "result": "N/A — fichaje",
+      "competition": "Mercado de fichajes",
+      "venue": "N/A",
+      "priority": "alta",
+      "notes": "Figo ficha por el Madrid (60 M€, récord mundial). Buscar declaraciones primera hora de Florentino, Gaspart, jugadores."
+    },
+    {
+      "id": "2002-11-23",
+      "match_date": "2002-11-23",
+      "search_dates": ["2002-11-24", "2002-11-25"],
+      "result": "FC Barcelona 0 - 0 Real Madrid",
+      "competition": "Liga",
+      "venue": "Camp Nou",
+      "priority": "máxima",
+      "notes": "Clásico del Cochinillo a Figo. Árbitro Medina Cantalejo paró el partido 15 min."
+    },
+    {
+      "id": "2005-11-19",
+      "match_date": "2005-11-19",
+      "search_dates": ["2005-11-20", "2005-11-21"],
+      "result": "Real Madrid 0 - 3 FC Barcelona",
+      "competition": "Liga",
+      "venue": "Bernabéu",
+      "priority": "máxima",
+      "notes": "Ronaldinho ovacionado por el Bernabéu. Doblete del brasileño."
+    },
+    {
+      "id": "2009-05-02",
+      "match_date": "2009-05-02",
+      "search_dates": ["2009-05-03", "2009-05-04"],
+      "result": "Real Madrid 2 - 6 FC Barcelona",
+      "competition": "Liga",
+      "venue": "Bernabéu",
+      "priority": "máxima",
+      "notes": "El 2-6. Puyol besó el brazalete con la bandera catalana. Pep primer año."
+    },
+    {
+      "id": "2010-11-29",
+      "match_date": "2010-11-29",
+      "search_dates": ["2010-11-30", "2010-12-01"],
+      "result": "FC Barcelona 5 - 0 Real Madrid",
+      "competition": "Liga",
+      "venue": "Camp Nou",
+      "priority": "máxima",
+      "notes": "Manita al Madrid de Mourinho (su primer Clásico). Buscar Mou RP."
+    },
+    {
+      "id": "2011-04-16",
+      "match_date": "2011-04-16",
+      "search_dates": ["2011-04-17", "2011-04-18"],
+      "result": "Real Madrid 1 - 1 FC Barcelona",
+      "competition": "Liga",
+      "venue": "Bernabéu",
+      "priority": "alta",
+      "notes": "Primer Clásico de los 4 en 18 días."
+    },
+    {
+      "id": "2011-04-20",
+      "match_date": "2011-04-20",
+      "search_dates": ["2011-04-21", "2011-04-22"],
+      "result": "Real Madrid 0 - 1 FC Barcelona",
+      "competition": "Final Copa del Rey",
+      "venue": "Mestalla",
+      "priority": "alta",
+      "notes": "Final de Copa, gol de Cristiano. Madrid gana en los penaltis."
+    },
+    {
+      "id": "2011-04-26",
+      "match_date": "2011-04-26",
+      "search_dates": ["2011-04-26", "2011-04-27"],
+      "result": "N/A — Rueda de prensa previa",
+      "competition": "Champions, semifinal ida (previa)",
+      "venue": "Bernabéu (sala de prensa)",
+      "priority": "máxima",
+      "notes": "RP de Guardiola: 'En esta sala él es el puto jefe, el puto amo'. Buscar transcripción ABC, Marca, AS, Mundo Deportivo del 27/04."
+    },
+    {
+      "id": "2011-04-27",
+      "match_date": "2011-04-27",
+      "search_dates": ["2011-04-28", "2011-04-29"],
+      "result": "Real Madrid 0 - 2 FC Barcelona",
+      "competition": "Champions, semifinal ida",
+      "venue": "Bernabéu",
+      "priority": "máxima",
+      "notes": "Roja a Pepe. RP de Mourinho: '¿Por qué? UNICEF'. 'Guardiola ha ganado una Champions que a mí me daría vergüenza'."
+    },
+    {
+      "id": "2011-08-17",
+      "match_date": "2011-08-17",
+      "search_dates": ["2011-08-18", "2011-08-19"],
+      "result": "FC Barcelona 3 - 2 Real Madrid",
+      "competition": "Supercopa España vuelta",
+      "venue": "Camp Nou",
+      "priority": "máxima",
+      "notes": "Tangana final. Mourinho mete dedo en ojo a Tito Vilanova. Sanción 2 partidos."
+    },
+    {
+      "id": "2014-04-16",
+      "match_date": "2014-04-16",
+      "search_dates": ["2014-04-17", "2014-04-18"],
+      "result": "Real Madrid 1 - 2 FC Barcelona",
+      "competition": "Final Copa del Rey",
+      "venue": "Mestalla",
+      "priority": "alta",
+      "notes": "Gol de Bale en la final. Carrera mítica."
+    },
+    {
+      "id": "2015-07-12",
+      "match_date": "2015-07-12",
+      "search_dates": ["2015-07-13", "2015-07-14"],
+      "result": "N/A — Rueda de prensa",
+      "competition": "Despedida",
+      "venue": "Bernabéu (sala de prensa)",
+      "priority": "alta",
+      "notes": "Casillas se despide entre lágrimas: 'Se terminó'. Solo en sala de prensa."
+    },
+    {
+      "id": "2015-11-21",
+      "match_date": "2015-11-21",
+      "search_dates": ["2015-11-22", "2015-11-23"],
+      "result": "Real Madrid 0 - 4 FC Barcelona",
+      "competition": "Liga",
+      "venue": "Bernabéu",
+      "priority": "máxima",
+      "notes": "Iniesta ovacionado por el Bernabéu. Luis Enrique: 'Patrimonio de la humanidad'."
+    },
+    {
+      "id": "2017-04-23",
+      "match_date": "2017-04-23",
+      "search_dates": ["2017-04-24", "2017-04-25"],
+      "result": "Real Madrid 2 - 3 FC Barcelona",
+      "competition": "Liga",
+      "venue": "Bernabéu",
+      "priority": "alta",
+      "notes": "Roja a Sergio Ramos. '¡Habla ahora, habla ahora!' a Piqué. Gol de Messi en el m. 92."
+    },
+    {
+      "id": "2018-05-06",
+      "match_date": "2018-05-06",
+      "search_dates": ["2018-05-07", "2018-05-08"],
+      "result": "FC Barcelona 2 - 2 Real Madrid",
+      "competition": "Liga",
+      "venue": "Camp Nou",
+      "priority": "media",
+      "notes": "Último Clásico de Iniesta antes de irse a Japón."
+    },
+    {
+      "id": "2024-10-26",
+      "match_date": "2024-10-26",
+      "search_dates": ["2024-10-27", "2024-10-28"],
+      "result": "Real Madrid 0 - 4 FC Barcelona",
+      "competition": "Liga",
+      "venue": "Bernabéu",
+      "priority": "alta",
+      "notes": "Clásico de Lamine Yamal. Goleada en el Bernabéu."
+    },
+    {
+      "id": "2025-10-26",
+      "match_date": "2025-10-26",
+      "search_dates": ["2025-10-27", "2025-10-28"],
+      "result": "Real Madrid 2 - 1 FC Barcelona",
+      "competition": "Liga",
+      "venue": "Bernabéu",
+      "priority": "máxima",
+      "notes": "Bronca Yamal-Carvajal-Vinicius-Rüdiger-Courtois al final. 'Tú hablas mucho'."
+    }
+  ]
+}
