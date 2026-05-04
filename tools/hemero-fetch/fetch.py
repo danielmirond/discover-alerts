@@ -43,21 +43,18 @@ SLEEP_BETWEEN = 1.5  # segundos entre peticiones para no saturar
 
 # ----------------------------------------------------------------------------
 # ABC — archivo histórico (1903 → 2010)
-# Patrón URL: https://hemeroteca.abc.es/nav/Navigate.exe/hemeroteca/madrid/abc/YYYY/MM/DD.html
+# URL nueva: https://www.abc.es/archivo/periodicos/abc-madrid-YYYYMMDD.html
 # ----------------------------------------------------------------------------
 def fetch_abc_madrid(date: datetime, out_dir: Path) -> Path | None:
     if date.year < 1903 or date.year > 2010:
         print(f"  [abc-madrid] {date:%Y-%m-%d}: fuera de cobertura (1903-2010)")
         return None
 
-    url = (
-        f"https://hemeroteca.abc.es/nav/Navigate.exe/hemeroteca/madrid/abc/"
-        f"{date:%Y/%m/%d}.html"
-    )
+    url = f"https://www.abc.es/archivo/periodicos/abc-madrid-{date:%Y%m%d}.html"
     print(f"  [abc-madrid] {url}")
 
     try:
-        resp = SESSION.get(url, timeout=30)
+        resp = SESSION.get(url, timeout=30, allow_redirects=True)
         resp.raise_for_status()
     except requests.RequestException as exc:
         print(f"    ERROR: {exc}")
@@ -67,31 +64,31 @@ def fetch_abc_madrid(date: datetime, out_dir: Path) -> Path | None:
     out.write_bytes(resp.content)
     print(f"    -> {out.relative_to(OUTPUT_DIR)}")
 
-    # Buscar enlaces a páginas concretas (la portada lista las páginas)
+    # Buscar enlaces a páginas concretas. ABC lista las páginas en la portada.
     soup = BeautifulSoup(resp.text, "html.parser")
-    page_links = [
-        a["href"]
-        for a in soup.find_all("a", href=True)
-        if "/hemeroteca/madrid/abc/" in a["href"] and a["href"].endswith(".html")
-    ]
-    print(f"    {len(page_links)} páginas detectadas en la edición")
+    page_links = []
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if "/archivo/periodicos/" in href or "/archivo/" in href:
+            page_links.append(href)
 
+    print(f"    {len(page_links)} páginas detectadas en la edición")
     return out
 
 
 # ----------------------------------------------------------------------------
-# La Vanguardia — hemeroteca (1881 → hoy)
-# Patrón: https://hemeroteca.lavanguardia.com/preview/YYYY/MM/DD/pagina-N.html
+# Mundo Deportivo — hemeroteca (1906 → hoy)
+# URL: https://hemeroteca.elmundodeportivo.es/preview/YYYY/MM/DD/pagina-N.html
+# (Es la misma estructura que La Vanguardia pero sí es accesible)
 # ----------------------------------------------------------------------------
-def fetch_lavanguardia(date: datetime, out_dir: Path) -> Path | None:
-    base = (
-        f"https://hemeroteca.lavanguardia.com/preview/"
-        f"{date:%Y/%m/%d}/"
-    )
-    print(f"  [lavanguardia] {base}")
+def fetch_mundo_deportivo(date: datetime, out_dir: Path) -> Path | None:
+    if date.year < 1906:
+        print(f"  [mundo-deportivo] {date:%Y-%m-%d}: fuera de cobertura (1906+)")
+        return None
 
-    # Probamos páginas 1-30 (deportivas suelen estar entre 30-50 en ediciones grandes,
-    # pero la portada es la 1 y a partir de ahí hay índice)
+    base = f"https://hemeroteca.elmundodeportivo.es/preview/{date:%Y/%m/%d}/"
+    print(f"  [mundo-deportivo] {base}")
+
     saved: list[Path] = []
     for n in range(1, 51):
         url = f"{base}pagina-{n}.html"
@@ -106,7 +103,7 @@ def fetch_lavanguardia(date: datetime, out_dir: Path) -> Path | None:
             print(f"    ERROR pág {n}: {exc}")
             break
 
-        out = out_dir / f"lavanguardia_{date:%Y-%m-%d}_pag{n:03}.html"
+        out = out_dir / f"mundo-deportivo_{date:%Y-%m-%d}_pag{n:03}.html"
         out.write_bytes(resp.content)
         saved.append(out)
         time.sleep(SLEEP_BETWEEN)
@@ -115,30 +112,6 @@ def fetch_lavanguardia(date: datetime, out_dir: Path) -> Path | None:
         print(f"    -> {len(saved)} páginas guardadas")
         return saved[0]
     return None
-
-
-# ----------------------------------------------------------------------------
-# Mundo Deportivo — hemeroteca (1906 → hoy)
-# Patrón: https://www.mundodeportivo.com/hemeroteca/YYYY/MM/DD/
-# ----------------------------------------------------------------------------
-def fetch_mundo_deportivo(date: datetime, out_dir: Path) -> Path | None:
-    url = f"https://www.mundodeportivo.com/hemeroteca/{date:%Y/%m/%d}/"
-    print(f"  [mundo-deportivo] {url}")
-
-    try:
-        resp = SESSION.get(url, timeout=30)
-        if resp.status_code == 404:
-            print(f"    edición no encontrada")
-            return None
-        resp.raise_for_status()
-    except requests.RequestException as exc:
-        print(f"    ERROR: {exc}")
-        return None
-
-    out = out_dir / f"mundo-deportivo_{date:%Y-%m-%d}.html"
-    out.write_bytes(resp.content)
-    print(f"    -> {out.relative_to(OUTPUT_DIR)}")
-    return out
 
 
 # ----------------------------------------------------------------------------
@@ -187,11 +160,7 @@ def process_target(target: dict, papers: list[str]) -> None:
             fetch_abc_madrid(date, out_dir)
             time.sleep(SLEEP_BETWEEN)
 
-        if "lavanguardia" in papers:
-            fetch_lavanguardia(date, out_dir)
-            time.sleep(SLEEP_BETWEEN)
-
-        if "mundo-deportivo" in papers and date.year >= 1906:
+        if "mundo-deportivo" in papers:
             fetch_mundo_deportivo(date, out_dir)
             time.sleep(SLEEP_BETWEEN)
 
@@ -211,8 +180,8 @@ def main() -> int:
     ap.add_argument("--id", help="Procesar un solo target por id")
     ap.add_argument(
         "--papers",
-        default="abc,lavanguardia,mundo-deportivo,bne",
-        help="Hemerotecas a usar (csv): abc,lavanguardia,mundo-deportivo,bne",
+        default="abc,mundo-deportivo,bne",
+        help="Hemerotecas a usar (csv): abc,mundo-deportivo,bne",
     )
     ap.add_argument(
         "--targets",
