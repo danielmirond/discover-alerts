@@ -4,6 +4,138 @@ Recopilación de citas verificadas con fuente primaria, organizadas cronológica
 
 ---
 
+## 🏛️ Orígenes (1902-1929)
+
+### Primer Clásico de la historia (13 mayo 1902)
+**Madrid Football Club 1 - 3 FC Barcelona**, semifinales de la Copa de la Coronación. Madrid recién creado, Barça con 3 años. Los catalanes ganaron por mayor experiencia.
+
+### Eliminatoria de 1916 — la que marcó el inicio del odio
+Semifinales de Copa del Rey: Barça gana 2-1, Madrid devuelve 4-1, empate 6-6 tras prórroga, **cuarto partido necesario**: Madrid 4-2 en prórroga. Polémica arbitral histórica.
+
+### Primer Clásico de Liga (17 febrero 1929, Les Corts)
+**Real Madrid 2 - 1 FC Barcelona** en la 2ª jornada de la primera Liga española.
+
+**Fuentes:**
+- [Cómo nació la rivalidad - Memorias del Fútbol](https://memoriasdelfutbol.com/real-madrid-vs-barcelona-rivalidad/)
+- [El primer Clásico de la historia - RFEF](https://rfef.es/es/noticias/te-contamos-como-fue-el-primer-clasico-de-la-historia-entre-madrid-y-barcelona)
+- [119 años del primer Clásico - ESPN](https://espndeportes.espn.com/futbol/espana/nota/_/id/6938077/119-anos-primer-clasico-historia-real-madrid-barcelona)
+
+---
+
+## 🛡️ Era Zamora-Samitier (años 30)
+
+**Ricardo Zamora**, fichado por el Madrid en agosto 1930 (~150.000 pesetas). En 1931 llegan **Ciriaco y Quincoces** del Alavés (65.000 pesetas) → eje defensivo Zamora-Quincoces-Ciriaco.
+
+**Real Madrid gana su primera Liga** en la 1931-32.
+
+**José Samitier** — el "mago" del Barça que cruzó al Madrid en enero 1933, viajando a la capital en una avioneta. Caso de "traición" temprana.
+
+**Fuentes:**
+- [Zamora, Ciriaco y Quincoces - Cuadernos de Fútbol](https://www.cuadernosdefutbol.com/2023/02/zamora-ciriaco-y-quincoces-defensa-de-leyenda/)
+- [José Samitier: el mago que aterrizó de Barcelona - La Galerna](https://www.lagalerna.com/jose-samitier/)
+- [Historia de la Liga 1929-1936 - RFEF](https://rfef.es/es/noticias/historia-de-la-liga-espanola-los-primeros-anos-1929-1936)
+
+---
+
+## 🩸 El 11-1 (13 junio 1943, Chamartín)
+
+**Real Madrid 11 - 1 FC Barcelona** en la vuelta de la semifinal de Copa del Generalísimo. El Barça llegaba con 3-0 a favor de la ida.
+
+### Las amenazas (testimonios)
+Según testimonios documentados, antes del partido **un alto cargo del régimen franquista entró al vestuario del Barça** advirtiendo a los jugadores sobre la "seguridad de sus familias". Los rumores apuntan también a que un oficial armado se acercó al árbitro antes del pitido inicial.
+
+### Prensa de la época
+El diario *Ya* describió los pitos a los jugadores madrileños como *"clara intención de atacar a los representantes de España"*.
+
+**Josep Valle**, jugador del Barça, recordó:
+> *"El press officer at the DND y ABC newspaper escribió todo tipo de mentiras escurrilosas."*
+
+### El legado
+> *"El 11-1 ocupa un lugar destacado en la historia del Barcelona como el partido que formó por primera vez la identificación del Madrid como el equipo de la dictadura y el Barcelona como sus víctimas."*
+
+**Fuentes:**
+- [El 11-1 entre verdad, leyenda y propaganda - Futbol Gate](https://www.futbolgate.com/investigaci%C3%B3n/el-11-1-del-real-madrid-al-bar%C3%A7a-en-la-copa-de-1943-entre-verdad-leyenda-y-propaganda)
+- [En 1943 se registró el 11-1 - ESPN](https://espndeportes.espn.com/noticias/nota/_/id/2047483/en-1943-la-mayor-goleada-en-clasicos)
+- [The 11-1 That Haunts Barcelona - Channel 8](https://channel8.com/english/news/47342)
+
+---
+
+## 🇦🇷 Era Di Stéfano-Kubala (años 50)
+
+### El fichaje que hizo explotar la rivalidad
+**Di Stéfano** a *Marca* el **24 julio 1953**:
+> *"Yo he venido a España para jugar en el Barcelona."*
+
+(Acabó fichando por el Madrid — caso del que muchos dicen que arranca la rivalidad moderna.)
+
+### Primer enfrentamiento Di Stéfano vs Kubala (25 octubre 1953)
+**Daucik** (entrenador del Barça), análisis previo:
+> *"Di Stéfano es más ágil y resistente, pero no llega al nivel de Kubala en concepción del juego."*
+
+Titular de **Marca**:
+> *"Kubala, el mejor interior del mundo."*
+
+Corresponsal de **La Vanguardia** en Madrid:
+> *"La gente solo se fija en dos hombres: Kubala y Di Stéfano."*
+
+### Relación personal (testimonios)
+Pese a la rivalidad, eran **grandes amigos**:
+> *"Kubala trataba muy bien a Alfredo cuando estaba en Barcelona para fichar por ellos."*
+
+Un jugador contemporáneo:
+> *"El más técnico que vi fue Kubala, pero el más práctico fue Alfredo."*
+
+### Cuando Di Stéfano (38 años) acabó en el Barça (vía Espanyol)
+> *"If I hadn't lost the Champions League final, I would still be in Madrid."*
+
+**Ferran Olivella** (exjugador del Barça):
+> *"Alfredo y Kubala eran muy amigos, pero cada uno defendía a los suyos. Eran líderes, pero cuando los partidos acababan eran como hermanos. Nunca hubo rivalidad entre ellos."*
+
+**José Emilio Santamaría** (defensa Madrid):
+> *"Kubala tenía una presencia inigualable en el campo y Alfredo, igual. Eso no quita que mandara a Alfredo a la mierda, porque él mandaba en los de delante y yo, en los de atrás."*
+
+**Fuentes:**
+- [La ucronía del Clásico: Di Stéfano azulgrana - ESPN](https://www.espn.com.ar/futbol/espana/nota/_/id/10072700/clasico-real-madrid-barcelona-di-stefano-azulgrana-ucronia)
+- [Kubala-Di Stéfano medio siglo después - Público](https://www.publico.es/actualidad/kubala-di-stefano-medio-siglo-despues.html)
+- [Una mirada al Clásico: el fichaje de Di Stéfano - El Español](https://www.elespanol.com/deportes/futbol/20251023/mirada-clasico-traves-historia-fichaje-di-stefano-hace-explotar-rivalidad/1003743981620_0.html)
+
+---
+
+## 👑 Era Bernabéu presidente / Puskás-Gento (años 60)
+
+**Santiago Bernabéu** (presidente, 35 años en el cargo, 16 Ligas, 6 Copas de Europa) tras una eliminación europea, comentario sarcástico:
+> *"El colegiado Leafe fue el mejor jugador del Barça."*
+
+**Francisco Gento** sobre el rumor de favoritismos europeos:
+> *"Se quería que otro club ganara la Copa de Europa, no siempre el mismo."*
+
+**Ferenc Puskás**, tras eliminatoria con Hungría:
+> *"Kocsis simuló una caída. Evitó mirarme a los ojos en el partido de vuelta."*
+
+**Fuentes:**
+- [El mayor atraco del siglo XX - Futbol Gate](https://www.futbolgate.com/investigaci%C3%B3n/el-mayor-atraco-del-siglo-xx)
+- [Santiago Bernabéu, el "caudillo" del fútbol - El Independiente](https://www.elindependiente.com/tendencias/2018/05/25/santiago-bernabeu-caudillo-futbol-forjo-imperio/)
+
+---
+
+## 🇦🇷 Era Maradona en el Barça (1982-1984)
+
+### 26 junio 1983 — Ovación al Pelusa en el Bernabéu
+
+Final ida Copa de la Liga, Bernabéu. **Maradona regateó al portero Agustín**, esperó a Juan José deslizando, **lo dejó pasar (que se rompió contra el palo)** y empujó al fondo.
+
+**Maradona** (entrevista en *Olé*) explicando la jugada:
+> *"Carrasco me la dio en mitad de campo, me llevé al portero por delante y esperé a Juan José, que ya venía, y le dejé pasar. Se rompió las pelotas contra el palo y yo la empujé. Después nos cruzamos y le pedí perdón. Me mandó a la mierda."*
+
+El Bernabéu se quitó el sombrero. **Primera vez** que un jugador del Barça era ovacionado por la afición del Madrid en su propia casa. Solo Ronaldinho (2005) e Iniesta (2015) lo repetirían.
+
+**Fuentes:**
+- [El día que Maradona salió ovacionado del Bernabéu - Fútbol Retro](https://futbolretro.es/diego-armando-maradona-salio-ovacionado-del-bernabeu/)
+- [Maradona, 40 años de su obra de arte en el Bernabéu - ESPN](https://espndeportes.espn.com/futbol/espana/nota/_/id/12236761/barcelona-maradona-40-anos-gol-estadio-santiago-bernabeu-real-madrid)
+- [Ovaciones históricas - El Gol Digital](https://www.elgoldigital.com/futbol/fc-barcelona/ovaciones-historicas-para-jugadores-del-fc-barcelona-en-el-bernabeu/)
+
+---
+
 ## 🟦 Era Cruyff jugador (1973-1978)
 
 ### Antes del 0-5 al Real Madrid en el Bernabéu (17 feb 1974)
