@@ -180,8 +180,9 @@ def main() -> int:
     ap.add_argument("--id", help="Procesar un solo target por id")
     ap.add_argument(
         "--papers",
-        default="abc,mundo-deportivo,bne",
-        help="Hemerotecas a usar (csv): abc,mundo-deportivo,bne",
+        default="abc,bne",
+        help="Hemerotecas a usar (csv): abc,mundo-deportivo,bne. "
+             "mundo-deportivo da timeout desde muchas IPs; usar solo si funciona.",
     )
     ap.add_argument(
         "--targets",
