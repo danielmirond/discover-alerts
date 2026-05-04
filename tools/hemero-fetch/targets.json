@@ -35,7 +35,7 @@
       "result": "Real Madrid 11 - 1 FC Barcelona",
       "competition": "Copa del Generalísimo, semifinal vuelta",
       "venue": "Chamartín",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "El 11-1. Buscar relatos del partido y la versión oficial del régimen. Diario Ya, ABC, La Vanguardia."
     },
     {
@@ -75,7 +75,7 @@
       "result": "Real Madrid 0 - 5 FC Barcelona",
       "competition": "Liga",
       "venue": "Bernabéu",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "El 0-5 de Cruyff que silenció el Bernabéu. Buscar crónicas en ABC, La Vanguardia, Mundo Deportivo, Marca."
     },
     {
@@ -105,7 +105,7 @@
       "result": "FC Barcelona vs Athletic Club",
       "competition": "Liga",
       "venue": "Camp Nou",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "Patada de Goikoetxea a Maradona (no es Clásico per se pero define la era). Buscar declaraciones de Menotti, Clemente, Goikoetxea."
     },
     {
@@ -125,7 +125,7 @@
       "result": "FC Barcelona 5 - 0 Real Madrid",
       "competition": "Liga",
       "venue": "Camp Nou",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "La 'manita' del Dream Team. Triplete de Romario. Cruyff entrenador. Buscar Mundo Deportivo y Sport."
     },
     {
@@ -135,7 +135,7 @@
       "result": "Real Madrid 5 - 0 FC Barcelona",
       "competition": "Liga",
       "venue": "Bernabéu",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "El 5-0 de la venganza. Laudrup ya en el Madrid (único jugador moderno que ganó 5-0 con ambos)."
     },
     {
@@ -155,7 +155,7 @@
       "result": "FC Barcelona 0 - 0 Real Madrid",
       "competition": "Liga",
       "venue": "Camp Nou",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "Clásico del Cochinillo a Figo. Árbitro Medina Cantalejo paró el partido 15 min."
     },
     {
@@ -165,7 +165,7 @@
       "result": "Real Madrid 0 - 3 FC Barcelona",
       "competition": "Liga",
       "venue": "Bernabéu",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "Ronaldinho ovacionado por el Bernabéu. Doblete del brasileño."
     },
     {
@@ -175,7 +175,7 @@
       "result": "Real Madrid 2 - 6 FC Barcelona",
       "competition": "Liga",
       "venue": "Bernabéu",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "El 2-6. Puyol besó el brazalete con la bandera catalana. Pep primer año."
     },
     {
@@ -185,7 +185,7 @@
       "result": "FC Barcelona 5 - 0 Real Madrid",
       "competition": "Liga",
       "venue": "Camp Nou",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "Manita al Madrid de Mourinho (su primer Clásico). Buscar Mou RP."
     },
     {
@@ -215,7 +215,7 @@
       "result": "N/A — Rueda de prensa previa",
       "competition": "Champions, semifinal ida (previa)",
       "venue": "Bernabéu (sala de prensa)",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "RP de Guardiola: 'En esta sala él es el puto jefe, el puto amo'. Buscar transcripción ABC, Marca, AS, Mundo Deportivo del 27/04."
     },
     {
@@ -225,7 +225,7 @@
       "result": "Real Madrid 0 - 2 FC Barcelona",
       "competition": "Champions, semifinal ida",
       "venue": "Bernabéu",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "Roja a Pepe. RP de Mourinho: '¿Por qué? UNICEF'. 'Guardiola ha ganado una Champions que a mí me daría vergüenza'."
     },
     {
@@ -235,7 +235,7 @@
       "result": "FC Barcelona 3 - 2 Real Madrid",
       "competition": "Supercopa España vuelta",
       "venue": "Camp Nou",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "Tangana final. Mourinho mete dedo en ojo a Tito Vilanova. Sanción 2 partidos."
     },
     {
@@ -265,7 +265,7 @@
       "result": "Real Madrid 0 - 4 FC Barcelona",
       "competition": "Liga",
       "venue": "Bernabéu",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "Iniesta ovacionado por el Bernabéu. Luis Enrique: 'Patrimonio de la humanidad'."
     },
     {
@@ -305,7 +305,7 @@
       "result": "Real Madrid 2 - 1 FC Barcelona",
       "competition": "Liga",
       "venue": "Bernabéu",
-      "priority": "máxima",
+      "priority": "maxima",
       "notes": "Bronca Yamal-Carvajal-Vinicius-Rüdiger-Courtois al final. 'Tú hablas mucho'."
     }
   ]
