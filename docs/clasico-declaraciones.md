@@ -136,6 +136,53 @@ El Bernabéu se quitó el sombrero. **Primera vez** que un jugador del Barça er
 
 ---
 
+## 🪓 Maradona vs Goikoetxea — "El Carnicero de Bilbao" (24 sep 1983)
+
+En el Camp Nou, Andoni Goikoetxea entra por detrás y le rompe el tobillo a Maradona (fractura del maléolo peroneal con desgarro ligamentario).
+
+**Maradona** después:
+> *"Me partió el tobillo en nuestro campo, a 60 metros del arco de ellos. Nunca creí que iba a venirme a buscar con tanta mala leche. Cuando paro la pelota, siento un 'crack', como cuando se rompe una madera."*
+
+**Menotti** (entrenador del Barça):
+> *"Deberá morirse alguien para que cambien las cosas."*
+
+**Javier Clemente** (entrenador del Athletic) saliendo del Camp Nou desafiante:
+> *"Estoy orgulloso de mis jugadores."*
+
+**Goikoetxea** quitándole importancia:
+> *"Fue una acción más del partido, no merezco ninguna sanción."*
+
+Sanción: 18 partidos (luego rebajada a 7-10). Esa misma noche **marcó un gol con las mismas botas en Copa de Europa**. Las guardó para siempre en una urna en Getxo:
+> *"Viví lo peor y lo mejor del fútbol con solo cuatro días de diferencia, por eso las guardo."*
+
+**Fuentes:**
+- [El día que rompieron a Maradona - ESPN](https://espndeportes.espn.com/futbol/espana/nota/_/id/7798642/diego-maradona-rompieron-tobillo-barcelona)
+- [El "Carnicero de Bilbao" - Vice](https://www.vice.com/es/article/how-the-butcher-of-bilbao-almost-ended-diego-maradonas-career/)
+- [A 30 años de la patada salvaje - La Nación](https://www.lanacion.com.ar/deportes/futbol/a-30-anos-de-la-patada-mas-salvaje-contra-diego-maradona-nid1622788/)
+- [Andoni Goikoetxea: barro y gloria - Panenka](https://www.panenka.org/pasaportes/andoni-goikoetxea-barro-y-gloria/)
+
+---
+
+## 🇩🇪 Bernd Schuster (1988-1990)
+
+Tras conflictos con Núñez en Barcelona, Schuster ficha **gratis** por el Real Madrid en julio 1988. Caso explosivo.
+
+**Ramón Mendoza** (presidente Madrid):
+> *"Es un fichaje con intriga, que daría un susto pequeño o grande a su gran rival."*
+
+**Schuster** años después matizando:
+> *"No me fui al Madrid para joder al Barça ni al Atleti para joder al Madrid. Son cosas que pasan."*
+
+> *"He recuperado las ganas por el fútbol. Llego motivado y con ganas de hacer las cosas bien para ganar títulos."*
+
+En el primer Clásico al Camp Nou (1988) tras su fichaje, **tuvo que salir escoltado por la policía** después de empeñarse en dar una vuelta de honor.
+
+**Fuentes:**
+- [Schuster: genio y conflicto - La Galerna](https://www.lagalerna.com/schuster-la-galerna/)
+- [Schuster: "No me fui al Madrid para joder al Barça" - Líbero](https://revistalibero.com/blogs/contenidos/schuster-maradona-tenia-una-sombra-tan-grande-que-nos-apagabamos-todos)
+
+---
+
 ## 🟦 Era Cruyff jugador (1973-1978)
 
 ### Antes del 0-5 al Real Madrid en el Bernabéu (17 feb 1974)
@@ -336,6 +383,77 @@ Mourinho se entera, se enfurece, y comienza el deterioro de su relación con Cas
 
 ---
 
+## 👁️ El dedo en el ojo a Tito Vilanova (17 agosto 2011)
+
+Final Supercopa de España, Camp Nou. Tras una entrada dura de Marcelo a Cesc Fábregas, se forma una tangana entre banquillos. **Mourinho se acerca por detrás a Tito Vilanova (segundo de Pep) y le mete el dedo en el ojo.** Vilanova reacciona con un manotazo.
+
+Sanción: solo **2 partidos** a Mourinho.
+
+Años después, tras la muerte de Vilanova, **Mourinho** se arrepintió:
+> *"Fallé."* (*"I failed."*)
+
+La imagen quedó icónica gracias a **Francesc Satorra** ("El Observador"), un dirigente del Camp Nou que aparece de fondo en el plano.
+
+**Fuentes:**
+- [La Supercopa del dedo en el ojo - Goal](https://www.goal.com/es/noticias/la-supercopa-que-llevo-al-dedo-de-mourinho-hasta-el-ojo-de-vilanova/yktnkxgqndch1mvhyxa50s70l)
+- [Sanción de 2 partidos a Mourinho - Libertad Digital](https://www.libertaddigital.com/deportes/2011-10-05/mourinho-pendiente-del-castigo-por-el-dedo-en-el-ojo-1276437308/)
+- [El arrepentimiento de Mourinho - El Nacional](https://www.elnacional.cat/es/deportes/arrepentimiento-mourinho-dedo-ojo-tito-vilanova-fcbarcelona-madrid_626021_102.html)
+
+📺 [Vídeo del incidente - YouTube](https://www.youtube.com/watch?v=XxilFZfqIfo)
+
+---
+
+## 🇫🇷 Era Zidane (jugador y entrenador)
+
+**Zidane** sobre la rivalidad:
+> *"El Barcelona es un equipo que siempre ha sido fuerte. Cada entrenador tiene cosas diferentes, pero el Barça siempre es el Barça. Es un equipo competitivo que sabe jugar muy buen fútbol y que te pone difíciles las cosas."*
+
+> *"Estábamos a disposición de los jugadores. Para mí, es lo que hace fuerte al equipo, estás ahí para el jugador."*
+
+**Primer Clásico como entrenador**: 2 abril 2016, Camp Nou — **Madrid 2-1**, terminando con la racha de 39 partidos invicto del Barça.
+
+**Fuentes:**
+- [Zidane y la previa de Barcelona-Real Madrid - La Nación](https://www.lanacion.com.ar/deportes/futbol/zidane-real-madrid-barcelona-nid2486994/)
+- [Zidane: trabajo y alegría - ESPN](https://espndeportes.espn.com/futbol/espana/nota/_/id/16188775/real-madrid-zidane-arreglo-2026-trabajo-alegria)
+
+---
+
+## 🇪🇸 Iniesta ovacionado en el Bernabéu (21 noviembre 2015)
+
+**Madrid 0 - 4 Barcelona**. Iniesta marcó y dio asistencia. Fue sustituido en el m. 77 y **el Bernabéu se levantó a aplaudirle**, tal como ocurrió con Ronaldinho en 2005 y con Maradona en 1983.
+
+**Iniesta**:
+> *"Quiero agradecer a los fans. Nos sentimos muy bien, jugamos un partido completo en todos los sentidos. Les dimos pocas opciones, apenas perdimos el balón."*
+
+**Luis Enrique** (entrenador del Barça):
+> *"Andrés Iniesta es patrimonio de la humanidad, no sólo de los culés."*
+
+**Fuentes:**
+- [El día que Bernabéu aplaudió a Iniesta - Sphera Sports](https://spherasports.com/el-dia-que-el-bernabeu-aplaudio-a-iniesta/)
+- [Iniesta ovación Bernabéu - Tribuna](https://tribuna.com/es/news/fcbarcelona-2021-05-01-el-dia-que-andres-iniesta-recibio-la-ovacion-del-santiago-bernabeu/)
+- [Goal: el día que Bernabéu aplaudió a Iniesta](https://www.goal.com/es/news/27/liga-de-espa%C3%B1a/2015/11/21/17571432/el-d%C3%ADa-que-el-santiago-bernab%C3%A9u-aplaudi%C3%B3-a-andr%C3%A9s-iniesta)
+
+📺 [El Bernabéu ovaciona a Iniesta - YouTube](https://www.youtube.com/watch?v=6_ClnCvZ_go)
+
+---
+
+## 🇨🇲 Eto'o, Puyol y la celebración de la bandera (mayo 2009)
+
+En el **Madrid 2-6 Barcelona** del 2 mayo 2009 (uno de los Clásicos más recordados), **Carles Puyol celebró su gol besando el brazalete con la bandera catalana** ante la afición del Bernabéu.
+
+**Puyol** (Clásico de Leyendas, 2025):
+> *"Un clásico siempre es un clásico. Todos quieren ganar."*
+
+> *"Tuve mucha suerte de tener a Rafa Márquez."*
+
+**Eto'o** ha mantenido siempre presencia mediática anti-Madrid (publicaciones en redes que han generado polémica).
+
+**Fuentes:**
+- [Carles Puyol Clásicos de leyenda - Bleacher Report](https://bleacherreport.com/articles/92847-el-clasico-barca-beat-madrid-2-0-but-puyol-proves-the-real-difference)
+- [Puyol enarbola su andar - Infobae](https://www.infobae.com/mexico/deportes/2025/04/12/carles-puyol-enarbola-su-andar-en-el-barcelona-junto-a-rafa-marquez-tuve-mucha-suerte-de-tenerlo/)
+
+---
+
 ## 🥊 Piqué vs Sergio Ramos (2017)
 
 Tras la roja a Ramos en el Bernabéu, este señaló a la grada hacia Piqué:
@@ -377,13 +495,56 @@ Sobre la roja de **Pepe** en un Madrid-Barça de Champions, **Piqué** dijo:
 
 ---
 
-## 🆕 Era Lamine Yamal (2024-2025)
+## 😢 Casillas adiós entre lágrimas (12 julio 2015)
+
+Casillas se despide solo en sala de prensa del Bernabéu tras 25 años en el Madrid. Sin homenaje oficial.
+
+**Casillas**:
+> *"Después de 25 años defendiendo el escudo del mejor club del mundo, llega un día difícil... despedirme de esta institución que me lo ha dado todo."*
+
+> *"Son treinta segundos pero me llevará casi una hora."* (bromeando entre lágrimas — el discurso duró 8 minutos)
+
+> *"Se terminó."*
+
+**Fuentes:**
+- [Casillas se despide entre lágrimas - Emol](https://www.emol.com/noticias/Deportes/2015/07/12/725573/Tras-25-anos-Iker-Casillas-se-despide-entre-lagrimas-del-Real-Madrid-Se-termino.html)
+- [Casillas llora en despedida - El Universal](https://www.eluniversal.com.mx/articulo/deportes/futbol/2015/07/12/iker-casillas-llora-en-su-despedida-del-real-madrid/)
+
+📺 [Las lágrimas de Casillas - YouTube](https://www.youtube.com/watch?v=TudJrYwqiKo)
+
+---
+
+## 🆕 Era Lamine Yamal — La bronca del Bernabéu (26 octubre 2025)
+
+**Real Madrid 2 - 1 FC Barcelona**, goles de Mbappé y Bellingham.
+
+**Origen**: Yamal en una transmisión de Kings League (con Ibai Llanos), comparando al equipo de los Porcinos con el Madrid:
+> *"Roban, se quejan…"*
+
+**Durante el partido**, **Vinicius** a Yamal repetidamente:
+> *"Solo das pases atrás, solo das pases atrás."*
+
+**Tras el pitido final**:
+
+**Carvajal** (capitán) a Yamal:
+> *"Tú hablas mucho. Tú hablas mucho."* (con gestos)
+
+**Vinicius** ante Yamal:
+> *"Tú hablas mucho, habla ahora."* (eco directo del *"¡Habla ahora, habla ahora!"* de Sergio Ramos a Piqué en 2017)
+
+**Courtois** se sumó al encaronazo y tuvo que ser sujetado por compañeros. **Rüdiger** y **Raphinha** acabaron también implicados.
+
+**Fuentes:**
+- [La bronca del Clásico - Infobae](https://www.infobae.com/deportes/2025/10/26/asi-fue-la-gresca-en-el-clasico-entre-real-madrid-y-barcelona-del-gesto-de-carvajal-a-yamal-a-las-reacciones-de-courtois-y-vinicius/)
+- [Bronca monumental: Carvajal, Courtois, Vinicius - Eurosport](https://espanol.eurosport.com/futbol/la-liga/2025-2026/bronca-clasico-gestos-yamal-carvajal-courtois-vinicius-policia-tangana_sto23234984/story.shtml)
+- [El brutal cruce Carvajal-Vinicius-Yamal - SDP Noticias](https://www.sdpnoticias.com/deportes/tu-hablas-mucho-el-brutal-cruce-entre-dani-carvajal-vinicius-jr-y-lamine-yamal-tras-el-clasico-de-espana/)
+
+---
+
+### Yamal — declaraciones previas
 
 **Yamal** (entrevista AS, marzo 2025):
 > *"El Madrid es el rival a batir."*
-
-**Yamal** (octubre 2025):
-> *"El Madrid roba"* — provocó encaronazo de Carvajal y Courtois al final del partido.
 
 **Rodrygo** previa Clásico:
 > *"Ganar y marcar."*
