@@ -1368,10 +1368,11 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     lastPollTrends: state.lastPollTrends,
     lastPollMedia: state.lastPollMedia,
     lastPollX: state.lastPollX,
-    cultural: culturalItems,
-    culturalEntityHits: Array.from(culturalEntityHits.entries()).map(([entity, hits]) => ({ entity, hits })),
-    aemetEnriched,
-    schemaNews,
+    // Sucesos/legal/cultural/aemet no aplican en instancias verticales (sport)
+    cultural: process.env.DS_CATEGORY_FILTER ? [] : culturalItems,
+    culturalEntityHits: process.env.DS_CATEGORY_FILTER ? [] : Array.from(culturalEntityHits.entries()).map(([entity, hits]) => ({ entity, hits })),
+    aemetEnriched: process.env.DS_CATEGORY_FILTER ? [] : aemetEnriched,
+    schemaNews: process.env.DS_CATEGORY_FILTER ? {} : schemaNews,
     // Páginas DS slim para fallback del Drawer (sólo metadata necesaria)
     pagesSlim: Object.entries(state.pages || {})
       .map(([url, ps]) => ({ url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position, domain: ps.domain, firstSeen: (ps as any).firstSeen, lastUpdated: ps.lastUpdated }))

@@ -48,21 +48,21 @@ async function fetchEndpoint<T>(
   return json.data ?? [];
 }
 
-function liveParams() {
+function liveParams(countryOverride?: string) {
   const { country, hours, lines } = config.discoversnoop;
-  return { country, hours, lines };
+  return { country: countryOverride || country, hours, lines };
 }
 
-export function fetchLiveEntities(): Promise<DiscoverEntity[]> {
-  return fetchEndpoint<DiscoverEntity>('/liveentities', liveParams());
+export function fetchLiveEntities(country?: string): Promise<DiscoverEntity[]> {
+  return fetchEndpoint<DiscoverEntity>('/liveentities', liveParams(country));
 }
 
-export function fetchLiveCategories(): Promise<DiscoverCategory[]> {
-  return fetchEndpoint<DiscoverCategory>('/livecategories', liveParams());
+export function fetchLiveCategories(country?: string): Promise<DiscoverCategory[]> {
+  return fetchEndpoint<DiscoverCategory>('/livecategories', liveParams(country));
 }
 
-export function fetchLivePages(): Promise<DiscoverPage[]> {
-  return fetchEndpoint<DiscoverPage>('/livepages', liveParams());
+export function fetchLivePages(country?: string): Promise<DiscoverPage[]> {
+  return fetchEndpoint<DiscoverPage>('/livepages', liveParams(country));
 }
 
 export function fetchLiveDomains(): Promise<DiscoverDomain[]> {

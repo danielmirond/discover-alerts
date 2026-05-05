@@ -109,8 +109,9 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'predicciones', label: 'Predicciones' },
     { id: 'cultural', label: 'Cultural' },
     { id: 'aemet', label: 'AEMET' },
+    { id: 'internacional', label: 'Internacional' },
     { id: 'configuracion', label: 'Config' },
-  ].filter(n => !verticalHidden.has(n.id));
+  ].filter(n => !verticalHidden.has(n.id) && (n.id !== 'internacional' || instance.vertical));
   const fmtDate = clock.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
   const fmtTime = clock.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   return (
@@ -908,6 +909,12 @@ function App() {
       'top 10 streaming en España · Netflix TSV oficial (semanal) + FlixPatrol (diario)',
       <CulturalView />
     );
+  } else if (activeNav === 'internacional') {
+    body = viewSinglePanel(
+      'Discover Sport · Internacional',
+      'top entidades + páginas /Sports en USA · UK · México · Argentina · Italia',
+      <InternationalView />
+    );
   } else if (activeNav === 'aemet') {
     body = viewSinglePanel(
       'AEMET — avisos meteorológicos',
@@ -1257,6 +1264,96 @@ function BoeView({ boe, rawEntities }) {
 }
 
 /* ---------------- Config view (read-only system status) ---------------- */
+function InternationalView() {
+  const [s, setS] = useState({ loading: true, data: null, error: null });
+  const [active, setActive] = useState('US');
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/international', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(d => alive && setS({ loading: false, data: d, error: null }))
+      .catch(e => alive && setS({ loading: false, data: null, error: e.message }));
+    return () => { alive = false; };
+  }, []);
+  if (s.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando…</div>;
+  if (s.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {s.error}</div>;
+  const { countries = {}, lastPoll } = s.data || {};
+  const order = ['US', 'GB', 'MX', 'AR', 'IT'];
+  const labels = { US: '🇺🇸 USA', GB: '🇬🇧 UK', MX: '🇲🇽 México', AR: '🇦🇷 Argentina', IT: '🇮🇹 Italia' };
+  const cur = countries[active] || { entities: [], pages: [] };
+
+  return (
+    <div>
+      <div style={{ padding: '8px 10px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>
+        Último poll: <strong style={{ color: 'var(--ink)' }}>{lastPoll ? new Date(lastPoll).toLocaleString('es-ES') : '(nunca)'}</strong> · solo categoría /Sports
+      </div>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
+        {order.map(c => {
+          const data = countries[c];
+          return (
+            <span key={c} onClick={() => setActive(c)}
+                  style={{
+                    cursor: 'pointer', padding: '4px 12px', fontFamily: 'var(--mono)', fontSize: 11,
+                    border: '1px solid var(--rule)',
+                    background: active === c ? 'var(--accent)' : 'transparent',
+                    color: active === c ? '#fff' : 'var(--ink)',
+                    letterSpacing: '.04em',
+                  }}>
+              {labels[c] || c} {data ? <strong style={{ opacity: 0.8 }}>{data.entities.length}</strong> : <span style={{ opacity: 0.4 }}>—</span>}
+            </span>
+          );
+        })}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: 20 }}>
+        <div>
+          <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>Entidades top {labels[active]}<span className="bar"></span><span className="meta">{(cur.entities || []).length}</span></div>
+          {(cur.entities || []).length === 0 ? (
+            <div style={{ padding: 8, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin datos.</div>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+              <tbody>
+                {(cur.entities || []).slice(0, 20).map(e => (
+                  <tr key={e.name} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                    <td style={{ padding: '4px 6px', width: 32, textAlign: 'right', color: 'var(--accent)', fontWeight: 700 }}>#{e.position}</td>
+                    <td style={{ padding: '4px 6px', color: 'var(--ink)', fontWeight: 500 }}>{e.name}</td>
+                    <td style={{ padding: '4px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>s{e.score}</td>
+                    <td style={{ padding: '4px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>{e.publications} pubs</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        <div>
+          <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>Noticias Discover {labels[active]}<span className="bar"></span><span className="meta">{(cur.pages || []).length}</span></div>
+          {(cur.pages || []).length === 0 ? (
+            <div style={{ padding: 8, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin datos.</div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
+              {(cur.pages || []).slice(0, 12).map((p, i) => (
+                <a key={p.url} href={p.url} target="_blank" rel="noreferrer"
+                   style={{ textDecoration: 'none', color: 'inherit', display: 'flex', gap: 8, padding: 4, borderBottom: '1px solid var(--rule-2)' }}>
+                  {p.image && <img src={p.image} alt="" style={{ width: 80, height: 45, objectFit: 'cover', border: '1px solid var(--rule)', flexShrink: 0 }} />}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, color: 'var(--ink)', fontWeight: 500, lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {p.title}
+                    </div>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', marginTop: 2 }}>
+                      #{i + 1} · s{p.score} · {(p.domain || '').replace(/^www\./, '') || p.publisher}
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CulturalView() {
   const [state, setState] = useState({ loading: true, data: null, error: null });
   useEffect(() => {

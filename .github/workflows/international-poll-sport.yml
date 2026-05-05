@@ -1,0 +1,29 @@
+name: "[Sport] International Poll"
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: international-poll-sport
+  cancel-in-progress: true
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production-sport
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --prefer-offline
+      - run: npx tsx src/run-poll.ts international
+        env:
+          DISCOVERSNOOP_TOKEN: ${{ secrets.DISCOVERSNOOP_TOKEN }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          DISCOVER_LINES: '300'

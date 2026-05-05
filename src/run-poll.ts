@@ -8,6 +8,7 @@ import { runMeneamePoll } from './polling/meneame-poll.js';
 import { runWikipediaPoll } from './polling/wikipedia-poll.js';
 import { runCulturalPoll } from './polling/cultural-poll.js';
 import { runAemetPoll } from './polling/aemet-poll.js';
+import { runInternationalPoll } from './polling/international-poll.js';
 
 const target = process.argv[2]; // discover | trends | media | boe | x | meneame | wikipedia | cultural | aemet | all
 
@@ -47,6 +48,9 @@ async function main() {
         break;
       case 'aemet':
         await runAemetPoll();
+        break;
+      case 'international':
+        await runInternationalPoll();
         break;
       case 'all':
         await runDiscoverPoll();
