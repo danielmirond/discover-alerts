@@ -675,6 +675,39 @@ La imagen quedó icónica gracias a **Francesc Satorra** ("El Observador"), un d
 
 📚 ABC reconoce textualmente *"un débil Real Madrid"*. Verificado en archivo digital.
 
+### 📰 Marca, 4 mayo 2009 — fuente primaria verificada (Wayback)
+
+Titular del 2-6:
+> **"Real Madrid 2-6 Barcelona. Humillación para sentenciar la Liga."**
+
+**Luis Enrique** (entonces entrenador del filial Barça B, ex-jugador de ambos clubes):
+> *"Fue un orgasmo futbolístico. ¡Qué maravilla ser aficionado del Barcelona y culé anoche!"*
+
+**Iker Casillas** (capitán Madrid):
+> *"Nos ha pasado un rodillo por encima."*
+
+**Raúl González** (capitán Madrid):
+> *"Te da impotencia ver que están cómodos y disfrutando."*
+
+**Txiki Begiristain** (director deportivo Barça):
+> *"El Bernabéu es el mejor escenario para cerrar una Liga."*
+
+Datos del día (Marca 04/05/2009):
+- *"Más del 85% de la afición considera que el 2-6 del Barça ha sido la derrota más dolorosa de la historia para el madridismo."*
+- *"El cántico 'eo, eo, eo, esto es un chorreo' no lo protagonizaron los jugadores sino los aficionados que les acompañaban en el avión de vuelta."*
+- *"Cinco detenidos por causar destrozos en la celebración del Barça."*
+- *"Asesinan en El Salvador a un hincha del Barça tras el Clásico."*
+
+📚 Verificado en archive.org, snapshot Marca 04/05/2009 06:24 UTC.
+
+### 📰 Marca, previa (30 abril 2009)
+
+Titular hoy: *"Messi: 'Prefiero ganar al Chelsea que al Madrid.'"*
+
+**Raúl González** (RP previa Madrid):
+> *"En el Bernabéu, el favorito es el Madrid."*
+
+---
 
 En el **Madrid 2-6 Barcelona** del 2 mayo 2009 (uno de los Clásicos más recordados), **Carles Puyol celebró su gol besando el brazalete con la bandera catalana** ante la afición del Bernabéu.
 
