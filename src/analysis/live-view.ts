@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { getState } from '../state/store.js';
 import { loadTopicsDictionary, classifyText, pickBestTopic } from './topic-classifier.js';
@@ -1385,13 +1385,11 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       const feedToPublisher = new Map<string, string>();
       try {
         const fpath = path.join(process.cwd(), process.env.FEEDS_PATH || 'feeds.json');
-        const feedsRaw = await readFile(fpath, 'utf-8').catch(() => '');
-        if (feedsRaw) {
-          const parsed = JSON.parse(feedsRaw) as { feeds: Array<{ name: string; domain?: string }> };
-          for (const f of (parsed.feeds || [])) {
-            if (f.name && f.domain) {
-              feedToPublisher.set(f.name, f.domain.replace(/^www\./, '').toLowerCase());
-            }
+        const feedsRaw = readFileSync(fpath, 'utf-8');
+        const parsed = JSON.parse(feedsRaw) as { feeds: Array<{ name: string; domain?: string }> };
+        for (const f of (parsed.feeds || [])) {
+          if (f.name && f.domain) {
+            feedToPublisher.set(f.name, f.domain.replace(/^www\./, '').toLowerCase());
           }
         }
       } catch { /* noop */ }
