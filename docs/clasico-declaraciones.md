@@ -406,6 +406,84 @@ Texto:
 
 ---
 
+### 29 noviembre 2010 — La manita a Mou (5-0 Camp Nou)
+
+📰 **ABC Madrid, 30 noviembre 2010 — fuente primaria verificada**:
+> *"BARÇA-REAL MADRID. Guardiola humilla a Mourinho. La estrategia del Barça en el derbi ante el Real Madrid se resolvió con una lección táctica de Pep Guardiola sobre Mourinho, que coloca líderes a los azulgrana. 5-0"*  
+> — ABC Madrid, 30/11/2010, portada (sección Deportes 6-7 y 68-77)
+
+📚 ABC titula literalmente **"Guardiola humilla a Mourinho"**. Cita histórica en periódico afín al Madrid. Verificado en archivo digital.
+
+### 📰 Marca, 30 noviembre 2010 — fuente primaria verificada (Wayback)
+
+Hoy en Marca: **"Mouchísimo Barça"**
+
+Titular del Clásico:
+> **"BARCELONA 5-0 REAL MADRID. Goleada histórica."**
+
+> *"Este Barça es una máquina."*
+
+Sobre la prensa internacional:
+> *"'Un manita en el cul', 'humillado' o 'lección a Mou'."* (Italia: 'La Gazzetta dello Sport' abrió con *"Barça divino, Mourinho humillado"*).
+
+**Mourinho** (RP post partido, recogida por Marca):
+> *"Cuando te meten 5 no se llora. Uno ha jugado al máximo nivel y otro muy mal. Es una derrota, no una humillación."*
+
+> *"La semana pasada teníamos un punto más y hoy dos menos. Siempre he dicho que el Barça es un producto acabado y al Madrid le falta mucho."*
+
+**Guardiola** (RP post partido, recogida por Marca):
+> *"No es verdad que seamos mucho mejores que el Real Madrid. Más que con el resultado, me quedo con cómo lo que hemos logrado."*
+
+**David Villa** (su primer Clásico):
+> *"Es el triunfo de un estilo. Para ser mi primer Clásico, más no puedo pedir. Estoy muy contento no sólo por el resultado, sino por la forma en que lo hemos logrado."*
+
+**Iniesta**: *"Nos lo merecimos."*
+
+**Puyol**: *"Ha sido espectacular."*
+
+📚 Verificado en archive.org, snapshot Marca 30/11/2010 12:12 UTC.
+
+### 📰 Sport, 30 noviembre 2010 — fuente primaria verificada (Wayback)
+
+Titulares de portada:
+> **"El Barça humilla al Madrid de Mourinho con otra 'manita' histórica."**
+
+> **"'Orgasmo' culé en el Camp Nou."**
+
+> *"¡Baño histórico al Madrid! 16 años después de la histórica 'manita' de 1994, el Barça volvió a golear por 5-0 al Real Madrid."*
+
+**Guardiola** (recogido por Sport):
+> *"Es una victoria de todos los que han creído en el modelo."*
+
+**David Villa**: *"Habían puesto en duda nuestro estilo."*
+
+**Puyol**: *"Ha sido el partido soñado."*
+
+**Iniesta**: *"No hemos dejado hacer nada al Madrid."*
+
+**Jorge Valdano** (director deportivo del Madrid, asumiendo la derrota):
+> *"El Barça ha sido muy, muy superior. Todos juntos saldremos de esta frustación."*
+
+Sport sobre Mou:
+> *"Mourinho asume la derrota pero no entona el 'mea culpa'."*
+
+📚 Verificado en archive.org, snapshot Sport 30/11/2010 01:01 UTC.
+
+### 📰 El País, 2 diciembre 2010 — fuente primaria verificada (Wayback)
+
+**Sergio Ramos** (sobre la entrada a Messi y la reacción de Puyol/Xavi):
+> *"Ya he pedido perdón a Puyol y Xavi. Al ser yo, todo el mundo lo exagera."*
+
+**Xavi Hernández** (a El País):
+> *"El 2-6 fue perfecto, pero el 5-0 lo supera. Tuve una sensación de enorme superioridad."*
+
+**Juan Mata** (Valencia, antes de visitar al Madrid el sábado siguiente):
+> *"Espero que no paguemos los platos rotos."*
+
+📚 Verificado en archive.org, snapshot El País 2/12/2010.
+
+---
+
 ### 26 abril 2011 — Guardiola "puto jefe, puto amo"
 
 📰 **ABC Madrid, 27 abril 2011 — fuente primaria verificada**:
