@@ -46,8 +46,8 @@ SLEEP_BETWEEN = 1.5  # segundos entre peticiones para no saturar
 # URL nueva: https://www.abc.es/archivo/periodicos/abc-madrid-YYYYMMDD.html
 # ----------------------------------------------------------------------------
 def fetch_abc_madrid(date: datetime, out_dir: Path) -> Path | None:
-    if date.year < 1903 or date.year > 2010:
-        print(f"  [abc-madrid] {date:%Y-%m-%d}: fuera de cobertura (1903-2010)")
+    if date.year < 1903:
+        print(f"  [abc-madrid] {date:%Y-%m-%d}: fuera de cobertura (ABC empieza en 1903)")
         return None
 
     url = f"https://www.abc.es/archivo/periodicos/abc-madrid-{date:%Y%m%d}.html"
