@@ -1374,54 +1374,67 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     // 3-grams filtrando stopwords y devuelve top 5 patrones por medio.
     // Útil para ver qué fórmula editorial domina en Marca vs AS vs MD, etc.
     patternsByMedia: (() => {
-      const mediaStopwords = new Set(['el','la','los','las','un','una','de','en','y','o','que','es','por','con','para','como','se','su','sus','le','les','lo','mas','ya','no','si','del','al','este','esta','estos','estas','ese','esa','pero','sin','sobre','entre','hasta','desde','muy','todo','toda','todos','todas','asi','tras','solo','tan','tambien','aun','mientras','cuando','donde','quien','cual','tras','segun','desde','contra','hace','dice','tiene','dijo','tras','tienen','dicen','va','van','ha','han','hay','sera','seran','fue','fueron']);
-      const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !mediaStopwords.has(w));
-      const trigrams = (words: string[]) => { const out: string[] = []; for (let i = 0; i <= words.length - 3; i++) out.push(words.slice(i, i + 3).join(' ')); return out; };
-      // feedDomains ya construido arriba a partir de los links — más fiable
-      // que parsear cada link otra vez. Usamos el dominio del primer link visto
-      // por feedName.
+      // Agregamos por publisher (dominio raíz), agrupando weeklyHistory de las
+      // últimas 1-2 semanas — mucha más data que state.mediaArticles (12h).
+      // weeklyHistory[weekKey][feedName] = { articleCount, patterns: {ngram: count} }
+      // → ya es 3-gramas pre-extraídos por weekly-aggregator. No re-tokenizamos.
       const feedToPublisher = new Map<string, string>();
       for (const [feedName, doms] of Object.entries(feedDomains || {})) {
         const arr = [...doms];
         if (arr.length === 0) continue;
-        // Tomar el dominio "core" — el que NO sea CDN (descartamos *.uecdn.es,
-        // *.cdn.*, *.cloudfront.net, etc) y normalizar amp./m./
         const cleaned = arr.map(d => d.replace(/^(www|amp|m|noticias)\./, ''));
         const nonCdn = cleaned.find(d => !/uecdn|cdn|cloudfront|akamai|edgesuite|fastly/i.test(d)) || cleaned[0];
         feedToPublisher.set(feedName, nonCdn);
       }
-      // Display name por publisher: intentar matchear contra feedNames conocidos
-      const knownPublishers = ['Mundo Deportivo','Marca','As','Sport','El Mundo','El País','La Vanguardia','ABC','El Confidencial','El Español','OK Diario','OKdiario','20 Minutos','El Periódico','Antena 3','laSexta','Levante-EMV','Faro de Vigo','La Provincia','Diario de Mallorca','Cadena SER','COPE','Onda Cero','Europa Press','RTVE','Heraldo','eldiario.es','Huffington Post','Xataka','El Diario Vasco','El Comercio','Diario de Navarra','La Voz','Las Provincias','La Verdad','Hoy','Sur','Ideal','El Norte de Castilla','El Correo','La Rioja','Las Provincias','Diario de Burgos','InfoLibre','Voz Pópuli','El Plural','El Independiente','Libertad Digital','Crónica Global','Diario de León','El Periódico','Confilegal','Lawyerpress','Legal Today','Mundo Jurídico','Economist & Jurist','El Derecho'];
+      const knownPublishers = ['Mundo Deportivo','Marca','As','Sport','El Mundo','El País','La Vanguardia','ABC','El Confidencial','El Español','OK Diario','OKdiario','20 Minutos','El Periódico','Antena 3','laSexta','Levante-EMV','Faro de Vigo','La Provincia','Diario de Mallorca','Cadena SER','COPE','Onda Cero','Europa Press','RTVE','Heraldo','eldiario.es','Huffington Post','Xataka','InfoLibre','Voz Pópuli','El Plural','El Independiente','Libertad Digital','Crónica Global','Diario de León','Confilegal','Lawyerpress','Legal Today'];
       const publisherInfo = new Map<string, { displayName: string; count: number; ngrams: Map<string, number>; subfeeds: Set<string> }>();
-      for (const art of Object.values(state.mediaArticles || {})) {
-        if (!art.title || !art.feedName) continue;
-        const dom = feedToPublisher.get(art.feedName) || (() => {
-          // Fallback: extraer dominio del link
-          if (!art.link) return '';
-          try {
-            return new URL(art.link).hostname.toLowerCase().replace(/^(www|amp|m|noticias)\./, '');
-          } catch { return ''; }
-        })();
-        if (!dom) continue;
-        let row = publisherInfo.get(dom);
-        if (!row) {
-          // Display name limpio: matching contra publishers conocidos por feedName
-          let dn = dom;
-          for (const known of knownPublishers) {
-            if (art.feedName.toLowerCase().startsWith(known.toLowerCase())) { dn = known; break; }
+      // Recoger últimas 2 semanas (current + previous) para ~14 días de cobertura
+      const wks = Object.keys(state.weeklyHistory || {}).sort().reverse().slice(0, 2);
+      for (const wk of wks) {
+        const byFeed = state.weeklyHistory?.[wk] || {};
+        for (const [feedName, stats] of Object.entries(byFeed)) {
+          const dom = feedToPublisher.get(feedName);
+          if (!dom) continue;
+          let row = publisherInfo.get(dom);
+          if (!row) {
+            let dn = dom;
+            for (const known of knownPublishers) {
+              if (feedName.toLowerCase().startsWith(known.toLowerCase())) { dn = known; break; }
+            }
+            if (dn === dom) dn = feedName.replace(/ Sitemap News$| RSS$| Feed$/i, '').replace(/ \(.+\)$/, '').split(' ').slice(0, 4).join(' ');
+            row = { displayName: dn, count: 0, ngrams: new Map(), subfeeds: new Set() };
+            publisherInfo.set(dom, row);
           }
-          if (dn === dom) {
-            // Fallback: tomar primera palabra del feedName limpio
-            dn = (art.feedName || dom).replace(/ Sitemap News$| RSS$| Feed$/i, '').replace(/ \(.+\)$/, '').split(' ').slice(0, 4).join(' ');
+          row.subfeeds.add(feedName);
+          row.count += (stats.articleCount || 0);
+          for (const [ngram, c] of Object.entries(stats.patterns || {})) {
+            row.ngrams.set(ngram, (row.ngrams.get(ngram) || 0) + c);
           }
-          row = { displayName: dn, count: 0, ngrams: new Map(), subfeeds: new Set() };
-          publisherInfo.set(dom, row);
         }
-        if (art.feedName) row.subfeeds.add(art.feedName);
-        row.count++;
-        const cleanTitle = decodeEntities(art.title);
-        const words = norm(cleanTitle);
-        for (const tg of trigrams(words)) row.ngrams.set(tg, (row.ngrams.get(tg) || 0) + 1);
+      }
+      // Fallback: si weeklyHistory está vacío (estado fresco), usar mediaArticles 12h
+      if (publisherInfo.size === 0) {
+        const mediaStopwords = new Set(['el','la','los','las','un','una','de','en','y','o','que','es','por','con','para','como','se','su','sus','le','les','lo','mas','ya','no','si','del','al','este','esta','estos','estas','ese','esa','pero','sin','sobre','entre','hasta','desde','muy','todo','toda','todos','todas','asi','tras','solo','tan','tambien','aun','mientras','cuando','donde','quien','cual','tras','segun','desde','contra','hace','dice','tiene','dijo','tras','tienen','dicen','va','van','ha','han','hay','sera','seran','fue','fueron']);
+        const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !mediaStopwords.has(w));
+        const trigrams = (words: string[]) => { const out: string[] = []; for (let i = 0; i <= words.length - 3; i++) out.push(words.slice(i, i + 3).join(' ')); return out; };
+        for (const art of Object.values(state.mediaArticles || {})) {
+          if (!art.title || !art.feedName) continue;
+          const dom = feedToPublisher.get(art.feedName);
+          if (!dom) continue;
+          let row = publisherInfo.get(dom);
+          if (!row) {
+            let dn = dom;
+            for (const known of knownPublishers) {
+              if (art.feedName.toLowerCase().startsWith(known.toLowerCase())) { dn = known; break; }
+            }
+            if (dn === dom) dn = art.feedName.split(' ').slice(0, 4).join(' ');
+            row = { displayName: dn, count: 0, ngrams: new Map(), subfeeds: new Set() };
+            publisherInfo.set(dom, row);
+          }
+          row.subfeeds.add(art.feedName);
+          row.count++;
+          for (const tg of trigrams(norm(decodeEntities(art.title)))) row.ngrams.set(tg, (row.ngrams.get(tg) || 0) + 1);
+        }
       }
       const out: Array<{ feedName: string; domain: string; subfeeds: number; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }> }> = [];
       for (const [domain, row] of publisherInfo) {
