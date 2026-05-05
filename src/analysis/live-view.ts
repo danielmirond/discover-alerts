@@ -1454,15 +1454,44 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
         }
       }
       const out: Array<{ feedName: string; domain: string; subfeeds: number; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }> }> = [];
+      // Filtros de calidad para limpiar ngramas basura:
+      //  - Skip si tiene token solo numérico (ej. "039 scudetto 039" residual)
+      //  - Skip si tiene token <=2 chars (residual de tokenization sucia)
+      const isCleanNgram = (ng: string): boolean => {
+        const tokens = ng.split(' ');
+        for (const t of tokens) {
+          if (t.length <= 2) return false;
+          if (/^\d+$/.test(t)) return false;
+        }
+        return true;
+      };
+      // Dedupe coincidencias: si 2 ngramas comparten 2 tokens consecutivos
+      // (ej. "milan directo serie" y "lazio directo serie"), conservar solo el
+      // de mayor count. Conservamos el primer hit y pedimos a los siguientes
+      // con bigrama compartido en el medio que cedan.
+      const dedupeOverlap = (sorted: Array<[string, number]>): Array<[string, number]> => {
+        const kept: Array<[string, number]> = [];
+        const seenBigrams = new Set<string>();
+        for (const [ngram, c] of sorted) {
+          const tokens = ngram.split(' ');
+          // bigrama central (token1 + token2): ej "directo serie" en "milan directo serie"
+          const middleBigram = tokens.slice(1, 3).join(' ');
+          if (seenBigrams.has(middleBigram)) continue;
+          seenBigrams.add(middleBigram);
+          kept.push([ngram, c]);
+          if (kept.length >= 10) break;
+        }
+        return kept;
+      };
+
       for (const [domain, row] of publisherInfo) {
-        if (row.count < 2) continue; // 2 articles mínimo para mostrar publisher
+        if (row.count < 2) continue;
         const minPatternCount = row.count >= 8 ? 2 : 1;
-        const sorted = [...row.ngrams.entries()].sort((a, b) => b[1] - a[1]).slice(0, 7);
-        const topPatterns = sorted
-          .filter(([, c]) => c >= minPatternCount)
-          .map(([ngram, c]) => ({ ngram, count: c, share: Math.round((c / row.count) * 100) }));
-        // Para publishers con poca data, mostrar aunque no tengan ngrams repetidos
-        // → al menos verán que están publicando, con sus titulares accesibles
+        const cleanSorted = [...row.ngrams.entries()]
+          .filter(([ng, c]) => c >= minPatternCount && isCleanNgram(ng))
+          .sort((a, b) => b[1] - a[1]);
+        const deduped = dedupeOverlap(cleanSorted);
+        const topPatterns = deduped.map(([ngram, c]) => ({ ngram, count: c, share: Math.round((c / row.count) * 100) }));
         if (topPatterns.length === 0 && row.count < 5) continue;
         out.push({ feedName: row.displayName, domain, subfeeds: row.subfeeds.size, articleCount: row.count, topPatterns });
       }
