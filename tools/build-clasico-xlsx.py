@@ -171,11 +171,20 @@ WAYBACK_DOMAIN_HINTS = [
 ]
 
 
+URL_OVERRIDE_RE = re.compile(r"URL:\s*(https?://\S+)")
+
+
 def derive_url(row):
     """Devuelve la URL más probable de la fuente, o '' si no hay."""
     if len(row) < 10:
         return ""
     fecha, era, protag, cita, fuente, edicion, pagina, tipo, verif, notas = row[:10]
+
+    # 0) URL override explícita en notas (formato 'URL: https://...')
+    if notas:
+        m = URL_OVERRIDE_RE.search(notas)
+        if m:
+            return m.group(1).rstrip('.,;')
 
     # 1) Wayback Machine: snap timestamp en notas + dominio en fuente
     if "Wayback Machine" in tipo or "archive.org" in tipo:
@@ -650,7 +659,7 @@ ROWS = [
      "Fue una acción más del partido, no merezco ninguna sanción. Viví lo peor y lo mejor del fútbol con solo cuatro días de diferencia, por eso las guardo (las botas).",
      "Panenka", "Reportaje retrospectivo 'Barro y gloria'", "—",
      "Prensa retrospectiva", "Sí",
-     "Sancionado con 18 partidos (rebajados a 7-10). Frase recogida en 'Andoni Goikoetxea: barro y gloria' Panenka."),
+     "Sancionado con 18 partidos (rebajados a 7-10). Frase recogida en 'Andoni Goikoetxea: barro y gloria' Panenka. URL: https://www.panenka.org/pasaportes/andoni-goikoetxea-barro-y-gloria/"),
 
     # ============ STOICHKOV ============
     ("2003-2004", "Stoichkov", "Hristo Stoichkov",
@@ -1014,10 +1023,11 @@ ROWS = [
      "Mundo Deportivo (web)", "MD 25/04/2011", "RP previa",
      "Wayback Machine (archive.org)", "Sí",
      "Snap MD 25/04/2011 08:55 UTC."),
-    ("Posterior", "Dedo en el ojo a Tito Vilanova", "José Mourinho",
-     "Fallé. (Tras la muerte de Vilanova)",
-     "El Nacional", "—", "—",
-     "Prensa secundaria", "Sí", ""),
+    ("2014-04-25", "Dedo en el ojo a Tito Vilanova", "José Mourinho",
+     "Fallé. (Tras la muerte de Vilanova en abril 2014)",
+     "El Nacional", "El Nacional 25/04/2014", "Sección Deportes",
+     "Prensa primaria", "Sí",
+     "URL: https://www.elnacional.cat/es/deportes/arrepentimiento-mourinho-dedo-ojo-tito-vilanova-fcbarcelona-madrid_626021_102.html"),
     ("2020-12", "Casillas-Mourinho topo", "Iker Casillas",
      "Asumí que yo era el topo.",
      "Infobae, El Español, Libertad Digital", "Documental 2020", "—",
@@ -1498,9 +1508,9 @@ FRASES_ICONICAS = [
      "Frase histórica antes del 0-5 que silenció el Bernabéu."),
     ("Años 80-90", "Cruyff", "Johan Cruyff",
      "Los catalanes no tienen mucho sentido del humor. Solo se ríen mucho si le ganan al Madrid.",
-     "La Vanguardia", "Recopilación de frases", "—",
-     "Prensa retrospectiva", "Sí",
-     "Frase legendaria atribuida a Cruyff en distintas entrevistas."),
+     "La Vanguardia", "Recopilación de frases (atribución)", "—",
+     "Atribuida", "Parcial — atribución repetida en biografías y recopilaciones",
+     "Cita característica del estilo Cruyff. Aparece en biografías y libros de frases pero no localizada en entrevista primaria con fecha exacta."),
     ("1988", "Cruyff", "Johan Cruyff",
      "Si un jugador me dice que va al Madrid, no va a jugar más en mi equipo.",
      "El País", "Entrevista verano 1988", "—",
@@ -1556,7 +1566,8 @@ FRASES_ICONICAS = [
     ("Años 80", "Núñez presidente Barça", "Josep Lluís Núñez",
      "El Madrid utilizó al franquismo. Nosotros sufrimos.",
      "El Periódico", "Entrevista 80s", "—",
-     "Prensa primaria", "Sí", ""),
+     "Prensa primaria", "Parcial — atribución repetida en libros y prensa retrospectiva",
+     "Frase recogida en libros sobre Núñez (1978-2000); fuente primaria exacta no localizada en hemeroteca digital."),
 
     # ============ ERA FLORENTINO ============
     ("2000", "Florentino primera presidencia", "Florentino Pérez",
@@ -1574,10 +1585,11 @@ FRASES_ICONICAS = [
      "Prensa primaria", "Sí", "Sobre el caso Negreira."),
 
     # ============ ERA LAPORTA ============
-    ("2003-2010", "Laporta presidente Barça", "Joan Laporta",
-     "El Real Madrid es el equipo del régimen. El Barça siempre fue el club del pueblo.",
-     "El Periódico", "Mitin elecciones 2003", "—",
-     "Prensa primaria", "Sí", ""),
+    ("2023-04-17", "Laporta caso Negreira", "Joan Laporta",
+     "El Real Madrid es un club que ha sido considerado el equipo del régimen. (Sobre los árbitros y los Comités históricos.)",
+     "ESPN Deportes / eldiario.es", "Rueda de prensa Negreira 17/04/2023", "Auditorio FC Barcelona",
+     "Prensa primaria", "Sí",
+     "URL: https://www.eldiario.es/rastreador/equipo-regimen-barca-real-madrid-acusan-servir-franquismo_132_10129155.html"),
     ("2021-actualidad", "Laporta segunda presidencia", "Joan Laporta",
      "Nosotros tenemos a Messi, ellos tienen a Florentino.",
      "Mundo Deportivo", "Rueda de prensa 2021", "—",
@@ -1788,20 +1800,21 @@ FRASES_ICONICAS = [
      "Prensa primaria", "Sí", ""),
     ("Años 80", "Manuel Fraga AP", "Manuel Fraga",
      "El Madrid representa a España. El que no entienda eso, no entiende el fútbol.",
-     "ABC", "Declaración años 80", "—",
-     "Hemeroteca digital ABC", "Sí",
-     "Frase polémica que reavivó la rivalidad política."),
+     "ABC", "Declaración años 80 (atribución)", "—",
+     "Atribuida", "NO — atribuida sin fuente primaria localizada",
+     "Frase repetida en blogs y libros. La fuente primaria en hemeroteca ABC años 80 no localizada con esta cita literal."),
 
     # ============ ESCRITORES E INTELECTUALES ============
-    ("Años 60-90", "Vázquez Montalbán culé", "Manuel Vázquez Montalbán",
-     "El Barça es el ejército desarmado de Cataluña. La forma más eficaz de no rendirse a Madrid.",
-     "Triunfo / El País", "Múltiples artículos años 70-90", "—",
+    ("1969", "Vázquez Montalbán culé", "Manuel Vázquez Montalbán",
+     "El Barça actúa como medio que establece contacto con la propia historia del pueblo catalán. (Versión 1969)",
+     "Triunfo", "Triunfo 1969", "Artículo",
+     "Prensa primaria", "Sí",
+     "Primer artículo conocido del autor sobre Barça-Catalunya."),
+    ("1987", "Vázquez Montalbán culé", "Manuel Vázquez Montalbán",
+     "El Barça es el ejército desarmado de Cataluña. (Frase formal del título 'Barça, el ejército de un país desarmado')",
+     "Catalonia (revista)", "Catalonia 1987 nº 1", "Página 45",
      "Prensa primaria + libros", "Sí",
-     "Vázquez Montalbán fue uno de los grandes intelectuales culés."),
-    ("Años 80", "Vázquez Montalbán culé", "Manuel Vázquez Montalbán",
-     "Si España fuera el Real Madrid, Cataluña sería siempre el FC Barcelona.",
-     "Cuadernos del Norte", "Artículo años 80", "—",
-     "Prensa retrospectiva", "Sí", ""),
+     "Artículo de referencia: 'Barça, el ejército de un país desarmado'. URL: https://dialnet.unirioja.es/servlet/articulo?codigo=1985572"),
     ("Años 2000", "Javier Marías madridista", "Javier Marías",
      "El Real Madrid no es un equipo. Es una forma de estar en el mundo. Una manera de mirar la vida.",
      "El País", "Columna semanal 2003", "—",
