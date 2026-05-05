@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { getState } from '../state/store.js';
 import { loadTopicsDictionary, classifyText, pickBestTopic } from './topic-classifier.js';
 import { computeVelocity, type VelocityMetrics } from './velocity.js';
@@ -1378,8 +1380,24 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       // últimas 1-2 semanas — mucha más data que state.mediaArticles (12h).
       // weeklyHistory[weekKey][feedName] = { articleCount, patterns: {ngram: count} }
       // → ya es 3-gramas pre-extraídos por weekly-aggregator. No re-tokenizamos.
+      // Mapping completo feedName → domain leyendo feeds.json directamente
+      // (feedDomains solo cubre feeds activos en últimas 12h, perdíamos cobertura).
       const feedToPublisher = new Map<string, string>();
+      try {
+        const fpath = path.join(process.cwd(), process.env.FEEDS_PATH || 'feeds.json');
+        const feedsRaw = await readFile(fpath, 'utf-8').catch(() => '');
+        if (feedsRaw) {
+          const parsed = JSON.parse(feedsRaw) as { feeds: Array<{ name: string; domain?: string }> };
+          for (const f of (parsed.feeds || [])) {
+            if (f.name && f.domain) {
+              feedToPublisher.set(f.name, f.domain.replace(/^www\./, '').toLowerCase());
+            }
+          }
+        }
+      } catch { /* noop */ }
+      // Fallback: completar con feedDomains observado (de mediaArticles 12h)
       for (const [feedName, doms] of Object.entries(feedDomains || {})) {
+        if (feedToPublisher.has(feedName)) continue;
         const arr = [...doms];
         if (arr.length === 0) continue;
         const cleaned = arr.map(d => d.replace(/^(www|amp|m|noticias)\./, ''));
