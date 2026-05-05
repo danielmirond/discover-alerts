@@ -103,13 +103,13 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'categorias', label: 'Categorías DS', count: counts.categorias },
     { id: 'medios', label: 'Medios' },
     { id: 'publishers', label: 'Publishers DS', count: counts.publishers },
+    { id: 'internacional', label: 'Internacional' },
     { id: 'formulas', label: 'Fórmulas' },
     { id: 'patrones', label: 'Patrones' },
     { id: 'historico', label: 'Histórico' },
     { id: 'predicciones', label: 'Predicciones' },
     { id: 'cultural', label: 'Cultural' },
     { id: 'aemet', label: 'AEMET' },
-    { id: 'internacional', label: 'Internacional' },
     { id: 'configuracion', label: 'Config' },
   ].filter(n => !verticalHidden.has(n.id) && (n.id !== 'internacional' || instance.vertical));
   const fmtDate = clock.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
