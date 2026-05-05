@@ -1383,7 +1383,10 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
         let row = byFeed.get(art.feedName);
         if (!row) { row = { count: 0, ngrams: new Map() }; byFeed.set(art.feedName, row); }
         row.count++;
-        const words = norm(art.title);
+        // Decodificar HTML entities ANTES de tokenizar para evitar basura
+        // tipo "039 scudetto 039" cuando viene &#39;scudetto&#39;.
+        const cleanTitle = decodeEntities(art.title);
+        const words = norm(cleanTitle);
         for (const tg of trigrams(words)) row.ngrams.set(tg, (row.ngrams.get(tg) || 0) + 1);
       }
       const out: Array<{ feedName: string; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }> }> = [];
