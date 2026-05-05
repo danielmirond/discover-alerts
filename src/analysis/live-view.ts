@@ -194,6 +194,7 @@ interface LiveViewResponse {
   headlinePatterns4d: LiveHeadlinePattern4d[];
   recentAlerts: LiveRecentAlert[];
   topMedia: LiveTopMedia[];
+  instance?: { name: string; vertical: string | null };
   cultural?: Array<any>;
   culturalEntityHits?: Array<any>;
   aemetEnriched?: Array<any>;
