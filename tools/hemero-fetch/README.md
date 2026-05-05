@@ -59,12 +59,21 @@ output/
 
 | Periódico | Cobertura | Endpoint |
 |---|---|---|
-| **ABC Madrid** | 1903-2010 | `hemeroteca.abc.es/nav/Navigate.exe/hemeroteca/madrid/abc/YYYY/MM/DD.html` |
-| **La Vanguardia** | 1881 → hoy | `hemeroteca.lavanguardia.com/preview/YYYY/MM/DD/pagina-N.html` |
-| **Mundo Deportivo** | 1906 → hoy | `mundodeportivo.com/hemeroteca/YYYY/MM/DD/` |
+| **ABC Madrid** | 1903 → hoy | `abc.es/archivo/periodicos/abc-madrid-YYYYMMDD.html` |
+| **Mundo Deportivo** | 1906 → hoy | `hemeroteca.elmundodeportivo.es/preview/...` (timeout en muchas IPs) |
 | **BNE Hemeroteca Digital** | varia | búsqueda libre filtrada por fecha |
+| **archive.org Wayback** | 1996 → hoy | capturas de Marca, AS, Sport, Mundo Deportivo, El País Deportes |
 
-`Marca` y `AS` no tienen hemeroteca pública digital fácilmente accesible. Si te las encuentras, dímelo y las añadimos.
+`Marca` y `AS` no tienen hemeroteca pública digital, pero **archive.org sí guardó copias** que descargamos vía CDX API.
+
+### Dominios Wayback configurados
+- `marca.com`
+- `as.com`
+- `sport.es`
+- `mundodeportivo.com`
+- `elpais.com/deportes`
+
+(Editar `WAYBACK_DOMAINS` en `fetch.py` para añadir más.)
 
 ## Targets
 

@@ -143,6 +143,80 @@ def fetch_bne_search(query: str, date: datetime, out_dir: Path) -> Path | None:
 
 
 # ----------------------------------------------------------------------------
+# Wayback Machine (archive.org)
+# Estrategia: para cada dominio (marca.com, as.com, sport.es, mundodeportivo.com,
+# elpais.com/deportes, lequipe.fr) se busca la captura más cercana al día d+1.
+# Se descarga la portada o página principal capturada, donde aparecen titulares
+# y enlaces a las crónicas completas.
+# ----------------------------------------------------------------------------
+WAYBACK_DOMAINS = [
+    "marca.com",
+    "as.com",
+    "sport.es",
+    "mundodeportivo.com",
+    "elpais.com/deportes",
+]
+
+
+def fetch_wayback(domain: str, date: datetime, out_dir: Path) -> Path | None:
+    """Descarga la captura de Wayback Machine más cercana a `date` para `domain`."""
+    timestamp_day = date.strftime("%Y%m%d")
+
+    # CDX API: snapshots para todo el día
+    cdx = (
+        "http://web.archive.org/cdx/search/cdx?"
+        f"url={domain}&from={timestamp_day}000000&to={timestamp_day}235959"
+        f"&output=json&limit=1&filter=statuscode:200"
+    )
+    print(f"  [wayback {domain}] {date:%Y-%m-%d}")
+
+    try:
+        resp = SESSION.get(cdx, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+    except (requests.RequestException, ValueError) as exc:
+        print(f"    ERROR CDX: {exc}")
+        return None
+
+    if not data or len(data) < 2:
+        print(f"    sin captura ese día — probando ventana ±3 días")
+        from_t = (date - timedelta(days=3)).strftime("%Y%m%d")
+        to_t = (date + timedelta(days=3)).strftime("%Y%m%d")
+        cdx = (
+            "http://web.archive.org/cdx/search/cdx?"
+            f"url={domain}&from={from_t}&to={to_t}"
+            f"&output=json&limit=1&filter=statuscode:200"
+        )
+        try:
+            resp = SESSION.get(cdx, timeout=30)
+            data = resp.json()
+        except (requests.RequestException, ValueError):
+            data = []
+        if not data or len(data) < 2:
+            print(f"    sin captura tampoco en ventana ampliada")
+            return None
+
+    # data[0] = headers, data[1] = primera fila
+    snap = data[1]
+    snap_timestamp = snap[1]
+    snap_url = snap[2]
+    archive_url = f"https://web.archive.org/web/{snap_timestamp}/{snap_url}"
+
+    try:
+        resp = SESSION.get(archive_url, timeout=60)
+        resp.raise_for_status()
+    except requests.RequestException as exc:
+        print(f"    ERROR fetch: {exc}")
+        return None
+
+    safe_domain = domain.replace("/", "_")
+    out = out_dir / f"wayback_{safe_domain}_{date:%Y-%m-%d}_{snap_timestamp}.html"
+    out.write_bytes(resp.content)
+    print(f"    -> {out.relative_to(OUTPUT_DIR)} (snap {snap_timestamp})")
+    return out
+
+
+# ----------------------------------------------------------------------------
 # Orquestador
 # ----------------------------------------------------------------------------
 def process_target(target: dict, papers: list[str]) -> None:
@@ -169,6 +243,11 @@ def process_target(target: dict, papers: list[str]) -> None:
             fetch_bne_search(query, date, out_dir)
             time.sleep(SLEEP_BETWEEN)
 
+        if "wayback" in papers:
+            for domain in WAYBACK_DOMAINS:
+                fetch_wayback(domain, date, out_dir)
+                time.sleep(SLEEP_BETWEEN)
+
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
@@ -180,9 +259,11 @@ def main() -> int:
     ap.add_argument("--id", help="Procesar un solo target por id")
     ap.add_argument(
         "--papers",
-        default="abc,bne",
-        help="Hemerotecas a usar (csv): abc,mundo-deportivo,bne. "
-             "mundo-deportivo da timeout desde muchas IPs; usar solo si funciona.",
+        default="abc,bne,wayback",
+        help="Fuentes (csv): abc, mundo-deportivo, bne, wayback. "
+             "mundo-deportivo da timeout desde muchas IPs. "
+             "wayback descarga capturas de Marca, AS, Sport, Mundo Deportivo y "
+             "El País Deportes desde archive.org.",
     )
     ap.add_argument(
         "--targets",
