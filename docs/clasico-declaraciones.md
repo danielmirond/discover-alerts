@@ -149,6 +149,14 @@ El Bernabéu se quitó el sombrero. **Primera vez** que un jugador del Barça er
 
 ## 🪓 Maradona vs Goikoetxea — "El Carnicero de Bilbao" (24 sep 1983)
 
+### 📰 ABC Madrid, 25 y 26 septiembre 1983 — fuente primaria verificada
+ABC del **25/9 (domingo) y 26/9 (lunes) NO destaca la lesión de Maradona en portada**. Las portadas se dedican a:
+- 25/9 ➜ *"EL GOBIERNO SOCIALISTA TOPA CON LA IGLESIA"* (censura ministerial sobre catecismos)
+- 26/9 ➜ *"NUEVOS POBRES"* (clases medias en 1984)
+
+📚 Hallazgo: la patada que casi termina con Maradona no llegó a portada del ABC al día siguiente. Apareció en sección Deportes interior. (Verificado en archivo digital ABC.)
+
+
 En el Camp Nou, Andoni Goikoetxea entra por detrás y le rompe el tobillo a Maradona (fractura del maléolo peroneal con desgarro ligamentario).
 
 **Maradona** después:
@@ -276,6 +284,21 @@ Imagen icónica: el ayudante **Tonny Bruins Slot** saltando del banquillo con la
 
 ---
 
+## 🟦 La venganza del 5-0 (7 ene 1995, Bernabéu)
+
+**Real Madrid 5 - 0 FC Barcelona**, **365 días después** de la manita en el Camp Nou. Triplete de Iván Zamorano. El Madrid se vengó con la misma cifra.
+
+### 📰 ABC Madrid, 8 enero 1995 — fuente primaria verificada
+> *"5-0: HISTÓRICA GOLEADA DEL REAL MADRID AL BARCELONA"*
+
+> *"El Real Madrid se impuso ayer al [Barcelona] por un resultado (5-0) que ya ha entrado en la historia del club de Chamartín, en un intenso partido que había despertado una inusitada expectación. El equipo blanco, arropado por más de cien mil personas que abarrotaron el Bernabéu, arrolló a su rival con una goleada que pudo ser aun mayor. El madridista Zamorano se convirtió en el héroe del partido al anotar tres tantos. Toda España estuvo pendiente del choque entre dos de los más grandes clubes mundiales, que ofrecieron un gran espectáculo presidido por la deportividad, sólo empañada por una aislada acción de Stoichkov. En la imagen, Iván Zamorano y Raúl celebran el tercer tanto madridista dentro de la portería azulgrana."*
+
+📚 Cita literal del ABC del 8/01/1995, portada. Verificado en archivo digital.
+
+(Nota: la *"aislada acción de Stoichkov"* hace referencia a una expulsión del búlgaro tras pisotón a Amavisca; Stoichkov fue sancionado.)
+
+---
+
 ## 🇩🇰 Laudrup cambia Barça por Madrid (verano 1994)
 
 Tras la final de Atenas perdida 4-0 ante el Milan, Laudrup deteriora su relación con Cruyff y ficha por el Madrid.
@@ -351,6 +374,15 @@ Tras fichar por el Madrid en 2000 (60 M€, récord mundial entonces), Figo sufr
 
 **Real Madrid 0 - 3 Barcelona**. Doblete de Ronaldinho. El Bernabéu (80.000 espectadores) se levanta a aplaudirle. Solo Maradona en 1983 había recibido algo similar.
 
+### 📰 ABC Madrid, 20 noviembre 2005 — fuente primaria verificada
+Foto de portada (firma Ignacio Gil): *"Ronaldinho fue el gran protagonista del partido. En la imagen, se escapa del marcaje de Sergio Ramos."*
+
+Texto:
+> *"Un gran Barça le pasa por encima al Real Madrid. El Bernabéu se rinde al Balón de Oro. Ronaldinho, autor de dos de los tres goles de su equipo, recibió la ovación de los espectadores tras marcar el 0-3 definitivo."*  
+> — ABC Madrid, 20/11/2005, portada (también páginas 89-93)
+
+📚 ABC reconoce textualmente que **"el Bernabéu se rinde al Balón de Oro"**. Verificado en archivo digital ABC.
+
 **Ronaldinho** años después:
 > *"Nunca me imaginé ser ovacionado en el Santiago Bernabéu."*
 
@@ -363,6 +395,16 @@ Tras fichar por el Madrid en 2000 (60 M€, récord mundial entonces), Figo sufr
 ---
 
 ## 🔥 Era Mourinho vs Guardiola (2010-2013)
+
+### 29 noviembre 2010 — La manita a Mou (5-0 Camp Nou)
+
+📰 **ABC Madrid, 30 noviembre 2010 — fuente primaria verificada**:
+> *"BARÇA-REAL MADRID. Guardiola humilla a Mourinho. La estrategia del Barça en el derbi ante el Real Madrid se resolvió con una lección táctica de Pep Guardiola sobre Mourinho, que coloca líderes a los azulgrana. 5-0"*  
+> — ABC Madrid, 30/11/2010, portada (sección Deportes 6-7 y 68-77)
+
+📚 ABC titula literalmente **"Guardiola humilla a Mourinho"**. Cita histórica en periódico afín al Madrid. Verificado en archivo digital.
+
+---
 
 ### 26 abril 2011 — Guardiola "puto jefe, puto amo"
 
@@ -478,6 +520,15 @@ La imagen quedó icónica gracias a **Francesc Satorra** ("El Observador"), un d
 ---
 
 ## 🇨🇲 Eto'o, Puyol y la celebración de la bandera (mayo 2009)
+
+### 📰 ABC Madrid, 3 mayo 2009 — fuente primaria verificada (2-6)
+> *"El Barça sentencia la Liga. Histórica goleada (2-6) de los azulgrana, que se exhibieron ante un débil Real Madrid."*
+
+> *"El gesto de decepción de Casillas resume el sentimiento del madridismo al ver cómo vuela el título."*  
+> — ABC Madrid, 3/05/2009, portada (páginas 88+)
+
+📚 ABC reconoce textualmente *"un débil Real Madrid"*. Verificado en archivo digital.
+
 
 En el **Madrid 2-6 Barcelona** del 2 mayo 2009 (uno de los Clásicos más recordados), **Carles Puyol celebró su gol besando el brazalete con la bandera catalana** ante la afición del Bernabéu.
 
