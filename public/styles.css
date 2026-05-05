@@ -95,32 +95,33 @@
   --accent-soft: #3B1414;
 }
 
-/* ============ SPORT — estética periódico deportivo ES ===========
- * Paleta inspirada en Marca/AS/Mundo Deportivo:
- *   - rojo de portada deportiva como acento principal
- *   - amarillo destacado para velocidad/score
- *   - azul oscuro para ink (como AS)
- *   - tipografía display bold condensed para headlines
- *   - scoreboard-style rank chips
+/* ============ SPORT — Estadio Deportivo (rojo + verde) ============
+ * Paleta directa de la cabecera Estadio Deportivo:
+ *   - rojo bandera (#D8261C) como acento dominante
+ *   - verde puro (#0AA84F) como secundario destacado
+ *   - tipografía stencil/condensed para wordmark
+ *   - tinta neutra dark para texto cuerpo
  * Se activa automáticamente cuando body[data-instance="sport"].
  */
 [data-instance="sport"] {
-  --accent: #E10600;             /* rojo Marca */
-  --accent-deep: #A30400;
-  --accent-soft: #FFEBEA;
-  --warn: #FFCB05;               /* amarillo deportivo (AS) */
-  --ok: #00A86B;
-  --viral: #FF6B00;              /* naranja gol */
-  --ink: #0A1F44;                /* azul oscuro AS-style */
-  --ink-2: #1A2F54;
-  --rule: #D9342B26;
+  --accent: #D8261C;             /* rojo Estadio */
+  --accent-deep: #A8170E;
+  --accent-soft: #FCE6E5;
+  --warn: #0AA84F;               /* verde Estadio */
+  --ok: #0AA84F;
+  --viral: #FF6B00;
+  --ink: #0E0E0F;                /* casi negro */
+  --ink-2: #2A2A2C;
+  --rule: #D8261C26;
 }
 body[data-instance="sport"] .wordmark {
-  font-family: var(--mono);
-  letter-spacing: 0.06em;
+  /* Imitamos el lock-up rojo+verde del logo: ESTADIO en rojo, DEPORTIVO en verde */
+  font-family: 'Oswald', 'Bebas Neue', 'Inter', system-ui, sans-serif;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   font-weight: 800;
-  background: linear-gradient(90deg, #E10600 0%, #FFCB05 100%);
+  font-style: italic;
+  background: linear-gradient(90deg, #D8261C 0%, #D8261C 50%, #0AA84F 50%, #0AA84F 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -132,21 +133,21 @@ body[data-instance="sport"] .ent-name {
   font-weight: 900;
   letter-spacing: -0.02em;
 }
-/* Rank/score chips estilo marcador */
+/* Rank/score chips estilo marcador (rojo dominante) */
 body[data-instance="sport"] .rank,
 body[data-instance="sport"] [data-rank] {
-  background: var(--ink);
-  color: #FFCB05;
+  background: var(--accent);
+  color: #fff;
   font-weight: 800;
   padding: 2px 6px;
   letter-spacing: 0.04em;
 }
-/* Velocity badges con más punch */
+/* Velocity badges */
 body[data-instance="sport"] .velocity.rising  { background: var(--accent); color: #fff; }
-body[data-instance="sport"] .velocity.peaking { background: #FFCB05; color: #0A1F44; font-weight: 800; }
+body[data-instance="sport"] .velocity.peaking { background: #0AA84F; color: #fff; font-weight: 800; }
 body[data-instance="sport"] .velocity.fading  { background: #6B7180; color: #fff; opacity: 0.85; }
 body[data-instance="sport"] .velocity.new     { background: var(--viral); color: #fff; }
-/* Cabecera con sello deportivo */
+/* Sello bicolor en masthead — banda roja + verde tipo Estadio Deportivo */
 body[data-instance="sport"] .masthead::after {
   content: 'INTELIGENCIA DEPORTIVA · ES';
   display: block;
@@ -154,11 +155,12 @@ body[data-instance="sport"] .masthead::after {
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent);
-  border-top: 2px solid var(--accent);
-  padding: 4px 0 0;
+  color: #fff;
+  background: linear-gradient(90deg, #D8261C 0%, #D8261C 50%, #0AA84F 50%, #0AA84F 100%);
+  padding: 4px 0;
   margin-top: 4px;
   text-align: center;
+  font-weight: 700;
 }
 
 /* ============ TERMINAL — aspecto tech/data (Bloomberg-ish) ============
