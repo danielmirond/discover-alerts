@@ -1,5 +1,5 @@
 import { updateState, saveState, loadState, getState } from '../state/store.js';
-import { fetchHistoricalPages } from '../sources/discoversnoop.js';
+import { fetchHistoricalPages, fetchCategoriesList } from '../sources/discoversnoop.js';
 import type { DiscoverPage } from '../types.js';
 
 /**
@@ -50,7 +50,19 @@ function rootDomain(input: string): string {
   return h;
 }
 
-async function fetchAndProcess(daysBack: number): Promise<{ count: number; map: Map<string, { displayName: string; count: number; ngrams: Map<string, number> }> }> {
+let categoryNamesCache: Record<number, string> | null = null;
+async function getCategoryNames(): Promise<Record<number, string>> {
+  if (categoryNamesCache) return categoryNamesCache;
+  try {
+    const list = await fetchCategoriesList();
+    const map: Record<number, string> = {};
+    for (const c of list as any[]) if (c?.id != null && c?.name) map[c.id] = c.name;
+    categoryNamesCache = map;
+    return map;
+  } catch { return {}; }
+}
+
+async function fetchAndProcess(daysBack: number): Promise<{ count: number; filtered: number; map: Map<string, { displayName: string; count: number; ngrams: Map<string, number> }> }> {
   const to = new Date();
   const from = new Date(Date.now() - daysBack * 24 * 3600_000);
   const pad = (n: number) => String(n).padStart(2, '0');
@@ -59,8 +71,25 @@ async function fetchAndProcess(daysBack: number): Promise<{ count: number; map: 
   const pages = await fetchHistoricalPages({ from_date: fmt(from), to_date: fmt(to), lines: 10000 });
   console.log(`[hist-patterns] got ${pages.length} pages`);
 
+  // Filtro opcional por categoría DS (instancia sport: DS_CATEGORY_FILTER=/Sports)
+  // Acepta también prefijos múltiples separados por coma (ej. '/Sports,/News/Sports')
+  const dsFilter = process.env.DS_CATEGORY_FILTER;
+  let filteredPages: DiscoverPage[] = pages;
+  if (dsFilter) {
+    const prefixes = dsFilter.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+    const names = await getCategoryNames();
+    const matches = (c: string | number | undefined): boolean => {
+      if (c == null) return false;
+      const name = (typeof c === 'number' ? names[c] : c) || '';
+      const lower = name.toLowerCase();
+      return prefixes.some(p => lower.startsWith(p));
+    };
+    filteredPages = pages.filter(p => matches(p.category));
+    console.log(`[hist-patterns] DS_CATEGORY_FILTER='${dsFilter}' → ${filteredPages.length}/${pages.length} pages`);
+  }
+
   const map = new Map<string, { displayName: string; count: number; ngrams: Map<string, number> }>();
-  for (const p of pages) {
+  for (const p of filteredPages) {
     if (!p.title) continue;
     const dom = rootDomain(p.domain || (p.url ? new URL(p.url).hostname : ''));
     if (!dom) continue;
@@ -74,18 +103,18 @@ async function fetchAndProcess(daysBack: number): Promise<{ count: number; map: 
       row.ngrams.set(tg, (row.ngrams.get(tg) || 0) + 1);
     }
   }
-  return { count: pages.length, map };
+  return { count: pages.length, filtered: filteredPages.length, map };
 }
 
 export async function runHistoricalPatternsPoll(): Promise<void> {
   await loadState();
   console.log('[hist-patterns] Starting...');
 
-  // Intentar 30 días primero. Si volume bajo (< 1000 pages totales), fallback a 90d.
+  // 30 días por defecto. Si data filtrada (post-DS_CATEGORY_FILTER) <1000, fallback 90d.
   let result = await fetchAndProcess(30);
   let window: '30d' | '90d' = '30d';
-  if (result.count < 1000) {
-    console.log(`[hist-patterns] 30d insufficient (${result.count} pages), trying 90d...`);
+  if (result.filtered < 1000) {
+    console.log(`[hist-patterns] 30d filtered=${result.filtered} insufficient, trying 90d...`);
     result = await fetchAndProcess(90);
     window = '90d';
   }
