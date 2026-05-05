@@ -1377,39 +1377,47 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       const mediaStopwords = new Set(['el','la','los','las','un','una','de','en','y','o','que','es','por','con','para','como','se','su','sus','le','les','lo','mas','ya','no','si','del','al','este','esta','estos','estas','ese','esa','pero','sin','sobre','entre','hasta','desde','muy','todo','toda','todos','todas','asi','tras','solo','tan','tambien','aun','mientras','cuando','donde','quien','cual','tras','segun','desde','contra','hace','dice','tiene','dijo','tras','tienen','dicen','va','van','ha','han','hay','sera','seran','fue','fueron']);
       const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !mediaStopwords.has(w));
       const trigrams = (words: string[]) => { const out: string[] = []; for (let i = 0; i <= words.length - 3; i++) out.push(words.slice(i, i + 3).join(' ')); return out; };
-      // Agrupamos por DOMINIO RAÍZ (publisher), no por feedName. Así un medio
-      // como Mundo Deportivo (con 30 sub-feeds) suma todos sus articles juntos
-      // y obtiene patrones consolidados.
-      const rootDomain = (link: string): string => {
-        try {
-          let h = new URL(link).hostname.toLowerCase().replace(/^(www|amp|m|noticias)\./, '');
-          // Subdominios → root: cordopolis.eldiario.es → eldiario.es
-          const parts = h.split('.');
-          if (parts.length >= 3 && !['co','com'].includes(parts[parts.length - 2])) {
-            // Heurística: si hay 3+ niveles, quedarse con últimos 2 (salvo TLDs compuestos como .com.es)
-            h = parts.slice(-2).join('.');
-          }
-          return h;
-        } catch { return ''; }
-      };
-      // Display name por dominio: usa el feedName más corto que coincida (suele ser el principal)
+      // feedDomains ya construido arriba a partir de los links — más fiable
+      // que parsear cada link otra vez. Usamos el dominio del primer link visto
+      // por feedName.
+      const feedToPublisher = new Map<string, string>();
+      for (const [feedName, doms] of Object.entries(feedDomains || {})) {
+        const arr = [...doms];
+        if (arr.length === 0) continue;
+        // Tomar el dominio "core" — el que NO sea CDN (descartamos *.uecdn.es,
+        // *.cdn.*, *.cloudfront.net, etc) y normalizar amp./m./
+        const cleaned = arr.map(d => d.replace(/^(www|amp|m|noticias)\./, ''));
+        const nonCdn = cleaned.find(d => !/uecdn|cdn|cloudfront|akamai|edgesuite|fastly/i.test(d)) || cleaned[0];
+        feedToPublisher.set(feedName, nonCdn);
+      }
+      // Display name por publisher: intentar matchear contra feedNames conocidos
+      const knownPublishers = ['Mundo Deportivo','Marca','As','Sport','El Mundo','El País','La Vanguardia','ABC','El Confidencial','El Español','OK Diario','OKdiario','20 Minutos','El Periódico','Antena 3','laSexta','Levante-EMV','Faro de Vigo','La Provincia','Diario de Mallorca','Cadena SER','COPE','Onda Cero','Europa Press','RTVE','Heraldo','eldiario.es','Huffington Post','Xataka','El Diario Vasco','El Comercio','Diario de Navarra','La Voz','Las Provincias','La Verdad','Hoy','Sur','Ideal','El Norte de Castilla','El Correo','La Rioja','Las Provincias','Diario de Burgos','InfoLibre','Voz Pópuli','El Plural','El Independiente','Libertad Digital','Crónica Global','Diario de León','El Periódico','Confilegal','Lawyerpress','Legal Today','Mundo Jurídico','Economist & Jurist','El Derecho'];
       const publisherInfo = new Map<string, { displayName: string; count: number; ngrams: Map<string, number>; subfeeds: Set<string> }>();
       for (const art of Object.values(state.mediaArticles || {})) {
-        if (!art.title || !art.link) continue;
-        const dom = rootDomain(art.link);
+        if (!art.title || !art.feedName) continue;
+        const dom = feedToPublisher.get(art.feedName) || (() => {
+          // Fallback: extraer dominio del link
+          if (!art.link) return '';
+          try {
+            return new URL(art.link).hostname.toLowerCase().replace(/^(www|amp|m|noticias)\./, '');
+          } catch { return ''; }
+        })();
         if (!dom) continue;
         let row = publisherInfo.get(dom);
         if (!row) {
-          // Intentamos display name decente desde feedName, simplificando
-          const baseFeed = (art.feedName || dom).replace(/ Sitemap News$| RSS$| Feed$/i, '').replace(/ \(.+\)$/, '').trim();
-          row = { displayName: baseFeed.split(' ').slice(0, 4).join(' '), count: 0, ngrams: new Map(), subfeeds: new Set() };
+          // Display name limpio: matching contra publishers conocidos por feedName
+          let dn = dom;
+          for (const known of knownPublishers) {
+            if (art.feedName.toLowerCase().startsWith(known.toLowerCase())) { dn = known; break; }
+          }
+          if (dn === dom) {
+            // Fallback: tomar primera palabra del feedName limpio
+            dn = (art.feedName || dom).replace(/ Sitemap News$| RSS$| Feed$/i, '').replace(/ \(.+\)$/, '').split(' ').slice(0, 4).join(' ');
+          }
+          row = { displayName: dn, count: 0, ngrams: new Map(), subfeeds: new Set() };
           publisherInfo.set(dom, row);
         }
         if (art.feedName) row.subfeeds.add(art.feedName);
-        // Si el feedName es más corto que el actual displayName, simplificamos
-        if (art.feedName && art.feedName.length < row.displayName.length && !/sitemap|rss|feed/i.test(art.feedName)) {
-          row.displayName = art.feedName;
-        }
         row.count++;
         const cleanTitle = decodeEntities(art.title);
         const words = norm(cleanTitle);
@@ -1417,23 +1425,16 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       }
       const out: Array<{ feedName: string; domain: string; subfeeds: number; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }> }> = [];
       for (const [domain, row] of publisherInfo) {
-        // Threshold relajado: 3 articles min para tener 50+ publishers visibles.
-        // Para publishers con 3-4 articles aceptamos patrones aunque sean ×1
-        // (1/3 = 33% share suficientemente significativo).
-        if (row.count < 3) continue;
+        if (row.count < 2) continue; // 2 articles mínimo para mostrar publisher
         const minPatternCount = row.count >= 8 ? 2 : 1;
         const sorted = [...row.ngrams.entries()].sort((a, b) => b[1] - a[1]).slice(0, 7);
         const topPatterns = sorted
           .filter(([, c]) => c >= minPatternCount)
           .map(([ngram, c]) => ({ ngram, count: c, share: Math.round((c / row.count) * 100) }));
-        if (topPatterns.length === 0) continue;
-        // Display name limpio: si tiene "Mundo Deportivo Bundesliga", reducir a "Mundo Deportivo"
-        let dn = row.displayName;
-        const knownPublishers = ['Mundo Deportivo','Marca','As','Sport','El Mundo','El País','La Vanguardia','ABC','El Confidencial','El Español','OK Diario','20 Minutos','El Periódico','Antena 3','laSexta','Levante-EMV','Faro de Vigo','La Provincia','Diario de Mallorca','Cadena SER','COPE','Onda Cero','Europa Press','RTVE','Heraldo'];
-        for (const known of knownPublishers) {
-          if (row.displayName.toLowerCase().startsWith(known.toLowerCase())) { dn = known; break; }
-        }
-        out.push({ feedName: dn, domain, subfeeds: row.subfeeds.size, articleCount: row.count, topPatterns });
+        // Para publishers con poca data, mostrar aunque no tengan ngrams repetidos
+        // → al menos verán que están publicando, con sus titulares accesibles
+        if (topPatterns.length === 0 && row.count < 5) continue;
+        out.push({ feedName: row.displayName, domain, subfeeds: row.subfeeds.size, articleCount: row.count, topPatterns });
       }
       return out.sort((a, b) => b.articleCount - a.articleCount).slice(0, 100);
     })(),
