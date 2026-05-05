@@ -16,12 +16,31 @@ from pathlib import Path
 # - La edición (con formato "ABC Madrid DD/MM/YYYY").
 # Devuelve "" si no hay URL fiable.
 ABC_DATE_RE = re.compile(r"ABC Madrid (\d{2})/(\d{2})/(\d{4})")
+LAVANGUARDIA_DATE_RE = re.compile(r"La Vanguardia (\d{2})/(\d{2})/(\d{4})")
+GENERIC_DATE_RE = re.compile(r"(\d{2})/(\d{2})/(\d{4})")
+YEAR_RE = re.compile(r"\b(19[3-9]\d|20[0-2]\d)\b")
 WAYBACK_SNAP_RE = re.compile(r"snap (\d{14})", re.IGNORECASE)
 WAYBACK_PRETTY_RE = re.compile(
     r"Snap (?:Sport|Marca|AS|MD|El País|Mundo Deportivo|Mundo deportivo)? ?"
     r"(?:web)? ?(\d{2}/\d{2}/\d{4}) (\d{2}):(\d{2}) UTC",
     re.IGNORECASE,
 )
+
+
+def _extract_year_token(*texts):
+    """Devuelve el año más probable (20xx o 19xx) buscando en edición/notas."""
+    for t in texts:
+        if not t:
+            continue
+        m = YEAR_RE.search(str(t))
+        if m:
+            return m.group(1)
+    return None
+
+
+def _wayback_year_url(year, dom):
+    """URL Wayback de calendario para un año concreto y dominio."""
+    return f"https://web.archive.org/web/{year}/https://www.{dom}/"
 
 WAYBACK_DOMAIN_HINTS = [
     ("Marca (web)", "marca.com"),
@@ -190,34 +209,140 @@ def derive_url(row):
         if m:
             d, mo, y = m.groups()
             return f"https://www.abc.es/archivo/periodicos/abc-madrid-{y}{mo}{d}.html"
+        # Si no hay 'ABC Madrid DD/MM/YYYY' busca DD/MM/YYYY genérico en edición
+        m = GENERIC_DATE_RE.search(edicion or "")
+        if m:
+            d, mo, y = m.groups()
+            return f"https://www.abc.es/archivo/periodicos/abc-madrid-{y}{mo}{d}.html"
 
-    # 3) Fuentes con dominio en hints (sin Wayback)
+    # 2b) Hemeroteca digital La Vanguardia: derivar fecha
+    if "Hemeroteca digital La Vanguardia" in tipo or "lavanguardia.com/hemeroteca" in tipo:
+        # Patrón "La Vanguardia DD/MM/YYYY"
+        m = LAVANGUARDIA_DATE_RE.search(edicion or "")
+        if not m:
+            m = GENERIC_DATE_RE.search(edicion or "")
+        if m:
+            d, mo, y = m.groups()
+            # Búsqueda hemeroteca por rango de fechas (URL real, navegable)
+            return f"https://www.lavanguardia.com/hemeroteca?fechaInicio={y}-{mo}-{d}&fechaFin={y}-{mo}-{d}"
+
+    # 2c) Hemeroteca digital BNE (Marca, AS, MD antiguos)
+    if "Hemeroteca digital BNE" in tipo:
+        # BNE: extraer fecha
+        m = GENERIC_DATE_RE.search(edicion or "")
+        if m:
+            d, mo, y = m.groups()
+            # Búsqueda BNE por título y fecha
+            titulo = "marca"
+            if "Mundo Deportivo" in (fuente or ""):
+                titulo = "el+mundo+deportivo"
+            elif "AS" in (fuente or ""):
+                titulo = "as"
+            return f"https://hemerotecadigital.bne.es/hd/es/results?titulo={titulo}&fechaFin={y}-{mo}-{d}&fechaInicio={y}-{mo}-{d}"
+        return "https://hemerotecadigital.bne.es/"
+
+    # 2d) Acervo Folha (Brasil) por fecha
+    if "Acervo Folha" in (fuente or "") or "Acervo Folha" in (tipo or ""):
+        m = GENERIC_DATE_RE.search(edicion or "")
+        if m:
+            d, mo, y = m.groups()
+            return f"https://acervo.folha.com.br/?initialDate={d}/{mo}/{y}&finalDate={d}/{mo}/{y}"
+        return "https://acervo.folha.com.br/"
+
+    # 2e) Wayback Machine sin tipo explícito pero con timestamp en notas
+    if "snap" in (notas or "").lower() or "Snap" in (notas or ""):
+        m = WAYBACK_SNAP_RE.search(notas or "")
+        if not m:
+            m2 = WAYBACK_PRETTY_RE.search(notas or "")
+            if m2:
+                d, mo, y = m2.group(1).split("/")
+                hh, mm = m2.group(2), m2.group(3)
+                ts = f"{y}{mo}{d}{hh}{mm}00"
+            else:
+                ts = None
+        else:
+            ts = m.group(1)
+        domain = ""
+        for prefix, dom in WAYBACK_DOMAIN_HINTS:
+            if prefix in (fuente or ""):
+                domain = dom
+                break
+        if ts and domain:
+            return f"https://web.archive.org/web/{ts}/https://www.{domain}/"
+
+    # 3) Fuentes con dominio en hints — preferir Wayback con fecha o año si hay
     for prefix, dom in WAYBACK_DOMAIN_HINTS:
-        if prefix in fuente:
+        if prefix in (fuente or ""):
+            # Si tenemos DD/MM/YYYY en edición → Wayback con timestamp exacto
+            m = GENERIC_DATE_RE.search(edicion or "")
+            if m:
+                d, mo, y = m.groups()
+                ts = f"{y}{mo}{d}120000"
+                return f"https://web.archive.org/web/{ts}/https://www.{dom}/"
+            # Si solo hay año en edición o notas → Wayback de calendario por año
+            year = _extract_year_token(edicion, fecha, notas)
+            if year:
+                return _wayback_year_url(year, dom)
+            # Fallback final
             return f"https://www.{dom}/"
 
     # 4) Wikipedia / RFEF para hechos históricos
-    if "Wikipedia" in fuente or "RFEF" in fuente:
+    if "Wikipedia" in (fuente or "") or "RFEF" in (fuente or ""):
         return "https://en.wikipedia.org/wiki/List_of_El_Cl%C3%A1sico_matches"
 
-    # 5) Patrón La Vanguardia (hemeroteca por fecha)
-    if "La Vanguardia" in fuente:
+    # 5) Patrón La Vanguardia (fallback genérico)
+    if "La Vanguardia" in (fuente or ""):
+        m = GENERIC_DATE_RE.search(edicion or "")
+        if m:
+            d, mo, y = m.groups()
+            return f"https://www.lavanguardia.com/hemeroteca?fechaInicio={y}-{mo}-{d}&fechaFin={y}-{mo}-{d}"
         return "https://www.lavanguardia.com/hemeroteca"
 
-    # 6) Periódicos genéricos
-    if "Marca" in fuente:
+    # 6) Periódicos genéricos con fecha
+    fuente_safe = fuente or ""
+    m = GENERIC_DATE_RE.search(edicion or "")
+    if m:
+        d, mo, y = m.groups()
+        ts = f"{y}{mo}{d}120000"
+        if "Marca" in fuente_safe:
+            return f"https://web.archive.org/web/{ts}/https://www.marca.com/"
+        if "AS" in fuente_safe or "as.com" in fuente_safe:
+            return f"https://web.archive.org/web/{ts}/https://as.com/"
+        if "Sport" in fuente_safe:
+            return f"https://web.archive.org/web/{ts}/https://www.sport.es/"
+        if "Mundo Deportivo" in fuente_safe or "mundodeportivo" in fuente_safe:
+            return f"https://web.archive.org/web/{ts}/https://www.mundodeportivo.com/"
+        if "El País" in fuente_safe or "elpais" in fuente_safe:
+            return f"https://web.archive.org/web/{ts}/https://elpais.com/deportes/"
+
+    # 6b) Periódicos genéricos con sólo año
+    year = _extract_year_token(edicion, fecha, notas)
+    if year:
+        if "Marca" in fuente_safe:
+            return _wayback_year_url(year, "marca.com")
+        if "AS" in fuente_safe or "as.com" in fuente_safe:
+            return _wayback_year_url(year, "as.com")
+        if "Sport" in fuente_safe:
+            return _wayback_year_url(year, "sport.es")
+        if "Mundo Deportivo" in fuente_safe or "mundodeportivo" in fuente_safe:
+            return _wayback_year_url(year, "mundodeportivo.com")
+        if "El País" in fuente_safe or "elpais" in fuente_safe:
+            return _wayback_year_url(year, "elpais.com")
+
+    # 6c) Periódicos genéricos sin fecha
+    if "Marca" in fuente_safe:
         return "https://www.marca.com/"
-    if "AS" in fuente or "as.com" in fuente:
+    if "AS" in fuente_safe or "as.com" in fuente_safe:
         return "https://as.com/"
-    if "Sport" in fuente:
+    if "Sport" in fuente_safe:
         return "https://www.sport.es/"
-    if "Mundo Deportivo" in fuente or "mundodeportivo" in fuente:
+    if "Mundo Deportivo" in fuente_safe or "mundodeportivo" in fuente_safe:
         return "https://www.mundodeportivo.com/"
-    if "El País" in fuente or "elpais" in fuente:
+    if "El País" in fuente_safe or "elpais" in fuente_safe:
         return "https://elpais.com/deportes/"
 
     # 7) Libros y memoria oral: sin URL
-    if "Libro" in tipo or "Memoria oral" in fuente or "Documental" in tipo:
+    if "Libro" in (tipo or "") or "Memoria oral" in fuente_safe or "Documental" in (tipo or ""):
         return ""
 
     return ""
