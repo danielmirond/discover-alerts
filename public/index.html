@@ -727,6 +727,13 @@ function App() {
       if (mapped) {
         setData(mapped);
         setLoaded(true);
+        // Aplicar tema de instancia (sport, etc.) si la API lo declara
+        try {
+          const inst = mapped._raw && mapped._raw.instance;
+          if (inst && inst.name && inst.name !== 'main') {
+            document.body.setAttribute('data-instance', inst.name);
+          }
+        } catch (e) { /* noop */ }
       }
     }
     load();

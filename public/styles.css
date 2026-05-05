@@ -95,6 +95,72 @@
   --accent-soft: #3B1414;
 }
 
+/* ============ SPORT — estética periódico deportivo ES ===========
+ * Paleta inspirada en Marca/AS/Mundo Deportivo:
+ *   - rojo de portada deportiva como acento principal
+ *   - amarillo destacado para velocidad/score
+ *   - azul oscuro para ink (como AS)
+ *   - tipografía display bold condensed para headlines
+ *   - scoreboard-style rank chips
+ * Se activa automáticamente cuando body[data-instance="sport"].
+ */
+[data-instance="sport"] {
+  --accent: #E10600;             /* rojo Marca */
+  --accent-deep: #A30400;
+  --accent-soft: #FFEBEA;
+  --warn: #FFCB05;               /* amarillo deportivo (AS) */
+  --ok: #00A86B;
+  --viral: #FF6B00;              /* naranja gol */
+  --ink: #0A1F44;                /* azul oscuro AS-style */
+  --ink-2: #1A2F54;
+  --rule: #D9342B26;
+}
+body[data-instance="sport"] .wordmark {
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 800;
+  background: linear-gradient(90deg, #E10600 0%, #FFCB05 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+body[data-instance="sport"] .alert-headline,
+body[data-instance="sport"] h1,
+body[data-instance="sport"] .ent-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+/* Rank/score chips estilo marcador */
+body[data-instance="sport"] .rank,
+body[data-instance="sport"] [data-rank] {
+  background: var(--ink);
+  color: #FFCB05;
+  font-weight: 800;
+  padding: 2px 6px;
+  letter-spacing: 0.04em;
+}
+/* Velocity badges con más punch */
+body[data-instance="sport"] .velocity.rising  { background: var(--accent); color: #fff; }
+body[data-instance="sport"] .velocity.peaking { background: #FFCB05; color: #0A1F44; font-weight: 800; }
+body[data-instance="sport"] .velocity.fading  { background: #6B7180; color: #fff; opacity: 0.85; }
+body[data-instance="sport"] .velocity.new     { background: var(--viral); color: #fff; }
+/* Cabecera con sello deportivo */
+body[data-instance="sport"] .masthead::after {
+  content: 'INTELIGENCIA DEPORTIVA · ES';
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-top: 2px solid var(--accent);
+  padding: 4px 0 0;
+  margin-top: 4px;
+  text-align: center;
+}
+
 /* ============ TERMINAL — aspecto tech/data (Bloomberg-ish) ============
  * Tema dark con paleta phosphor amber + cyan, mono dominante, scanlines
  * sutiles. Override de CSS variables existentes, sin reescribir rules.
