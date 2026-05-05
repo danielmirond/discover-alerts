@@ -189,6 +189,14 @@ En el primer Clásico al Camp Nou (1988) tras su fichaje, **tuvo que salir escol
 **Johan Cruyff** (declaración previa):
 > *"I'd like to crush Madrid."*
 
+### 📰 Crónica de ABC (Madrid), 19 febrero 1974 — fuente primaria verificada en hemeroteca
+Pie de foto bajo la imagen de Cruyff marcando el segundo gol:
+> *"Un Barcelona deslumbrante, articulado por ese genio del fútbol que es Joan Cruyff, goleó al Real Madrid en el Estadio Bernabéu. Unimos el aplauso sin reservas al gran Club azulgrana con el estímulo para que directivos, técnicos y jugadores del Madrid no pierdan la moral y superen el bache que hoy afecta al que durante muchos años fue el indiscutible mejor equipo del mundo. La hinchada madridista, una de las más deportivas y tenaces de España, debe apoyar ahora con más entusiasmo que nunca al histórico Club blanco."*
+
+Titular del recuadro: **"PASARÁ LA MALA RACHA"**
+
+📚 Fuente primaria: ABC Madrid, 19/02/1974, página de portada/contraportada (verificado en hemeroteca digital ABC).
+
 Aquel 0-5 silenció el Bernabéu, fue un hito político (final del franquismo) y futbolístico. Cruyff fichó por el Barça en agosto de 1973 rechazando al Real Madrid.
 
 **Fuentes:**
