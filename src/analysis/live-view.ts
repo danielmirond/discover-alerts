@@ -1389,14 +1389,46 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       }
       return out.sort((a, b) => (b.firstSeen || '').localeCompare(a.firstSeen || '')).slice(0, 400);
     })(),
-    entities: entities.slice(0, 100),
-    categories: categories.slice(0, 50),
+    entities: (() => {
+      let out = entities;
+      if (process.env.DS_CATEGORY_FILTER) {
+        const f = process.env.DS_CATEGORY_FILTER.toLowerCase();
+        out = out.filter(e => (e.category || '').toLowerCase().startsWith(f));
+      }
+      return out.slice(0, 100);
+    })(),
+    categories: (() => {
+      let out = categories;
+      if (process.env.DS_CATEGORY_FILTER) {
+        const f = process.env.DS_CATEGORY_FILTER.toLowerCase();
+        out = out.filter(c => (c.name || '').toLowerCase().startsWith(f));
+      }
+      return out.slice(0, 50);
+    })(),
     concordances: concordances.slice(0, 50),
     opportunities: opportunitiesSorted,
     formulasLast30d,
     headlinePatterns,
     headlinePatterns4d,
-    recentAlerts,
+    recentAlerts: (() => {
+      if (!process.env.DS_CATEGORY_FILTER) return recentAlerts;
+      const f = process.env.DS_CATEGORY_FILTER.toLowerCase();
+      return recentAlerts.filter(r => {
+        // Keep alerts whose category matches OR which are entity-derived and match via map
+        const c = (r.category || '').toLowerCase();
+        if (c.startsWith(f)) return true;
+        // Discard schema_news_match (sucesos/legal) and other non-sport types
+        if (['schema_news_match', 'category', 'stale_data'].includes(r.type)) {
+          return c.startsWith(f);
+        }
+        // For entity alerts without category, look up in state.entityCategoryMap
+        const a = (r as any).title || (r as any).entityName;
+        if (a && state.entityCategoryMap[a]) {
+          return state.entityCategoryMap[a].toLowerCase().startsWith(f);
+        }
+        return false;
+      });
+    })(),
     topMedia,
     weeklyHistorySummary: {
       availableWeeks: Object.keys(state.weeklyHistory || {}).sort().reverse(),
