@@ -1417,10 +1417,14 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       }
       const out: Array<{ feedName: string; domain: string; subfeeds: number; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }> }> = [];
       for (const [domain, row] of publisherInfo) {
-        if (row.count < 5) continue;
+        // Threshold relajado: 3 articles min para tener 50+ publishers visibles.
+        // Para publishers con 3-4 articles aceptamos patrones aunque sean ×1
+        // (1/3 = 33% share suficientemente significativo).
+        if (row.count < 3) continue;
+        const minPatternCount = row.count >= 8 ? 2 : 1;
         const sorted = [...row.ngrams.entries()].sort((a, b) => b[1] - a[1]).slice(0, 7);
         const topPatterns = sorted
-          .filter(([, c]) => c >= 2)
+          .filter(([, c]) => c >= minPatternCount)
           .map(([ngram, c]) => ({ ngram, count: c, share: Math.round((c / row.count) * 100) }));
         if (topPatterns.length === 0) continue;
         // Display name limpio: si tiene "Mundo Deportivo Bundesliga", reducir a "Mundo Deportivo"

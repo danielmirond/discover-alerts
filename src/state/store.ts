@@ -113,9 +113,10 @@ export async function loadState(): Promise<void> {
   }
 }
 
-// Límite seguro por shard (Upstash free tier ≈1 MB por request).
-// Si un shard se pasa, truncamos las entradas más antiguas antes de guardar.
-const SHARD_MAX_BYTES = 900_000;
+// Límite seguro por shard (Upstash free tier ≈1 MB por request, observado
+// que rechaza por encima de ~1MB neto). Subido de 900k a 950k para aprovechar
+// más espacio sin acercarse al borde.
+const SHARD_MAX_BYTES = 950_000;
 
 function trimByRecency<T extends { firstSeen?: string; pubDate?: string; lastUpdated?: string; timestamp?: string }>(
   obj: Record<string, T>,
