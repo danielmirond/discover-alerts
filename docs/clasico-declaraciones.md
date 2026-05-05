@@ -533,6 +533,35 @@ Rueda de prensa previa a la semifinal de Champions, Bernabéu. Guardiola pierde 
 
 Según el cineasta David Trueba (amigo cercano de Pep), Guardiola la planeó la noche anterior: *"Mañana voy a remover la rueda de prensa. Los jugadores lo necesitan."*
 
+### 📰 AS, 26 abril 2011 — fuente primaria verificada (Wayback)
+
+Hoy en AS: **"Guardiolato"** (titular del día)
+
+**Mourinho** (RP previa 26/04, recogida por AS):
+> *"Guardiola hace lo nunca visto, criticar un acierto."*
+
+> *"Había un grupo muy pequeñito de técnicos que no hablaba de los árbitros. Y luego un grupo que los critica cuando tiene errores, en el que estoy yo. Ahora hay un tercero en el que sólo está Pep."*
+
+**Marcelo** (a AS):
+> *"Prefiero ganar y no jugar bien. Lo importante es ganar."*
+
+**Tomás Roncero** (jefe de redacción AS, blog tras la final de Copa de la semana anterior):
+> *"Qué bien me supo esta Copa."*
+
+📚 Verificado en archive.org, snapshot AS 26/04/2011 15:35 UTC.
+
+### 📰 Marca, 25 abril 2011 — fuente primaria verificada (Wayback)
+
+Hoy en Marca: **"Eurocanguelo"**
+
+**Sergio Ramos** (respondiendo a Pep tras la final de Copa):
+> *"Ya se critica hasta una decisión correcta. El otro día se criticaba una decisión correcta que había tenido en la final, que es lo último."*
+
+Sobre el Valencia 3-6 Madrid del fin de semana previo (con pasillo del Valencia al Madrid campeón de Copa):
+> Titular Marca: *"VALENCIA 3-6 R. MADRID. Pasillo, baño y masaje."*
+
+📚 Verificado en archive.org, snapshot Marca 25/04/2011 13:30 UTC.
+
 ### 27 abril 2011 — Mourinho "¿Por qué? ¿Por qué?" + UNICEF
 
 Tras el 0-2 del Barça en el Bernabéu y la roja a Pepe, Mourinho explota en RP:
@@ -549,6 +578,29 @@ ABC del **29/04**:
 > *"Madrid y Barcelona cruzan denuncias ante la UEFA"* (páginas 92-94)
 
 📚 ABC titula literalmente **"Mou, expulsado"**. Verificado en archivo digital.
+
+### 📰 El País, 29 abril 2011 — fuente primaria verificada (Wayback)
+
+Crónica firmada por **Diego Torres**:
+> **"Mourinho: 'Estamos eliminados.' Mourinho dice sentir asco, carga contra el árbitro, cuya actuación vio absolutamente increíble y cree que Guardiola ha ganado una Champions que a él le daría vergüenza."**  
+> — Diego Torres, El País 29/04/2011
+
+**Cristiano Ronaldo** (a El País):
+> *"No me gusta jugar así... Es lo que hay."*
+
+**Real Madrid (denuncia oficial a UEFA)**:
+> *"Los azulgrana simularon agresiones de forma persistente con el único fin de equivocar al árbitro."*
+
+**Toni Freixa (portavoz FC Barcelona, denuncia a Mou)**:
+> *"Los líderes, como son los entrenadores, deberían hablar solo de fútbol y no de cuestiones que incitan a la violencia."*
+
+Titulares destacados de El País 29/04:
+- *"La pelota da la razón al Barça."* (José Sámano)
+- *"Messi avala el discurso de Guardiola. Siempre guardó respeto institucional hacia el Madrid, pero le preocupa la manera de administrar el poder de Florentino."* (Ramon Besa)
+- *"Pepe, misión imposible."* (Diego Torres)
+- *"Mou les inculca jugar sucio."*
+
+📚 Verificado en archive.org, snapshot El País 29/04/2011 05:37 UTC.
 
 ---
 
