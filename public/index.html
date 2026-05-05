@@ -1271,22 +1271,31 @@ function BoeView({ boe, rawEntities }) {
 /* ---------------- Config view (read-only system status) ---------------- */
 function PatternsByMediaPanel({ groups }) {
   if (!groups || groups.length === 0) return null;
+  const [filter, setFilter] = useState('');
+  const list = filter
+    ? groups.filter(g => (g.feedName || '').toLowerCase().includes(filter.toLowerCase()) || (g.domain || '').toLowerCase().includes(filter.toLowerCase()))
+    : groups;
   return (
     <div className="panel" style={{ marginTop: 24 }}>
       <div className="kicker">
-        Patrones por medio
+        Patrones por publisher
         <span className="bar"></span>
-        <span className="meta">{groups.length} cabeceras · top 5 trigramas/medio</span>
+        <span className="meta">{groups.length} publishers · agregados por dominio raíz · top 7 trigramas</span>
       </div>
-      <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 8, lineHeight: 1.5 }}>
-        N-gramas más usados por cada cabecera RSS últimas 12h. Útil para ver qué <strong style={{ color: 'var(--ink)' }}>fórmula editorial domina</strong> en cada medio: si Marca repite "fichaje sorpresa de" 8 veces y AS no, hay un patrón claro de cómo cada uno construye sus titulares.
+      <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 10, lineHeight: 1.5 }}>
+        N-gramas más usados por cada <strong style={{ color: 'var(--ink)' }}>publisher</strong> (dominio raíz) en las últimas 12h. Aglutina todos los sub-feeds de un mismo medio: Mundo Deportivo Bundesliga + Serie A + F1 + ... = un único "Mundo Deportivo" con miles de artículos analizados juntos. Útil para detectar <strong style={{ color: 'var(--ink)' }}>fórmula editorial dominante</strong>.
       </div>
+      <input type="search" value={filter} onChange={e => setFilter(e.target.value)} placeholder="filtrar por nombre o dominio…"
+             style={{ width: '100%', maxWidth: 320, padding: '6px 10px', fontFamily: 'var(--mono)', fontSize: 11, border: '1px solid var(--rule)', background: 'transparent', color: 'var(--ink)', marginBottom: 12 }} />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 14 }}>
-        {groups.map((g, i) => (
+        {list.map((g, i) => (
           <div key={i} style={{ border: '1px solid var(--rule-2)', padding: 10 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
               <strong style={{ fontFamily: 'var(--sans)', fontSize: 13, color: 'var(--ink)' }}>{g.feedName}</strong>
               <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>{g.articleCount} arts</span>
+            </div>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', marginBottom: 8, textTransform: 'lowercase' }}>
+              {g.domain}{g.subfeeds > 1 ? ` · ${g.subfeeds} sub-feeds` : ''}
             </div>
             {(g.topPatterns || []).map((p, j) => (
               <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 8, padding: '3px 0', borderBottom: '1px solid var(--rule-2)' }}>

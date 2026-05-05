@@ -1377,29 +1377,61 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       const mediaStopwords = new Set(['el','la','los','las','un','una','de','en','y','o','que','es','por','con','para','como','se','su','sus','le','les','lo','mas','ya','no','si','del','al','este','esta','estos','estas','ese','esa','pero','sin','sobre','entre','hasta','desde','muy','todo','toda','todos','todas','asi','tras','solo','tan','tambien','aun','mientras','cuando','donde','quien','cual','tras','segun','desde','contra','hace','dice','tiene','dijo','tras','tienen','dicen','va','van','ha','han','hay','sera','seran','fue','fueron']);
       const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !mediaStopwords.has(w));
       const trigrams = (words: string[]) => { const out: string[] = []; for (let i = 0; i <= words.length - 3; i++) out.push(words.slice(i, i + 3).join(' ')); return out; };
-      const byFeed = new Map<string, { count: number; ngrams: Map<string, number> }>();
+      // Agrupamos por DOMINIO RAÍZ (publisher), no por feedName. Así un medio
+      // como Mundo Deportivo (con 30 sub-feeds) suma todos sus articles juntos
+      // y obtiene patrones consolidados.
+      const rootDomain = (link: string): string => {
+        try {
+          let h = new URL(link).hostname.toLowerCase().replace(/^(www|amp|m|noticias)\./, '');
+          // Subdominios → root: cordopolis.eldiario.es → eldiario.es
+          const parts = h.split('.');
+          if (parts.length >= 3 && !['co','com'].includes(parts[parts.length - 2])) {
+            // Heurística: si hay 3+ niveles, quedarse con últimos 2 (salvo TLDs compuestos como .com.es)
+            h = parts.slice(-2).join('.');
+          }
+          return h;
+        } catch { return ''; }
+      };
+      // Display name por dominio: usa el feedName más corto que coincida (suele ser el principal)
+      const publisherInfo = new Map<string, { displayName: string; count: number; ngrams: Map<string, number>; subfeeds: Set<string> }>();
       for (const art of Object.values(state.mediaArticles || {})) {
-        if (!art.feedName || !art.title) continue;
-        let row = byFeed.get(art.feedName);
-        if (!row) { row = { count: 0, ngrams: new Map() }; byFeed.set(art.feedName, row); }
+        if (!art.title || !art.link) continue;
+        const dom = rootDomain(art.link);
+        if (!dom) continue;
+        let row = publisherInfo.get(dom);
+        if (!row) {
+          // Intentamos display name decente desde feedName, simplificando
+          const baseFeed = (art.feedName || dom).replace(/ Sitemap News$| RSS$| Feed$/i, '').replace(/ \(.+\)$/, '').trim();
+          row = { displayName: baseFeed.split(' ').slice(0, 4).join(' '), count: 0, ngrams: new Map(), subfeeds: new Set() };
+          publisherInfo.set(dom, row);
+        }
+        if (art.feedName) row.subfeeds.add(art.feedName);
+        // Si el feedName es más corto que el actual displayName, simplificamos
+        if (art.feedName && art.feedName.length < row.displayName.length && !/sitemap|rss|feed/i.test(art.feedName)) {
+          row.displayName = art.feedName;
+        }
         row.count++;
-        // Decodificar HTML entities ANTES de tokenizar para evitar basura
-        // tipo "039 scudetto 039" cuando viene &#39;scudetto&#39;.
         const cleanTitle = decodeEntities(art.title);
         const words = norm(cleanTitle);
         for (const tg of trigrams(words)) row.ngrams.set(tg, (row.ngrams.get(tg) || 0) + 1);
       }
-      const out: Array<{ feedName: string; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }> }> = [];
-      for (const [feedName, row] of byFeed) {
-        if (row.count < 5) continue; // medios con muy pocos artículos no tienen patrón consolidado
-        const sorted = [...row.ngrams.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const out: Array<{ feedName: string; domain: string; subfeeds: number; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }> }> = [];
+      for (const [domain, row] of publisherInfo) {
+        if (row.count < 5) continue;
+        const sorted = [...row.ngrams.entries()].sort((a, b) => b[1] - a[1]).slice(0, 7);
         const topPatterns = sorted
           .filter(([, c]) => c >= 2)
           .map(([ngram, c]) => ({ ngram, count: c, share: Math.round((c / row.count) * 100) }));
         if (topPatterns.length === 0) continue;
-        out.push({ feedName, articleCount: row.count, topPatterns });
+        // Display name limpio: si tiene "Mundo Deportivo Bundesliga", reducir a "Mundo Deportivo"
+        let dn = row.displayName;
+        const knownPublishers = ['Mundo Deportivo','Marca','As','Sport','El Mundo','El País','La Vanguardia','ABC','El Confidencial','El Español','OK Diario','20 Minutos','El Periódico','Antena 3','laSexta','Levante-EMV','Faro de Vigo','La Provincia','Diario de Mallorca','Cadena SER','COPE','Onda Cero','Europa Press','RTVE','Heraldo'];
+        for (const known of knownPublishers) {
+          if (row.displayName.toLowerCase().startsWith(known.toLowerCase())) { dn = known; break; }
+        }
+        out.push({ feedName: dn, domain, subfeeds: row.subfeeds.size, articleCount: row.count, topPatterns });
       }
-      return out.sort((a, b) => b.articleCount - a.articleCount).slice(0, 30);
+      return out.sort((a, b) => b.articleCount - a.articleCount).slice(0, 100);
     })(),
 
     // Sucesos/legal/cultural/aemet no aplican en instancias verticales (sport)
