@@ -408,6 +408,16 @@ Texto:
 
 ### 26 abril 2011 — Guardiola "puto jefe, puto amo"
 
+📰 **ABC Madrid, 27 abril 2011 — fuente primaria verificada**:
+> *"Choque antes de la batalla final. Mourinho y Guardiola protagonizaron su primer rifirrafe la víspera de la semifinal de la Champions."*  
+> — ABC Madrid, 27/04/2011, portada (sección Deportes 74-77)
+
+📚 ABC describe la rueda de prensa del "puto jefe" como *"el primer rifirrafe"* entre los dos. Verificado en archivo digital.
+
+---
+
+### 27 abril 2011 — Mourinho "¿Por qué? ¿Por qué?" + UNICEF
+
 Rueda de prensa previa a la semifinal de Champions, Bernabéu. Guardiola pierde los papeles tras los ataques de Mourinho:
 
 > *"Como Mou me trata de Pep, yo le voy a tratar de José. No le conozco personalmente, pero al gerente que sí le conoce, mañana a las 8.45 nos enfrentamos en el campo. Fuera del campo, él ya ha ganado todo el año. Que se lleve la Champions personal fuera del campo, se la regalo y nos vamos a casa. En esta sala (de prensa), él es el puto jefe, el puto amo. Yo no quiero competir con él aquí ni un instante."*
@@ -421,6 +431,17 @@ Tras el 0-2 del Barça en el Bernabéu y la roja a Pepe, Mourinho explota en RP:
 > *"¿Por qué? ¿Por qué? Yo no entiendo por qué. No sé si es por la publicidad de UNICEF, no sé si son muy simpáticos. Stark, Ovrebo, De Bleeckere, Bussaca... no entiendo por qué."*
 
 > *"Guardiola ha ganado una Champions que a mí me daría vergüenza haber ganado."*
+
+📰 **ABC Madrid, 28 abril 2011 — fuente primaria verificada**:
+> *"Mou, expulsado. Messi pesca en medio de la bronca (0-2) y obliga al Real Madrid a una proeza en el Camp Nou."*  
+> — ABC Madrid, 28/04/2011, portada (Deportes 70-76)
+
+ABC del **29/04**:
+> *"Madrid y Barcelona cruzan denuncias ante la UEFA"* (páginas 92-94)
+
+📚 ABC titula literalmente **"Mou, expulsado"**. Verificado en archivo digital.
+
+---
 
 ### Agosto 2011 — Supercopa: el dedo en el ojo
 
@@ -467,6 +488,14 @@ Mourinho se entera, se enfurece, y comienza el deterioro de su relación con Cas
 
 ## 👁️ El dedo en el ojo a Tito Vilanova (17 agosto 2011)
 
+### 📰 ABC Madrid, 18 agosto 2011 — fuente primaria verificada
+La portada del 18/08 está dominada por la JMJ (Jornada Mundial de la Juventud) con la visita del Papa Benedicto XVI a Madrid. **El dedo en el ojo y la tangana del Camp Nou solo aparecen en pie**:
+
+> *"Un Madrid con garra no evita el primer título del Barcelona."*  
+> — ABC Madrid, 18/08/2011, portada (página 62)
+
+📚 Hallazgo: la agresión de Mourinho a Tito Vilanova **NO llegó a portada del ABC** porque el día estaba dominado por la llegada del Papa a Madrid. Verificado en archivo digital.
+
 Final Supercopa de España, Camp Nou. Tras una entrada dura de Marcelo a Cesc Fábregas, se forma una tangana entre banquillos. **Mourinho se acerca por detrás a Tito Vilanova (segundo de Pep) y le mete el dedo en el ojo.** Vilanova reacciona con un manotazo.
 
 Sanción: solo **2 partidos** a Mourinho.
@@ -501,6 +530,14 @@ La imagen quedó icónica gracias a **Francesc Satorra** ("El Observador"), un d
 ---
 
 ## 🇪🇸 Iniesta ovacionado en el Bernabéu (21 noviembre 2015)
+
+### 📰 ABC Madrid, 22 noviembre 2015 — fuente primaria verificada
+> *"Una gran bandera de Francia fue desplegada ayer en el Bernabéu a los acordes de La Marsellesa en homenaje a las víctimas de los atentados de París."*
+
+> *"SONORO MINUTO DE SILENCIO CONTRA EL TERRORISMO. El Real Madrid-Barcelona (0-4) se jugó con normalidad entre medidas de seguridad inéditas. Rajoy acudió al Bernabéu."*  
+> — ABC Madrid, 22/11/2015, portada
+
+📚 Hallazgo: el Clásico se jugó **8 días después de los atentados de París (13 noviembre 2015)**. La portada del ABC está completamente eclipsada por la conmemoración. La ovación a Iniesta no aparece destacada en portada por este contexto.
 
 **Madrid 0 - 4 Barcelona**. Iniesta marcó y dio asistencia. Fue sustituido en el m. 77 y **el Bernabéu se levantó a aplaudirle**, tal como ocurrió con Ronaldinho en 2005 y con Maradona en 1983.
 
@@ -606,6 +643,13 @@ Casillas se despide solo en sala de prensa del Bernabéu tras 25 años en el Mad
 ---
 
 ## 🆕 Era Lamine Yamal — La bronca del Bernabéu (26 octubre 2025)
+
+### 📰 ABC Madrid, 27 y 28 octubre 2025 — fuente primaria verificada
+La portada del **27/10/2025** (al día siguiente del Clásico) **NO menciona el partido**: está completamente dedicada a la **dimisión de Carlos Mazón** y la dana de Valencia (titular: *"La mayoría de votantes del PP en Valencia piden que Mazón dimita y convoque elecciones"*).
+
+La portada del **28/10/2025** tampoco menciona el Clásico: portadas dominadas por Extremadura adelantando elecciones y la encuesta GAD3.
+
+📚 Hallazgo: la bronca **Yamal-Carvajal-Vinicius-Rüdiger-Courtois** del Bernabéu **no llegó a portada del ABC en los dos días siguientes**, eclipsada por la crisis política de Valencia tras la dana. Verificado en archivo digital.
 
 **Real Madrid 2 - 1 FC Barcelona**, goles de Mbappé y Bellingham.
 
