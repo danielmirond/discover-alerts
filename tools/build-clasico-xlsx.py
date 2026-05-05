@@ -78,6 +78,35 @@ ROWS = [
      "ABC", "ABC Madrid 27/04/2011", "Portada (Deportes 74-77)",
      "Hemeroteca digital ABC", "Sí",
      "Mismo día de la rueda de prensa donde Pep dijo 'él es el puto jefe'."),
+    ("2011-04-27", "RP del 'puto jefe'", "Mundo Deportivo (titular)",
+     "Mourinho es el 'puto' jefe.",
+     "Mundo Deportivo (web)", "MD 27/04/2011", "Portada digital",
+     "Wayback Machine (archive.org)", "Sí",
+     "Snapshot 27/04/2011 06:21 UTC. Titular literal en portada."),
+    ("2011-04-27", "RP del 'puto jefe'", "Pep Guardiola (recogido por Mundo Deportivo)",
+     "¿He respondido cuando ha dicho que no he respetado a un árbitro cuando en toda mi carrera los he respetado?",
+     "Mundo Deportivo (web)", "MD 27/04/2011", "Portada digital",
+     "Wayback Machine (archive.org)", "Sí",
+     "Cita textual de Pep Guardiola en la rueda de prensa."),
+    ("2011-04-27", "RP del 'puto jefe'", "Marca (titular)",
+     "PEP GUARDIOLA RETA ANTE LA PRENSA A JOSÉ MOURINHO: 'A las 20.45 nos vemos en el campo'.",
+     "Marca (web)", "Marca 27/04/2011", "Portada digital",
+     "Wayback Machine (archive.org)", "Sí",
+     "Snapshot 27/04/2011 08:44 UTC."),
+    ("2011-04-27", "RP del 'puto jefe'", "Marca (cuerpo del artículo)",
+     "Tras la comparecencia del entrenador del Real Madrid, se generó una enorme expectación por ver la respuesta de Pep Guardiola. Y no defraudó a nadie. Aceptó el desafío y contestó al preparador portugués como nunca había hecho.",
+     "Marca (web)", "Marca 27/04/2011", "Crónica RP",
+     "Wayback Machine (archive.org)", "Sí",
+     "Marca, afín al Madrid, dice que Pep contestó 'como nunca había hecho'."),
+    ("2011-04-27", "RP del 'puto jefe'", "Mundo Deportivo (titular Pepe)",
+     "Pepe ya es un monumento al anti-fútbol. Aspira a consolidarse como violento número uno.",
+     "Mundo Deportivo (web)", "MD 27/04/2011", "Portada digital",
+     "Wayback Machine (archive.org)", "Sí", ""),
+    ("2011-04-24", "Pre-Clásicos 2011", "AS (titular)",
+     "Pepe, el coco del Barça.",
+     "AS (web)", "AS 24/04/2011", "Portada digital",
+     "Wayback Machine (archive.org)", "Sí",
+     "AS prepara el Clásico anticipando a Pepe como referente del Madrid."),
     ("2011-04-28", "0-2 Champions, roja Pepe, UNICEF", "ABC Madrid",
      "Mou, expulsado. Messi pesca en medio de la bronca (0-2) y obliga al Real Madrid a una proeza en el Camp Nou.",
      "ABC", "ABC Madrid 28/04/2011", "Portada (Deportes 70-76)",
@@ -332,9 +361,13 @@ ROWS = [
 wb = Workbook()
 wb.remove(wb.active)  # Quitamos hoja por defecto
 
-# Separamos en dos hojas según fuente
-ROWS_HEMERO = [r for r in ROWS if "Hemeroteca digital" in r[7]]
-ROWS_OTROS = [r for r in ROWS if "Hemeroteca digital" not in r[7]]
+# Separamos en dos hojas según tipo de fuente
+def is_primary_archive(r):
+    t = r[7]
+    return "Hemeroteca digital" in t or "Wayback" in t
+
+ROWS_HEMERO = [r for r in ROWS if is_primary_archive(r)]
+ROWS_OTROS = [r for r in ROWS if not is_primary_archive(r)]
 
 
 def fill_sheet(ws, rows):
@@ -387,8 +420,8 @@ def fill_sheet(ws, rows):
     ws.auto_filter.ref = ws.dimensions
 
 
-# Pestaña 1 — fuentes primarias verificadas en hemeroteca ABC
-ws1 = wb.create_sheet("Hemeroteca ABC verificadas")
+# Pestaña 1 — fuentes primarias verificadas (hemeroteca ABC + Wayback Machine)
+ws1 = wb.create_sheet("Archivos primarios verificados")
 fill_sheet(ws1, ROWS_HEMERO)
 
 # Pestaña 2 — el resto de declaraciones (prensa primaria web, libros, vídeo, etc.)

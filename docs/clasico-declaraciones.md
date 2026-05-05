@@ -414,6 +414,37 @@ Texto:
 
 📚 ABC describe la rueda de prensa del "puto jefe" como *"el primer rifirrafe"* entre los dos. Verificado en archivo digital.
 
+### 📰 Mundo Deportivo, 27 abril 2011 — fuente primaria verificada (Wayback Machine)
+
+Portada digital de MD el mismo día del partido (snapshot Wayback):
+> **Titular: "Mourinho es el 'puto' jefe"**
+
+Subtítulo:
+> *"El entrenador del FC Barcelona pasa al ataque y responde directamente a Mourinho. ¿He respondido cuando ha dicho que no he respetado a un árbitro cuando en toda mi carrera los he respetado?"*
+
+Otros titulares de la portada:
+> *"Guardiola: 'Hay que marcar'"*  
+> *"Mourinho ataca a Guardiola"*  
+> *"Pepe ya es un monumento al anti-fútbol. Aspira a consolidarse como violento número uno"*
+
+📚 Recoge la cita literal de Pep ("he respetado los árbitros toda mi carrera") con titular agresivo. Verificado en archive.org/web Wayback Machine, snapshot 27/04/2011 06:21 UTC.
+
+### 📰 Marca, 27 abril 2011 — fuente primaria verificada (Wayback Machine)
+
+Titular principal:
+> **"PEP GUARDIOLA RETA ANTE LA PRENSA A JOSÉ MOURINHO: 'A las 20.45 nos vemos en el campo'"**
+
+Cuerpo:
+> *"José Mourinho llegó con el discurso bien preparado y bien estructurado a la sala de prensa: expuso los hechos, los argumentó y sacó sus conclusiones en una sala de prensa abarrotada. Tras la comparecencia del entrenador del Real Madrid, se generó una enorme expectación por ver la respuesta de Pep Guardiola. Y no defraudó a nadie. Aceptó el desafío y contestó al preparador portugués como nunca había hecho."*
+
+Encuesta del día:
+> *"¿Crees que ha perdido Guardiola los papeles?"*
+
+Sobre el árbitro:
+> *"Wolfgang Stark, el árbitro del Clásico. Admirador confeso de Messi, este año fue elegido peor árbitro de la Bundesliga por los jugadores."*
+
+📚 Marca, periódico afín al Madrid, recoge la rueda de prensa como **"como nunca había hecho"** Pep. Verificado en archive.org/web, snapshot 27/04/2011 08:44 UTC.
+
 ---
 
 ### 27 abril 2011 — Mourinho "¿Por qué? ¿Por qué?" + UNICEF
