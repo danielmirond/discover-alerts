@@ -970,8 +970,11 @@ function App() {
 /* ---------------- Sucesos view (capa editorial YMYL) ---------------- */
 function SchemaNewsBlock({ sucesos = [], legal = [] }) {
   const [active, setActive] = useState(sucesos.length >= legal.length ? 'sucesos' : 'legal');
+  const [expanded, setExpanded] = useState(false);
   const items = active === 'sucesos' ? sucesos : legal;
   const accentColor = active === 'sucesos' ? 'var(--warn)' : 'var(--accent)';
+  const SAMPLE_SIZE = 4;
+  const visible = expanded ? items.slice(0, 30) : items.slice(0, SAMPLE_SIZE);
 
   const tab = (id, label, count) => (
     <span key={id} onClick={() => setActive(id)}
@@ -1002,8 +1005,8 @@ function SchemaNewsBlock({ sucesos = [], legal = [] }) {
           Sin noticias en este esquema ahora mismo.
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 360, overflowY: 'auto' }}>
-          {items.slice(0, 30).map((n, i) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: expanded ? 480 : 'none', overflowY: expanded ? 'auto' : 'visible' }}>
+          {visible.map((n, i) => (
             <a key={i} href={n.url} target="_blank" rel="noreferrer"
                style={{ textDecoration: 'none', color: 'inherit', padding: '6px 8px', display: 'flex', gap: 8, borderBottom: '1px solid var(--rule-2)', fontFamily: 'var(--sans)' }}>
               <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: n.kind === 'ds' ? 'var(--accent)' : 'var(--ink-4)', flexShrink: 0, minWidth: 30, paddingTop: 2 }}>
@@ -1020,6 +1023,16 @@ function SchemaNewsBlock({ sucesos = [], legal = [] }) {
               </span>
             </a>
           ))}
+          {items.length > SAMPLE_SIZE && (
+            <div style={{ marginTop: 6, padding: '4px 8px', textAlign: 'center' }}>
+              <span onClick={() => setExpanded(!expanded)}
+                    style={{ cursor: 'pointer', fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: '.05em', color: accentColor, padding: '4px 12px', border: `1px solid ${accentColor}`, display: 'inline-block' }}>
+                {expanded
+                  ? `▲ Plegar (mostrando ${visible.length})`
+                  : `▼ Ver las ${items.length} (ahora ${SAMPLE_SIZE})`}
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>
