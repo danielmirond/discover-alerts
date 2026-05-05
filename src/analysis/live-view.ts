@@ -1404,8 +1404,9 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       }
       const knownPublishers = ['Mundo Deportivo','Marca','As','Sport','El Mundo','El País','La Vanguardia','ABC','El Confidencial','El Español','OK Diario','OKdiario','20 Minutos','El Periódico','Antena 3','laSexta','Levante-EMV','Faro de Vigo','La Provincia','Diario de Mallorca','Cadena SER','COPE','Onda Cero','Europa Press','RTVE','Heraldo','eldiario.es','Huffington Post','Xataka','InfoLibre','Voz Pópuli','El Plural','El Independiente','Libertad Digital','Crónica Global','Diario de León','Confilegal','Lawyerpress','Legal Today'];
       const publisherInfo = new Map<string, { displayName: string; count: number; ngrams: Map<string, number>; subfeeds: Set<string> }>();
-      // Recoger últimas 2 semanas (current + previous) para ~14 días de cobertura
-      const wks = Object.keys(state.weeklyHistory || {}).sort().reverse().slice(0, 2);
+      // Recoger últimas 4 semanas (~1 mes). El weekly aggregator suma cada poll
+      // al weekKey de la semana actual, así que se actualiza solo.
+      const wks = Object.keys(state.weeklyHistory || {}).sort().reverse().slice(0, 4);
       for (const wk of wks) {
         const byFeed = state.weeklyHistory?.[wk] || {};
         for (const [feedName, stats] of Object.entries(byFeed)) {
