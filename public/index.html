@@ -1296,7 +1296,7 @@ function PatternsByMediaPanel({ groups }) {
         <span className="meta">{groups.length} publishers · agregados por dominio raíz · top 7 trigramas</span>
       </div>
       <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 10, lineHeight: 1.5 }}>
-        N-gramas más usados por cada <strong style={{ color: 'var(--ink)' }}>publisher</strong> (dominio raíz) en las últimas 12h. Aglutina todos los sub-feeds de un mismo medio: Mundo Deportivo Bundesliga + Serie A + F1 + ... = un único "Mundo Deportivo" con miles de artículos analizados juntos. Útil para detectar <strong style={{ color: 'var(--ink)' }}>fórmula editorial dominante</strong>.
+        N-gramas más usados en titulares <strong style={{ color: 'var(--ink)' }}>que han entrado en Discover</strong> (no en RSS publicado), agrupados por publisher (dominio raíz). Cada publisher aglutina todos sus sub-dominios. Útil para detectar la <strong style={{ color: 'var(--ink)' }}>fórmula editorial que funciona en Discover</strong>, no la que usa el medio en general.
       </div>
       <input type="search" value={filter} onChange={e => setFilter(e.target.value)} placeholder="filtrar por nombre o dominio…"
              style={{ width: '100%', maxWidth: 320, padding: '6px 10px', fontFamily: 'var(--mono)', fontSize: 11, border: '1px solid var(--rule)', background: 'transparent', color: 'var(--ink)', marginBottom: 12 }} />
