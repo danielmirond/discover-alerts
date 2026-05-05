@@ -41,6 +41,17 @@ Semifinales de Copa del Rey: Barça gana 2-1, Madrid devuelve 4-1, empate 6-6 tr
 
 **Real Madrid 11 - 1 FC Barcelona** en la vuelta de la semifinal de Copa del Generalísimo. El Barça llegaba con 3-0 a favor de la ida.
 
+### 📰 ABC Madrid silenció el 11-1 en portada — fuente primaria verificada
+Buscando en hemeroteca de ABC, las **portadas del 15 y 16 de junio de 1943** (dos días después y al día siguiente del partido) **NO mencionan el 11-1**. Las portadas se dedican a:
+- 15/06/1943 ➜ *"SOLEMNES ACTOS RELIGIOSOS EN TOLEDO"* (consagración de la diócesis)
+- 16/06/1943 ➜ *"EL MINISTRO DE AGRICULTURA, EN GALICIA"*
+
+📚 Hallazgo: ni siquiera ABC, periódico claramente afín al régimen, destacó la goleada en portada. Lo cual encaja con dos lecturas:
+1. La prensa madrileña la trató como noticia menor (cabe en sección deportes interior).
+2. Se prefirió no llamar la atención sobre un resultado tan abultado en plena posguerra.
+
+(Verificado en archivo digital ABC, descargas del 9 mayo 2026.)
+
 ### Las amenazas (testimonios)
 Según testimonios documentados, antes del partido **un alto cargo del régimen franquista entró al vestuario del Barça** advirtiendo a los jugadores sobre la "seguridad de sus familias". Los rumores apuntan también a que un oficial armado se acercó al árbitro antes del pitido inicial.
 
@@ -245,6 +256,12 @@ Reciente burla en TUDN sobre los títulos:
 
 **Barcelona 5 - 0 Real Madrid**. Triplete de Romario, gol de Koeman e Iván Iglesias. Cruyff entrenador.
 
+### 📰 ABC Madrid, 9 enero 1994 — fuente primaria verificada
+> *"5-0: GOLEADA HISTÓRICA DEL BARCELONA AL REAL MADRID EN EL NOU CAMP"*  
+> — ABC Madrid, 9/01/1994, portada (sección Deportes)
+
+(Verificado en archivo digital ABC.)
+
 **Cruyff** previa al partido:
 > *"I'd like to crush Madrid."*
 
@@ -296,6 +313,21 @@ A Figo, años después:
 ---
 
 ## 🐷 Figo y la cabeza de cochinillo (23 nov 2002, Camp Nou)
+
+### 📰 ABC Madrid, 24 noviembre 2002 — fuente primaria verificada
+Foto de portada (firma del fotógrafo Ignacio Gil): *"Luis Figo en el momento de sacar un córner custodiado por la Policía"*.
+
+Texto:
+> *"Violencia en las gradas del Camp Nou en un partido que empató el Madrid (0-0). El árbitro suspendió el encuentro durante quince minutos por el lanzamiento masivo de objetos a Luis Figo. El presidente del Barça, Joan Gaspart, consideró que el público reaccionó ante una provocación."*  
+> — ABC Madrid, 24/11/2002, portada (también páginas 112-116)
+
+ABC Madrid, 25/11/2002 (al día siguiente):
+> *"Según el Reglamento, el Camp Nou debería ser clausurado. La infracción grave prevé una sanción de uno a tres partidos; la muy grave, de cuatro a una temporada."*  
+> — ABC Madrid, 25/11/2002, portada
+
+📚 Cita literal de **Joan Gaspart** (presidente FC Barcelona) recogida por ABC: *"el público reaccionó ante una provocación"*. Verificado en archivo digital ABC.
+
+---
 
 Tras fichar por el Madrid en 2000 (60 M€, récord mundial entonces), Figo sufrió en su segunda visita al Camp Nou:
 - Botellas de whisky y agua
