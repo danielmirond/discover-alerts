@@ -557,10 +557,32 @@ Hoy en Marca: **"Eurocanguelo"**
 **Sergio Ramos** (respondiendo a Pep tras la final de Copa):
 > *"Ya se critica hasta una decisión correcta. El otro día se criticaba una decisión correcta que había tenido en la final, que es lo último."*
 
+**Andrés Iniesta** (RP previa Champions, defendiendo a Pep):
+> *"Todos conocemos a Guardiola. Yo no creo que quisiera decir eso. El máster no busca excusas."*
+
+**Johan Cruyff** (en *El Periódico*, recogido por Marca):
+> *"Más que temer quién pitará o si el césped estará alto, preocúpate de tu equipo."*
+
+Marca explica:
+> *"Cruyff envía un recadito a Pep: 'Le pide que no se queje tanto y se centre en lo deportivo.' El Madrid llega más fuerte."*
+
 Sobre el Valencia 3-6 Madrid del fin de semana previo (con pasillo del Valencia al Madrid campeón de Copa):
 > Titular Marca: *"VALENCIA 3-6 R. MADRID. Pasillo, baño y masaje."*
 
 📚 Verificado en archive.org, snapshot Marca 25/04/2011 13:30 UTC.
+
+### 📰 Mundo Deportivo, 25 abril 2011 — fuente primaria verificada (Wayback)
+
+**Víctor Valdés** (RP previa Champions, recogido por Mundo Deportivo):
+> *"Dependerá del árbitro que podamos hacer nuestro juego. No hay que obsesionarse con estas cosas. Tenemos que ir a lo nuestro y hacer el partido que nos interesa."*
+
+**Mascherano** ("El Jefecito"):
+> *"Cómodo de central, gracias a la ayuda del equipo, pese a tener que pensarlo todo más."*
+
+Titular MD:
+> *"El Madrid repetirá: a cortar y pegar."*
+
+📚 Verificado en archive.org, snapshot MD 25/04/2011 08:55 UTC.
 
 ### 27 abril 2011 — Mourinho "¿Por qué? ¿Por qué?" + UNICEF
 
@@ -656,6 +678,39 @@ La portada del 18/08 está dominada por la JMJ (Jornada Mundial de la Juventud) 
 > — ABC Madrid, 18/08/2011, portada (página 62)
 
 📚 Hallazgo: la agresión de Mourinho a Tito Vilanova **NO llegó a portada del ABC** porque el día estaba dominado por la llegada del Papa a Madrid. Verificado en archivo digital.
+
+### 📰 AS, 18 agosto 2011 — fuente primaria verificada (Wayback)
+
+Hoy en AS: **"¿Por qué? Por Messi"** (titular del día)
+
+Titular principal:
+> **"Mourinho le metió un dedo en el ojo a Tito Vilanova."**
+
+> *"El Barça no pedirá sanción para Mou. Sólo actuaría contra el entrenador portugués ante el Comité de Competición si el Real Madrid hace una defensa pública de su actuación o si inicia una guerra de videodenuncias."*
+
+> *"Mou escandaliza a la Prensa mundial."*
+
+**Joan Gaspart** (ex-presidente FC Barcelona, recogido por AS):
+> *"Mourinho tiene una doble personalidad. Aunque en Madrid estén encantados con él, no es el Mourinho que yo conocí. Le gustaría que todo terminara con una disculpa del luso."*
+
+**Xavi Hernández** (a AS):
+> *"Es lamentable la imagen del Madrid. No están a la altura."*
+
+**Gerard Piqué** (a AS):
+> *"Mourinho se está cargando el fútbol español."*
+
+**Joaquim Villarrubí** (vicepresidente FC Barcelona, recogido por AS):
+> *"Mourinho es una lacra para el fútbol."*
+
+> *"Fue el entrenador del Real Madrid quien obligó a sus jugadores a abandonar el campo cuando los jugadores del Barcelona recogían la Supercopa."*
+
+Otra noticia destacada del día:
+> *"Villa dio un puñetazo a Özil."*
+
+**'El tío del bigote' identificado**:
+> *"Se llama Francesc Satorra y es el encargado del túnel de vestuarios del Camp Nou. Ayer vio cómo Mourinho le metía un dedo en el ojo a Tito Vilanova y hoy en internet ya se venden camisetas con su cara."*
+
+📚 Verificado en archive.org, snapshot AS 18/08/2011 20:56 UTC. Es el día siguiente al partido (Camp Nou 17/08, Supercopa vuelta).
 
 Final Supercopa de España, Camp Nou. Tras una entrada dura de Marcelo a Cesc Fábregas, se forma una tangana entre banquillos. **Mourinho se acerca por detrás a Tito Vilanova (segundo de Pep) y le mete el dedo en el ojo.** Vilanova reacciona con un manotazo.
 
