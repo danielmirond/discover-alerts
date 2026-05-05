@@ -150,11 +150,41 @@ def fetch_bne_search(query: str, date: datetime, out_dir: Path) -> Path | None:
 # y enlaces a las crónicas completas.
 # ----------------------------------------------------------------------------
 WAYBACK_DOMAINS = [
+    # Deportivos españoles
     "marca.com",
     "as.com",
     "sport.es",
     "mundodeportivo.com",
+    # Generales españoles (Tier 1)
     "elpais.com/deportes",
+    "elpais.com",
+    "elmundo.es",
+    "abc.es",
+    "lavanguardia.com",
+    "20minutos.es",
+    # Digitales nativos
+    "eldiario.es",
+    "elconfidencial.com",
+    "vozpopuli.com",
+    "publico.es",
+    "okdiario.com",
+    # Catalanes
+    "ara.cat",
+    "elperiodico.com",
+    # Vascos / gallegos / regionales
+    "elcorreo.com",
+    "diariovasco.com",
+    "lavozdegalicia.es",
+    # Internacionales (Tier 5)
+    "theguardian.com",
+    "nytimes.com",
+    "lemonde.fr",
+    "lequipe.fr",
+    "bbc.com",
+    "espn.com",
+    "clarin.com",
+    "lanacion.com.ar",
+    "folha.uol.com.br",
 ]
 
 
@@ -217,6 +247,97 @@ def fetch_wayback(domain: str, date: datetime, out_dir: Path) -> Path | None:
 
 
 # ----------------------------------------------------------------------------
+# Diario de Sesiones del Congreso de los Diputados (Tier 4 — fuente oficial)
+# Buscador: https://www.congreso.es/web/guest/busqueda-de-publicaciones
+# Resultados con texto completo OCR. Cobertura: legislaturas constitucionales.
+# ----------------------------------------------------------------------------
+def fetch_congreso(query: str, date: datetime, out_dir: Path) -> Path | None:
+    """Busca en el Diario de Sesiones del Congreso para una fecha y término."""
+    # El buscador usa POST con muchos parámetros; pedimos la página de resultados
+    # mediante un GET con parámetros básicos (la app real usa form-urlencoded).
+    url = (
+        "https://www.congreso.es/web/guest/busqueda-de-publicaciones?"
+        f"p_p_id=publicaciones&p_p_lifecycle=0&"
+        f"_publicaciones_mode=mostrarTextoCompleto&"
+        f"_publicaciones_textoBusqueda={quote(query)}&"
+        f"_publicaciones_fechaDesde={date:%d/%m/%Y}&"
+        f"_publicaciones_fechaHasta={(date + timedelta(days=7)):%d/%m/%Y}"
+    )
+    print(f"  [congreso] {query!r} {date:%Y-%m-%d}")
+
+    try:
+        resp = SESSION.get(url, timeout=30)
+        resp.raise_for_status()
+    except requests.RequestException as exc:
+        print(f"    ERROR: {exc}")
+        return None
+
+    out = out_dir / f"congreso_{date:%Y-%m-%d}.html"
+    out.write_bytes(resp.content)
+    print(f"    -> {out.relative_to(OUTPUT_DIR)}")
+    return out
+
+
+# ----------------------------------------------------------------------------
+# The Guardian Open Platform (Tier 5 — internacional, API libre)
+# https://open-platform.theguardian.com/  | API key gratis tras registro
+# Para el MVP usamos el endpoint público sin clave (rate limited).
+# ----------------------------------------------------------------------------
+def fetch_guardian(query: str, date: datetime, out_dir: Path) -> Path | None:
+    """Busca artículos en The Guardian para una fecha y término."""
+    api_key = "test"  # Sustituir por clave personal al subir el límite
+    from_d = (date - timedelta(days=1)).strftime("%Y-%m-%d")
+    to_d = (date + timedelta(days=2)).strftime("%Y-%m-%d")
+    url = (
+        "https://content.guardianapis.com/search?"
+        f"q={quote(query)}&from-date={from_d}&to-date={to_d}"
+        f"&show-fields=bodyText,headline,trailText&page-size=10&api-key={api_key}"
+    )
+    print(f"  [guardian] {query!r} {date:%Y-%m-%d}")
+
+    try:
+        resp = SESSION.get(url, timeout=30)
+        resp.raise_for_status()
+    except requests.RequestException as exc:
+        print(f"    ERROR: {exc}")
+        return None
+
+    out = out_dir / f"guardian_{date:%Y-%m-%d}.json"
+    out.write_bytes(resp.content)
+    print(f"    -> {out.relative_to(OUTPUT_DIR)}")
+    return out
+
+
+# ----------------------------------------------------------------------------
+# YouTube — transcripciones automáticas (Tier 2)
+# Usa youtube-transcript-api. NOTA: YouTube bloquea peticiones desde IPs de cloud.
+# Funciona desde IPs residenciales (Mac doméstico).
+# ----------------------------------------------------------------------------
+def fetch_youtube_transcript(video_id: str, out_dir: Path) -> Path | None:
+    """Descarga la transcripción automática (subtítulos) de un vídeo de YouTube."""
+    try:
+        from youtube_transcript_api import YouTubeTranscriptApi
+    except ImportError:
+        print(f"  [youtube] youtube-transcript-api no instalado: pip install youtube-transcript-api")
+        return None
+
+    print(f"  [youtube] {video_id}")
+
+    try:
+        api = YouTubeTranscriptApi()
+        transcript = api.fetch(video_id, languages=["es", "en"])
+        text = "\n".join(s.text for s in transcript)
+    except Exception as exc:
+        print(f"    ERROR: {type(exc).__name__}: {str(exc)[:120]}")
+        return None
+
+    out = out_dir / f"youtube_{video_id}.txt"
+    out.write_text(text, encoding="utf-8")
+    print(f"    -> {out.relative_to(OUTPUT_DIR)} ({len(text)} chars)")
+    return out
+
+
+# ----------------------------------------------------------------------------
 # Orquestador
 # ----------------------------------------------------------------------------
 def process_target(target: dict, papers: list[str]) -> None:
@@ -248,6 +369,21 @@ def process_target(target: dict, papers: list[str]) -> None:
                 fetch_wayback(domain, date, out_dir)
                 time.sleep(SLEEP_BETWEEN)
 
+        if "congreso" in papers:
+            query = target.get("congreso_query") or "Real Madrid Barcelona"
+            fetch_congreso(query, date, out_dir)
+            time.sleep(SLEEP_BETWEEN)
+
+        if "guardian" in papers:
+            query = target.get("guardian_query") or 'Real Madrid Barcelona'
+            fetch_guardian(query, date, out_dir)
+            time.sleep(SLEEP_BETWEEN)
+
+        if "youtube" in papers:
+            for vid in target.get("youtube_ids", []):
+                fetch_youtube_transcript(vid, out_dir)
+                time.sleep(SLEEP_BETWEEN)
+
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
@@ -260,10 +396,10 @@ def main() -> int:
     ap.add_argument(
         "--papers",
         default="abc,bne,wayback",
-        help="Fuentes (csv): abc, mundo-deportivo, bne, wayback. "
-             "mundo-deportivo da timeout desde muchas IPs. "
-             "wayback descarga capturas de Marca, AS, Sport, Mundo Deportivo y "
-             "El País Deportes desde archive.org.",
+        help="Fuentes (csv): abc, mundo-deportivo, bne, wayback, "
+             "congreso, guardian, youtube. "
+             "wayback cubre 28 dominios (deportivos + generales españoles + "
+             "digitales nativos + catalanes/regionales + internacionales).",
     )
     ap.add_argument(
         "--targets",
