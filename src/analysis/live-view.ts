@@ -1359,6 +1359,10 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
   });
 
   return {
+    instance: {
+      name: process.env.INSTANCE_NAME || 'main',
+      vertical: process.env.DS_CATEGORY_FILTER || null,
+    },
     lastPollDiscover: state.lastPollDiscover,
     lastPollTrends: state.lastPollTrends,
     lastPollMedia: state.lastPollMedia,

@@ -65,9 +65,9 @@ export async function runDiscoverPoll(): Promise<void> {
 
     console.timeEnd('[discover] fetch');
 
-    const ent = entities.status === 'fulfilled' ? entities.value : [];
-    const cat = categories.status === 'fulfilled' ? categories.value : [];
-    const pag = pages.status === 'fulfilled' ? pages.value : [];
+    let ent = entities.status === 'fulfilled' ? entities.value : [];
+    let cat = categories.status === 'fulfilled' ? categories.value : [];
+    let pag = pages.status === 'fulfilled' ? pages.value : [];
     const dom = domains.status === 'fulfilled' ? domains.value : [];
     const soc = social.status === 'fulfilled' ? social.value : [];
 
@@ -76,6 +76,32 @@ export async function runDiscoverPoll(): Promise<void> {
     if (pages.status === 'rejected') console.error('[discover] pages error:', pages.reason);
     if (domains.status === 'rejected') console.error('[discover] domains error:', domains.reason);
     if (social.status === 'rejected') console.error('[discover] social error:', social.reason);
+
+    // Filtrado opcional por categoría DS para instancias verticales (ej: sport).
+    // Acepta prefijos: DS_CATEGORY_FILTER="/Sports" filtra todo /Sports/...
+    const dsFilter = process.env.DS_CATEGORY_FILTER;
+    if (dsFilter && dsFilter.length > 0) {
+      const cnames = await getCategoryNames();
+      const matchesFilter = (c: string | number | undefined): boolean => {
+        if (c == null) return false;
+        const name = typeof c === 'number' ? cnames[c] : c;
+        if (!name) return false;
+        return name.toLowerCase().startsWith(dsFilter.toLowerCase());
+      };
+      const beforePages = pag.length;
+      const beforeCats = cat.length;
+      pag = pag.filter(p => matchesFilter(p.category));
+      cat = cat.filter(c => matchesFilter(cnames[c.id]));
+      // Para entities: filtrar a las que aparecen en al menos una page del filtro
+      const allowedNames = new Set<string>();
+      for (const p of pag) for (const e of ((p.entities as unknown as any[]) || [])) {
+        const n = typeof e === 'string' ? e : e?.entity;
+        if (n) allowedNames.add(n);
+      }
+      const beforeEnts = ent.length;
+      ent = ent.filter(e => allowedNames.has(e.entity));
+      console.log(`[discover] DS_CATEGORY_FILTER="${dsFilter}" applied: pages ${beforePages}→${pag.length} · categories ${beforeCats}→${cat.length} · entities ${beforeEnts}→${ent.length}`);
+    }
 
     console.log(`[discover] Fetched: ${ent.length} entities, ${cat.length} categories, ${pag.length} pages, ${dom.length} domains, ${soc.length} social`);
 

@@ -85,7 +85,13 @@ function ThemeSwitch() {
 }
 
 /* ---------------- Masthead ---------------- */
-function Masthead({ activeNav, setActiveNav, clock, counts = {} }) {
+function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }) {
+  // Tabs irrelevantes para instancias verticales (sport, etc.) — se ocultan
+  // si DS_CATEGORY_FILTER está activo. El polling tampoco rellena estos
+  // datos en ese caso.
+  const verticalHidden = instance.vertical
+    ? new Set(['sucesos', 'boe', 'cultural', 'aemet'])
+    : new Set();
   const navs = [
     { id: 'feed', label: 'Feed en vivo', count: counts.feed },
     { id: 'huecos', label: 'Huecos', count: counts.huecos },
@@ -104,7 +110,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {} }) {
     { id: 'cultural', label: 'Cultural' },
     { id: 'aemet', label: 'AEMET' },
     { id: 'configuracion', label: 'Config' },
-  ];
+  ].filter(n => !verticalHidden.has(n.id));
   const fmtDate = clock.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
   const fmtTime = clock.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   return (
@@ -932,7 +938,7 @@ function App() {
 
   return (
     <>
-      <Masthead activeNav={activeNav} setActiveNav={setActiveNav} clock={clock} counts={navCounts} />
+      <Masthead activeNav={activeNav} setActiveNav={setActiveNav} clock={clock} counts={navCounts} instance={(data._raw && data._raw.instance) || {}} />
       {tweaks.showTicker && <Ticker data={data} />}
       <Pollers pollers={data.pollers || []} />
       <div className="shell">{body}</div>
