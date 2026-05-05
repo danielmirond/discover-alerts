@@ -1,9 +1,135 @@
 #!/usr/bin/env python3
 """Genera docs/clasico-declaraciones.xlsx con todas las citas verificadas."""
+import re
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from openpyxl.utils import get_column_letter
 from pathlib import Path
+
+# ============================================================================
+# DERIVACIÓN AUTOMÁTICA DE URL
+# ============================================================================
+# Recorre cada fila y construye la URL más probable a partir de:
+# - El tipo de fuente ("Hemeroteca digital ABC" / "Wayback Machine (...)")
+# - Las notas (timestamp del snapshot Wayback "Snap YYYY/MM/DD HH:MM UTC"
+#   o referencias en formato "snap YYYYMMDDHHMMSS").
+# - La edición (con formato "ABC Madrid DD/MM/YYYY").
+# Devuelve "" si no hay URL fiable.
+ABC_DATE_RE = re.compile(r"ABC Madrid (\d{2})/(\d{2})/(\d{4})")
+WAYBACK_SNAP_RE = re.compile(r"snap (\d{14})", re.IGNORECASE)
+WAYBACK_PRETTY_RE = re.compile(
+    r"Snap (?:Sport|Marca|AS|MD|El País|Mundo Deportivo|Mundo deportivo)? ?"
+    r"(?:web)? ?(\d{2}/\d{2}/\d{4}) (\d{2}):(\d{2}) UTC",
+    re.IGNORECASE,
+)
+
+WAYBACK_DOMAIN_HINTS = [
+    ("Marca (web)", "marca.com"),
+    ("Marca", "marca.com"),
+    ("AS (web)", "as.com"),
+    ("AS ", "as.com"),
+    ("Sport (web)", "sport.es"),
+    ("Sport ", "sport.es"),
+    ("Mundo Deportivo (web)", "mundodeportivo.com"),
+    ("Mundo Deportivo", "mundodeportivo.com"),
+    ("El País (web)", "elpais.com/deportes"),
+    ("El País", "elpais.com/deportes"),
+    ("La Gazzetta", "gazzetta.it"),
+    ("Bloody Elbow", "bloodyelbow.com"),
+    ("Olympics.com", "olympics.com"),
+    ("Cyclingnews", "cyclingnews.com"),
+    ("CNBC", "cnbc.com"),
+    ("Goal.com", "goal.com"),
+    ("ESPN", "espn.com"),
+    ("BBC", "bbc.com"),
+    ("Women's Health", "womenshealthmag.com"),
+    ("The Times", "thetimes.co.uk"),
+    ("Cadena SER", "cadenaser.com"),
+    ("Semana", "semana.es"),
+    ("GQ", "gq.com"),
+    ("Eurosport", "eurosport.es"),
+    ("Covers.com", "covers.com"),
+    ("Glamour", "glamour.es"),
+    ("El Español", "elespanol.com"),
+    ("Gasol Foundation", "gasolfoundation.org"),
+    ("Instagram", "instagram.com"),
+    ("Sport Klub", "sportklub.rs"),
+    ("Stream Ibai", "twitch.tv/ibai"),
+    ("NBC", "nbcsports.com"),
+    ("FOX 8", "fox8.com"),
+]
+
+
+def derive_url(row):
+    """Devuelve la URL más probable de la fuente, o '' si no hay."""
+    if len(row) < 10:
+        return ""
+    fecha, era, protag, cita, fuente, edicion, pagina, tipo, verif, notas = row[:10]
+
+    # 1) Wayback Machine: snap timestamp en notas + dominio en fuente
+    if "Wayback Machine" in tipo or "archive.org" in tipo:
+        # Buscar timestamp Wayback compacto en notas
+        m = WAYBACK_SNAP_RE.search(notas)
+        if not m:
+            # Buscar formato pretty "DD/MM/YYYY HH:MM UTC"
+            m2 = WAYBACK_PRETTY_RE.search(notas)
+            if m2:
+                d, mo, y = m2.group(1).split("/")
+                hh, mm = m2.group(2), m2.group(3)
+                ts = f"{y}{mo}{d}{hh}{mm}00"
+            else:
+                ts = None
+        else:
+            ts = m.group(1)
+        domain = ""
+        for prefix, dom in WAYBACK_DOMAIN_HINTS:
+            if prefix in fuente:
+                domain = dom
+                break
+        if ts and domain:
+            return f"https://web.archive.org/web/{ts}/https://www.{domain}/"
+        if domain:
+            # Calendar Wayback para el dominio
+            return f"https://web.archive.org/web/*/https://www.{domain}/"
+
+    # 2) Hemeroteca digital ABC: derivar fecha de edición
+    if "Hemeroteca digital ABC" in tipo:
+        m = ABC_DATE_RE.search(edicion)
+        if m:
+            d, mo, y = m.groups()
+            return f"https://www.abc.es/archivo/periodicos/abc-madrid-{y}{mo}{d}.html"
+
+    # 3) Fuentes con dominio en hints (sin Wayback)
+    for prefix, dom in WAYBACK_DOMAIN_HINTS:
+        if prefix in fuente:
+            return f"https://www.{dom}/"
+
+    # 4) Wikipedia / RFEF para hechos históricos
+    if "Wikipedia" in fuente or "RFEF" in fuente:
+        return "https://en.wikipedia.org/wiki/List_of_El_Cl%C3%A1sico_matches"
+
+    # 5) Patrón La Vanguardia (hemeroteca por fecha)
+    if "La Vanguardia" in fuente:
+        return "https://www.lavanguardia.com/hemeroteca"
+
+    # 6) Periódicos genéricos
+    if "Marca" in fuente:
+        return "https://www.marca.com/"
+    if "AS" in fuente or "as.com" in fuente:
+        return "https://as.com/"
+    if "Sport" in fuente:
+        return "https://www.sport.es/"
+    if "Mundo Deportivo" in fuente or "mundodeportivo" in fuente:
+        return "https://www.mundodeportivo.com/"
+    if "El País" in fuente or "elpais" in fuente:
+        return "https://elpais.com/deportes/"
+
+    # 7) Libros y memoria oral: sin URL
+    if "Libro" in tipo or "Memoria oral" in fuente or "Documental" in tipo:
+        return ""
+
+    return ""
+
 
 # ============================================================================
 # DATOS
@@ -798,7 +924,7 @@ ROWS_OTROS = [r for r in ROWS if not is_primary_archive(r)]
 def fill_sheet(ws, rows):
     HEADERS = ["Fecha", "Era / contexto", "Protagonista", "Cita literal",
                "Fuente", "Edición / publicación", "Página / lugar",
-               "Tipo fuente", "Verificado", "Notas"]
+               "Tipo fuente", "Verificado", "Notas", "URL fuente"]
 
     header_font = Font(bold=True, color="FFFFFF", size=12)
     header_fill = PatternFill("solid", fgColor="1F4E78")
@@ -823,10 +949,17 @@ def fill_sheet(ws, rows):
         cell.border = thin_border
 
     for ri, row in enumerate(rows, 2):
-        for ci, value in enumerate(row, 1):
+        # Añadir URL derivada al final
+        url = derive_url(row)
+        full_row = list(row) + [url]
+        for ci, value in enumerate(full_row, 1):
             cell = ws.cell(row=ri, column=ci, value=value)
             cell.alignment = Alignment(vertical="top", wrap_text=True)
             cell.border = thin_border
+            # URL como hyperlink si existe
+            if ci == 11 and value:
+                cell.hyperlink = value
+                cell.font = Font(color="0563C1", underline="single")
 
         verified = row[8].lower() if len(row) > 8 else ""
         if verified.startswith("sí"):
@@ -836,7 +969,7 @@ def fill_sheet(ws, rows):
         elif verified.startswith("no"):
             ws.cell(row=ri, column=9).fill = unverified_fill
 
-    widths = [12, 24, 28, 80, 20, 30, 22, 22, 14, 40]
+    widths = [12, 24, 28, 80, 20, 30, 22, 22, 14, 40, 50]
     for i, w in enumerate(widths, 1):
         ws.column_dimensions[get_column_letter(i)].width = w
 
