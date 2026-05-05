@@ -1339,8 +1339,12 @@ function InternationalView() {
   if (s.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando…</div>;
   if (s.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {s.error}</div>;
   const { countries = {}, lastPoll } = s.data || {};
-  const order = ['US', 'GB', 'MX', 'AR', 'IT'];
-  const labels = { US: '🇺🇸 USA', GB: '🇬🇧 UK', MX: '🇲🇽 México', AR: '🇦🇷 Argentina', IT: '🇮🇹 Italia' };
+  const order = ['US', 'GB', 'IT', 'FR', 'DE', 'PT', 'MX', 'AR', 'CO', 'CL', 'BR', 'JP', 'KR'];
+  const labels = {
+    US: '🇺🇸 USA', GB: '🇬🇧 UK', IT: '🇮🇹 Italia', FR: '🇫🇷 Francia',
+    DE: '🇩🇪 Alemania', PT: '🇵🇹 Portugal', MX: '🇲🇽 México', AR: '🇦🇷 Argentina',
+    CO: '🇨🇴 Colombia', CL: '🇨🇱 Chile', BR: '🇧🇷 Brasil', JP: '🇯🇵 Japón', KR: '🇰🇷 Corea',
+  };
   const cur = countries[active] || { entities: [], pages: [] };
 
   return (

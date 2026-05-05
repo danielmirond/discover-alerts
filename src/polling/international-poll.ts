@@ -23,13 +23,22 @@ export interface InternationalCountrySnap {
 const COUNTRIES = [
   { code: 'US', label: 'USA' },
   { code: 'GB', label: 'UK' },
+  { code: 'IT', label: 'Italia' },
+  { code: 'FR', label: 'Francia' },
+  { code: 'DE', label: 'Alemania' },
+  { code: 'PT', label: 'Portugal' },
   { code: 'MX', label: 'México' },
   { code: 'AR', label: 'Argentina' },
-  { code: 'IT', label: 'Italia' },
+  { code: 'CO', label: 'Colombia' },
+  { code: 'CL', label: 'Chile' },
+  { code: 'BR', label: 'Brasil' },
+  { code: 'JP', label: 'Japón' },
+  { code: 'KR', label: 'Corea Sur' },
 ];
 
-/** Categorías que consideramos deportivas (prefijo case-insensitive). */
-const SPORT_PREFIX = '/sports';
+/** Categorías que consideramos deportivas (case-insensitive prefix match).
+ * Algunos países (US, BR, JP) clasifican deporte bajo /News/Sports en DS. */
+const SPORT_PREFIXES = ['/sports', '/news/sports'];
 
 let categoryNamesCache: Record<number, string> | null = null;
 async function getCategoryNames(): Promise<Record<number, string>> {
@@ -52,7 +61,8 @@ function isSportCategory(c: string | number | undefined, names: Record<number, s
   if (c == null) return false;
   const name = typeof c === 'number' ? names[c] : c;
   if (!name) return false;
-  return name.toLowerCase().startsWith(SPORT_PREFIX);
+  const lower = name.toLowerCase();
+  return SPORT_PREFIXES.some(p => lower.startsWith(p));
 }
 
 async function fetchOne(code: string, names: Record<number, string>): Promise<InternationalCountrySnap | null> {
