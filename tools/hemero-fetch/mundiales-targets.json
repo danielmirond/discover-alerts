@@ -1,0 +1,246 @@
+{
+  "_comment": "Partidos y momentos clave de los Mundiales 1930-2022. Fechas de búsqueda en hemerotecas internacionales del DÍA SIGUIENTE (donde aparecen las crónicas).",
+  "_papers_recomendados_por_mundial": {
+    "1930": ["La Nación AR", "Clarín AR", "Folha SP"],
+    "1934": ["La Gazzetta dello Sport", "Corriere della Sera"],
+    "1950": ["Folha SP", "O Globo", "La Nación AR"],
+    "1958": ["Aftonbladet (Suecia)", "Le Monde", "ABC"],
+    "1966": ["BBC", "Daily Mail", "The Guardian"],
+    "1970": ["Folha SP", "El Universal MX", "Marca"],
+    "1974": ["Bild", "Marca", "ABC"],
+    "1978": ["La Nación AR", "Clarín AR", "ABC"],
+    "1982": ["La Gazzetta", "Marca", "ABC"],
+    "1986": ["Clarín AR", "El Gráfico", "Marca", "BBC"],
+    "1990": ["La Gazzetta", "Bild", "Marca"],
+    "1994": ["Folha SP", "ESPN", "Marca"],
+    "1998": ["L'Équipe", "Le Monde", "Marca"],
+    "2002": ["Asahi Shimbun", "Chosun (Corea)", "Marca"],
+    "2006": ["La Gazzetta", "Bild", "Marca"],
+    "2010": ["Marca", "AS", "Mundo Deportivo", "El País", "BBC"],
+    "2014": ["Folha SP", "O Globo", "Marca", "AS"],
+    "2018": ["L'Équipe", "Le Monde", "Marca"],
+    "2022": ["La Nación AR", "Clarín AR", "L'Équipe", "Marca", "AS"]
+  },
+  "targets": [
+    {
+      "id": "1930-07-30",
+      "match_date": "1930-07-30",
+      "search_dates": ["1930-07-31", "1930-08-01"],
+      "result": "Uruguay 4 - 2 Argentina",
+      "competition": "Final del primer Mundial (Uruguay 1930)",
+      "venue": "Estadio Centenario (Montevideo)",
+      "priority": "maxima",
+      "notes": "Primer Mundial de la historia. Buscar en La Nación AR, Folha SP, ABC."
+    },
+    {
+      "id": "1950-07-16",
+      "match_date": "1950-07-16",
+      "search_dates": ["1950-07-17", "1950-07-18"],
+      "result": "Uruguay 2 - 1 Brasil",
+      "competition": "Final Mundial Brasil 1950 - 'Maracanazo'",
+      "venue": "Maracaná",
+      "priority": "maxima",
+      "notes": "El Maracanazo. Brasil silenciado. Buscar Folha SP, O Globo, La Nación AR."
+    },
+    {
+      "id": "1954-07-04",
+      "match_date": "1954-07-04",
+      "search_dates": ["1954-07-05", "1954-07-06"],
+      "result": "Alemania Federal 3 - 2 Hungría",
+      "competition": "Final Mundial Suiza 1954 - 'Milagro de Berna'",
+      "venue": "Wankdorfstadion (Berna)",
+      "priority": "maxima",
+      "notes": "Hungría favorita rotunda; ganó Alemania. 'Das Wunder von Bern'."
+    },
+    {
+      "id": "1958-06-29",
+      "match_date": "1958-06-29",
+      "search_dates": ["1958-06-30", "1958-07-01"],
+      "result": "Brasil 5 - 2 Suecia",
+      "competition": "Final Mundial Suecia 1958",
+      "venue": "Råsundastadion (Solna)",
+      "priority": "maxima",
+      "notes": "Pelé con 17 años, primer Mundial brasileño. Buscar Aftonbladet, Folha SP."
+    },
+    {
+      "id": "1962-06-17",
+      "match_date": "1962-06-17",
+      "search_dates": ["1962-06-18", "1962-06-19"],
+      "result": "Brasil 3 - 1 Checoslovaquia",
+      "competition": "Final Mundial Chile 1962",
+      "venue": "Estadio Nacional (Santiago)",
+      "priority": "alta",
+      "notes": "Garrincha como protagonista (Pelé lesionado)."
+    },
+    {
+      "id": "1966-07-30",
+      "match_date": "1966-07-30",
+      "search_dates": ["1966-07-31", "1966-08-01"],
+      "result": "Inglaterra 4 - 2 Alemania Federal",
+      "competition": "Final Mundial Inglaterra 1966 - 'gol fantasma'",
+      "venue": "Wembley",
+      "priority": "maxima",
+      "notes": "El gol fantasma de Hurst. Único Mundial inglés. Bobby Moore."
+    },
+    {
+      "id": "1970-06-21",
+      "match_date": "1970-06-21",
+      "search_dates": ["1970-06-22", "1970-06-23"],
+      "result": "Brasil 4 - 1 Italia",
+      "competition": "Final Mundial México 1970",
+      "venue": "Estadio Azteca",
+      "priority": "maxima",
+      "notes": "Brasil de Pelé, posiblemente el mejor equipo de la historia. Tercer Mundial brasileño definitivo."
+    },
+    {
+      "id": "1974-07-07",
+      "match_date": "1974-07-07",
+      "search_dates": ["1974-07-08", "1974-07-09"],
+      "result": "Alemania Federal 2 - 1 Holanda",
+      "competition": "Final Mundial Alemania 1974 - 'Naranja Mecánica'",
+      "venue": "Olímpico de Múnich",
+      "priority": "maxima",
+      "notes": "Cruyff y la Holanda del fútbol total perdieron. Beckenbauer campeón."
+    },
+    {
+      "id": "1978-06-25",
+      "match_date": "1978-06-25",
+      "search_dates": ["1978-06-26", "1978-06-27"],
+      "result": "Argentina 3 - 1 Holanda",
+      "competition": "Final Mundial Argentina 1978 (en plena dictadura)",
+      "venue": "Monumental (Buenos Aires)",
+      "priority": "maxima",
+      "notes": "Mundial bajo Videla. Kempes goleador. Holanda subcampeona otra vez."
+    },
+    {
+      "id": "1982-07-11",
+      "match_date": "1982-07-11",
+      "search_dates": ["1982-07-12", "1982-07-13"],
+      "result": "Italia 3 - 1 Alemania Federal",
+      "competition": "Final Mundial España 1982",
+      "venue": "Bernabéu (Madrid)",
+      "priority": "maxima",
+      "notes": "Paolo Rossi tras volver de la sanción por 'Totonero'. Mundial en España."
+    },
+    {
+      "id": "1986-06-22",
+      "match_date": "1986-06-22",
+      "search_dates": ["1986-06-23", "1986-06-24"],
+      "result": "Argentina 2 - 1 Inglaterra",
+      "competition": "Cuartos Mundial México 1986 - 'Mano de Dios' + 'Gol del Siglo'",
+      "venue": "Estadio Azteca",
+      "priority": "maxima",
+      "notes": "Maradona: la Mano de Dios (m.51) y el gol del siglo (m.55). Post-Falklands."
+    },
+    {
+      "id": "1986-06-29",
+      "match_date": "1986-06-29",
+      "search_dates": ["1986-06-30", "1986-07-01"],
+      "result": "Argentina 3 - 2 Alemania Federal",
+      "competition": "Final Mundial México 1986",
+      "venue": "Estadio Azteca",
+      "priority": "alta",
+      "notes": "Maradona campeón. Burruchaga el gol del título."
+    },
+    {
+      "id": "1990-07-08",
+      "match_date": "1990-07-08",
+      "search_dates": ["1990-07-09", "1990-07-10"],
+      "result": "Alemania Federal 1 - 0 Argentina",
+      "competition": "Final Mundial Italia 1990 - 'Gianna' Schillaci",
+      "venue": "Olímpico de Roma",
+      "priority": "alta",
+      "notes": "Maradona llora. Goycoechea héroe en penaltis vs Italia."
+    },
+    {
+      "id": "1994-07-17",
+      "match_date": "1994-07-17",
+      "search_dates": ["1994-07-18", "1994-07-19"],
+      "result": "Brasil 0 - 0 Italia (3-2 penaltis)",
+      "competition": "Final Mundial USA 1994 - Baggio falla penalti",
+      "venue": "Rose Bowl (Pasadena)",
+      "priority": "maxima",
+      "notes": "Roberto Baggio falla el penalti decisivo. Romario MVP. Tetracampeonato Brasil."
+    },
+    {
+      "id": "1998-07-12",
+      "match_date": "1998-07-12",
+      "search_dates": ["1998-07-13", "1998-07-14"],
+      "result": "Francia 3 - 0 Brasil",
+      "competition": "Final Mundial Francia 1998",
+      "venue": "Stade de France",
+      "priority": "maxima",
+      "notes": "Zidane doblete. Misterio de Ronaldo Nazario antes del partido."
+    },
+    {
+      "id": "2002-06-30",
+      "match_date": "2002-06-30",
+      "search_dates": ["2002-07-01", "2002-07-02"],
+      "result": "Brasil 2 - 0 Alemania",
+      "competition": "Final Mundial Corea-Japón 2002",
+      "venue": "Estadio Internacional (Yokohama)",
+      "priority": "maxima",
+      "notes": "Ronaldo Nazário 'redención': 8 goles del Mundial. Pentacampeonato Brasil."
+    },
+    {
+      "id": "2006-07-09",
+      "match_date": "2006-07-09",
+      "search_dates": ["2006-07-10", "2006-07-11"],
+      "result": "Italia 1 - 1 Francia (5-3 penaltis)",
+      "competition": "Final Mundial Alemania 2006 - 'Cabezazo' Zidane a Materazzi",
+      "venue": "Olímpico (Berlín)",
+      "priority": "maxima",
+      "notes": "Zidane cabezazo a Materazzi en su último partido. Roja. Italia campeona."
+    },
+    {
+      "id": "2010-07-11",
+      "match_date": "2010-07-11",
+      "search_dates": ["2010-07-12", "2010-07-13"],
+      "result": "España 1 - 0 Holanda (prórroga)",
+      "competition": "Final Mundial Sudáfrica 2010 - Iniesta gol",
+      "venue": "Soccer City (Johannesburgo)",
+      "priority": "maxima",
+      "notes": "Gol de Iniesta. Casillas capitán. Único Mundial español."
+    },
+    {
+      "id": "2014-07-08",
+      "match_date": "2014-07-08",
+      "search_dates": ["2014-07-09", "2014-07-10"],
+      "result": "Alemania 7 - 1 Brasil",
+      "competition": "Semifinal Mundial Brasil 2014 - 'Mineirazo'",
+      "venue": "Mineirão (Belo Horizonte)",
+      "priority": "maxima",
+      "notes": "Humillación histórica de Brasil en su Mundial. 5 goles en 18 minutos."
+    },
+    {
+      "id": "2014-07-13",
+      "match_date": "2014-07-13",
+      "search_dates": ["2014-07-14", "2014-07-15"],
+      "result": "Alemania 1 - 0 Argentina (prórroga)",
+      "competition": "Final Mundial Brasil 2014",
+      "venue": "Maracaná",
+      "priority": "alta",
+      "notes": "Götze gol decisivo en prórroga. Messi subcampeón."
+    },
+    {
+      "id": "2018-07-15",
+      "match_date": "2018-07-15",
+      "search_dates": ["2018-07-16", "2018-07-17"],
+      "result": "Francia 4 - 2 Croacia",
+      "competition": "Final Mundial Rusia 2018 - Mbappé 19 años",
+      "venue": "Luzhniki (Moscú)",
+      "priority": "maxima",
+      "notes": "Mbappé el segundo más joven en marcar en final desde Pelé. Modric Balón de Oro."
+    },
+    {
+      "id": "2022-12-18",
+      "match_date": "2022-12-18",
+      "search_dates": ["2022-12-19", "2022-12-20"],
+      "result": "Argentina 3 - 3 Francia (4-2 penaltis)",
+      "competition": "Final Mundial Qatar 2022 - 'la mejor final de la historia'",
+      "venue": "Lusail",
+      "priority": "maxima",
+      "notes": "Messi campeón del mundo. Mbappé hat-trick en final perdida. La Scaloneta."
+    }
+  ]
+}
