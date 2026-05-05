@@ -330,69 +330,77 @@ ROWS = [
 # ============================================================================
 
 wb = Workbook()
-ws = wb.active
-ws.title = "Clásico - Citas"
+wb.remove(wb.active)  # Quitamos hoja por defecto
 
-HEADERS = ["Fecha", "Era / contexto", "Protagonista", "Cita literal",
-           "Fuente", "Edición / publicación", "Página / lugar",
-           "Tipo fuente", "Verificado", "Notas"]
+# Separamos en dos hojas según fuente
+ROWS_HEMERO = [r for r in ROWS if "Hemeroteca digital" in r[7]]
+ROWS_OTROS = [r for r in ROWS if "Hemeroteca digital" not in r[7]]
 
-# Estilos
-header_font = Font(bold=True, color="FFFFFF", size=12)
-header_fill = PatternFill("solid", fgColor="1F4E78")
-header_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-verified_fill = PatternFill("solid", fgColor="D5E8D4")  # verde claro
-partial_fill = PatternFill("solid", fgColor="FFF2CC")   # amarillo claro
-unverified_fill = PatternFill("solid", fgColor="F8CECC")  # rojo claro
+def fill_sheet(ws, rows):
+    HEADERS = ["Fecha", "Era / contexto", "Protagonista", "Cita literal",
+               "Fuente", "Edición / publicación", "Página / lugar",
+               "Tipo fuente", "Verificado", "Notas"]
 
-thin_border = Border(
-    left=Side(style="thin", color="CCCCCC"),
-    right=Side(style="thin", color="CCCCCC"),
-    top=Side(style="thin", color="CCCCCC"),
-    bottom=Side(style="thin", color="CCCCCC"),
-)
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    header_fill = PatternFill("solid", fgColor="1F4E78")
+    header_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-# Headers
-for col, header in enumerate(HEADERS, 1):
-    cell = ws.cell(row=1, column=col, value=header)
-    cell.font = header_font
-    cell.fill = header_fill
-    cell.alignment = header_align
-    cell.border = thin_border
+    verified_fill = PatternFill("solid", fgColor="D5E8D4")
+    partial_fill = PatternFill("solid", fgColor="FFF2CC")
+    unverified_fill = PatternFill("solid", fgColor="F8CECC")
 
-# Filas
-for ri, row in enumerate(ROWS, 2):
-    for ci, value in enumerate(row, 1):
-        cell = ws.cell(row=ri, column=ci, value=value)
-        cell.alignment = Alignment(vertical="top", wrap_text=True)
+    thin_border = Border(
+        left=Side(style="thin", color="CCCCCC"),
+        right=Side(style="thin", color="CCCCCC"),
+        top=Side(style="thin", color="CCCCCC"),
+        bottom=Side(style="thin", color="CCCCCC"),
+    )
+
+    for col, header in enumerate(HEADERS, 1):
+        cell = ws.cell(row=1, column=col, value=header)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_align
         cell.border = thin_border
 
-    verified = row[8].lower() if len(row) > 8 else ""
-    if verified.startswith("sí"):
-        ws.cell(row=ri, column=9).fill = verified_fill
-    elif verified.startswith("parcial"):
-        ws.cell(row=ri, column=9).fill = partial_fill
-    elif verified.startswith("no"):
-        ws.cell(row=ri, column=9).fill = unverified_fill
+    for ri, row in enumerate(rows, 2):
+        for ci, value in enumerate(row, 1):
+            cell = ws.cell(row=ri, column=ci, value=value)
+            cell.alignment = Alignment(vertical="top", wrap_text=True)
+            cell.border = thin_border
 
-# Anchos de columna
-widths = [12, 24, 28, 80, 20, 30, 22, 22, 14, 40]
-for i, w in enumerate(widths, 1):
-    ws.column_dimensions[get_column_letter(i)].width = w
+        verified = row[8].lower() if len(row) > 8 else ""
+        if verified.startswith("sí"):
+            ws.cell(row=ri, column=9).fill = verified_fill
+        elif verified.startswith("parcial"):
+            ws.cell(row=ri, column=9).fill = partial_fill
+        elif verified.startswith("no"):
+            ws.cell(row=ri, column=9).fill = unverified_fill
 
-# Altura de filas
-ws.row_dimensions[1].height = 32
+    widths = [12, 24, 28, 80, 20, 30, 22, 22, 14, 40]
+    for i, w in enumerate(widths, 1):
+        ws.column_dimensions[get_column_letter(i)].width = w
 
-# Freeze header
-ws.freeze_panes = "A2"
+    ws.row_dimensions[1].height = 32
+    ws.freeze_panes = "A2"
+    ws.auto_filter.ref = ws.dimensions
 
-# Filtro
-ws.auto_filter.ref = ws.dimensions
+
+# Pestaña 1 — fuentes primarias verificadas en hemeroteca ABC
+ws1 = wb.create_sheet("Hemeroteca ABC verificadas")
+fill_sheet(ws1, ROWS_HEMERO)
+
+# Pestaña 2 — el resto de declaraciones (prensa primaria web, libros, vídeo, etc.)
+ws2 = wb.create_sheet("Otras citas")
+fill_sheet(ws2, ROWS_OTROS)
 
 # Guardar
 out = Path(__file__).resolve().parents[1] / "docs" / "clasico-declaraciones.xlsx"
 out.parent.mkdir(exist_ok=True)
 wb.save(out)
 print(f"Generado: {out}")
-print(f"Filas: {len(ROWS)}")
+print(f"  Hoja 1 (hemeroteca verificadas): {len(ROWS_HEMERO)} filas")
+print(f"  Hoja 2 (otras citas): {len(ROWS_OTROS)} filas")
+print(f"  Total: {len(ROWS)}")
+
