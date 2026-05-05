@@ -195,6 +195,7 @@ interface LiveViewResponse {
   recentAlerts: LiveRecentAlert[];
   topMedia: LiveTopMedia[];
   instance?: { name: string; vertical: string | null };
+  patternsByMedia?: Array<any>;
   cultural?: Array<any>;
   culturalEntityHits?: Array<any>;
   aemetEnriched?: Array<any>;
@@ -1368,6 +1369,36 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     lastPollTrends: state.lastPollTrends,
     lastPollMedia: state.lastPollMedia,
     lastPollX: state.lastPollX,
+    // === PATTERNS BY MEDIO (n-gramas más usados por cada cabecera) ===
+    // Agrupa state.mediaArticles por feedName, normaliza títulos, extrae
+    // 3-grams filtrando stopwords y devuelve top 5 patrones por medio.
+    // Útil para ver qué fórmula editorial domina en Marca vs AS vs MD, etc.
+    patternsByMedia: (() => {
+      const mediaStopwords = new Set(['el','la','los','las','un','una','de','en','y','o','que','es','por','con','para','como','se','su','sus','le','les','lo','mas','ya','no','si','del','al','este','esta','estos','estas','ese','esa','pero','sin','sobre','entre','hasta','desde','muy','todo','toda','todos','todas','asi','tras','solo','tan','tambien','aun','mientras','cuando','donde','quien','cual','tras','segun','desde','contra','hace','dice','tiene','dijo','tras','tienen','dicen','va','van','ha','han','hay','sera','seran','fue','fueron']);
+      const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !mediaStopwords.has(w));
+      const trigrams = (words: string[]) => { const out: string[] = []; for (let i = 0; i <= words.length - 3; i++) out.push(words.slice(i, i + 3).join(' ')); return out; };
+      const byFeed = new Map<string, { count: number; ngrams: Map<string, number> }>();
+      for (const art of Object.values(state.mediaArticles || {})) {
+        if (!art.feedName || !art.title) continue;
+        let row = byFeed.get(art.feedName);
+        if (!row) { row = { count: 0, ngrams: new Map() }; byFeed.set(art.feedName, row); }
+        row.count++;
+        const words = norm(art.title);
+        for (const tg of trigrams(words)) row.ngrams.set(tg, (row.ngrams.get(tg) || 0) + 1);
+      }
+      const out: Array<{ feedName: string; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }> }> = [];
+      for (const [feedName, row] of byFeed) {
+        if (row.count < 5) continue; // medios con muy pocos artículos no tienen patrón consolidado
+        const sorted = [...row.ngrams.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+        const topPatterns = sorted
+          .filter(([, c]) => c >= 2)
+          .map(([ngram, c]) => ({ ngram, count: c, share: Math.round((c / row.count) * 100) }));
+        if (topPatterns.length === 0) continue;
+        out.push({ feedName, articleCount: row.count, topPatterns });
+      }
+      return out.sort((a, b) => b.articleCount - a.articleCount).slice(0, 30);
+    })(),
+
     // Sucesos/legal/cultural/aemet no aplican en instancias verticales (sport)
     cultural: process.env.DS_CATEGORY_FILTER ? [] : culturalItems,
     culturalEntityHits: process.env.DS_CATEGORY_FILTER ? [] : Array.from(culturalEntityHits.entries()).map(([entity, hits]) => ({ entity, hits })),
