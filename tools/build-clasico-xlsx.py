@@ -1,0 +1,398 @@
+#!/usr/bin/env python3
+"""Genera docs/clasico-declaraciones.xlsx con todas las citas verificadas."""
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
+from pathlib import Path
+
+# ============================================================================
+# DATOS
+# ============================================================================
+
+# Cada fila: (fecha, era, protagonista, cita, fuente, edicion, pagina, tipo, verificado, notas)
+
+ROWS = [
+    # ============ HEMEROTECA ABC VERIFICADAS (las joyas) ============
+    ("1943-06-15", "El 11-1 (1943)", "ABC Madrid",
+     "(Portada dedicada a 'SOLEMNES ACTOS RELIGIOSOS EN TOLEDO' — el 11-1 NO aparece)",
+     "ABC", "ABC Madrid 15/06/1943", "Portada",
+     "Hemeroteca digital ABC", "Sí",
+     "Hallazgo: ABC NO destacó el 11-1 en portada dos días después del partido."),
+    ("1943-06-16", "El 11-1 (1943)", "ABC Madrid",
+     "(Portada dedicada a 'EL MINISTRO DE AGRICULTURA, EN GALICIA' — el 11-1 NO aparece)",
+     "ABC", "ABC Madrid 16/06/1943", "Portada",
+     "Hemeroteca digital ABC", "Sí",
+     "Hallazgo: ABC tampoco destacó el 11-1 en portada el lunes."),
+    ("1974-02-19", "Cruyff 0-5 al Bernabéu", "ABC Madrid",
+     "Pasará la mala racha. Un Barcelona deslumbrante, articulado por ese genio del fútbol que es Joan Cruyff, goleó al Real Madrid en el Estadio Bernabéu. Unimos el aplauso sin reservas al gran Club azulgrana con el estímulo para que directivos, técnicos y jugadores del Madrid no pierdan la moral y superen el bache que hoy afecta al que durante muchos años fue el indiscutible mejor equipo del mundo. La hinchada madridista, una de las más deportivas y tenaces de España, debe apoyar ahora con más entusiasmo que nunca al histórico Club blanco.",
+     "ABC", "ABC Madrid 19/02/1974", "Portada (pie de foto)",
+     "Hemeroteca digital ABC", "Sí",
+     "ABC (madridista) reconoce 'sin reservas' la genialidad de Cruyff."),
+    ("1983-09-25", "Goikoetxea-Maradona", "ABC Madrid",
+     "(Portada dedicada a 'EL GOBIERNO SOCIALISTA TOPA CON LA IGLESIA' — la lesión NO aparece)",
+     "ABC", "ABC Madrid 25/09/1983", "Portada",
+     "Hemeroteca digital ABC", "Sí",
+     "Hallazgo: ABC NO destacó la patada de Goikoetxea a Maradona en portada."),
+    ("1983-09-26", "Goikoetxea-Maradona", "ABC Madrid",
+     "(Portada 'NUEVOS POBRES' — la lesión NO aparece)",
+     "ABC", "ABC Madrid 26/09/1983", "Portada",
+     "Hemeroteca digital ABC", "Sí",
+     "Hallazgo: tampoco destacó al lunes siguiente."),
+    ("1994-01-09", "Manita Dream Team", "ABC Madrid",
+     "5-0: GOLEADA HISTÓRICA DEL BARCELONA AL REAL MADRID EN EL NOU CAMP",
+     "ABC", "ABC Madrid 09/01/1994", "Portada (Sección Deportes)",
+     "Hemeroteca digital ABC", "Sí",
+     "Triplete de Romario, gol de Koeman e Iván Iglesias. Cruyff entrenador."),
+    ("1995-01-08", "Venganza 5-0 (1995)", "ABC Madrid",
+     "5-0: HISTÓRICA GOLEADA DEL REAL MADRID AL BARCELONA. El Real Madrid se impuso ayer al [Barcelona] por un resultado (5-0) que ya ha entrado en la historia del club de Chamartín, en un intenso partido que había despertado una inusitada expectación. El equipo blanco, arropado por más de cien mil personas que abarrotaron el Bernabéu, arrolló a su rival con una goleada que pudo ser aun mayor. El madridista Zamorano se convirtió en el héroe del partido al anotar tres tantos. Toda España estuvo pendiente del choque entre dos de los más grandes clubes mundiales, que ofrecieron un gran espectáculo presidido por la deportividad, sólo empañada por una aislada acción de Stoichkov.",
+     "ABC", "ABC Madrid 08/01/1995", "Portada",
+     "Hemeroteca digital ABC", "Sí",
+     "365 días después de la manita. Triplete de Zamorano. Stoichkov expulsado."),
+    ("2002-11-24", "Cochinillo a Figo", "Joan Gaspart (presidente FC Barcelona)",
+     "El público reaccionó ante una provocación. (Recogido por ABC) Violencia en las gradas del Camp Nou en un partido que empató el Madrid (0-0). El árbitro suspendió el encuentro durante quince minutos por el lanzamiento masivo de objetos a Luis Figo.",
+     "ABC", "ABC Madrid 24/11/2002", "Portada (también pp 112-116)",
+     "Hemeroteca digital ABC", "Sí",
+     "Foto: 'Luis Figo en el momento de sacar un córner custodiado por la Policía' (foto: Ignacio Gil)."),
+    ("2002-11-25", "Cochinillo a Figo", "ABC Madrid",
+     "Según el Reglamento, el Camp Nou debería ser clausurado. La infracción grave prevé una sanción de uno a tres partidos; la muy grave, de cuatro a una temporada.",
+     "ABC", "ABC Madrid 25/11/2002", "Portada (también pp 92-94)",
+     "Hemeroteca digital ABC", "Sí",
+     "Editorial pidiendo la clausura del Camp Nou."),
+    ("2005-11-20", "Ronaldinho ovación Bernabéu", "ABC Madrid",
+     "Un gran Barça le pasa por encima al Real Madrid. El Bernabéu se rinde al Balón de Oro. Ronaldinho, autor de dos de los tres goles de su equipo, recibió la ovación de los espectadores tras marcar el 0-3 definitivo.",
+     "ABC", "ABC Madrid 20/11/2005", "Portada (pp 89-93)",
+     "Hemeroteca digital ABC", "Sí",
+     "Foto: 'Ronaldinho fue el gran protagonista del partido. En la imagen, se escapa del marcaje de Sergio Ramos' (foto: Ignacio Gil)."),
+    ("2009-05-03", "2-6 Pep primer año", "ABC Madrid",
+     "El Barça sentencia la Liga. Histórica goleada (2-6) de los azulgrana, que se exhibieron ante un débil Real Madrid. El gesto de decepción de Casillas resume el sentimiento del madridismo al ver cómo vuela el título.",
+     "ABC", "ABC Madrid 03/05/2009", "Portada (pp 88+)",
+     "Hemeroteca digital ABC", "Sí",
+     "ABC reconoce 'un débil Real Madrid'."),
+    ("2010-11-30", "Manita a Mou (5-0)", "ABC Madrid",
+     "BARÇA-REAL MADRID. Guardiola humilla a Mourinho. La estrategia del Barça en el derbi ante el Real Madrid se resolvió con una lección táctica de Pep Guardiola sobre Mourinho, que coloca líderes a los azulgrana. 5-0",
+     "ABC", "ABC Madrid 30/11/2010", "Portada (Deportes 6-7 y 68-77)",
+     "Hemeroteca digital ABC", "Sí",
+     "Periódico afín al Madrid titula 'Guardiola humilla a Mourinho'."),
+    ("2011-04-27", "RP del 'puto jefe'", "ABC Madrid",
+     "Choque antes de la batalla final. Mourinho y Guardiola protagonizaron su primer rifirrafe la víspera de la semifinal de la Champions.",
+     "ABC", "ABC Madrid 27/04/2011", "Portada (Deportes 74-77)",
+     "Hemeroteca digital ABC", "Sí",
+     "Mismo día de la rueda de prensa donde Pep dijo 'él es el puto jefe'."),
+    ("2011-04-28", "0-2 Champions, roja Pepe, UNICEF", "ABC Madrid",
+     "Mou, expulsado. Messi pesca en medio de la bronca (0-2) y obliga al Real Madrid a una proeza en el Camp Nou.",
+     "ABC", "ABC Madrid 28/04/2011", "Portada (Deportes 70-76)",
+     "Hemeroteca digital ABC", "Sí",
+     "Mismo día de la rajada de Mou con UNICEF y 'Champions vergonzosa'."),
+    ("2011-04-29", "0-2 Champions, denuncias", "ABC Madrid",
+     "Madrid y Barcelona cruzan denuncias ante la UEFA",
+     "ABC", "ABC Madrid 29/04/2011", "Portada (pp 92-94)",
+     "Hemeroteca digital ABC", "Sí", ""),
+    ("2011-08-18", "Dedo en el ojo a Tito", "ABC Madrid",
+     "Un Madrid con garra no evita el primer título del Barcelona (sólo en pie). Portada eclipsada por la JMJ del Papa.",
+     "ABC", "ABC Madrid 18/08/2011", "Portada (página 62)",
+     "Hemeroteca digital ABC", "Sí",
+     "Hallazgo: el dedo en el ojo NO llegó a portada — ese día llegaba Benedicto XVI a Madrid para la JMJ."),
+    ("2015-11-22", "Iniesta ovación Bernabéu", "ABC Madrid",
+     "SONORO MINUTO DE SILENCIO CONTRA EL TERRORISMO. El Real Madrid-Barcelona (0-4) se jugó con normalidad entre medidas de seguridad inéditas. Una gran bandera de Francia fue desplegada ayer en el Bernabéu a los acordes de La Marsellesa en homenaje a las víctimas de los atentados de París. Rajoy acudió al Bernabéu.",
+     "ABC", "ABC Madrid 22/11/2015", "Portada",
+     "Hemeroteca digital ABC", "Sí",
+     "Hallazgo: ovación a Iniesta eclipsada por los atentados de París (8 días antes)."),
+    ("2025-10-27", "Bronca Yamal-Carvajal-Vinicius", "ABC Madrid",
+     "(Portada dedicada a Mazón y la dana en Valencia — el Clásico NO aparece)",
+     "ABC", "ABC Madrid 27/10/2025", "Portada",
+     "Hemeroteca digital ABC", "Sí",
+     "Hallazgo: la bronca NO llegó a portada — el día está dominado por la crisis de Mazón."),
+    ("2025-10-28", "Bronca Yamal-Carvajal-Vinicius", "ABC Madrid",
+     "(Portada dedicada a Extremadura adelantando elecciones — el Clásico NO aparece)",
+     "ABC", "ABC Madrid 28/10/2025", "Portada",
+     "Hemeroteca digital ABC", "Sí",
+     "Hallazgo: tampoco llegó al martes."),
+
+    # ============ ORIGENES (1902-1929) ============
+    ("1902-05-13", "Primer Clásico", "Madrid FC vs FC Barcelona",
+     "Madrid FC 1 - 3 FC Barcelona. Primer Clásico de la historia. Los catalanes, con más experiencia (3 años), ganan al recién creado Madrid FC.",
+     "Wikipedia / RFEF", "—", "—",
+     "Documental", "Sí (hecho histórico)",
+     "Copa de la Coronación, semifinal. Hipódromo (Madrid)."),
+    ("1929-02-17", "Primer Clásico de Liga", "FC Barcelona vs Real Madrid",
+     "Real Madrid 2-1 FC Barcelona. Primer Clásico de la primera Liga española.",
+     "Wikipedia / RFEF", "—", "—",
+     "Documental", "Sí (hecho histórico)",
+     "Les Corts, 2ª jornada de la 1ª Liga."),
+
+    # ============ DI STÉFANO / KUBALA (años 50) ============
+    ("1953-07-24", "Di Stéfano ficha", "Alfredo Di Stéfano",
+     "Yo he venido a España para jugar en el Barcelona.",
+     "Marca", "Marca 24/07/1953", "—",
+     "Prensa primaria", "Parcial (no localizada en hemeroteca BNE)",
+     "Acabó fichando por el Madrid. Caso histórico."),
+    ("1953-10-25", "Di Stéfano vs Kubala", "Daucik (entrenador Barça)",
+     "Di Stéfano es más ágil y resistente, pero no llega al nivel de Kubala en concepción del juego.",
+     "Marca", "Marca octubre 1953", "—",
+     "Prensa primaria", "Parcial",
+     "Análisis previo al primer Di Stéfano-Kubala."),
+    ("1953-10-25", "Di Stéfano vs Kubala", "Marca",
+     "Kubala, el mejor interior del mundo.",
+     "Marca", "Marca octubre 1953", "Titular",
+     "Prensa primaria", "Parcial", ""),
+    ("1953-10-25", "Di Stéfano vs Kubala", "La Vanguardia",
+     "La gente solo se fija en dos hombres: Kubala y Di Stéfano.",
+     "La Vanguardia", "La Vanguardia octubre 1953", "Corresponsal Madrid",
+     "Prensa primaria", "Parcial", ""),
+    ("1965-09-26", "Era Bernabéu presidente", "Santiago Bernabéu (presidente Madrid)",
+     "El colegiado Leafe fue el mejor jugador del Barça.",
+     "Memoria oral / Futbol Gate", "—", "—",
+     "Documental", "Parcial",
+     "Comentario sarcástico sobre arbitraje."),
+    ("1965-09-26", "Era Bernabéu presidente", "Francisco Gento",
+     "Se quería que otro club ganara la Copa de Europa, no siempre el mismo.",
+     "Memoria oral", "—", "—",
+     "Documental", "Parcial", ""),
+
+    # ============ MARADONA (1983) ============
+    ("1983-06-26", "Maradona ovacionado Bernabéu", "Diego Armando Maradona",
+     "Carrasco me la dio en mitad de campo, me llevé al portero por delante y esperé a Juan José, que ya venía, y le dejé pasar. Se rompió las pelotas contra el palo y yo la empujé. Después nos cruzamos y le pedí perdón. Me mandó a la mierda.",
+     "Olé (entrevista)", "Olé, años después", "—",
+     "Prensa secundaria", "Sí",
+     "Final Copa de la Liga ida, Bernabéu 2-2."),
+    ("1983-09-24", "Goikoetxea-Maradona", "Diego Maradona",
+     "Me partió el tobillo en nuestro campo, a 60 metros del arco de ellos. Nunca creí que iba a venirme a buscar con tanta mala leche. Cuando paro la pelota, siento un 'crack', como cuando se rompe una madera.",
+     "Múltiples (ESPN, Vice, La Nación)", "Diversas entrevistas posteriores", "—",
+     "Prensa secundaria", "Sí",
+     "Fractura del maléolo peroneal."),
+    ("1983-09-24", "Goikoetxea-Maradona", "César Luis Menotti (entrenador Barça)",
+     "Deberá morirse alguien para que cambien las cosas.",
+     "Prensa española época", "Sept 1983", "—",
+     "Prensa secundaria", "Sí", ""),
+    ("1983-09-24", "Goikoetxea-Maradona", "Javier Clemente (entrenador Athletic)",
+     "Estoy orgulloso de mis jugadores.",
+     "Prensa española época", "Sept 1983", "—",
+     "Prensa secundaria", "Sí", ""),
+    ("1983-09-24", "Goikoetxea-Maradona", "Andoni Goikoetxea",
+     "Fue una acción más del partido, no merezco ninguna sanción. Viví lo peor y lo mejor del fútbol con solo cuatro días de diferencia, por eso las guardo (las botas).",
+     "Múltiples (Panenka, ESPN)", "Posterior", "—",
+     "Prensa secundaria", "Sí",
+     "Sancionado con 18 partidos (rebajados a 7-10)."),
+
+    # ============ STOICHKOV ============
+    ("2003", "Stoichkov", "Hristo Stoichkov",
+     "Siempre voy a odiar al Real Madrid. Es más fácil que se abra la tierra a que yo acepte trabajar en ese club. El Real Madrid me da ganas de vomitar.",
+     "Múltiples (Milenio, Facebook FCBarcelonista)", "2003", "—",
+     "Prensa secundaria", "Sí", ""),
+    ("2000s", "Stoichkov", "Hristo Stoichkov",
+     "El Madrid me da asco, nunca me veréis con una camiseta blanca.",
+     "Múltiples", "—", "—",
+     "Prensa secundaria", "Sí", ""),
+
+    # ============ FIGO 2002 ============
+    ("2002-11-23", "Cochinillo a Figo", "Luis Figo",
+     "No me siento ni Judas ni traidor.",
+     "Memorias del Fútbol / Infobae", "Posterior", "—",
+     "Prensa secundaria", "Sí",
+     "Lanzamientos: cabeza de cochinillo, botellas whisky, agua, móviles. Pancartas 'Judas'. 110 dB."),
+
+    # ============ ERA MOURINHO-PEP (2010-2013) ============
+    ("2011-04-26", "RP del 'puto jefe'", "Pep Guardiola",
+     "Como Mou me trata de Pep, yo le voy a tratar de José. No le conozco personalmente, pero al gerente que sí le conoce, mañana a las 8.45 nos enfrentamos en el campo. Fuera del campo, él ya ha ganado todo el año. Que se lleve la Champions personal fuera del campo, se la regalo y nos vamos a casa. En esta sala (de prensa), él es el puto jefe, el puto amo. Yo no quiero competir con él aquí ni un instante.",
+     "Libertad Digital, Goal, TUDN", "26/04/2011", "Bernabéu (sala de prensa)",
+     "Prensa primaria contemporánea", "Sí",
+     "Rueda de prensa previa Champions semifinal."),
+    ("2011-04-27", "RP UNICEF Mou", "José Mourinho",
+     "¿Por qué? ¿Por qué? Yo no entiendo por qué. No sé si es por la publicidad de UNICEF, no sé si son muy simpáticos. Stark, Ovrebo, De Bleeckere, Bussaca... no entiendo por qué.",
+     "Libertad Digital", "27/04/2011", "Sala de prensa Bernabéu",
+     "Prensa primaria contemporánea", "Sí",
+     "Tras roja a Pepe en 0-2 Champions."),
+    ("2011-04-27", "RP UNICEF Mou", "José Mourinho",
+     "Guardiola ha ganado una Champions que a mí me daría vergüenza haber ganado.",
+     "Libertad Digital", "27/04/2011", "Sala de prensa Bernabéu",
+     "Prensa primaria contemporánea", "Sí", ""),
+    ("2011-08-17", "Dedo en el ojo a Tito Vilanova", "José Mourinho (acción)",
+     "(Mourinho mete el dedo en el ojo a Tito Vilanova, segundo de Pep, durante tangana al final del partido.)",
+     "Goal, El Nacional, vídeo viral", "17/08/2011", "Camp Nou",
+     "Vídeo + prensa", "Sí",
+     "Sanción: 2 partidos. Imagen icónica con 'El Observador' (Francesc Satorra)."),
+    ("Posterior", "Dedo en el ojo a Tito Vilanova", "José Mourinho",
+     "Fallé. (Tras la muerte de Vilanova)",
+     "El Nacional", "—", "—",
+     "Prensa secundaria", "Sí", ""),
+    ("2020-12", "Casillas-Mourinho topo", "Iker Casillas",
+     "Asumí que yo era el topo.",
+     "Infobae, El Español, Libertad Digital", "Documental 2020", "—",
+     "Prensa primaria contemporánea", "Sí",
+     "Reconciliación posterior."),
+    ("2020-12", "Casillas-Mourinho topo", "Antón Meana (Cadena SER)",
+     "Topo ninguno. Había filtraciones y alguna filtración salía permanentemente del cuerpo técnico de Mourinho.",
+     "Defensa Central", "2020", "—",
+     "Prensa primaria contemporánea", "Sí", ""),
+    ("2025-10-23", "Casillas-Mourinho posterior", "Iker Casillas",
+     "La gente se queda con el odio (hate), pero con el tiempo todo cambia.",
+     "Infobae", "23/10/2025", "—",
+     "Prensa primaria", "Sí", ""),
+
+    # ============ INIESTA / OVACIÓN BERNABEU 2015 ============
+    ("2015-11-21", "Iniesta ovación Bernabéu", "Andrés Iniesta",
+     "Quiero agradecer a los fans. Nos sentimos muy bien, jugamos un partido completo en todos los sentidos. Les dimos pocas opciones, apenas perdimos el balón.",
+     "Sphera Sports, Tribuna, Goal", "21/11/2015", "Bernabéu",
+     "Prensa primaria contemporánea", "Sí",
+     "Madrid 0-4 Barça."),
+    ("2015-11-21", "Iniesta ovación Bernabéu", "Luis Enrique (entrenador Barça)",
+     "Andrés Iniesta es patrimonio de la humanidad, no sólo de los culés.",
+     "Sphera Sports, beIN", "21/11/2015", "—",
+     "Prensa primaria contemporánea", "Sí", ""),
+
+    # ============ PIQUÉ vs RAMOS 2017 ============
+    ("2017-04-23", "Ramos-Piqué", "Sergio Ramos",
+     "¡Habla ahora, habla ahora!",
+     "Líbero, Goal", "23/04/2017", "Bernabéu",
+     "Vídeo + prensa", "Sí",
+     "Tras roja a Ramos, señalando a la grada hacia Piqué."),
+    ("2017", "Ramos-Piqué", "Gerard Piqué",
+     "Desde el palco del Bernabéu se mueven los hilos del país. Se va a arrepentir cuando llegue a casa. Mi relación con él (Ramos) no es muy buena, pero está mejorando.",
+     "Goal, Líbero", "Abril 2017", "Twitter / RP",
+     "Prensa primaria contemporánea", "Sí", ""),
+    ("Posterior", "Pepe-Piqué", "Gerard Piqué",
+     "Una escena monumental. Ver esa roja [a Pepe] fue uno de los mayores placeres que he tenido en mi vida.",
+     "Goal", "Posterior", "—",
+     "Prensa secundaria", "Sí", ""),
+
+    # ============ 2-6 (2009) PUYOL ============
+    ("2009-05-02", "2-6 Pep primer año", "Carles Puyol",
+     "(Celebra besando el brazalete de capitán con la bandera catalana ante la afición del Bernabéu.)",
+     "Bleacher Report", "2009", "Bernabéu",
+     "Vídeo histórico", "Sí",
+     "Madrid 2-6 Barça."),
+    ("2025", "Puyol Clásicos Leyendas", "Carles Puyol",
+     "Un clásico siempre es un clásico. Todos quieren ganar.",
+     "Infobae", "2025", "Costa Rica (Clásico Leyendas)",
+     "Prensa primaria contemporánea", "Sí", ""),
+
+    # ============ CRISTIANO vs MESSI ============
+    ("2022-2024", "Cristiano vs Messi", "Cristiano Ronaldo",
+     "¿Messi es mejor que yo? No estoy de acuerdo. No quiero ser humilde.",
+     "Piers Morgan / La Nación", "Entrevistas múltiples", "—",
+     "Prensa primaria contemporánea", "Sí", ""),
+    ("2022-2024", "Cristiano vs Messi", "Cristiano Ronaldo",
+     "Nos respetamos mucho. No somos amigos, pero compartimos 15 años en el stage de los premios y siempre nos llevamos muy bien. La prensa siempre quiso vender que éramos enemigos, pero no es cierto.",
+     "Múltiples", "—", "—",
+     "Prensa primaria contemporánea", "Sí", ""),
+    ("2023", "Messi sobre Cristiano", "Lionel Messi",
+     "Una batalla, entre comillas. (Sobre los Clásicos)",
+     "L'Équipe (tras Balón de Oro)", "2023", "—",
+     "Prensa primaria contemporánea", "Sí", ""),
+
+    # ============ LAMINE YAMAL ============
+    ("2025-03", "Lamine Yamal", "Lamine Yamal",
+     "El Madrid es el rival a batir.",
+     "AS", "Marzo 2025", "—",
+     "Prensa primaria contemporánea", "Sí", ""),
+    ("2025-10", "Lamine Yamal", "Lamine Yamal",
+     "Roban, se quejan… (sobre el Madrid en transmisión Kings League con Ibai)",
+     "Múltiples (Infobae, Eurosport)", "Octubre 2025", "—",
+     "Stream + prensa", "Sí", ""),
+    ("2025-10-26", "Bronca Yamal-Carvajal", "Vinicius Junior",
+     "Solo das pases atrás, solo das pases atrás. Tú hablas mucho, habla ahora.",
+     "Infobae, Eurosport, SDP Noticias", "Tras Madrid 2-1 Barça", "Bernabéu",
+     "Vídeo + prensa", "Sí",
+     "Eco directo al 'habla ahora' de Sergio Ramos a Piqué de 2017."),
+    ("2025-10-26", "Bronca Yamal-Carvajal", "Dani Carvajal (capitán Madrid)",
+     "Tú hablas mucho. Tú hablas mucho.",
+     "Infobae, Eurosport", "Tras Madrid 2-1 Barça", "Bernabéu",
+     "Vídeo + prensa", "Sí", ""),
+
+    # ============ EL CHIRINGUITO ============
+    ("2010s-2020s", "El Chiringuito", "Tomás Roncero",
+     "Porque el coronavirus no me deja, pero me lanzaba a darte un abrazo ahora mismo.",
+     "Diez Minutos / El Chiringuito", "—", "—",
+     "Vídeo TV", "Sí", ""),
+    ("2010s-2020s", "El Chiringuito", "Josep Pedrerol",
+     "El ADN del Madrid es la leche. Cuando damos al Madrid por perdido, gana títulos.",
+     "El Chiringuito", "—", "—",
+     "Vídeo TV", "Sí", ""),
+    ("2010s-2020s", "El Chiringuito", "Edu Aguirre",
+     "Messi es un 7 en todo, pero no es un 10 en nada.",
+     "El Nacional", "—", "—",
+     "Vídeo TV", "Sí", ""),
+
+    # ============ NO VERIFICADAS ============
+    ("?", "Cruyff (atribución dudosa)", "Johan Cruyff",
+     "Preferiría perder un Clásico que un partido cualquiera.",
+     "Frases de Futbolistas (sin fuente primaria)", "—", "—",
+     "Atribuida", "NO — posiblemente apócrifa", "No localizada en fuentes primarias."),
+    ("?", "Cristiano Ronaldo (atribución dudosa)", "Cristiano Ronaldo",
+     "Siempre intento cuidar mi cuerpo, la comida y dormir, que es muy importante.",
+     "frasesdefutbolistas.com", "—", "—",
+     "Atribuida", "NO — sin fuente primaria",
+     "Coherente con su discurso pero atribución exacta no localizada."),
+]
+
+# ============================================================================
+# GENERACIÓN DEL EXCEL
+# ============================================================================
+
+wb = Workbook()
+ws = wb.active
+ws.title = "Clásico - Citas"
+
+HEADERS = ["Fecha", "Era / contexto", "Protagonista", "Cita literal",
+           "Fuente", "Edición / publicación", "Página / lugar",
+           "Tipo fuente", "Verificado", "Notas"]
+
+# Estilos
+header_font = Font(bold=True, color="FFFFFF", size=12)
+header_fill = PatternFill("solid", fgColor="1F4E78")
+header_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+verified_fill = PatternFill("solid", fgColor="D5E8D4")  # verde claro
+partial_fill = PatternFill("solid", fgColor="FFF2CC")   # amarillo claro
+unverified_fill = PatternFill("solid", fgColor="F8CECC")  # rojo claro
+
+thin_border = Border(
+    left=Side(style="thin", color="CCCCCC"),
+    right=Side(style="thin", color="CCCCCC"),
+    top=Side(style="thin", color="CCCCCC"),
+    bottom=Side(style="thin", color="CCCCCC"),
+)
+
+# Headers
+for col, header in enumerate(HEADERS, 1):
+    cell = ws.cell(row=1, column=col, value=header)
+    cell.font = header_font
+    cell.fill = header_fill
+    cell.alignment = header_align
+    cell.border = thin_border
+
+# Filas
+for ri, row in enumerate(ROWS, 2):
+    for ci, value in enumerate(row, 1):
+        cell = ws.cell(row=ri, column=ci, value=value)
+        cell.alignment = Alignment(vertical="top", wrap_text=True)
+        cell.border = thin_border
+
+    verified = row[8].lower() if len(row) > 8 else ""
+    if verified.startswith("sí"):
+        ws.cell(row=ri, column=9).fill = verified_fill
+    elif verified.startswith("parcial"):
+        ws.cell(row=ri, column=9).fill = partial_fill
+    elif verified.startswith("no"):
+        ws.cell(row=ri, column=9).fill = unverified_fill
+
+# Anchos de columna
+widths = [12, 24, 28, 80, 20, 30, 22, 22, 14, 40]
+for i, w in enumerate(widths, 1):
+    ws.column_dimensions[get_column_letter(i)].width = w
+
+# Altura de filas
+ws.row_dimensions[1].height = 32
+
+# Freeze header
+ws.freeze_panes = "A2"
+
+# Filtro
+ws.auto_filter.ref = ws.dimensions
+
+# Guardar
+out = Path(__file__).resolve().parents[1] / "docs" / "clasico-declaraciones.xlsx"
+out.parent.mkdir(exist_ok=True)
+wb.save(out)
+print(f"Generado: {out}")
+print(f"Filas: {len(ROWS)}")
