@@ -167,12 +167,16 @@ async function main() {
 
   console.log(`  ${matched.length} páginas con match Madrid/Barça/Clásico`);
 
-  // También busca entidades agregadas
-  const entities = await fetchHistoricalEntities({ from_date: from, to_date: to, lines: 1000 });
-  const matchedEntities = entities.filter((e) => matchesAny(e.entity));
-  console.log(`  Entidades destacadas: ${matchedEntities.length}`);
-  for (const e of matchedEntities.slice(0, 20)) {
-    console.log(`    [${e.position}] "${e.entity}" — score ${e.score_decimal} (${e.publications} pubs)`);
+  // También busca entidades agregadas (opcional — solo disponible desde 10/01/2025)
+  try {
+    const entities = await fetchHistoricalEntities({ from_date: from, to_date: to, lines: 1000 });
+    const matchedEntities = entities.filter((e) => matchesAny(e.entity));
+    console.log(`  Entidades destacadas: ${matchedEntities.length}`);
+    for (const e of matchedEntities.slice(0, 20)) {
+      console.log(`    [${e.position}] "${e.entity}" — score ${e.score_decimal} (${e.publications} pubs)`);
+    }
+  } catch (err: any) {
+    console.log(`  (entities no disponible: ${err.message.slice(0, 100)})`);
   }
 
   // Output
