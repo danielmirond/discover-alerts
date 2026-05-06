@@ -17,8 +17,23 @@
  * filtradas por keywords Madrid/Barça/Clásico.
  */
 
-import 'dotenv/config';
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync } from 'fs';
+
+// Carga .env manualmente (sin dependencia de dotenv)
+function loadEnv(path: string) {
+  if (!existsSync(path)) return;
+  const content = readFileSync(path, 'utf8');
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq < 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    const value = trimmed.slice(eq + 1).trim();
+    if (!process.env[key]) process.env[key] = value;
+  }
+}
+loadEnv('.env');
 import {
   fetchHistoricalPages,
   fetchHistoricalEntities,
