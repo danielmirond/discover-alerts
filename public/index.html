@@ -1450,15 +1450,20 @@ function CompetitorsView({ competitors = [] }) {
             {/* Stats numéricos */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 10 }}>
               <div>
-                <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Hoy</div>
+                <div title="Páginas en Discover en las últimas 24h"
+                     style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>24h</div>
                 <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 700, color: c.pagesToday > 0 ? 'var(--accent)' : 'var(--ink-3)' }}>{c.pagesToday}</div>
               </div>
               <div>
-                <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>48h</div>
+                <div title="Páginas en Discover en las últimas 48h (rolling)"
+                     style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>48h</div>
                 <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 700, color: 'var(--ink)' }}>{c.pages48h}</div>
               </div>
               <div>
-                <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>{c.pagesHistoricalWindow || '—'}</div>
+                <div title={`Páginas en Discover en los últimos ${c.pagesHistoricalWindow === '90d' ? '90 días' : '30 días'} (histórico DS)`}
+                     style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                  {c.pagesHistoricalWindow === '90d' ? '90 días' : '30 días'}
+                </div>
                 <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 700, color: 'var(--ink)' }}>{c.pagesHistorical || 0}</div>
               </div>
             </div>
@@ -1481,7 +1486,7 @@ function CompetitorsView({ competitors = [] }) {
             {/* Top patrones */}
             {(c.topPatterns || []).length > 0 && (
               <div style={{ marginBottom: 10 }}>
-                <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 4 }}>Patrones top {c.pagesHistoricalWindow}</div>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 4 }}>Patrones top {c.pagesHistoricalWindow === '90d' ? '90 días' : '30 días'}</div>
                 {c.topPatterns.slice(0, 6).map((p, i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '2px 0', borderBottom: '1px dotted var(--rule-2)' }}>
                     <span style={{ fontFamily: 'var(--serif)', fontSize: 12, color: 'var(--ink-2)' }}>{p.ngram}</span>
