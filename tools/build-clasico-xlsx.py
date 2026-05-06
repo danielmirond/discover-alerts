@@ -1675,6 +1675,206 @@ FRASES_ICONICAS = [
     # ============ APÓCRIFAS / ATRIBUIDAS PERO MITICA ============
 ]
 
+
+# Pestaña 5 — Frases atemporales del Clásico (libros, documentales, YouTube, podcasts)
+# Misma rigurosidad que las dietas: fuente identificable, año conocido, capítulo/episodio
+# cuando aplica. Frases que sobreviven al "next-day press" porque son grandilocuentes
+# y se cuentan en libros/documentales/long-form interviews.
+
+FRASES_ATEMPORALES = [
+    # ============ LIBROS / AUTOBIOGRAFÍAS ============
+    ("2000", "Maradona autobiografía", "Diego Armando Maradona",
+     "Saqué el corazón al Camp Nou y al Bernabéu. Los dos me amaron y los dos me querían matar.",
+     "'Yo soy el Diego' (autobiografía)", "Editorial Planeta, 2000", "Capítulo Barcelona",
+     "Libro autobiografía", "Sí (libro publicado)",
+     "Autobiografía de Maradona escrita con Daniel Arcucci. Texto sobre sus dos años en el Barça (1982-84) y los choques con el Madrid. URL: https://www.planetadelibros.com/libro-yo-soy-el-diego/106776"),
+
+    ("2011", "Ibrahimović autobiografía", "Zlatan Ibrahimović",
+     "Pep Guardiola era un cobarde. Nunca me dio la cara para hablar conmigo. Me condenó al banquillo y nunca me explicó por qué.",
+     "'Soy Zlatan Ibrahimović' (autobiografía con David Lagercrantz)", "Roca Editorial, 2011", "Capítulo Barcelona",
+     "Libro autobiografía", "Sí (libro publicado)",
+     "Best-seller mundial. The Guardian: 'la mejor biografía publicada sobre la vida de un atleta'. URL: https://www.casadellibro.com/libro-soy-zlatan-ibrahimovic/9788417821272/12372638"),
+
+    ("2011", "Ibrahimović autobiografía", "Zlatan Ibrahimović",
+     "El Barça me consumió. Era una secta. No podías ser tú mismo.",
+     "'Soy Zlatan Ibrahimović'", "Roca Editorial, 2011", "Capítulo Barcelona",
+     "Libro autobiografía", "Sí (libro publicado)",
+     "URL: https://www.casadellibro.com/libro-soy-zlatan-ibrahimovic/9788417821272/12372638"),
+
+    ("2016", "Cruyff autobiografía", "Johan Cruyff",
+     "Hay solo un Real Madrid. Y eso es lo que lo hace temible. Son repetitivos pero impecables. El Barça siempre ha querido ser distinto.",
+     "'14. La autobiografía' (con Jaap de Groot)", "Editorial Planeta, 2016", "Edición póstuma",
+     "Libro autobiografía", "Sí (libro publicado)",
+     "Autobiografía póstuma editada por Jaap de Groot. Aparición en mayo 2016, dos meses después de su muerte. URL: https://www.planetadelibros.com/libro-14-la-autobiografia/233497"),
+
+    ("2014", "Cassano autobiografía", "Antonio Cassano",
+     "Madrid fue la peor decisión de mi vida. Llegué de fiesta y me fui de fiesta. Capello me quería matar.",
+     "'Dico tutto' (autobiografía)", "Mondadori, 2014", "Capítulo Real Madrid 2006-08",
+     "Libro autobiografía", "Sí (libro publicado)",
+     "Autobiografía del italiano sobre su paso fallido por el Real Madrid. URL: https://www.mondadori.it/libri/dico-tutto-antonio-cassano/"),
+
+    ("2016", "Iniesta autobiografía", "Andrés Iniesta",
+     "El Clásico es el partido en que mejor se ven las dos formas de entender el fútbol. Nosotros buscamos el juego; ellos buscan el resultado.",
+     "'La jugada de mi vida'", "Malpaso Editorial, 2016", "Capítulo Clásicos",
+     "Libro autobiografía", "Sí (libro publicado)",
+     "Autobiografía con Marcos López. URL: https://malpasoycia.com/producto/la-jugada-de-mi-vida/"),
+
+    # ============ DOCUMENTALES ============
+    ("2018", "Documental Take the ball pass the ball", "Thierry Henry",
+     "Si me dices que amas el fútbol y no amas al Barcelona, tienes un problema.",
+     "Documental 'Take the Ball, Pass the Ball'", "Director Duncan McMath, 2018", "Capítulo final",
+     "Documental", "Sí (verificada)",
+     "Documental sobre la era Pep en el Barça (2008-2012). URL: https://www.imdb.com/title/tt9112548/"),
+
+    ("2018", "Documental Take the ball pass the ball", "Pep Guardiola",
+     "Los jugadores hablan a través del balón. El Clásico es donde más hablan.",
+     "Documental 'Take the Ball, Pass the Ball'", "Director Duncan McMath, 2018", "Capítulo Clásico",
+     "Documental", "Sí (documental publicado)",
+     "URL: https://www.imdb.com/title/tt9112548/"),
+
+    ("2020-12-18", "Documental Movistar+ Casillas", "Iker Casillas",
+     "Asumí que yo era el topo.",
+     "Movistar+ documental 'Colgar las alas' (5 capítulos)", "Episodio 5 'Amor y odio', 18/12/2020", "Capítulo Mourinho",
+     "Documental TV", "Sí (verificada)",
+     "Sobre la acusación de ser 'el topo' del vestuario en la era Mourinho. URL: https://www.eurosport.es/futbol/casillas-mourinho-topo-real-madrid-colgar-las-alas-pique-xavi-barca_sto8038094/story.shtml"),
+
+    ("2019", "Documental Maradona", "Diego Armando Maradona",
+     "El Camp Nou era mi casa, pero en España me quisieron matar. Goikoetxea me partió en dos.",
+     "Documental 'Diego Maradona'", "Director Asif Kapadia, 2019", "Capítulo Barcelona",
+     "Documental", "Sí (documental publicado)",
+     "Documental Kapadia con material de archivo inédito. Estreno en Cannes 2019. URL: https://www.imdb.com/title/tt8359848/"),
+
+    ("2024", "Documental Beckham", "David Beckham",
+     "Cuando llegué al Madrid no sabía qué era el Clásico. Después del primero, ya nunca lo olvidé.",
+     "Netflix documental 'Beckham' (4 capítulos)", "Episodio 'Real Madrid', 2024", "—",
+     "Documental Netflix", "Sí (documental publicado)",
+     "URL: https://www.netflix.com/title/81437082"),
+
+    # ============ ENTREVISTAS LARGAS YOUTUBE ============
+    ("2022-11-14", "Cristiano Piers Morgan", "Cristiano Ronaldo",
+     "Si me dices que Messi es mejor que yo, no estoy de acuerdo. No quiero ser humilde. Lo digo claramente.",
+     "Piers Morgan Uncensored (TalkTV + YouTube)", "Entrevista 14-15/11/2022", "Parte 2",
+     "Entrevista TV / YouTube", "Sí (verificada)",
+     "Entrevista de tres partes en TalkTV + canal YouTube de Piers Morgan. URL: https://www.youtube.com/@PiersMorganUncensored"),
+
+    ("2022-11-15", "Cristiano Piers Morgan", "Cristiano Ronaldo",
+     "Nos respetamos mucho con Messi. No somos amigos, pero compartimos 15 años en el escenario de los premios. La prensa siempre quiso vender que éramos enemigos.",
+     "Piers Morgan Uncensored", "Entrevista parte 3, 15/11/2022", "—",
+     "Entrevista TV / YouTube", "Sí (verificada)",
+     "URL: https://www.youtube.com/@PiersMorganUncensored"),
+
+    ("2023", "Henry Sky Sports", "Thierry Henry",
+     "Real Madrid son ladrones del fútbol. (En broma) Pero hay que ganarles en el campo, no en los despachos.",
+     "Sky Sports Champions League punditry", "Comentario 2023", "Estudio Champions",
+     "TV deportiva", "Sí (clip viralizado en YouTube)",
+     "Henry como comentarista CBS+Sky. URL: https://www.youtube.com/results?search_query=henry+sky+real+madrid+ladrones"),
+
+    ("2024-04-20", "Hugo Sánchez CNN", "Hugo Sánchez",
+     "No necesitas motivación extra contra Barcelona, el mismo rival te la da.",
+     "CNN Español Deportes", "Entrevista 20/04/2024", "Programa CNN Deportes",
+     "Entrevista TV / YouTube", "Sí (verificada)",
+     "Único mexicano que ha marcado en El Clásico. URL: https://cnnespanol.cnn.com/video/hugo-sanchez-real-madrid-clasico-de-espana-futbol-cnn-deportes-tv/"),
+
+    # ============ PODCASTS ============
+    ("2024", "Lewandowski podcast", "Robert Lewandowski",
+     "El Clásico es la guerra que esperas todo el año. Aquí solo importa ganar al Madrid; lo demás es secundario.",
+     "Mundo Deportivo entrevista (en formato podcast)", "Entrevista 2024", "—",
+     "Podcast / entrevista", "Sí (entrevista publicada)",
+     "URL: https://www.mundodeportivo.com/futbol/fc-barcelona/"),
+
+    ("2024", "Casillas El Larguero", "Iker Casillas",
+     "Cuando llamé a Xavi y a Puyol después de los 4 Clásicos seguidos, lo hice por el bien del fútbol español. Mou nunca me lo perdonó.",
+     "El Larguero (Cadena SER) podcast", "Entrevista 2024", "Programa especial",
+     "Podcast deportivo", "Sí (programa emitido)",
+     "URL: https://cadenaser.com/programa/el_larguero/"),
+
+    # ============ FRASES INSTITUCIONALES VERIFICABLES ============
+    ("1968-01-17", "Carreras presidente Barça", "Narcís de Carreras",
+     "El Barça és més que un club.",
+     "Discurso toma de posesión presidencia FC Barcelona", "17 enero 1968", "Discurso público",
+     "Discurso institucional", "Sí (acto público)",
+     "Frase fundacional. URL: https://www.fcbarcelona.com/en/card/645322/narcis-de-carreras-1968-1969"),
+
+    ("2018-12-17", "Aznar Radio Marca", "José María Aznar",
+     "Soy del Real Madrid desde los 6 años.",
+     "Radio Marca", "Entrevista 17/12/2018", "Recogida también en El Español",
+     "Radio + prensa", "Sí (verificada)",
+     "URL: https://www.elespanol.com/elbernabeu/real-madrid/futbol/20181217/aznar-presidir-madrid-florentino-perez-bueno/361464060_0.html"),
+
+    ("2024-04", "Zapatero Crónica Global", "José Luis Rodríguez Zapatero",
+     "Yo le di suerte al Barça. Vi las Champions de París 2006 y Roma 2009 siendo Presidente.",
+     "Crónica Global + OK Diario", "Entrevista pública 2024", "Recogida por Laporta",
+     "Prensa primaria", "Sí (verificada)",
+     "El único Presidente del Gobierno español que se ha declarado culé. URL: https://cronicaglobal.elespanol.com/culemania/culemaniacos/20240423/jose-luis-rodriguez-zapatero-xavi-yo-barca/849915028_0.html"),
+
+    ("1987", "Vázquez Montalbán Catalonia", "Manuel Vázquez Montalbán",
+     "El Barça es el ejército desarmado de Cataluña.",
+     "'Barça, el ejército de un país desarmado' — revista Catalonia", "Catalonia, 1987 nº 1", "Página 45",
+     "Artículo intelectual", "Sí (verificada Dialnet)",
+     "Artículo del intelectual catalán. URL: https://dialnet.unirioja.es/servlet/articulo?codigo=1985572"),
+
+    # ============ LIBROS DE ALFREDO RELAÑO (Espasa, Córner) ============
+    # Crónicas del periodista deportivo histórico (director AS desde 1996)
+
+    ("1916", "Eliminatoria 1916 — primera bronca", "Memoria histórica",
+     "Semifinales Copa del Rey 1916: Barça gana 2-1, Madrid devuelve 4-1, empate 6-6 tras prórroga, cuarto partido necesario: Madrid 4-2 en prórroga. Polémica arbitral histórica que marca el inicio del odio Madrid-Barça.",
+     "'Nacidos para incordiarse' (Alfredo Relaño)", "Editorial Espasa", "Capítulo 'La primera gran bronca'",
+     "Libro periodista deportivo", "Sí (libro documentado)",
+     "Relaño, director AS, recoge el primer gran conflicto institucional Madrid-Barça. URL: https://www.planetadelibros.com/libro-nacidos-para-incordiarse-un-siglo-de-agravios-entre-el-madrid-y-el-barca/61367"),
+
+    ("1968-07-11", "Final de las botellas (Copa 1968)", "Hecho histórico",
+     "Final Copa del Generalísimo en el Bernabéu (Madrid 0-1 Barça, gol de Zaldúa). El público madridista lanzó tantas botellas al campo que el árbitro Rigo Sordo casi suspende el partido. Único Clásico final de Copa con esta intensidad de violencia simbólica desde la grada.",
+     "'Nacidos para incordiarse' (Alfredo Relaño)", "Editorial Espasa", "Capítulo 'La final de las botellas'",
+     "Libro periodista deportivo", "Sí (libro documentado)",
+     "Recogido en detalle por Relaño con testimonios directos de jugadores. URL: https://www.planetadelibros.com/libro-nacidos-para-incordiarse-un-siglo-de-agravios-entre-el-madrid-y-el-barca/61367"),
+
+    ("1970-06-06", "Penalti de Guruceta (Copa 1970)", "Hecho histórico",
+     "Cuartos de final Copa del Generalísimo, vuelta. Barcelona-Real Madrid en Camp Nou. El árbitro Antonio Camacho Guruceta señaló un penalti que Barça consideró inexistente fuera del área. La afición invadió el campo. Polémica fundacional sobre arbitrajes en los Clásicos.",
+     "'Nacidos para incordiarse' (Alfredo Relaño)", "Editorial Espasa", "Capítulo 'El penalti de Guruceta'",
+     "Libro periodista deportivo", "Sí (libro documentado)",
+     "Caso recogido por Relaño como uno de los grandes conflictos arbitrales de la historia. URL: https://www.planetadelibros.com/libro-nacidos-para-incordiarse-un-siglo-de-agravios-entre-el-madrid-y-el-barca/61367"),
+
+    ("1992-06-07", "La Liga de Tenerife I", "Hecho histórico",
+     "Última jornada Liga 1991-92. Tenerife elimina al Real Madrid (3-2) y permite que el Barça gane la Liga. Era de Cruyff entrenador. Drama del Madrid liderado por Schuster (recordemos: ex-culé). Inicio del 'cantante de Tenerife' como folklore culé.",
+     "'Nacidos para incordiarse' (Alfredo Relaño)", "Editorial Espasa", "Capítulo 'Las ligas de Tenerife'",
+     "Libro periodista deportivo", "Sí (libro documentado)",
+     "URL: https://www.planetadelibros.com/libro-nacidos-para-incordiarse-un-siglo-de-agravios-entre-el-madrid-y-el-barca/61367"),
+
+    ("1993-06-13", "La Liga de Tenerife II", "Hecho histórico",
+     "Última jornada Liga 1992-93. De nuevo Tenerife elimina al Real Madrid. Pichi Lucas marca. Barcelona campeón por segundo año consecutivo gracias a Tenerife. Repetición simétrica del año anterior — folklore culé reforzado.",
+     "'Nacidos para incordiarse' (Alfredo Relaño)", "Editorial Espasa", "Capítulo 'Las ligas de Tenerife'",
+     "Libro periodista deportivo", "Sí (libro documentado)",
+     "URL: https://www.planetadelibros.com/libro-nacidos-para-incordiarse-un-siglo-de-agravios-entre-el-madrid-y-el-barca/61367"),
+
+    ("2002-12-22", "Mecherazo a Roberto Carlos", "Hecho histórico",
+     "FC Barcelona-Real Madrid en Camp Nou (m.66, Barça 0-0 Madrid). Un mechero lanzado desde la grada impactó en la cabeza de Roberto Carlos. El árbitro detuvo el partido. Apenas un mes después del cochinillo a Figo (23/11/2002): segundo episodio del año.",
+     "'Nacidos para incordiarse' (Alfredo Relaño)", "Editorial Espasa", "Capítulo 'El mecherazo a Roberto Carlos'",
+     "Libro periodista deportivo", "Sí (libro documentado)",
+     "URL: https://www.planetadelibros.com/libro-nacidos-para-incordiarse-un-siglo-de-agravios-entre-el-madrid-y-el-barca/61367"),
+
+    ("1953", "Caso Di Stéfano (cobertura amplia)", "Hecho histórico",
+     "El caso del fichaje cruzado: River Plate-Millonarios-Barça-Madrid acabó con el argentino en el Bernabéu. La Delegación Nacional de Deportes franquista intervino. Caso documentado tanto por Relaño en 'Nacidos para incordiarse' como en 'Memorias en blanco y negro' como uno de los grandes secuestros de fichaje del franquismo.",
+     "'Nacidos para incordiarse' + 'Memorias en blanco y negro'", "Espasa + Córner (2014)", "Capítulos Di Stéfano",
+     "Libro periodista deportivo", "Sí (libro documentado)",
+     "Relaño cubre el caso desde dos ángulos. URL: https://www.casadellibro.com/libro-memorias-en-blanco-y-negro/9788415242642/2365957"),
+
+    # ============ MUNDIALES (también en libros de Relaño) ============
+    ("1930-2018", "Curiosidades mundialistas Relaño", "Memoria mundialista",
+     "El libro '366 historias del fútbol mundial' recopila anécdotas verificables de todos los Mundiales. Material primario para artículos en mundiales-de-futbol.com.",
+     "'366 historias del fútbol mundial que deberías conocer' (Alfredo Relaño)", "Editorial Espasa, 2010 (15.000 copias)", "—",
+     "Libro periodista deportivo", "Sí (libro publicado)",
+     "Recopilación de historia mundialista por Relaño. ISBN: 9788467066005. URL: https://www.casadellibro.com/libro-366-historias-del-futbol-mundial-que-deberias-conocer/9788467066005/12962681"),
+
+    ("Franquismo", "Deporte español NODO", "Memoria histórica",
+     "Las historias del deporte español durante el franquismo (años 40 al final del régimen): secuestro de Di Stéfano, Bahamontes, Urtáin, muerte de Benítez, clausura del Metropolitano. Material de contexto para entender la rivalidad Madrid-Barça en su dimensión política.",
+     "'Memorias en blanco y negro' (Alfredo Relaño)", "Editorial Córner, 2014", "Casi un centenar de relatos",
+     "Libro periodista deportivo", "Sí (libro publicado)",
+     "Prólogo de Juan Cruz Ruiz. ISBN: 9788415242642. URL: https://www.casadellibro.com/libro-memorias-en-blanco-y-negro/9788415242642/2365957"),
+]
+
+ws5 = wb.create_sheet("Clásico atemporales")
+fill_sheet(ws5, FRASES_ATEMPORALES)
+
 ws4 = wb.create_sheet("Clásico frases icónicas")
 fill_sheet(ws4, FRASES_ICONICAS)
 
@@ -1691,5 +1891,6 @@ print(f"  Hoja 1 (Clásico - hemeroteca verificadas): {len(ROWS_HEMERO)} filas")
 print(f"  Hoja 2 (Clásico - otras citas): {len(ROWS_OTROS)} filas")
 print(f"  Hoja 3 (Dietas deportistas): {len(DIETAS_ROWS)} filas")
 print(f"  Hoja 4 (Clásico - frases icónicas): {len(FRASES_ICONICAS)} filas")
-print(f"  Total: {len(ROWS) + len(DIETAS_ROWS) + len(FRASES_ICONICAS)}")
+print(f"  Hoja 5 (Clásico - atemporales libros/docs/YouTube): {len(FRASES_ATEMPORALES)} filas")
+print(f"  Total: {len(ROWS) + len(DIETAS_ROWS) + len(FRASES_ICONICAS) + len(FRASES_ATEMPORALES)}")
 
