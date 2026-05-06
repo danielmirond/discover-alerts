@@ -1583,10 +1583,11 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       }
       const dayMs = Date.now() - 24 * 3600_000;
       const cnames = (() => {
-        // Build minimal category names cache from pages metadata if available
+        // Build category id → name desde state.categories (que SÍ tiene los names).
         const m: Record<number, string> = {};
-        for (const ps of Object.values(state.pages || {})) {
-          if (typeof (ps as any).category === 'string' && (ps as any).category) continue;
+        for (const [id, snap] of Object.entries(state.categories || {})) {
+          const idNum = Number(id);
+          if (!isNaN(idNum) && (snap as any).name) m[idNum] = (snap as any).name;
         }
         return m;
       })();
