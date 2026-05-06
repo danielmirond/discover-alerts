@@ -34,10 +34,70 @@ function loadEnv(path: string) {
   }
 }
 loadEnv('.env');
-import {
-  fetchHistoricalPages,
-  fetchHistoricalEntities,
-} from '../src/sources/discoversnoop.js';
+
+// Llamada directa a la API DiscoverSnoop (sin depender de src/config.ts)
+const API_BASE = 'https://api.discoversnoop.com';
+const TOKEN = process.env.DISCOVERSNOOP_TOKEN;
+const COUNTRY = process.env.DISCOVER_COUNTRY || 'ES';
+
+if (!TOKEN) {
+  console.error('ERROR: falta DISCOVERSNOOP_TOKEN en .env');
+  process.exit(1);
+}
+
+interface DiscoverPage {
+  url: string;
+  title: string;
+  title_original?: string;
+  title_english?: string;
+  snippet?: string;
+  publisher?: string;
+  domain?: string;
+  image?: string;
+}
+
+interface DiscoverEntity {
+  entity: string;
+  country: string;
+  score: number;
+  score_decimal: number;
+  position: number;
+  publications: number;
+}
+
+async function fetchEndpoint<T>(path: string, params: Record<string, string | number>): Promise<T[]> {
+  const url = new URL(path, API_BASE);
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v));
+
+  const res = await fetch(url.toString(), {
+    headers: { Authorization: `Bearer ${TOKEN}` },
+  });
+  const text = await res.text();
+  if (!res.ok) throw new Error(`${path} HTTP ${res.status}: ${text.slice(0, 300)}`);
+
+  const parsed = JSON.parse(text);
+  const json = Array.isArray(parsed) ? parsed[0] : parsed;
+  if (!json?.status) throw new Error(`${path} status=false: ${JSON.stringify(json).slice(0, 300)}`);
+  return json.data ?? [];
+}
+
+function fetchHistoricalPages(p: { from_date: string; to_date: string; lines: number }) {
+  return fetchEndpoint<DiscoverPage>('/pages', {
+    country: COUNTRY,
+    from_date: p.from_date,
+    to_date: p.to_date,
+    lines: p.lines,
+  });
+}
+
+function fetchHistoricalEntities(p: { from_date: string; to_date: string; lines: number }) {
+  return fetchEndpoint<DiscoverEntity>('/entities', {
+    country: COUNTRY,
+    from_date: p.from_date,
+    to_date: p.to_date,
+    lines: p.lines,
+  });
+}
 
 const KEYWORDS = [
   /real madrid/i,
