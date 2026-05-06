@@ -199,6 +199,17 @@ interface LiveViewResponse {
   instance?: { name: string; vertical: string | null };
   patternsByMedia?: Array<any>;
   patternsByMediaHistorical?: { window: string; lastUpdated: string; publishers: Array<any> } | null;
+  competitors?: Array<{
+    name: string;
+    domain: string;
+    pagesToday: number;
+    pages48h: number;
+    pagesHistorical: number;
+    pagesHistoricalWindow: string;
+    topCategories: Array<{ name: string; count: number }>;
+    topPatterns: Array<{ ngram: string; count: number }>;
+    samples: Array<{ url: string; title: string; image?: string; score: number; firstSeen?: string; category?: string }>;
+  }>;
   cultural?: Array<any>;
   culturalEntityHits?: Array<any>;
   aemetEnriched?: Array<any>;
@@ -1493,6 +1504,94 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
         out.push({ feedName: row.displayName, domain, subfeeds: row.subfeeds.size, articleCount: row.count, topPatterns });
       }
       return out.sort((a, b) => b.articleCount - a.articleCount).slice(0, 100);
+    })(),
+
+    // === COMPETIDORES (sport) ===========================================
+    // Conjunto fijo de competidores deportivos. Para cada uno calculamos:
+    //   - pagesToday: pages DS últimas 24h (state.pages firstSeen)
+    //   - pages48h: pages DS últimas 48h (todo el state.pages)
+    //   - pagesHistorical: pages DS en publisherPatternsHistorical (30d/90d)
+    //   - topCategories: del state.pages
+    //   - topPatterns: del histórico (más data = más señal)
+    //   - samples: 3 titulares recientes con thumbnail
+    competitors: (() => {
+      const histRef: any = (state as any).publisherPatternsHistorical;
+      const list = [
+        { name: 'AS', domain: 'as.com' },
+        { name: 'MARCA', domain: 'marca.com' },
+        { name: 'Mundo Deportivo', domain: 'mundodeportivo.com' },
+        { name: 'SPORT.es', domain: 'sport.es' },
+        { name: 'El Desmarque', domain: 'eldesmarque.com' },
+        { name: 'Estadio Deportivo', domain: 'estadiodeportivo.com' },
+        { name: 'Eurosport', domain: 'eurosport.es' },
+        { name: 'TyC Sports', domain: 'tycsports.com' },
+        { name: 'Superdeporte', domain: 'superdeporte.es' },
+        { name: 'Defensa Central', domain: 'defensacentral.com' },
+      ];
+      const dayMs = Date.now() - 24 * 3600_000;
+      const cnames = (() => {
+        // Build minimal category names cache from pages metadata if available
+        const m: Record<number, string> = {};
+        for (const ps of Object.values(state.pages || {})) {
+          if (typeof (ps as any).category === 'string' && (ps as any).category) continue;
+        }
+        return m;
+      })();
+      const getCatName = (c: string | number | undefined): string | undefined => {
+        if (c == null) return undefined;
+        if (typeof c === 'number') return cnames[c] || `Cat ${c}`;
+        return c;
+      };
+      const matchesDom = (host: string, target: string) => {
+        const h = host.toLowerCase().replace(/^(www|amp|m|noticias)\./, '');
+        return h === target || h.endsWith('.' + target);
+      };
+      return list.map(comp => {
+        const matchedPages: Array<{ url: string; ps: any }> = [];
+        for (const [url, ps] of Object.entries(state.pages || {})) {
+          if (!ps.title) continue;
+          let host = (ps.domain || '').toLowerCase().replace(/^www\./, '');
+          if (!host) {
+            try { host = new URL(url).hostname.toLowerCase().replace(/^(www|amp|m|noticias)\./, ''); } catch { continue; }
+          }
+          if (matchesDom(host, comp.domain)) matchedPages.push({ url, ps });
+        }
+        const pages48h = matchedPages.length;
+        const pagesToday = matchedPages.filter(({ ps }) => {
+          const ts = Date.parse((ps as any).firstSeen || ps.lastUpdated || '');
+          return ts && ts >= dayMs;
+        }).length;
+        // Categorías por count
+        const catCount = new Map<string, number>();
+        for (const { ps } of matchedPages) {
+          const cn = getCatName((ps as any).category);
+          if (cn) catCount.set(cn, (catCount.get(cn) || 0) + 1);
+        }
+        const topCategories = [...catCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, count]) => ({ name, count }));
+        // Patrones desde histórico (si hay)
+        let topPatterns: Array<{ ngram: string; count: number }> = [];
+        let pagesHistorical = 0;
+        let pagesHistoricalWindow = '';
+        if (histRef && histRef.patterns && histRef.patterns[comp.domain]) {
+          const h = histRef.patterns[comp.domain];
+          pagesHistorical = h.articleCount || 0;
+          pagesHistoricalWindow = histRef.window || '';
+          topPatterns = (h.topNgrams || []).slice(0, 8);
+        }
+        // Samples (3 más recientes)
+        const samples = [...matchedPages]
+          .sort((a, b) => Date.parse((b.ps as any).firstSeen || b.ps.lastUpdated || '') - Date.parse((a.ps as any).firstSeen || a.ps.lastUpdated || ''))
+          .slice(0, 3)
+          .map(({ url, ps }) => ({
+            url,
+            title: ps.title || '',
+            image: ps.image,
+            score: ps.score || 0,
+            firstSeen: (ps as any).firstSeen,
+            category: getCatName((ps as any).category),
+          }));
+        return { name: comp.name, domain: comp.domain, pagesToday, pages48h, pagesHistorical, pagesHistoricalWindow, topCategories, topPatterns, samples };
+      });
     })(),
 
     // Patrones histórico (1 mes / fallback 3 meses) precomputados por
