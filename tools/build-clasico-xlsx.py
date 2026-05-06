@@ -1814,13 +1814,23 @@ FRASES_ATEMPORALES = [
      "Artículo del intelectual catalán. URL: https://dialnet.unirioja.es/servlet/articulo?codigo=1985572"),
 
     # ============ LIBROS DE ALFREDO RELAÑO (Espasa, Córner) ============
-    # Crónicas del periodista deportivo histórico (director AS desde 1996)
+    # Crónicas del periodista deportivo histórico (director AS 1996-2019)
+    # AVISO: las descripciones de los hechos están bien documentadas en múltiples
+    # fuentes históricas; los temas figuran explícitamente en la sinopsis del libro
+    # de Relaño. Pero NO he podido leer las páginas concretas (Amazon/Google Books/
+    # Archive.org bloquean acceso). Cita textual del autor pendiente de verificar.
 
-    ("1916", "Eliminatoria 1916 — primera bronca", "Memoria histórica",
+    ("2024", "Relaño centralismo vs federalismo", "Alfredo Relaño",
+     "El Madrid, cuyo nombre es el de la capital, es el referente de un modelo centralista, un poco a lo francés; mientras que el Barça simboliza el espíritu federalista.",
+     "El Critic (entrevista)", "Entrevista 2024", "Sección entrevistas",
+     "Entrevista periódico", "Sí (verificada)",
+     "Cita literal verificada en El Critic. URL: https://www.elcritic.cat/entrevistes/alfredo-relano-el-madrid-representa-el-centralismo-el-barca-el-espiritu-federalista-216886"),
+
+    ("1916", "Eliminatoria 1916 — primera bronca", "Tema documentado por Relaño",
      "Semifinales Copa del Rey 1916: Barça gana 2-1, Madrid devuelve 4-1, empate 6-6 tras prórroga, cuarto partido necesario: Madrid 4-2 en prórroga. Polémica arbitral histórica que marca el inicio del odio Madrid-Barça.",
-     "'Nacidos para incordiarse' (Alfredo Relaño)", "Editorial Espasa", "Capítulo 'La primera gran bronca'",
-     "Libro periodista deportivo", "Sí (libro documentado)",
-     "Relaño, director AS, recoge el primer gran conflicto institucional Madrid-Barça. URL: https://www.planetadelibros.com/libro-nacidos-para-incordiarse-un-siglo-de-agravios-entre-el-madrid-y-el-barca/61367"),
+     "'Nacidos para incordiarse' (Alfredo Relaño)", "Editorial Espasa, ISBN 9788427038905", "Capítulo dedicado al tema (paginación no verificada)",
+     "Libro periodista deportivo", "Tema sí en libro; cita textual sin verificar",
+     "Hecho histórico bien documentado en múltiples fuentes; figura explícitamente en sinopsis del libro de Relaño. Capítulo y cita textual del autor sin verificar (acceso bloqueado a preview). URL libro: https://www.planetadelibros.com/libro-nacidos-para-incordiarse-un-siglo-de-agravios-entre-el-madrid-y-el-barca/61367"),
 
     ("1968-07-11", "Final de las botellas (Copa 1968)", "Hecho histórico",
      "Final Copa del Generalísimo en el Bernabéu (Madrid 0-1 Barça, gol de Zaldúa). El público madridista lanzó tantas botellas al campo que el árbitro Rigo Sordo casi suspende el partido. Único Clásico final de Copa con esta intensidad de violencia simbólica desde la grada.",
