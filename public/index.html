@@ -1388,8 +1388,12 @@ function PatternsByMediaPanel({ groups }) {
 }
 
 function CompetitorsView({ competitors = [] }) {
-  const sorted = [...competitors].sort((a, b) => (b.pagesHistorical || 0) - (a.pagesHistorical || 0));
-  if (sorted.length === 0) {
+  const [kindFilter, setKindFilter] = useState('all'); // 'all' | 'sport' | 'general'
+  const filtered = kindFilter === 'all' ? competitors : competitors.filter(c => c.kind === kindFilter);
+  const sorted = [...filtered].sort((a, b) => (b.pagesHistorical || 0) - (a.pagesHistorical || 0));
+  const sportCount = competitors.filter(c => c.kind === 'sport').length;
+  const generalCount = competitors.filter(c => c.kind === 'general').length;
+  if (competitors.length === 0) {
     return (
       <div style={{ padding: 16, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>
         Sin datos de competidores. El primer poll de patterns histórico debe correr.
@@ -1406,13 +1410,36 @@ function CompetitorsView({ competitors = [] }) {
       <div style={{ padding: '8px 10px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>
         Hoy (últ. 24h) · 48h · histórico (1 mes) · top categorías y patrones por cabecera competidora.
       </div>
+      {(sportCount > 0 && generalCount > 0) && (
+        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          {[
+            { id: 'all', label: 'Todos', n: competitors.length },
+            { id: 'sport', label: '🏆 Deportivos', n: sportCount },
+            { id: 'general', label: '📰 Generalistas', n: generalCount },
+          ].map(c => (
+            <span key={c.id} onClick={() => setKindFilter(c.id)}
+                  style={{
+                    cursor: 'pointer', padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 11,
+                    border: '1px solid var(--rule)',
+                    background: kindFilter === c.id ? 'var(--ink)' : 'transparent',
+                    color: kindFilter === c.id ? 'var(--paper)' : 'var(--ink)',
+                    letterSpacing: '.04em',
+                  }}>
+              {c.label} <strong style={{ opacity: 0.7 }}>{c.n}</strong>
+            </span>
+          ))}
+        </div>
+      )}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 14 }}>
         {sorted.map(c => (
           <div key={c.domain} style={{ border: '1px solid var(--rule)', padding: 12 }}>
             {/* Header con nombre + dominio + estado activo */}
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 8, paddingBottom: 6, borderBottom: '2px solid var(--accent)' }}>
               <div>
-                <div style={{ fontFamily: 'var(--sans)', fontWeight: 800, fontSize: 15, color: 'var(--ink)' }}>{c.name}</div>
+                <div style={{ fontFamily: 'var(--sans)', fontWeight: 800, fontSize: 15, color: 'var(--ink)' }}>
+                  {c.kind === 'sport' ? '🏆 ' : ''}
+                  {c.name}
+                </div>
                 <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>{c.domain}</div>
               </div>
               {c.pagesToday > 0 && (

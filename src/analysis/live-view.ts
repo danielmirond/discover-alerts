@@ -202,6 +202,7 @@ interface LiveViewResponse {
   competitors?: Array<{
     name: string;
     domain: string;
+    kind: 'sport' | 'general';
     pagesToday: number;
     pages48h: number;
     pagesHistorical: number;
@@ -1521,45 +1522,64 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       // - Main (sin filter): generalistas españoles (los 10 más relevantes en
       //   competencia editorial Discover).
       // Override: COMPETITORS_DOMAINS env var con "name|domain,name|domain,..."
-      const sportList = [
-        { name: 'AS', domain: 'as.com' },
-        { name: 'MARCA', domain: 'marca.com' },
-        { name: 'Mundo Deportivo', domain: 'mundodeportivo.com' },
-        { name: 'SPORT.es', domain: 'sport.es' },
-        { name: 'El Desmarque', domain: 'eldesmarque.com' },
-        { name: 'Estadio Deportivo', domain: 'estadiodeportivo.com' },
-        { name: 'Eurosport', domain: 'eurosport.es' },
-        { name: 'TyC Sports', domain: 'tycsports.com' },
-        { name: 'Superdeporte', domain: 'superdeporte.es' },
-        { name: 'Defensa Central', domain: 'defensacentral.com' },
+      const sportList: Array<{ name: string; domain: string; kind: 'sport' }> = [
+        { name: 'AS', domain: 'as.com', kind: 'sport' },
+        { name: 'MARCA', domain: 'marca.com', kind: 'sport' },
+        { name: 'Mundo Deportivo', domain: 'mundodeportivo.com', kind: 'sport' },
+        { name: 'SPORT.es', domain: 'sport.es', kind: 'sport' },
+        { name: 'El Desmarque', domain: 'eldesmarque.com', kind: 'sport' },
+        { name: 'Estadio Deportivo', domain: 'estadiodeportivo.com', kind: 'sport' },
+        { name: 'Eurosport', domain: 'eurosport.es', kind: 'sport' },
+        { name: 'TyC Sports', domain: 'tycsports.com', kind: 'sport' },
+        { name: 'Superdeporte', domain: 'superdeporte.es', kind: 'sport' },
+        { name: 'Defensa Central', domain: 'defensacentral.com', kind: 'sport' },
       ];
-      const mainList = [
-        { name: 'El País', domain: 'elpais.com' },
-        { name: 'El Mundo', domain: 'elmundo.es' },
-        { name: 'ABC', domain: 'abc.es' },
-        { name: 'La Vanguardia', domain: 'lavanguardia.com' },
-        { name: 'El Español', domain: 'elespanol.com' },
-        { name: 'El Confidencial', domain: 'elconfidencial.com' },
-        { name: 'OK Diario', domain: 'okdiario.com' },
-        { name: '20 Minutos', domain: '20minutos.es' },
-        { name: 'eldiario.es', domain: 'eldiario.es' },
-        { name: 'Huffington Post', domain: 'huffingtonpost.es' },
-        { name: 'El Periódico', domain: 'elperiodico.com' },
-        { name: 'La Razón', domain: 'larazon.es' },
-        { name: 'RTVE', domain: 'rtve.es' },
-        { name: 'Antena 3', domain: 'antena3.com' },
-        { name: 'laSexta', domain: 'lasexta.com' },
+      const mainList: Array<{ name: string; domain: string; kind: 'general' }> = [
+        // Top diarios nacionales
+        { name: 'El País', domain: 'elpais.com', kind: 'general' },
+        { name: 'El Mundo', domain: 'elmundo.es', kind: 'general' },
+        { name: 'ABC', domain: 'abc.es', kind: 'general' },
+        { name: 'La Vanguardia', domain: 'lavanguardia.com', kind: 'general' },
+        { name: 'La Razón', domain: 'larazon.es', kind: 'general' },
+        { name: 'El Español', domain: 'elespanol.com', kind: 'general' },
+        // Digitales nativos
+        { name: 'El Confidencial', domain: 'elconfidencial.com', kind: 'general' },
+        { name: 'OK Diario', domain: 'okdiario.com', kind: 'general' },
+        { name: '20 Minutos', domain: '20minutos.es', kind: 'general' },
+        { name: 'eldiario.es', domain: 'eldiario.es', kind: 'general' },
+        { name: 'Huffington Post', domain: 'huffingtonpost.es', kind: 'general' },
+        { name: 'Voz Pópuli', domain: 'vozpopuli.com', kind: 'general' },
+        { name: 'El Independiente', domain: 'elindependiente.com', kind: 'general' },
+        { name: 'Libertad Digital', domain: 'libertaddigital.com', kind: 'general' },
+        { name: 'El Plural', domain: 'elplural.com', kind: 'general' },
+        { name: 'Crónica Global', domain: 'cronicaglobal.elespanol.com', kind: 'general' },
+        // TV / Radio
+        { name: 'RTVE', domain: 'rtve.es', kind: 'general' },
+        { name: 'Antena 3', domain: 'antena3.com', kind: 'general' },
+        { name: 'laSexta', domain: 'lasexta.com', kind: 'general' },
+        { name: 'Cadena SER', domain: 'cadenaser.com', kind: 'general' },
+        { name: 'COPE', domain: 'cope.es', kind: 'general' },
+        { name: 'Onda Cero', domain: 'ondacero.es', kind: 'general' },
+        // Regionales relevantes
+        { name: 'El Periódico', domain: 'elperiodico.com', kind: 'general' },
       ];
       // Override opcional vía env var
       const override = (process.env.COMPETITORS_DOMAINS || '').trim();
-      let list: Array<{ name: string; domain: string }>;
+      let list: Array<{ name: string; domain: string; kind: 'sport' | 'general' }>;
       if (override) {
         list = override.split(',').map(s => {
-          const [name, domain] = s.split('|').map(x => (x || '').trim());
-          return name && domain ? { name, domain } : null;
-        }).filter(Boolean) as Array<{ name: string; domain: string }>;
+          const parts = s.split('|').map(x => (x || '').trim());
+          if (parts.length < 2) return null;
+          const [name, domain, kind] = parts;
+          if (!name || !domain) return null;
+          return { name, domain, kind: (kind === 'sport' ? 'sport' : 'general') };
+        }).filter(Boolean) as Array<{ name: string; domain: string; kind: 'sport' | 'general' }>;
+      } else if (process.env.DS_CATEGORY_FILTER) {
+        // Sport: solo deportivos
+        list = sportList;
       } else {
-        list = process.env.DS_CATEGORY_FILTER ? sportList : mainList;
+        // Main: deportivos + generalistas (cobertura completa)
+        list = [...sportList, ...mainList];
       }
       const dayMs = Date.now() - 24 * 3600_000;
       const cnames = (() => {
@@ -1623,7 +1643,7 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
             firstSeen: (ps as any).firstSeen,
             category: getCatName((ps as any).category),
           }));
-        return { name: comp.name, domain: comp.domain, pagesToday, pages48h, pagesHistorical, pagesHistoricalWindow, topCategories, topPatterns, samples };
+        return { name: comp.name, domain: comp.domain, kind: comp.kind, pagesToday, pages48h, pagesHistorical, pagesHistoricalWindow, topCategories, topPatterns, samples };
       });
     })(),
 
