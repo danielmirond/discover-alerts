@@ -107,6 +107,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'competidores', label: 'Competidores' },
     { id: 'formulas', label: 'Fórmulas' },
     { id: 'patrones', label: 'Patrones' },
+    { id: 'patrones-categoria', label: 'Patrones · Categoría' },
     { id: 'historico', label: 'Histórico' },
     { id: 'predicciones', label: 'Predicciones' },
     { id: 'cultural', label: 'Cultural' },
@@ -898,10 +899,13 @@ function App() {
     body = viewPanelOnly(
       <>
         <PatternsPanel patterns={data.headlinePatterns || []} />
-        <PatternsByCategoryPanel hist={(data._raw && data._raw.patternsByCategoryHistorical) || null} />
         <PatternsByMediaPanel groups={(data._raw && data._raw.patternsByMedia) || []} />
         <PatternsHistoricalPanel hist={(data._raw && data._raw.patternsByMediaHistorical) || null} />
       </>
+    );
+  } else if (activeNav === 'patrones-categoria') {
+    body = viewPanelOnly(
+      <PatternsByCategoryPanel hist={(data._raw && data._raw.patternsByCategoryHistorical) || null} />
     );
   } else if (activeNav === 'historico') {
     body = viewPanelOnly(<WeeklyPanel weekly={data.weekly || []} />);
