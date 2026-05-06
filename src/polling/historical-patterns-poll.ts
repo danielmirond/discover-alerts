@@ -62,7 +62,12 @@ async function getCategoryNames(): Promise<Record<number, string>> {
   } catch { return {}; }
 }
 
-async function fetchAndProcess(daysBack: number): Promise<{ count: number; filtered: number; map: Map<string, { displayName: string; count: number; ngrams: Map<string, number> }> }> {
+async function fetchAndProcess(daysBack: number): Promise<{
+  count: number;
+  filtered: number;
+  map: Map<string, { displayName: string; count: number; ngrams: Map<string, number> }>;
+  byCategory: Map<string, { count: number; ngrams: Map<string, number> }>;
+}> {
   const to = new Date();
   const from = new Date(Date.now() - daysBack * 24 * 3600_000);
   const pad = (n: number) => String(n).padStart(2, '0');
@@ -88,7 +93,9 @@ async function fetchAndProcess(daysBack: number): Promise<{ count: number; filte
     console.log(`[hist-patterns] DS_CATEGORY_FILTER='${dsFilter}' → ${filteredPages.length}/${pages.length} pages`);
   }
 
+  const names = await getCategoryNames();
   const map = new Map<string, { displayName: string; count: number; ngrams: Map<string, number> }>();
+  const byCategory = new Map<string, { count: number; ngrams: Map<string, number> }>();
   for (const p of filteredPages) {
     if (!p.title) continue;
     const dom = rootDomain(p.domain || (p.url ? new URL(p.url).hostname : ''));
@@ -99,11 +106,19 @@ async function fetchAndProcess(daysBack: number): Promise<{ count: number; filte
       map.set(dom, row);
     }
     row.count++;
-    for (const tg of trigrams(tokenize(p.title))) {
-      row.ngrams.set(tg, (row.ngrams.get(tg) || 0) + 1);
+    const tgs = trigrams(tokenize(p.title));
+    for (const tg of tgs) row.ngrams.set(tg, (row.ngrams.get(tg) || 0) + 1);
+
+    // Aggregate per DS category as well
+    const catName = typeof p.category === 'number' ? names[p.category] : (p.category as string | undefined);
+    if (catName) {
+      let crow = byCategory.get(catName);
+      if (!crow) { crow = { count: 0, ngrams: new Map() }; byCategory.set(catName, crow); }
+      crow.count++;
+      for (const tg of tgs) crow.ngrams.set(tg, (crow.ngrams.get(tg) || 0) + 1);
     }
   }
-  return { count: pages.length, filtered: filteredPages.length, map };
+  return { count: pages.length, filtered: filteredPages.length, map, byCategory };
 }
 
 export async function runHistoricalPatternsPoll(): Promise<void> {
@@ -141,7 +156,26 @@ export async function runHistoricalPatternsPoll(): Promise<void> {
   };
   console.log(`[hist-patterns] Persisted ${Object.keys(patterns).length} publishers (window=${window})`);
 
-  updateState({ publisherPatternsHistorical: out } as any);
+  // Persist by category too: top 12 ngrams per DS category
+  const byCat: Record<string, { articleCount: number; topNgrams: Array<{ ngram: string; count: number }> }> = {};
+  for (const [catName, row] of result.byCategory) {
+    if (row.count < 5) continue;
+    const sorted = [...row.ngrams.entries()]
+      .filter(([ng]) => ng.split(' ').every(t => t.length > 2 && !/^\d+$/.test(t)))
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12);
+    if (sorted.length === 0) continue;
+    byCat[catName] = {
+      articleCount: row.count,
+      topNgrams: sorted.map(([ngram, count]) => ({ ngram, count })),
+    };
+  }
+  console.log(`[hist-patterns] Persisted ${Object.keys(byCat).length} categories`);
+
+  updateState({
+    publisherPatternsHistorical: out,
+    categoryPatternsHistorical: { window, lastUpdated: out.lastUpdated, categories: byCat },
+  } as any);
   try { await saveState(); } catch (err) { console.error('[hist-patterns] saveState:', err); }
   console.log('[hist-patterns] Poll complete');
 }

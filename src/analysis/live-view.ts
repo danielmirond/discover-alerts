@@ -199,6 +199,7 @@ interface LiveViewResponse {
   instance?: { name: string; vertical: string | null };
   patternsByMedia?: Array<any>;
   patternsByMediaHistorical?: { window: string; lastUpdated: string; publishers: Array<any> } | null;
+  patternsByCategoryHistorical?: { window: string; lastUpdated: string; categories: Array<any> } | null;
   competitors?: Array<{
     name: string;
     domain: string;
@@ -1648,6 +1649,25 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       });
     })(),
 
+    // Patrones histórico por CATEGORÍA DS (precomputados igual que por publisher).
+    patternsByCategoryHistorical: (() => {
+      const hist = (state as any).categoryPatternsHistorical;
+      if (!hist || !hist.categories) return null;
+      const out: Array<{ category: string; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }> }> = [];
+      for (const [name, row] of Object.entries(hist.categories as Record<string, any>)) {
+        const top = (row.topNgrams || []).slice(0, 10);
+        out.push({
+          category: name,
+          articleCount: row.articleCount || 0,
+          topPatterns: top.map((p: any) => ({ ngram: p.ngram, count: p.count, share: Math.round((p.count / Math.max(row.articleCount, 1)) * 100) })),
+        });
+      }
+      return {
+        window: hist.window,
+        lastUpdated: hist.lastUpdated,
+        categories: out.sort((a, b) => b.articleCount - a.articleCount).slice(0, 100),
+      };
+    })(),
     // Patrones histórico (1 mes / fallback 3 meses) precomputados por
     // historical-patterns-poll a partir de DS /pages histórico.
     patternsByMediaHistorical: (() => {

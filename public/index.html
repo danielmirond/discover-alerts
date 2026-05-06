@@ -898,6 +898,7 @@ function App() {
     body = viewPanelOnly(
       <>
         <PatternsPanel patterns={data.headlinePatterns || []} />
+        <PatternsByCategoryPanel hist={(data._raw && data._raw.patternsByCategoryHistorical) || null} />
         <PatternsByMediaPanel groups={(data._raw && data._raw.patternsByMedia) || []} />
         <PatternsHistoricalPanel hist={(data._raw && data._raw.patternsByMediaHistorical) || null} />
       </>
@@ -1290,6 +1291,61 @@ function BoeView({ boe, rawEntities }) {
 }
 
 /* ---------------- Config view (read-only system status) ---------------- */
+function PatternsByCategoryPanel({ hist }) {
+  const [filter, setFilter] = useState('');
+  if (!hist || !hist.categories || hist.categories.length === 0) {
+    return (
+      <div className="panel" style={{ marginTop: 24 }}>
+        <div className="kicker">
+          Patrones por categoría DS (1 mes)
+          <span className="bar"></span>
+          <span className="meta">pendiente — corre 1× al día</span>
+        </div>
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)', padding: 8 }}>
+          Aún no se ha corrido el poll histórico. Cadencia diaria 04:00 UTC.
+        </div>
+      </div>
+    );
+  }
+  const list = filter
+    ? hist.categories.filter(g => (g.category || '').toLowerCase().includes(filter.toLowerCase()))
+    : hist.categories;
+  const lastTs = hist.lastUpdated ? new Date(hist.lastUpdated).toLocaleString('es-ES') : '—';
+  const windowLabel = hist.window === '90d' ? '90 días' : '30 días';
+  return (
+    <div className="panel" style={{ marginTop: 24 }}>
+      <div className="kicker">
+        Patrones por categoría DS ({windowLabel})
+        <span className="bar"></span>
+        <span className="meta">{hist.categories.length} categorías · DS /pages histórico · actualizado {lastTs}</span>
+      </div>
+      <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 10, lineHeight: 1.5 }}>
+        N-gramas dominantes por <strong style={{ color: 'var(--ink)' }}>categoría DiscoverSnoop</strong> en los últimos {windowLabel}. Útil para ver qué fórmula editorial domina cada vertical (Política, Sports/Soccer, Entertainment, etc.) más allá de qué medio publica.
+      </div>
+      <input type="search" value={filter} onChange={e => setFilter(e.target.value)} placeholder="filtrar categoría (ej. /Sports)…"
+             style={{ width: '100%', maxWidth: 320, padding: '6px 10px', fontFamily: 'var(--mono)', fontSize: 11, border: '1px solid var(--rule)', background: 'transparent', color: 'var(--ink)', marginBottom: 12 }} />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 14 }}>
+        {list.slice(0, 60).map((g, i) => (
+          <div key={i} style={{ border: '1px solid var(--rule-2)', padding: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+              <strong style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)', letterSpacing: '.02em' }}>{g.category}</strong>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>{g.articleCount} pages</span>
+            </div>
+            {(g.topPatterns || []).map((p, j) => (
+              <div key={j} style={{ display: 'flex', alignItems: 'baseline', gap: 8, padding: '3px 0', borderBottom: '1px solid var(--rule-2)' }}>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', minWidth: 18, textAlign: 'right' }}>{j + 1}</span>
+                <span style={{ flex: 1, fontFamily: 'var(--serif)', fontSize: 12, color: 'var(--ink-2)', lineHeight: 1.3 }}>{p.ngram}</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', minWidth: 28, textAlign: 'right' }}>×{p.count}</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--accent)', minWidth: 32, textAlign: 'right' }}>{p.share}%</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function PatternsHistoricalPanel({ hist }) {
   const [filter, setFilter] = useState('');
   if (!hist || !hist.publishers || hist.publishers.length === 0) {
