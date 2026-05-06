@@ -62,17 +62,121 @@ async function getCategoryNames(): Promise<Record<number, string>> {
   } catch { return {}; }
 }
 
-// Heurística verbos ES: detecta tokens con terminaciones típicas de verbo
-// conjugado (presente, pretérito, imperfecto, futuro, participio, gerundio).
-// No es perfecto pero filtra ~80% sustantivos. Filtro adicional: descartar
-// nombres propios (mayúscula inicial — ya pasaron por toLowerCase, así que
-// usamos lista negra de sustantivos comunes en titulares).
-const VERB_NOISE = new Set(['vida','tema','caso','grupo','sector','centro','equipo','plan','base','area','frente','tras','desde','sobre','contra','arte','gente','tipo','clase','linea','luz','mar','aire','agua','tierra','ciudad','calle','casa','lado','final','hora','dia','noche','tarde','manana','semana','mes','ano','siglo','vez','momento','minuto','segundo','tiempo','parte','forma','razon','manera','modo','aspecto','punto','sentido','idea','gente','niveles','puerta','cara','mano','pie','cabeza','mundo','pais','espana','mismo','primer','segundo','ultimo','solo','fondo','medio','tipo']);
+// Whitelist de verbos editoriales ES con sus conjugaciones más comunes en
+// titulares (presente 3ª persona, pretérito perfecto simple, participio).
+// Más honesto que heurística regex que captura nombres propios como verbos.
+// Cubre ~120 verbos × ~3 formas = ~350 tokens reconocidos.
+const EDITORIAL_VERBS = new Set([
+  // anunciar, anuncia, anuncian, anunció, anunciaron, anunciado
+  'anuncia','anuncian','anuncio','anunciaron','anunciado',
+  'asegura','aseguran','aseguro','aseguraron','asegurado',
+  'confirma','confirman','confirmo','confirmaron','confirmado',
+  'denuncia','denuncian','denuncio','denunciaron','denunciado',
+  'advierte','advierten','advirtio','advirtieron','advertido',
+  'revela','revelan','revelo','revelaron','revelado',
+  'pide','piden','pidio','pidieron','pedido',
+  'exige','exigen','exigio','exigieron','exigido',
+  'propone','proponen','propuso','propusieron','propuesto',
+  'niega','niegan','nego','negaron','negado',
+  'descarta','descartan','descarto','descartaron','descartado',
+  'condena','condenan','condeno','condenaron','condenado','condenada',
+  'aprueba','aprueban','aprobo','aprobaron','aprobado',
+  'rechaza','rechazan','rechazo','rechazaron','rechazado',
+  'suspende','suspenden','suspendio','suspendieron','suspendido',
+  'prohibe','prohiben','prohibio','prohibieron','prohibido',
+  'declara','declaran','declaro','declararon','declarado',
+  'acusa','acusan','acuso','acusaron','acusado',
+  'defiende','defienden','defendio','defendieron','defendido',
+  'sostiene','sostienen','sostuvo','sostuvieron',
+  'mantiene','mantienen','mantuvo','mantuvieron','mantenido',
+  'lanza','lanzan','lanzo','lanzaron','lanzado',
+  'presenta','presentan','presento','presentaron','presentado',
+  'gana','ganan','gano','ganaron','ganado',
+  'pierde','pierden','perdio','perdieron','perdido',
+  'derrota','derrotan','derroto','derrotaron','derrotado',
+  'abre','abren','abrio','abrieron','abierto','abierta',
+  'cierra','cierran','cerro','cerraron','cerrado','cerrada',
+  'decide','deciden','decidio','decidieron','decidido',
+  'alerta','alertan','alerto','alertaron','alertado',
+  'reclama','reclaman','reclamo','reclamaron','reclamado',
+  'dispara','disparan','disparo','dispararon','disparado',
+  'habla','hablan','hablo','hablaron','hablado',
+  'busca','buscan','busco','buscaron','buscado',
+  'encuentra','encuentran','encontro','encontraron','encontrado','encontrada',
+  'halla','hallan','hallo','hallaron','hallado','hallada',
+  'detiene','detienen','detuvo','detuvieron','detenido','detenida','detenidos',
+  'arresta','arrestan','arresto','arrestaron','arrestado',
+  'libera','liberan','libero','liberaron','liberado',
+  'escapa','escapan','escapo','escaparon',
+  'muere','mueren','murio','murieron','muerto','muerta',
+  'mata','matan','mato','mataron','matado',
+  'hiere','hieren','hirio','hirieron','herido','herida','heridos','heridas',
+  'salva','salvan','salvo','salvaron','salvado',
+  'rescata','rescatan','rescato','rescataron','rescatado',
+  'descubre','descubren','descubrio','descubrieron','descubierto','descubierta',
+  'investiga','investigan','investigo','investigaron','investigado',
+  'dimite','dimiten','dimitio','dimitieron','dimitido',
+  'renuncia','renuncian','renuncio','renunciaron','renunciado',
+  'vuelve','vuelven','volvio','volvieron','vuelto',
+  'llega','llegan','llego','llegaron','llegado',
+  'sale','salen','salio','salieron','salido','salida',
+  'viaja','viajan','viajo','viajaron','viajado',
+  'debuta','debutan','debuto','debutaron',
+  'regresa','regresan','regreso','regresaron','regresado',
+  'marca','marcan','marco','marcaron','marcado',
+  'anota','anotan','anoto','anotaron','anotado',
+  'ficha','fichan','ficho','ficharon','fichado',
+  'vende','venden','vendio','vendieron','vendido','vendida',
+  'compra','compran','compro','compraron','comprado','comprada',
+  'recibe','reciben','recibio','recibieron','recibido','recibida',
+  'entrega','entregan','entrego','entregaron','entregado','entregada',
+  'paga','pagan','pago','pagaron','pagado',
+  'cobra','cobran','cobro','cobraron','cobrado',
+  'sube','suben','subio','subieron','subido',
+  'baja','bajan','bajo','bajaron','bajado',
+  'cae','caen','cayo','cayeron','caido',
+  'vuela','vuelan','volo','volaron','volado',
+  'vence','vencen','vencio','vencieron','vencido',
+  'supera','superan','supero','superaron','superado','superada',
+  'golpea','golpean','golpeo','golpearon','golpeado',
+  'retira','retiran','retiro','retiraron','retirado','retirada',
+  'destituye','destituyen','destituyo','destituyeron','destituido',
+  'nombra','nombran','nombro','nombraron','nombrado','nombrada',
+  'designa','designan','designo','designaron','designado',
+  'vota','votan','voto','votaron','votado',
+  'lamenta','lamentan','lamento','lamentaron','lamentado',
+  'aclara','aclaran','aclaro','aclararon','aclarado',
+  'expone','exponen','expuso','expusieron','expuesto',
+  'afirma','afirman','afirmo','afirmaron','afirmado',
+  'garantiza','garantizan','garantizo','garantizaron','garantizado',
+  'acepta','aceptan','acepto','aceptaron','aceptado',
+  'veta','vetan','veto','vetaron','vetado',
+  'intenta','intentan','intento','intentaron','intentado',
+  'pretende','pretenden','pretendio','pretendieron','pretendido',
+  'espera','esperan','espero','esperaron','esperado',
+  'evita','evitan','evito','evitaron','evitado',
+  'impide','impiden','impidio','impidieron','impedido',
+  'paraliza','paralizan','paralizo','paralizaron','paralizado',
+  'cesa','cesan','ceso','cesaron','cesado',
+  'despide','despiden','despidio','despidieron','despedido','despedida',
+  'bloquea','bloquean','bloqueo','bloquearon','bloqueado',
+  'ratifica','ratifican','ratifico','ratificaron','ratificado',
+  'amenaza','amenazan','amenazo','amenazaron','amenazado',
+  'rompe','rompen','rompio','rompieron','roto','rota',
+  'estalla','estallan','estallo','estallaron','estallado',
+  'exhibe','exhiben','exhibio','exhibieron','exhibido',
+  'fulmina','fulminan','fulmino','fulminaron','fulminado',
+  'humilla','humillan','humillo','humillaron','humillado',
+  'arrasa','arrasan','arraso','arrasaron','arrasado',
+  'destroza','destrozan','destrozo','destrozaron','destrozado',
+  'estrena','estrenan','estreno','estrenaron','estrenado',
+  'firma','firman','firmo','firmaron','firmado','firmada',
+  'aplaza','aplazan','aplazo','aplazaron','aplazado',
+  'celebra','celebran','celebro','celebraron','celebrado',
+]);
 function looksLikeVerb(token: string): boolean {
-  if (token.length < 4) return false;
-  if (VERB_NOISE.has(token)) return false;
-  // Terminaciones verbales típicas (presente, pretérito, futuro, participio, gerundio)
-  return /(?:[aei]r|a|e|an|en|aba|aban|ido|ado|ada|adas|ados|idos|idas|ó|ió|ará|erá|irá|aron|eron|ieron|aria|eria|iria|ando|iendo|ado|ido|aron)$/.test(token);
+  if (token.length < 3) return false;
+  return EDITORIAL_VERBS.has(token);
 }
 
 async function fetchAndProcess(daysBack: number): Promise<{
