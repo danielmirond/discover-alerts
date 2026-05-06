@@ -1516,7 +1516,12 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     //   - samples: 3 titulares recientes con thumbnail
     competitors: (() => {
       const histRef: any = (state as any).publisherPatternsHistorical;
-      const list = [
+      // Lista adaptativa según instancia.
+      // - Sport (DS_CATEGORY_FILTER=/Sports): cabeceras deportivas ES + LatAm
+      // - Main (sin filter): generalistas españoles (los 10 más relevantes en
+      //   competencia editorial Discover).
+      // Override: COMPETITORS_DOMAINS env var con "name|domain,name|domain,..."
+      const sportList = [
         { name: 'AS', domain: 'as.com' },
         { name: 'MARCA', domain: 'marca.com' },
         { name: 'Mundo Deportivo', domain: 'mundodeportivo.com' },
@@ -1528,6 +1533,34 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
         { name: 'Superdeporte', domain: 'superdeporte.es' },
         { name: 'Defensa Central', domain: 'defensacentral.com' },
       ];
+      const mainList = [
+        { name: 'El País', domain: 'elpais.com' },
+        { name: 'El Mundo', domain: 'elmundo.es' },
+        { name: 'ABC', domain: 'abc.es' },
+        { name: 'La Vanguardia', domain: 'lavanguardia.com' },
+        { name: 'El Español', domain: 'elespanol.com' },
+        { name: 'El Confidencial', domain: 'elconfidencial.com' },
+        { name: 'OK Diario', domain: 'okdiario.com' },
+        { name: '20 Minutos', domain: '20minutos.es' },
+        { name: 'eldiario.es', domain: 'eldiario.es' },
+        { name: 'Huffington Post', domain: 'huffingtonpost.es' },
+        { name: 'El Periódico', domain: 'elperiodico.com' },
+        { name: 'La Razón', domain: 'larazon.es' },
+        { name: 'RTVE', domain: 'rtve.es' },
+        { name: 'Antena 3', domain: 'antena3.com' },
+        { name: 'laSexta', domain: 'lasexta.com' },
+      ];
+      // Override opcional vía env var
+      const override = (process.env.COMPETITORS_DOMAINS || '').trim();
+      let list: Array<{ name: string; domain: string }>;
+      if (override) {
+        list = override.split(',').map(s => {
+          const [name, domain] = s.split('|').map(x => (x || '').trim());
+          return name && domain ? { name, domain } : null;
+        }).filter(Boolean) as Array<{ name: string; domain: string }>;
+      } else {
+        list = process.env.DS_CATEGORY_FILTER ? sportList : mainList;
+      }
       const dayMs = Date.now() - 24 * 3600_000;
       const cnames = (() => {
         // Build minimal category names cache from pages metadata if available
