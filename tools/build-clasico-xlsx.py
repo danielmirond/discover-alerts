@@ -1249,10 +1249,102 @@ ROWS_HEMERO = [r for r in ROWS if is_primary_archive(r)]
 ROWS_OTROS = [r for r in ROWS if not is_primary_archive(r)]
 
 
+def derive_relevance(row):
+    """Devuelve una explicación honesta de por qué se incluye la cita/hecho.
+
+    Mapea la 'era / contexto' de la fila a una relevancia editorial estándar.
+    Si la era no está en el mapa, usa una relevancia genérica con el tipo de fuente.
+    """
+    if len(row) < 10:
+        return ""
+    fecha, era, protag, cita, fuente, edicion, pagina, tipo, verif, notas = row[:10]
+    era_lower = (era or "").lower()
+    tipo_lower = (tipo or "").lower()
+
+    # Mapa específico era → relevancia
+    relevance_map = {
+        "11-1": "Episodio fundacional del relato 'Madrid franquista vs Barça víctima'. Material sensible: distinguir hecho deportivo (verificado) de interpretación política (debatida historiográficamente).",
+        "cruyff 0-5": "Hito futbolístico de los 70. Cruyff había rechazado al Madrid; el 0-5 silenció el Bernabéu en plena dictadura. ABC reconoció la genialidad 'sin reservas' — útil para mostrar respeto institucional excepcional.",
+        "goikoetxea-maradona": "La patada que casi termina la carrera de Maradona. La cobertura ABC al día siguiente fue baja (no en portada) — material para análisis sobre tratamiento mediático selectivo.",
+        "manita dream team": "Primera 'manita' moderna que define la simbología del Clásico actual (cinco dedos = humillación). Punto de inflexión generacional.",
+        "venganza 5-0": "Cierre simétrico (365 días después con mismo marcador). Coincidencia cinematográfica que cierra el círculo del Dream Team.",
+        "cochinillo a figo": "Imagen icónica del odio al traidor. Permite contar la dimensión simbólica del cochinillo (animal, alimento, ofensa) y debate sobre tibieza institucional.",
+        "ronaldinho ovación": "Segunda ovación a un culé en el Bernabéu (tras Maradona-83). Convierte la excepción en patrón. ABC tituló 'el Bernabéu se rinde'.",
+        "rp del 'puto jefe'": "RP histórica de Pep. Pieza maestra de retórica defensiva; sintetiza la guerra Mou-Pep en un sólo discurso.",
+        "rp unicef mou": "Pieza retórica conspirativa pública. Útil para análisis sobre el rol del entrenador-portavoz y deconstrucción del agravio mediático.",
+        "dedo en el ojo a tito": "Hecho con vídeo claro. Sanción mínima abrió debate sobre la doble vara federativa. Tras muerte de Tito, Mou pidió perdón implícito ('fallé') — arco narrativo cerrado.",
+        "casillas-mourinho topo": "Conflicto interno Madrid 2010-15 hecho público en documental Movistar+ 2020. Permite contar el coste humano de la guerra Mou-Pep sin entrar en cotilleos.",
+        "iniesta ovación bernabéu": "Tercera ovación a un culé en el Bernabéu en 32 años. Cierra el patrón Maradona-Ronaldinho-Iniesta. Permite estructurar artículo con tres bloques narrativos paralelos.",
+        "ramos-piqué": "Roja simbólica + gesto a la grada. Sintetiza el clímax narrativo del Clásico moderno. Material visual de oro.",
+        "puyol": "Carles Puyol con la bandera catalana. Material político-deportivo; el capitán del Barça como símbolo identitario.",
+        "lamine yamal": "Eje generacional 2024-2026: el adolescente convertido en figura mediática del Clásico. Permite contar el relevo generacional.",
+        "bronca yamal-carvajal": "Episodio reciente que reproduce el 'habla ahora' de 2017. Demuestra continuidad cultural del Clásico entre generaciones.",
+        "el chiringuito": "Periodismo-espectáculo del Clásico. Material para análisis del tratamiento mediático y polarización de las aficiones.",
+        "schuster ficha por el madrid": "Antecedente del cambio de bando moderno (Figo 2000, Eto'o 2004). Útil para hilo cronológico de 'desertores' Barça-Madrid.",
+        "hugo sánchez sobre el clásico": "Voz internacional del Madrid (único mexicano que marcó en Clásico). Útil para abrir contenido a audiencia latinoamericana.",
+        "helenio herrera": "Pionero del entrenador mediático y filósofo del Clásico moderno. Frases que influyen a Mourinho 50 años después.",
+        "casillas se despide": "Despedida austera tras 25 años. Material emocional + análisis del coste humano de la era post-Mou.",
+        "casillas y xavi premio asturias": "Hito de reconciliación pública tras la guerra de Mou. Reconocimiento institucional al fútbol español sobre las rivalidades.",
+        "zidane primer clásico como entrenador": "Entrenador con más Clásicos ganados de la historia reciente. Hilo de su filosofía gestiva ante el Barça.",
+        "stoichkov": "Voz más anti-Madrid del culé histórico. Permite mostrar la dimensión emocional irracional de la rivalidad.",
+        "primer clásico": "Punto de partida histórico. Útil para contextualizar la rivalidad fundacional con datos verificables.",
+        "primer clásico de liga": "Inicio de la rivalidad en formato de campeonato regular. Útil para hilo histórico institucional.",
+        "di stéfano ficha": "Caso fundacional del Clásico moderno. Primera intervención institucional de la Federación franquista en favor del Madrid.",
+        "di stéfano vs kubala": "Primer enfrentamiento de los dos cracks de los 50. Permite contar la era pre-televisión del Clásico.",
+        "era bernabéu presidente": "Frases de presidentes históricos del Madrid. Útil para entender la dimensión institucional de la rivalidad.",
+        "maradona ovacionado bernabéu": "Primera ovación a un culé en el Bernabéu en la historia (1983). Punto de inflexión emocional histórico.",
+        "era cristiano ronaldo": "Eje de la era 2009-2018. Frases de Cristiano sobre el Madrid y sobre Messi — útil para hilo de su impacto en el Clásico.",
+        "lewandowski en barça": "Voz internacional reciente del Barça. Útil para contar la entrada de europeos top-tier al Clásico contemporáneo.",
+        "vinicius racismo": "Frente abierto del racismo en el fútbol español. El Camp Nou en la cronología de incidentes. Activismo de Vinicius como narrativa propia.",
+    }
+
+    for key, relevance in relevance_map.items():
+        if key in era_lower:
+            return relevance
+
+    # Detectar si es entrada de dietas (era = deporte)
+    sports_eras = ["tenis", "nba", "nfl", "futbol", "fútbol", "ufc", "mma", "f1", "boxeo",
+                   "ciclismo", "atletismo", "swimming", "natación", "natacion",
+                   "golf", "beisbol", "béisbol", "rugby", "patinaje", "polo",
+                   "esports", "gimnasia", "bádminton", "badminton",
+                   "balonmano", "voleibol", "volleyball", "skateboard"]
+    is_dieta = any(s in era_lower for s in sports_eras)
+
+    if is_dieta:
+        if "libro" in tipo_lower or "autobiograf" in tipo_lower:
+            return f"Dieta documentada en libro propio del deportista. Material primario para contar hábitos alimentarios de élite."
+        if "podcast" in tipo_lower:
+            return f"Dieta declarada en podcast — material conversacional reciente, útil para tono moderno."
+        if "documental" in tipo_lower:
+            return f"Dieta cubierta en documental. Material visual y narrativo."
+        return f"Dieta declarada por el deportista en prensa o entrevista. Útil para reportajes sobre nutrición deportiva de élite."
+
+    # Relevancia genérica según tipo de fuente (Clásico)
+    if "hemeroteca digital abc" in tipo_lower:
+        return "Portada/crónica primaria del ABC verificada en hemeroteca digital. Material editorial de primera línea para contextualizar la cobertura mediática contemporánea al evento."
+    if "wayback" in tipo_lower or "archive.org" in tipo_lower:
+        return "Snapshot Wayback Machine — captura web contemporánea al evento. Útil para citar la cobertura digital exacta del momento."
+    if "hemeroteca digital la vanguardia" in tipo_lower:
+        return "Crónica primaria de La Vanguardia verificada en hemeroteca digital. Voz tradicional de Catalunya en el Clásico."
+    if "rp en directo" in tipo_lower:
+        return "Rueda de prensa en directo — declaración pública verificada por múltiples medios."
+    if "vídeo" in tipo_lower or "video" in tipo_lower:
+        return "Vídeo público — material visual disponible para verificación. Cita extraída de archivo audiovisual."
+    if "libro" in tipo_lower or "autobiograf" in tipo_lower:
+        return "Cita extraída de libro publicado del propio protagonista o autor con acceso al sujeto."
+    if "atribuida" in tipo_lower or "atribuci" in (verif or "").lower():
+        return "Atribución repetida en biografías y prensa secundaria, sin localización en fuente primaria. Tratar como punto de partida para verificar."
+    if "stream" in tipo_lower or "twitch" in tipo_lower:
+        return "Transmisión en streaming/redes — momento mediático contemporáneo capturado."
+
+    return "Cita / declaración pública del Clásico. Útil como contexto editorial; requiere verificación específica antes de citar."
+
+
 def fill_sheet(ws, rows):
     HEADERS = ["Fecha", "Era / contexto", "Protagonista", "Cita literal",
                "Fuente", "Edición / publicación", "Página / lugar",
-               "Tipo fuente", "Verificado", "Notas", "URL fuente"]
+               "Tipo fuente", "Verificado", "Notas", "URL fuente",
+               "Relevancia editorial"]
 
     header_font = Font(bold=True, color="FFFFFF", size=12)
     header_fill = PatternFill("solid", fgColor="1F4E78")
@@ -1277,9 +1369,10 @@ def fill_sheet(ws, rows):
         cell.border = thin_border
 
     for ri, row in enumerate(rows, 2):
-        # Añadir URL derivada al final
+        # Añadir URL derivada y relevancia editorial
         url = derive_url(row)
-        full_row = list(row) + [url]
+        relevance = derive_relevance(row)
+        full_row = list(row) + [url, relevance]
         for ci, value in enumerate(full_row, 1):
             cell = ws.cell(row=ri, column=ci, value=value)
             cell.alignment = Alignment(vertical="top", wrap_text=True)
@@ -1294,10 +1387,10 @@ def fill_sheet(ws, rows):
             ws.cell(row=ri, column=9).fill = verified_fill
         elif verified.startswith("parcial"):
             ws.cell(row=ri, column=9).fill = partial_fill
-        elif verified.startswith("no"):
+        elif verified.startswith("no") or "atribuci" in verified:
             ws.cell(row=ri, column=9).fill = unverified_fill
 
-    widths = [12, 24, 28, 80, 20, 30, 22, 22, 14, 40, 50]
+    widths = [12, 24, 28, 80, 20, 30, 22, 22, 14, 40, 50, 60]
     for i, w in enumerate(widths, 1):
         ws.column_dimensions[get_column_letter(i)].width = w
 
