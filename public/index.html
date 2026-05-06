@@ -108,6 +108,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'formulas', label: 'Fórmulas' },
     { id: 'patrones', label: 'Patrones' },
     { id: 'patrones-categoria', label: 'Patrones · Categoría' },
+    { id: 'datacategoria', label: 'Datacategoría' },
     { id: 'historico', label: 'Histórico' },
     { id: 'predicciones', label: 'Predicciones' },
     { id: 'cultural', label: 'Cultural' },
@@ -907,6 +908,10 @@ function App() {
     body = viewPanelOnly(
       <PatternsByCategoryPanel hist={(data._raw && data._raw.patternsByCategoryHistorical) || null} />
     );
+  } else if (activeNav === 'datacategoria') {
+    body = viewPanelOnly(
+      <DatacategoriaView hist={(data._raw && data._raw.patternsByCategoryHistorical) || null} />
+    );
   } else if (activeNav === 'historico') {
     body = viewPanelOnly(<WeeklyPanel weekly={data.weekly || []} />);
   } else if (activeNav === 'predicciones') {
@@ -1295,6 +1300,124 @@ function BoeView({ boe, rawEntities }) {
 }
 
 /* ---------------- Config view (read-only system status) ---------------- */
+function DatacategoriaView({ hist }) {
+  const [filter, setFilter] = useState('');
+  const [active, setActive] = useState('');
+  if (!hist || !hist.categories || hist.categories.length === 0) {
+    return (
+      <div className="panel">
+        <div className="kicker">
+          Datacategoría · entidades · trigramas · verbos
+          <span className="bar"></span>
+          <span className="meta">pendiente — corre 1× al día</span>
+        </div>
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)', padding: 8 }}>
+          Aún no se ha corrido el poll histórico. Cadencia diaria 04:00 UTC. Disparable manual desde GitHub Actions.
+        </div>
+      </div>
+    );
+  }
+  const list = filter
+    ? hist.categories.filter(g => (g.category || '').toLowerCase().includes(filter.toLowerCase()))
+    : hist.categories;
+  const cur = active
+    ? hist.categories.find(g => g.category === active)
+    : list[0];
+  const windowLabel = hist.window === '90d' ? '90 días' : '30 días';
+
+  return (
+    <div className="panel">
+      <div className="kicker">
+        Datacategoría
+        <span className="bar"></span>
+        <span className="meta">{hist.categories.length} categorías DS · ventana {windowLabel}</span>
+      </div>
+      <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 10, lineHeight: 1.5 }}>
+        Por cada categoría DiscoverSnoop, las <strong style={{ color: 'var(--ink)' }}>entidades</strong>, <strong style={{ color: 'var(--ink)' }}>trigramas</strong> y <strong style={{ color: 'var(--ink)' }}>verbos</strong> más usados en titulares que han entrado en Discover en {windowLabel}. Útil para entender el lenguaje editorial dominante en cada vertical (qué entidades polarizan, qué fórmulas se repiten, qué verbos disparan clicks).
+      </div>
+      <input type="search" value={filter} onChange={e => setFilter(e.target.value)} placeholder="filtrar categoría (ej. /Sports, /News/Politics)…"
+             style={{ width: '100%', maxWidth: 360, padding: '6px 10px', fontFamily: 'var(--mono)', fontSize: 11, border: '1px solid var(--rule)', background: 'transparent', color: 'var(--ink)', marginBottom: 12 }} />
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16, maxHeight: 110, overflowY: 'auto', padding: 4, border: '1px solid var(--rule-2)' }}>
+        {list.slice(0, 60).map((g, i) => (
+          <span key={i} onClick={() => setActive(g.category)}
+                style={{
+                  cursor: 'pointer', padding: '3px 8px', fontFamily: 'var(--mono)', fontSize: 10,
+                  border: '1px solid var(--rule)',
+                  background: (cur && cur.category === g.category) ? 'var(--ink)' : 'transparent',
+                  color: (cur && cur.category === g.category) ? 'var(--paper)' : 'var(--ink-2)',
+                  whiteSpace: 'nowrap',
+                }}>
+            {g.category} <strong style={{ opacity: 0.6, marginLeft: 4 }}>{g.articleCount}</strong>
+          </span>
+        ))}
+      </div>
+      {!cur && (
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)', padding: 8 }}>
+          Selecciona una categoría arriba.
+        </div>
+      )}
+      {cur && (
+        <div>
+          <div style={{ marginBottom: 12 }}>
+            <strong style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--ink)', letterSpacing: '.04em' }}>{cur.category}</strong>
+            <span style={{ marginLeft: 8, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>{cur.articleCount} pages en {windowLabel}</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+            {/* Entidades */}
+            <div style={{ border: '1px solid var(--rule-2)', padding: 10 }}>
+              <div className="kicker" style={{ borderTop: 'none', paddingTop: 0, marginBottom: 8 }}>
+                Entidades<span className="bar"></span>
+                <span className="meta">top 10</span>
+              </div>
+              {(cur.topEntities || []).length === 0 ? (
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>—</div>
+              ) : cur.topEntities.map((e, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 8, padding: '3px 0', borderBottom: '1px solid var(--rule-2)' }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', minWidth: 18, textAlign: 'right' }}>{i + 1}</span>
+                  <span style={{ flex: 1, fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink)', fontWeight: 500 }}>{e.name}</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--accent)' }}>×{e.count}</span>
+                </div>
+              ))}
+            </div>
+            {/* Trigramas */}
+            <div style={{ border: '1px solid var(--rule-2)', padding: 10 }}>
+              <div className="kicker" style={{ borderTop: 'none', paddingTop: 0, marginBottom: 8 }}>
+                Patrones (trigramas)<span className="bar"></span>
+                <span className="meta">top 10</span>
+              </div>
+              {(cur.topPatterns || []).length === 0 ? (
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>—</div>
+              ) : cur.topPatterns.map((p, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 8, padding: '3px 0', borderBottom: '1px solid var(--rule-2)' }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', minWidth: 18, textAlign: 'right' }}>{i + 1}</span>
+                  <span style={{ flex: 1, fontFamily: 'var(--serif)', fontSize: 12, color: 'var(--ink-2)', lineHeight: 1.3 }}>{p.ngram}</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--accent)' }}>×{p.count}</span>
+                </div>
+              ))}
+            </div>
+            {/* Verbos */}
+            <div style={{ border: '1px solid var(--rule-2)', padding: 10 }}>
+              <div className="kicker" style={{ borderTop: 'none', paddingTop: 0, marginBottom: 8 }}>
+                Verbos<span className="bar"></span>
+                <span className="meta">top 10</span>
+              </div>
+              {(cur.topVerbs || []).length === 0 ? (
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>—</div>
+              ) : cur.topVerbs.map((v, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 8, padding: '3px 0', borderBottom: '1px solid var(--rule-2)' }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', minWidth: 18, textAlign: 'right' }}>{i + 1}</span>
+                  <span style={{ flex: 1, fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)', fontWeight: 600, fontStyle: 'italic' }}>{v.verb}</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--accent)' }}>×{v.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PatternsByCategoryPanel({ hist }) {
   const [filter, setFilter] = useState('');
   if (!hist || !hist.categories || hist.categories.length === 0) {

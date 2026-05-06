@@ -62,11 +62,24 @@ async function getCategoryNames(): Promise<Record<number, string>> {
   } catch { return {}; }
 }
 
+// Heurística verbos ES: detecta tokens con terminaciones típicas de verbo
+// conjugado (presente, pretérito, imperfecto, futuro, participio, gerundio).
+// No es perfecto pero filtra ~80% sustantivos. Filtro adicional: descartar
+// nombres propios (mayúscula inicial — ya pasaron por toLowerCase, así que
+// usamos lista negra de sustantivos comunes en titulares).
+const VERB_NOISE = new Set(['vida','tema','caso','grupo','sector','centro','equipo','plan','base','area','frente','tras','desde','sobre','contra','arte','gente','tipo','clase','linea','luz','mar','aire','agua','tierra','ciudad','calle','casa','lado','final','hora','dia','noche','tarde','manana','semana','mes','ano','siglo','vez','momento','minuto','segundo','tiempo','parte','forma','razon','manera','modo','aspecto','punto','sentido','idea','gente','niveles','puerta','cara','mano','pie','cabeza','mundo','pais','espana','mismo','primer','segundo','ultimo','solo','fondo','medio','tipo']);
+function looksLikeVerb(token: string): boolean {
+  if (token.length < 4) return false;
+  if (VERB_NOISE.has(token)) return false;
+  // Terminaciones verbales típicas (presente, pretérito, futuro, participio, gerundio)
+  return /(?:[aei]r|a|e|an|en|aba|aban|ido|ado|ada|adas|ados|idos|idas|ó|ió|ará|erá|irá|aron|eron|ieron|aria|eria|iria|ando|iendo|ado|ido|aron)$/.test(token);
+}
+
 async function fetchAndProcess(daysBack: number): Promise<{
   count: number;
   filtered: number;
   map: Map<string, { displayName: string; count: number; ngrams: Map<string, number> }>;
-  byCategory: Map<string, { count: number; ngrams: Map<string, number> }>;
+  byCategory: Map<string, { count: number; ngrams: Map<string, number>; entities: Map<string, number>; verbs: Map<string, number> }>;
 }> {
   const to = new Date();
   const from = new Date(Date.now() - daysBack * 24 * 3600_000);
@@ -95,7 +108,7 @@ async function fetchAndProcess(daysBack: number): Promise<{
 
   const names = await getCategoryNames();
   const map = new Map<string, { displayName: string; count: number; ngrams: Map<string, number> }>();
-  const byCategory = new Map<string, { count: number; ngrams: Map<string, number> }>();
+  const byCategory = new Map<string, { count: number; ngrams: Map<string, number>; entities: Map<string, number>; verbs: Map<string, number> }>();
   for (const p of filteredPages) {
     if (!p.title) continue;
     const dom = rootDomain(p.domain || (p.url ? new URL(p.url).hostname : ''));
@@ -106,16 +119,27 @@ async function fetchAndProcess(daysBack: number): Promise<{
       map.set(dom, row);
     }
     row.count++;
-    const tgs = trigrams(tokenize(p.title));
+    const titleTokens = tokenize(p.title);
+    const tgs = trigrams(titleTokens);
     for (const tg of tgs) row.ngrams.set(tg, (row.ngrams.get(tg) || 0) + 1);
 
-    // Aggregate per DS category as well
+    // Aggregate per DS category as well — ngramas + entidades + verbos
     const catName = typeof p.category === 'number' ? names[p.category] : (p.category as string | undefined);
     if (catName) {
       let crow = byCategory.get(catName);
-      if (!crow) { crow = { count: 0, ngrams: new Map() }; byCategory.set(catName, crow); }
+      if (!crow) { crow = { count: 0, ngrams: new Map(), entities: new Map(), verbs: new Map() }; byCategory.set(catName, crow); }
       crow.count++;
       for (const tg of tgs) crow.ngrams.set(tg, (crow.ngrams.get(tg) || 0) + 1);
+      // Entidades: vienen en p.entities (objetos { entity, country } o strings)
+      const ents = (p.entities as unknown as any[]) || [];
+      for (const e of ents) {
+        const ename = typeof e === 'string' ? e : (e?.entity || e?.name);
+        if (ename && ename.length > 2) crow.entities.set(ename, (crow.entities.get(ename) || 0) + 1);
+      }
+      // Verbos: tokens que pasan heurística verbal (descarta ruido común)
+      for (const tk of titleTokens) {
+        if (looksLikeVerb(tk)) crow.verbs.set(tk, (crow.verbs.get(tk) || 0) + 1);
+      }
     }
   }
   return { count: pages.length, filtered: filteredPages.length, map, byCategory };
@@ -156,18 +180,31 @@ export async function runHistoricalPatternsPoll(): Promise<void> {
   };
   console.log(`[hist-patterns] Persisted ${Object.keys(patterns).length} publishers (window=${window})`);
 
-  // Persist by category too: top 12 ngrams per DS category
-  const byCat: Record<string, { articleCount: number; topNgrams: Array<{ ngram: string; count: number }> }> = {};
+  // Persist by category: top 12 ngrams + top 15 entities + top 12 verbs per DS category
+  const byCat: Record<string, {
+    articleCount: number;
+    topNgrams: Array<{ ngram: string; count: number }>;
+    topEntities: Array<{ name: string; count: number }>;
+    topVerbs: Array<{ verb: string; count: number }>;
+  }> = {};
   for (const [catName, row] of result.byCategory) {
     if (row.count < 5) continue;
-    const sorted = [...row.ngrams.entries()]
+    const ngrams = [...row.ngrams.entries()]
       .filter(([ng]) => ng.split(' ').every(t => t.length > 2 && !/^\d+$/.test(t)))
       .sort((a, b) => b[1] - a[1])
       .slice(0, 12);
-    if (sorted.length === 0) continue;
+    const entities = [...row.entities.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 15);
+    const verbs = [...row.verbs.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12);
+    if (ngrams.length === 0 && entities.length === 0 && verbs.length === 0) continue;
     byCat[catName] = {
       articleCount: row.count,
-      topNgrams: sorted.map(([ngram, count]) => ({ ngram, count })),
+      topNgrams: ngrams.map(([ngram, count]) => ({ ngram, count })),
+      topEntities: entities.map(([name, count]) => ({ name, count })),
+      topVerbs: verbs.map(([verb, count]) => ({ verb, count })),
     };
   }
   console.log(`[hist-patterns] Persisted ${Object.keys(byCat).length} categories`);

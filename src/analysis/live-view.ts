@@ -1653,13 +1653,15 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     patternsByCategoryHistorical: (() => {
       const hist = (state as any).categoryPatternsHistorical;
       if (!hist || !hist.categories) return null;
-      const out: Array<{ category: string; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }> }> = [];
+      const out: Array<{ category: string; articleCount: number; topPatterns: Array<{ ngram: string; count: number; share: number }>; topEntities: Array<{ name: string; count: number }>; topVerbs: Array<{ verb: string; count: number }> }> = [];
       for (const [name, row] of Object.entries(hist.categories as Record<string, any>)) {
         const top = (row.topNgrams || []).slice(0, 10);
         out.push({
           category: name,
           articleCount: row.articleCount || 0,
           topPatterns: top.map((p: any) => ({ ngram: p.ngram, count: p.count, share: Math.round((p.count / Math.max(row.articleCount, 1)) * 100) })),
+          topEntities: (row.topEntities || []).slice(0, 10),
+          topVerbs: (row.topVerbs || []).slice(0, 10),
         });
       }
       return {
