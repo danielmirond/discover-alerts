@@ -434,11 +434,130 @@ def fill_sheet(ws, rows):
     ws.auto_filter.ref = ws.dimensions
 
 
+# ============ CURIOSIDADES PURAS (trivia / récords / datos sueltos) ============
+# Formato: (categoría, dato, valor / detalle, fuente, URL, verificación)
+
+CURIOSIDADES = [
+    # === Récords goleadores ===
+    ("Récord", "Pichichi histórico de un Mundial", "Just Fontaine — 13 goles (Suecia 1958, en 6 partidos)", "FIFA records", "https://www.fifa.com/tournaments/mens/worldcup/records", "✅"),
+    ("Récord", "Goleador histórico Mundiales (acumulado)", "Miroslav Klose — 16 goles (Alemania, 4 Mundiales 2002-2014)", "FIFA records", "https://www.fifa.com/tournaments/mens/worldcup/records", "✅"),
+    ("Récord", "Más goles en un partido (Mundial)", "Oleg Salenko — 5 goles (Rusia 6-1 Camerún, 1994)", "FIFA records", "https://www.fifa.com/tournaments/mens/worldcup/records", "✅"),
+    ("Récord", "Goleada más amplia", "Hungría 10-1 El Salvador (1982)", "FIFA records", "https://www.fifa.com/tournaments/mens/worldcup/records", "✅"),
+    ("Récord", "Gol más rápido", "Hakan Şükür (Turquía) — 10.8 segundos vs Corea (2002, tercer puesto)", "FIFA records", "https://www.fifa.com/tournaments/mens/worldcup/records", "✅"),
+    ("Récord", "Promedio de goles más alto en un Mundial", "5.38 goles/partido — Suiza 1954", "FIFA records", "https://www.fifa.com/tournaments/mens/worldcup/records", "✅"),
+    ("Récord", "Promedio de goles más bajo en un Mundial", "2.21 goles/partido — Italia 1990", "FIFA records", "https://www.fifa.com/tournaments/mens/worldcup/records", "✅"),
+
+    # === Récords participación ===
+    ("Récord", "Más Mundiales jugados (jugador)", "Lothar Matthäus — 5 Mundiales (RFA/Alemania 1982-1998, 25 partidos)", "FIFA records", "https://www.fifa.com/tournaments/mens/worldcup/records", "✅"),
+    ("Récord", "Selección con más Mundiales (todos)", "Brasil — 22 participaciones, único país en todos los Mundiales", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup", "✅"),
+    ("Récord", "Selección con más títulos", "Brasil — 5 títulos (1958, 1962, 1970, 1994, 2002)", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup", "✅"),
+    ("Récord", "Mundiales como anfitrión campeón", "Solo 6: Uruguay 1930, Italia 1934, Inglaterra 1966, RFA 1974, Argentina 1978, Francia 1998", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup", "✅"),
+    ("Récord", "Anfitriones que NO pasaron de 1ª ronda", "Sudáfrica 2010 (única vez en la historia hasta hoy)", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup/2010southafrica", "✅"),
+
+    # === Récords arbitrales ===
+    ("Récord", "Único árbitro que dirigió 2 finales de Mundial", "Ivan Eklind (Suecia) — finales 1934 y 1938", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup", "✅"),
+    ("Récord", "Primer árbitro español en una final", "Antonio Mateu Lahoz — nunca dirigió una final, dato erróneo en redes; el récord lo tiene José Luis García Aranda en otros torneos", "FIFA archive", "https://www.fifa.com/", "📰"),
+    ("Récord", "Primera tarjeta roja directa en un Mundial", "Carlos Caszely (Chile) vs RFA, 14/06/1974", "Memoria Chilena BNCh", "https://www.memoriachilena.gob.cl/", "✅"),
+    ("Récord", "Primer árbitro en mostrar tarjeta amarilla", "Ken Aston (inglés) — diseñó el sistema en 1966 tras Battle of Santiago. Implementado en México 1970.", "IFAB", "https://www.theifab.com/", "✅"),
+
+    # === Récords selecciones ===
+    ("Récord", "Únicos países africanos en cuartos de final", "Camerún 1990, Senegal 2002, Ghana 2010, Marruecos 2022 (semifinalista)", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup", "✅"),
+    ("Récord", "Único país asiático en semifinales", "Corea del Sur 2002 (eliminada por Alemania)", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup", "✅"),
+    ("Récord", "Selecciones que NUNCA han clasificado", "China (solo en 2002), India (no clasifica desde 1950 cuando se retiró), Indonesia (solo 1938)", "FIFA archive", "https://www.fifa.com/", "✅"),
+    ("Récord", "Mundial con más debutantes simultáneos", "1934 (16 selecciones, todas debutantes excepto Uruguay que no fue)", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup/1934italy", "✅"),
+
+    # === Mascotas ===
+    ("Mascota", "Primera mascota oficial", "Willie (Inglaterra 1966) — león con camiseta UK", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup/1966england", "✅"),
+    ("Mascota", "Mascota más conocida en España", "Naranjito (España 1982) — naranja con cara, primera mascota antropomorfa frutal", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup/1982spain", "✅"),
+    ("Mascota", "Mascotas por edición (1966-2022)", "Willie 66, Juanito 70, Tip y Tap 74, Gauchito 78, Naranjito 82, Pique 86, Ciao 90, Striker 94, Footix 98, Ato/Kaz/Nik 02, Goleo 06, Zakumi 10, Fuleco 14, Zabivaka 18, La'eeb 22", "FIFA archive", "https://www.fifa.com/", "✅"),
+    ("Mascota", "Mundial 2026 — mascotas", "Maple (Canadá), Zayu (México) y Clutch (USA) — primera vez con 3 mascotas", "FIFA Communications", "https://www.fifa.com/tournaments/mens/worldcup/canada-mexico-and-usa-2026", "✅"),
+
+    # === Balones ===
+    ("Balón", "Primer balón oficial Adidas", "Telstar — México 1970, blanco-negro panel (32 paneles, primer balón retransmitido en TV color)", "FIFA + Adidas", "https://www.adidas.com/us/blog/world-cup-ball-history", "✅"),
+    ("Balón", "Balón con nombres oficiales", "Tango (78), Tango España (82), Azteca (86), Etrusco (90), Questra (94), Tricolore (98), Fevernova (02), Teamgeist (06), Jabulani (10), Brazuca (14), Telstar 18 (18), Al Rihla (22)", "FIFA archive", "https://www.fifa.com/", "✅"),
+    ("Balón", "Balón más criticado por porteros", "Jabulani (Sudáfrica 2010) — Casillas, Buffon, Julio César firmaron protesta conjunta por trayectoria errática", "Marca + Bild + Gazzetta archives", "https://www.marca.com/", "✅"),
+
+    # === Asistencias ===
+    ("Asistencia", "Récord asistencia partido", "Maracaná 1950, Brasil-Uruguay final: 199.854 espectadores oficiales (~210.000 estimados)", "FIFA archive + BNDigital Brasil", "https://www.fifa.com/tournaments/mens/worldcup/1950brazil", "✅"),
+    ("Asistencia", "Mundial con más asistencia total", "USA 1994: 3.587.538 espectadores totales (récord intacto)", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup/1994usa", "✅"),
+    ("Asistencia", "Mundial con menor asistencia (post-1950)", "Italia 1934 — sin datos oficiales completos, ediciones menores", "FIFA archive", "https://www.fifa.com/", "📰"),
+
+    # === Mundial 2026 ===
+    ("Formato", "Mundial 2026: 48 selecciones", "Primer Mundial con 48 equipos (frente a 32 anteriores). 12 grupos de 4. 104 partidos en 16 ciudades.", "FIFA oficial", "https://www.fifa.com/tournaments/mens/worldcup/canada-mexico-and-usa-2026", "✅"),
+    ("Formato", "Mundial 2026: 3 países sede", "USA (11 ciudades), México (3), Canadá (2). Primera vez con 3 países anfitriones.", "FIFA oficial", "https://www.fifa.com/tournaments/mens/worldcup/canada-mexico-and-usa-2026", "✅"),
+
+    # === Trivia varios ===
+    ("Trivia", "Único Mundial con final repetida", "1950 — el sistema fue de liguilla, sin final como tal. Brasil-Uruguay decidió título de facto en última jornada.", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup/1950brazil", "✅"),
+    ("Trivia", "Primera transmisión por TV en color", "México 1970 — coincide con la primera Telstar y el primer Mundial 'global' en imagen.", "FIFA archive + NHK Japón", "https://www.fifa.com/tournaments/mens/worldcup/1970mexico", "✅"),
+    ("Trivia", "Único futbolista que jugó dos finales con dos selecciones", "Luis Monti — final 1930 con Argentina (perdió), final 1934 con Italia (ganó)", "FIFA archive + Clarín archivo", "https://www.fifa.com/tournaments/mens/worldcup", "✅"),
+    ("Trivia", "Único Mundial sin equipos europeos en cuartos", "1930 — el primero. Solo USA y los 4 sudamericanos clasificados.", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup/1930uruguay", "✅"),
+    ("Trivia", "Países con un único título en su historia", "Inglaterra (1966), Francia (1998), España (2010)", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup", "✅"),
+    ("Trivia", "Únicos jugadores con 4 títulos del Mundial", "Pelé — Brasil 1958, 1962 (lesionado), 1970", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup", "✅"),
+    ("Trivia", "Único Mundial sin gol en el primer partido", "1962 — Chile-Suiza fue 3-1 (sí hubo). El primer 0-0 oficial fue Brasil-Inglaterra 1958.", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup", "✅"),
+    ("Trivia", "Final más larga", "España 1-0 Holanda (Sudáfrica 2010) — 116 minutos de prórroga, gol de Iniesta m.116", "FIFA archive", "https://www.fifa.com/tournaments/mens/worldcup/2010southafrica", "✅"),
+    ("Trivia", "Final con más goles", "Brasil 4-2 Suecia (1958), Suecia-Alemania 5-2 (1934), Hungría-RFA 3-2 (1954)", "FIFA archive", "https://www.fifa.com/", "✅"),
+    ("Trivia", "Únicos hat-tricks en finales", "Geoff Hurst (Inglaterra-RFA, 1966) — único hat-trick en una final hasta Mbappé (Francia-Argentina, 2022, perdida)", "FIFA archive", "https://www.fifa.com/", "✅"),
+]
+
+
+def fill_curiosidades_sheet(ws, rows):
+    headers = ["Categoría", "Dato", "Valor / detalle", "Fuente", "URL", "Verif."]
+    ws.append(headers)
+    header_fill = PatternFill(start_color="1f3864", end_color="1f3864", fill_type="solid")
+    header_font = Font(color="FFFFFF", bold=True, size=11)
+    for col_num in range(1, len(headers) + 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    cat_fills = {
+        "Récord": PatternFill(start_color="fff2cc", end_color="fff2cc", fill_type="solid"),
+        "Mascota": PatternFill(start_color="e2efda", end_color="e2efda", fill_type="solid"),
+        "Balón": PatternFill(start_color="fce4d6", end_color="fce4d6", fill_type="solid"),
+        "Asistencia": PatternFill(start_color="d9e2f3", end_color="d9e2f3", fill_type="solid"),
+        "Formato": PatternFill(start_color="ddebf7", end_color="ddebf7", fill_type="solid"),
+        "Trivia": PatternFill(start_color="ededed", end_color="ededed", fill_type="solid"),
+    }
+    border = Border(
+        left=Side(style="thin", color="cccccc"),
+        right=Side(style="thin", color="cccccc"),
+        top=Side(style="thin", color="cccccc"),
+        bottom=Side(style="thin", color="cccccc"),
+    )
+    for row_data in rows:
+        ws.append(row_data)
+        r = ws.max_row
+        cat = row_data[0]
+        fill = cat_fills.get(cat, None)
+        for c in range(1, len(headers) + 1):
+            cell = ws.cell(row=r, column=c)
+            cell.alignment = Alignment(wrap_text=True, vertical="top")
+            cell.border = border
+            if fill:
+                cell.fill = fill
+            if c == 5 and row_data[4]:  # URL
+                cell.hyperlink = row_data[4]
+                cell.font = Font(color="0563C1", underline="single", size=10)
+            else:
+                cell.font = Font(size=10)
+    widths = [13, 38, 75, 28, 50, 8]
+    for i, w in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+    ws.row_dimensions[1].height = 28
+    ws.freeze_panes = "A2"
+    ws.auto_filter.ref = ws.dimensions
+
+
 def main():
     wb = Workbook()
     ws = wb.active
     ws.title = "Mundial — hechos"
     fill_sheet(ws, ROWS)
+
+    # Hoja 2 — Curiosidades puras (datos sueltos / récords / trivia)
+    ws2 = wb.create_sheet("Mundial — curiosidades")
+    fill_curiosidades_sheet(ws2, CURIOSIDADES)
+
     out = Path(__file__).resolve().parents[1] / "docs" / "mundial-hechos.xlsx"
     wb.save(out)
     print(f"Generado: {out}")
@@ -446,11 +565,13 @@ def main():
     emo = sum(1 for r in ROWS if "Emotivo" in r[0])
     pol = sum(1 for r in ROWS if "Polémico" in r[0])
     ver = sum(1 for r in ROWS if "VERIFICADO" in r[6])
-    print(f"  🔍 Curiosos: {cur}")
-    print(f"  💧 Emotivos: {emo}")
-    print(f"  🔥 Polémicos: {pol}")
-    print(f"  ✅ Verificados: {ver}")
-    print(f"  Total: {len(ROWS)}")
+    print(f"  Hoja 1 (Hechos):")
+    print(f"    🔍 Curiosos: {cur}")
+    print(f"    💧 Emotivos: {emo}")
+    print(f"    🔥 Polémicos: {pol}")
+    print(f"    ✅ Verificados: {ver}")
+    print(f"  Hoja 2 (Curiosidades puras): {len(CURIOSIDADES)} entradas")
+    print(f"  Total: {len(ROWS) + len(CURIOSIDADES)}")
 
 
 if __name__ == "__main__":
