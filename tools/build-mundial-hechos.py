@@ -208,7 +208,6 @@ ROWS = [
      "https://www.lematin.ma/",
      "✅ VERIFICADO",
      "Héroe puntual con biografía completa: del Sevilla al Al-Hilal en 1 mes. Marruecos primer africano en semis (gracias a sus penaltis). Material clave para Mundial Qatar 2022."),
-]
 
     # ============ EMOTIVOS ============
     ("💧 Emotivo", "1939-01-23",
