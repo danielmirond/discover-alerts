@@ -12,6 +12,7 @@ import type {
   SchemaNewsMatchAlert,
 } from '../types.js';
 import { loadTopicsDictionary } from './topic-classifier.js';
+import { rankEntitiesBySalience } from './salience.js';
 
 function normalize(s: string): string {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -144,6 +145,14 @@ export async function detectMediaDiscoverCorrelations(
       const articleDesc = (article as any).description
         ? [ (article as any).description ].filter(Boolean)
         : undefined;
+      // Salience: ordenar entidades por su importancia en el artículo
+      const ranked = rankEntitiesBySalience(entitiesInArticle, {
+        title: article.title,
+        description: (article as any).description,
+      });
+      const orderedEntities = ranked.primary
+        ? [ranked.primary.entity, ...ranked.secondary.map(s => s.entity)]
+        : entitiesInArticle;
       multiEntityAlerts.push({
         type: 'multi_entity_article',
         articleTitle: article.title,
@@ -151,10 +160,12 @@ export async function detectMediaDiscoverCorrelations(
         feedName: article.feedName,
         feedCategory: article.feedCategory,
         feedScope: article.feedScope,
-        entities: entitiesInArticle.slice(0, 10),
+        entities: orderedEntities.slice(0, 10),
         category: majorityCat,
         topic: majorityTopic,
         contextSnippets: articleDesc,
+        primaryEntity: ranked.primary?.entity,
+        primarySalience: ranked.primary?.salience,
       });
     }
   }

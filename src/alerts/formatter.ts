@@ -560,9 +560,18 @@ function formatMultiEntityArticle(a: Extract<Alert, { type: 'multi_entity_articl
   ];
   const ctxME = contextSnippetsBlock(a.contextSnippets);
   if (ctxME) blocks.push(ctxME);
+  // Si hay primaryEntity con salience razonable, destacarlo
+  let entitiesLine: string;
+  if (a.primaryEntity && (a.primarySalience ?? 0) >= 0.5) {
+    const others = a.entities.filter(e => e !== a.primaryEntity).join(', ');
+    entitiesLine = `*Entidad principal:* ${a.primaryEntity}` +
+      (a.primarySalience ? ` _(salience ${a.primarySalience.toFixed(2)})_` : '') +
+      (others ? `\n*Otras entidades:* ${others}` : '');
+  } else {
+    entitiesLine = `*Entidades detectadas:* ${a.entities.join(', ')}`;
+  }
   blocks.push(section(
-    `*Entidades detectadas:* ${a.entities.join(', ')}` +
-    (a.category ? `\n*Categoria DS:* ${a.category}` : ''),
+    entitiesLine + (a.category ? `\n*Categoria DS:* ${a.category}` : ''),
   ));
   blocks.push(context(`Multi-entity article | ${a.feedCategory || 'media'} | ${a.feedScope || 'nacional'}`));
   return blocks;

@@ -447,6 +447,11 @@ export interface MultiEntityArticleAlert {
   topic?: string;
   /** Description del artículo cuando el feed la trae. */
   contextSnippets?: string[];
+  /** Entidad PRINCIPAL del artículo según salience score (early en titular,
+   * múltiples ocurrencias). Las del campo `entities` quedan como secundarias. */
+  primaryEntity?: string;
+  /** Score de salience [0,1] de la entidad primaria. */
+  primarySalience?: number;
 }
 
 export interface OwnMediaAlert {
