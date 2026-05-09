@@ -16,6 +16,17 @@
  * Sin API key. Rate limit: ~50 req/s — usamos límite conservador con throttle.
  */
 
+export interface KgRelation {
+  /** ID de la propiedad Wikidata (P102 = miembro de partido político, P54 = miembro de equipo, etc.). */
+  property: string;
+  /** Nombre legible de la relación. */
+  label: string;
+  /** QID del valor (otra entidad). */
+  targetQid: string;
+  /** Nombre legible del valor. */
+  targetName: string;
+}
+
 export interface KgEnrichment {
   name: string;
   wdId?: string;
@@ -24,10 +35,42 @@ export interface KgEnrichment {
   wikipediaEs?: string;
   wikipediaEn?: string;
   aliases?: string[];
+  /** Relaciones clave que importan editorialmente (partido político, equipo,
+   * ocupación, país de origen, padre/hijo en orgs, etc.). */
+  relations?: KgRelation[];
   resolvedAt: string;
   /** Si la búsqueda no devolvió match razonable. */
   notFound?: boolean;
 }
+
+// Propiedades Wikidata clave (claims) — solo las editorialmente útiles.
+// Sample: si una entidad es Pedro Sánchez (Q190085), P102 → PSOE; P39 → cargo público.
+const KEY_PROPERTIES: Record<string, string> = {
+  P102: 'miembro de partido',
+  P39: 'cargo',
+  P106: 'ocupación',
+  P54: 'miembro del equipo',
+  P118: 'liga',
+  P641: 'deporte',
+  P17: 'país',
+  P27: 'nacionalidad',
+  P22: 'padre',
+  P25: 'madre',
+  P26: 'cónyuge',
+  P40: 'hijo',
+  P127: 'propietario',
+  P749: 'matriz',
+  P159: 'sede',
+  P710: 'participante',
+  P276: 'lugar',
+  P800: 'obra notable',
+  P50: 'autor',
+  P57: 'director',
+  P175: 'intérprete',
+  P58: 'guionista',
+  P136: 'género',
+  P31: 'tipo',
+};
 
 // Mapping de Wikidata "instance of" (P31) a tipo simple. Lista ampliada
 // cubriendo los QIDs más frecuentes en news ES.
@@ -109,6 +152,22 @@ async function searchQid(name: string): Promise<string | null> {
   } catch { return null; }
 }
 
+/** Resuelve labels ES de un grupo de QIDs en una sola llamada. */
+async function resolveLabels(qids: string[]): Promise<Record<string, string>> {
+  if (qids.length === 0) return {};
+  const ids = qids.slice(0, 50).join('|');
+  const url = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${encodeURIComponent(ids)}&props=labels&languages=es|en&format=json&origin=*`;
+  try {
+    const j = await fetchJson(url);
+    const out: Record<string, string> = {};
+    for (const [qid, ent] of Object.entries((j?.entities || {}) as Record<string, any>)) {
+      const lbl = ent?.labels?.es?.value || ent?.labels?.en?.value;
+      if (lbl) out[qid] = lbl;
+    }
+    return out;
+  } catch { return {}; }
+}
+
 /** Recupera atributos clave de un QID. */
 async function fetchEntity(qid: string): Promise<KgEnrichment | null> {
   const url = `https://www.wikidata.org/wiki/Special:EntityData/${qid}.json`;
@@ -123,6 +182,28 @@ async function fetchEntity(qid: string): Promise<KgEnrichment | null> {
     // P31 instance of
     const p31Claims = e.claims?.P31 || [];
     const p31s = p31Claims.map((c: any) => c.mainsnak?.datavalue?.value?.id).filter(Boolean);
+
+    // Extraer relaciones clave: { property: P102 → [Q123, Q456], P39 → [...] }
+    const relationsRaw: Array<{ property: string; targetQid: string }> = [];
+    for (const propId of Object.keys(KEY_PROPERTIES)) {
+      const claims = e.claims?.[propId] || [];
+      for (const c of claims.slice(0, 3)) { // max 3 valores por propiedad
+        const qid = c?.mainsnak?.datavalue?.value?.id;
+        if (qid) relationsRaw.push({ property: propId, targetQid: qid });
+      }
+    }
+    const targetQids = [...new Set(relationsRaw.map(r => r.targetQid))];
+    const labelsByQid = targetQids.length > 0 ? await resolveLabels(targetQids) : {};
+    const relations: KgRelation[] = relationsRaw
+      .filter(r => labelsByQid[r.targetQid])
+      .slice(0, 10)
+      .map(r => ({
+        property: r.property,
+        label: KEY_PROPERTIES[r.property] || r.property,
+        targetQid: r.targetQid,
+        targetName: labelsByQid[r.targetQid],
+      }));
+
     return {
       name: labels.es?.value || labels.en?.value || qid,
       wdId: qid,
@@ -131,6 +212,7 @@ async function fetchEntity(qid: string): Promise<KgEnrichment | null> {
       wikipediaEs: sitelinks.eswiki ? `https://es.wikipedia.org/wiki/${encodeURIComponent(sitelinks.eswiki.title.replace(/ /g, '_'))}` : undefined,
       wikipediaEn: sitelinks.enwiki ? `https://en.wikipedia.org/wiki/${encodeURIComponent(sitelinks.enwiki.title.replace(/ /g, '_'))}` : undefined,
       aliases: aliases.slice(0, 5).map((a: any) => a.value).filter(Boolean),
+      relations,
       resolvedAt: new Date().toISOString(),
     };
   } catch { return null; }

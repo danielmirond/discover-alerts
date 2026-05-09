@@ -390,6 +390,20 @@ function Drawer({ alert, onClose, data }) {
                     también conocida como: {kg.aliases.slice(0, 3).join(', ')}
                   </div>
                 )}
+                {(kg.relations || []).length > 0 && (
+                  <div style={{ marginBottom: 8 }}>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 3 }}>Relaciones KG</div>
+                    {kg.relations.slice(0, 6).map((r, i) => (
+                      <div key={i} style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', lineHeight: 1.4 }}>
+                        <span style={{ color: 'var(--ink-4)' }}>{r.label}:</span>{' '}
+                        <a href={`https://www.wikidata.org/wiki/${r.targetQid}`} target="_blank" rel="noreferrer"
+                           style={{ color: 'var(--ink)', textDecoration: 'none' }}>
+                          {r.targetName}
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <div style={{ display: 'flex', gap: 8, fontFamily: 'var(--mono)', fontSize: 10 }}>
                   {kg.wdId && <a href={`https://www.wikidata.org/wiki/${kg.wdId}`} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>Wikidata {kg.wdId}</a>}
                   {kg.wikipediaEs && <a href={kg.wikipediaEs} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>Wikipedia ES</a>}
