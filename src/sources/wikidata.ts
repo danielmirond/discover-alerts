@@ -29,28 +29,49 @@ export interface KgEnrichment {
   notFound?: boolean;
 }
 
-// Mapping rough de Wikidata "instance of" (P31) o subclasses a tipo simple.
-// Prefijos Q comunes para personas/lugares/orgs/eventos. Nota: Wikidata es
-// gigantesco, esto es heurístico — solo cubrimos los más frecuentes en news.
-const PERSON_QIDS = new Set(['Q5', 'Q215627']); // human, person
+// Mapping de Wikidata "instance of" (P31) a tipo simple. Lista ampliada
+// cubriendo los QIDs más frecuentes en news ES.
+const PERSON_QIDS = new Set([
+  'Q5', 'Q215627', 'Q24229398', 'Q95074', // human, person, agent, fictional character
+  'Q937857', 'Q2066131', 'Q1028181', // football player, sportsperson, painter
+  'Q82955', 'Q189290', 'Q484876', 'Q2526255', // politician, military officer, executive, athlete
+  'Q33999', 'Q177220', 'Q10800557', 'Q49757', 'Q1622272', // actor, singer, film actor, poet, university teacher
+  'Q14467526', 'Q43845', 'Q170790', // sportsperson, journalist, businessperson
+]);
 const ORG_QIDS = new Set([
   'Q43229', 'Q4830453', 'Q783794', 'Q484652', 'Q15265344', // organization, business, company, NGO, broadcaster
   'Q7278', 'Q11032', 'Q56061', 'Q27686', 'Q1469848', // political party, newspaper, admin entity, intl org, ministry
-  'Q476028', 'Q12973014', // football club, sports club
+  'Q476028', 'Q12973014', 'Q847017', 'Q35536', // football club, sports club, sports team, basketball team
+  'Q4438121', 'Q161726', 'Q1248784', 'Q207320', // sports league, multinational corp, airline, govt agency
+  'Q3918', 'Q875538', 'Q3914', 'Q9842', // university, public university, school, primary school
+  'Q1322005', 'Q41710', 'Q24650', 'Q1071027', // bank, ethnic group, church, charitable org
+  'Q1530705', 'Q161091', 'Q486839', 'Q166262', // foundation, manufacturer, league, supranational org
+  'Q23958946', 'Q7257717', // financial institution, web service
 ]);
 const PLACE_QIDS = new Set([
   'Q515', 'Q486972', 'Q3957', 'Q5119', 'Q56061', // city, settlement, town, capital, admin entity
-  'Q6256', 'Q5107', // country, continent
-  'Q17350442', 'Q22865', // venue, region
+  'Q6256', 'Q5107', 'Q1620908', 'Q15284', // country, continent, historical region, municipality
+  'Q17350442', 'Q22865', 'Q23397', 'Q3914', // venue, region, lake, school
+  'Q4022', 'Q34442', 'Q47053', 'Q41176', // river, road, mountain, building
+  'Q23413', 'Q174782', 'Q12280', 'Q39614', // castle, square, bridge, cemetery
+  'Q1107656', 'Q484170', 'Q4022', // amusement park, commune of France, river
+  'Q484170', 'Q11750716', 'Q35657', // commune, autonomous community, US state
+  'Q1549591', 'Q1093829', // big city, city
 ]);
 const EVENT_QIDS = new Set([
-  'Q1190554', 'Q1656682', 'Q132241', // event, occurrence, festival
-  'Q11514315', 'Q2627975', // historical event, championship
-  'Q500834', 'Q189760', // tournament, war
+  'Q1190554', 'Q1656682', 'Q132241', 'Q189760', // event, occurrence, festival, war
+  'Q11514315', 'Q2627975', 'Q500834', 'Q15275719', // historical event, championship, tournament, recurring event
+  'Q1656682', 'Q15966540', 'Q175331', 'Q23653', // sports tournament, election, demonstration, terrorist attack
+  'Q2425052', 'Q83267', 'Q3001412', 'Q1153607', // crime, disaster, scandal, sports season
+  'Q26529', 'Q198', 'Q151885', 'Q40231', // space mission, war, concept, election
+  'Q40231', 'Q3024240', 'Q21184583', // historical period, fiscal year, seasonal event
 ]);
 const WORK_QIDS = new Set([
   'Q11424', 'Q5398426', 'Q571', 'Q482994', // film, TV series, book, album
-  'Q7889', 'Q15709879', // video game, drama TV series
+  'Q7889', 'Q15709879', 'Q47461344', // video game, drama TV series, written work
+  'Q3331189', 'Q386724', 'Q134556', 'Q188451', // version of work, work, single, music genre
+  'Q277759', 'Q838948', 'Q1004', // book series, work of art, comic
+  'Q14406742', 'Q24862', 'Q11410', // television film, short film, game
 ]);
 
 function classifyType(p31s: string[]): KgEnrichment['type'] {
