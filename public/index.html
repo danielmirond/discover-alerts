@@ -110,6 +110,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'patrones-categoria', label: 'Patrones · Categoría' },
     { id: 'datacategoria', label: 'Datacategoría' },
     { id: 'auditor', label: 'Auditor titular' },
+    { id: 'kg', label: 'Knowledge Graph' },
     { id: 'historico', label: 'Histórico' },
     { id: 'predicciones', label: 'Predicciones' },
     { id: 'cultural', label: 'Cultural' },
@@ -919,6 +920,12 @@ function App() {
       'reglas extraídas del research 1492.vision sobre pipelines Discover ES/FR',
       <AuditorView />
     );
+  } else if (activeNav === 'kg') {
+    body = viewSinglePanel(
+      'Knowledge Graph · enrichment Wikidata',
+      'cada entidad DS cruzada con Wikidata → tipo, descripción, Wikipedia, aliases',
+      <KgView entities={(data._raw && data._raw.entities) || []} kg={(data._raw && data._raw.entityKgEnrichment) || {}} />
+    );
   } else if (activeNav === 'historico') {
     body = viewPanelOnly(<WeeklyPanel weekly={data.weekly || []} />);
   } else if (activeNav === 'predicciones') {
@@ -1307,6 +1314,98 @@ function BoeView({ boe, rawEntities }) {
 }
 
 /* ---------------- Config view (read-only system status) ---------------- */
+function KgView({ entities, kg }) {
+  const [filter, setFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const enrichedNames = Object.keys(kg || {});
+  const total = entities.length;
+  const enrichedCount = entities.filter(e => kg[e.name] && !kg[e.name].notFound).length;
+  const notFoundCount = entities.filter(e => kg[e.name] && kg[e.name].notFound).length;
+  const noDataCount = total - enrichedCount - notFoundCount;
+  const byType = (() => {
+    const m = {};
+    for (const e of entities) {
+      const k = kg[e.name];
+      if (k && !k.notFound) m[k.type || 'Other'] = (m[k.type || 'Other'] || 0) + 1;
+    }
+    return m;
+  })();
+  const list = entities.filter(e => {
+    const k = kg[e.name];
+    if (typeFilter === 'enriched' && !(k && !k.notFound)) return false;
+    if (typeFilter === 'notfound' && !(k && k.notFound)) return false;
+    if (typeFilter === 'pending' && k) return false;
+    if (['Person','Organization','Place','Event','Work','Other'].includes(typeFilter)) {
+      if (!k || k.notFound || k.type !== typeFilter) return false;
+    }
+    if (filter && !e.name.toLowerCase().includes(filter.toLowerCase())) return false;
+    return true;
+  }).slice(0, 100);
+
+  const typeColor = (t) => {
+    const map = { Person: 'var(--ok)', Organization: 'var(--accent)', Place: 'var(--warn)', Event: '#7B61FF', Work: '#FF6B6B', Other: 'var(--ink-3)' };
+    return map[t] || 'var(--ink-3)';
+  };
+
+  return (
+    <div>
+      <div style={{ padding: '8px 10px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', lineHeight: 1.6 }}>
+        <strong style={{ color: 'var(--ink)' }}>{total}</strong> entidades en vivo · <strong style={{ color: 'var(--ok)' }}>{enrichedCount}</strong> enriquecidas Wikidata · <strong style={{ color: 'var(--warn)' }}>{notFoundCount}</strong> sin match · <strong style={{ color: 'var(--ink-4)' }}>{noDataCount}</strong> pendientes
+        <br/>
+        Por tipo: {Object.entries(byType).map(([t, n]) => <span key={t} style={{ marginRight: 10, color: typeColor(t) }}>{t} {n}</span>)}
+        <br/>
+        El poll Wikidata corre cada 6h y enriquece hasta 60 entidades por ejecución (max 5000 en cache).
+      </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+        {['all','enriched','notfound','pending','Person','Organization','Place','Event','Work'].map(t => (
+          <span key={t} onClick={() => setTypeFilter(t)}
+                style={{ cursor: 'pointer', padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 10, border: '1px solid var(--rule)', background: typeFilter === t ? 'var(--ink)' : 'transparent', color: typeFilter === t ? 'var(--paper)' : 'var(--ink)', letterSpacing: '.04em' }}>
+            {t}
+          </span>
+        ))}
+        <input value={filter} onChange={e => setFilter(e.target.value)} placeholder="filtrar por nombre…"
+               style={{ marginLeft: 'auto', padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 11, border: '1px solid var(--rule)', background: 'transparent', color: 'var(--ink)', minWidth: 220 }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
+        {list.map((e, i) => {
+          const k = kg[e.name] || {};
+          const isEnriched = k.wdId && !k.notFound;
+          return (
+            <div key={i} style={{ border: '1px solid var(--rule-2)', padding: 10, background: 'var(--paper)' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
+                <strong style={{ fontFamily: 'var(--sans)', fontSize: 14, color: 'var(--ink)' }}>{e.name}</strong>
+                {isEnriched && (
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 9, padding: '1px 5px', background: typeColor(k.type), color: 'var(--paper)', textTransform: 'uppercase', letterSpacing: '.05em' }}>{k.type}</span>
+                )}
+                {k.notFound && (
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--warn)' }}>no-match</span>
+                )}
+                {!k.wdId && !k.notFound && (
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)' }}>pending</span>
+                )}
+                <span style={{ marginLeft: 'auto', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>s{e.score}</span>
+              </div>
+              {k.description && (
+                <div style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink-3)', lineHeight: 1.4, marginBottom: 6 }}>{k.description}</div>
+              )}
+              {(k.aliases || []).length > 0 && (
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 6 }}>
+                  alias: {k.aliases.slice(0, 3).join(', ')}
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 8, fontFamily: 'var(--mono)', fontSize: 10 }}>
+                {k.wdId && <a href={`https://www.wikidata.org/wiki/${k.wdId}`} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>{k.wdId}</a>}
+                {k.wikipediaEs && <a href={k.wikipediaEs} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>ES</a>}
+                {k.wikipediaEn && <a href={k.wikipediaEn} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>EN</a>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function AuditorView() {
   const [headline, setHeadline] = useState('');
   const [result, setResult] = useState(null);

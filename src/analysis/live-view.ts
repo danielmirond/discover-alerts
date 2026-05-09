@@ -200,6 +200,7 @@ interface LiveViewResponse {
   patternsByMedia?: Array<any>;
   patternsByMediaHistorical?: { window: string; lastUpdated: string; publishers: Array<any> } | null;
   patternsByCategoryHistorical?: { window: string; lastUpdated: string; categories: Array<any> } | null;
+  entityKgEnrichment?: Record<string, any>;
   competitors?: Array<{
     name: string;
     domain: string;
@@ -1714,6 +1715,7 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       }
       return out.sort((a, b) => (b.firstSeen || '').localeCompare(a.firstSeen || '')).slice(0, 400);
     })(),
+    entityKgEnrichment: (state as any).entityKgEnrichment || {},
     entities: (() => {
       let out = entities;
       if (process.env.DS_CATEGORY_FILTER) {
