@@ -3,6 +3,40 @@ import { pickFormulasWithMeta } from './headline-formulas.js';
 import { momentumIcon, momentumLabel } from '../analysis/velocity.js';
 import { getState, updateState } from '../state/store.js';
 import { checkImage } from '../analysis/image-check.js';
+import { auditHeadline } from '../analysis/headline-auditor.js';
+
+/**
+ * Bloque inline con el verdict del auditor de titular para una headline real.
+ * Se aplica a alertas que llevan titular de artículo (multi_entity, coverage,
+ * own_media, first_mover, schema_news, meneame). Mantiene el bloque compacto:
+ * un context con verdict + score + top 2 issues. Si el titular es bueno
+ * (verdict=good) y no hay issues, devuelve null para no añadir ruido.
+ */
+function headlineAuditBlock(title: string | undefined): SlackBlock | null {
+  if (!title || title.length < 8) return null;
+  try {
+    const r = auditHeadline(title);
+    // Si está limpio, no metemos ruido — el redactor solo quiere ver lo accionable.
+    if (r.verdict === 'good' && r.issues.length === 0) return null;
+    const icon = r.verdict === 'good' ? ':white_check_mark:'
+               : r.verdict === 'review' ? ':warning:'
+               : ':x:';
+    const verdictLabel = r.verdict === 'good' ? 'OK'
+                       : r.verdict === 'review' ? 'revisar'
+                       : 'reescribir';
+    const issuesText = r.issues
+      .slice(0, 2)
+      .map(i => i.suggestion ? `${i.message} → ${i.suggestion}` : i.message)
+      .join(' · ');
+    const parts = [
+      `${icon} *Auditor titular:* ${verdictLabel} (${r.score}/100, ${r.length} chars)`,
+    ];
+    if (issuesText) parts.push(issuesText);
+    return context(parts.join(' — '));
+  } catch {
+    return null;
+  }
+}
 
 const FORMULA_USAGE_RETENTION_MS = 30 * 24 * 3600_000; // 30 days
 const FORMULA_USAGE_MAX_ENTRIES = 5000;
@@ -390,6 +424,9 @@ function formatEntityCoverage(a: Extract<Alert, { type: 'entity_coverage' }>): S
   ];
   if (ctxEC) blocks.push(ctxEC);
   blocks.push(section(`*Titulares:*\n${articleLines}`));
+  // Audit del primer titular (suele ser el más relevante: feed top o más reciente)
+  const auditEC = headlineAuditBlock(a.articles[0]?.title);
+  if (auditEC) blocks.push(auditEC);
   blocks.push(context(`Cobertura mediatica | DiscoverSnoop + RSS medios`));
   return blocks;
 }
@@ -424,6 +461,11 @@ function formatOwnMedia(a: Extract<Alert, { type: 'own_media' }>): SlackBlock[] 
       `:newspaper: *Tambien cubierto por:* ${a.otherOutlets.join(', ')}`,
     ));
   }
+
+  // Auditamos NUESTRO titular — es el caso de mayor valor: el redactor recibe
+  // feedback directo sobre el titular que ya publicamos.
+  const auditOM = headlineAuditBlock(a.title);
+  if (auditOM) blocks.push(auditOM);
 
   blocks.push(context('Own media tracking | Discover Alerts'));
   return blocks;
@@ -573,6 +615,8 @@ function formatMultiEntityArticle(a: Extract<Alert, { type: 'multi_entity_articl
   blocks.push(section(
     entitiesLine + (a.category ? `\n*Categoria DS:* ${a.category}` : ''),
   ));
+  const auditME = headlineAuditBlock(a.articleTitle);
+  if (auditME) blocks.push(auditME);
   blocks.push(context(`Multi-entity article | ${a.feedCategory || 'media'} | ${a.feedScope || 'nacional'}`));
   return blocks;
 }
@@ -592,7 +636,7 @@ function formatMeneameHot(a: Extract<Alert, { type: 'meneame_hot' }>): SlackBloc
   const discoverNote = a.discoverAbsent
     ? ':warning: *Aún no aparece en Discover — posible adelantamiento*'
     : `:link: También en Discover: ${a.matchingDiscoverEntities.join(', ')}`;
-  return [
+  const blocks: SlackBlock[] = [
     header(`:fire: Viral en Menéame: ${a.title.slice(0, 100)}`),
     fields(
       `*Karma:* ${a.karma}`,
@@ -603,8 +647,11 @@ function formatMeneameHot(a: Extract<Alert, { type: 'meneame_hot' }>): SlackBloc
     section(
       `${discoverNote}\n\n<${a.storyUrl}|Ver en Menéame> · <${a.externalUrl}|Fuente original>`,
     ),
-    context(`Menéame upstream signal | ${new Date(a.pubDate).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}`),
   ];
+  const auditMN = headlineAuditBlock(a.title);
+  if (auditMN) blocks.push(auditMN);
+  blocks.push(context(`Menéame upstream signal | ${new Date(a.pubDate).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}`));
+  return blocks;
 }
 
 function formatWikipediaSurge(a: Extract<Alert, { type: 'wikipedia_surge' }>): SlackBlock[] {
@@ -629,16 +676,19 @@ function formatFirstMover(a: Extract<Alert, { type: 'first_mover' }>): SlackBloc
   const wireContext = a.isWire
     ? ' · AGENCIA PRIMARIA (EFE/Europa Press/Reuters) — los medios citarán esto en 15-60 min'
     : ' · decidir entrar o saltar con fuentes propias';
-  return [
+  const blocks: SlackBlock[] = [
     header(`${a.isWire ? ':newspaper:' : ':dart:'} ${wirePrefix}Exclusiva de ${a.feedName}: ${a.entityName}`),
     section(
       `Solo *${a.feedName}* publica sobre *${a.entityName}* en los últimos ${a.windowMinutes} min.\n` +
       `<${a.link}|${a.title}>`,
     ),
-    context(
-      `${a.isWire ? 'Wire first' : 'First mover'} | ${a.category || '-'}${a.topic ? ' · ' + a.topic : ''}${wireContext}`,
-    ),
   ];
+  const auditFM = headlineAuditBlock(a.title);
+  if (auditFM) blocks.push(auditFM);
+  blocks.push(context(
+    `${a.isWire ? 'Wire first' : 'First mover'} | ${a.category || '-'}${a.topic ? ' · ' + a.topic : ''}${wireContext}`,
+  ));
+  return blocks;
 }
 
 async function formatSingleAlert(alert: Alert) {
@@ -671,17 +721,20 @@ function formatSchemaNewsMatch(a: Extract<Alert, { type: 'schema_news_match' }>)
   const dsTag = a.discoverScore != null
     ? ` · Discover score ${a.discoverScore}${a.discoverPosition != null ? ' · pos #' + a.discoverPosition : ''}`
     : '';
-  return [
+  const blocks: SlackBlock[] = [
     header(`${icon} ${topicLabel} · ${a.entityName}`),
     section(
       `*${a.feedName}* publica sobre *${a.entityName}* con titular tipo *${a.topic}*:\n` +
       `<${a.articleLink}|${a.articleTitle}>`,
     ),
-    context(
-      `Keywords: ${a.keywords.join(', ')}${dsTag}${a.category ? ' · ' + a.category : ''}` +
-      ` · ${a.topic === 'sucesos' ? 'YMYL: atribución obligatoria + lenguaje factual' : 'YMYL: citar tribunal/sentencia y respetar presunción'}`
-    ),
   ];
+  const auditSN = headlineAuditBlock(a.articleTitle);
+  if (auditSN) blocks.push(auditSN);
+  blocks.push(context(
+    `Keywords: ${a.keywords.join(', ')}${dsTag}${a.category ? ' · ' + a.category : ''}` +
+    ` · ${a.topic === 'sucesos' ? 'YMYL: atribución obligatoria + lenguaje factual' : 'YMYL: citar tribunal/sentencia y respetar presunción'}`
+  ));
+  return blocks;
 }
 
 /**
