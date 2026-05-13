@@ -39,6 +39,16 @@ const CLICKBAIT_HARD = [
   'la verdad oculta', 'lo que nadie te ha contado', 'jamás imaginarás',
 ];
 
+// Muletillas IA reconocibles en titular (en cuerpo se audita aparte).
+// Un titular con "cabe destacar" o "sin duda" huele a IA y/o a opinión vacía.
+const AI_TELLS_HEADLINE = [
+  'cabe destacar', 'cabe señalar', 'cabe mencionar',
+  'sin duda', 'sin lugar a dudas',
+  'en definitiva', 'en resumidas cuentas',
+  'es importante señalar', 'es importante destacar',
+  'no obstante', 'asimismo',
+];
+
 // Palabras vacías estilo "esto/eso/lo que"
 const VAGUE_OPENERS = [
   'esto', 'eso', 'lo que', 'el motivo', 'la razón', 'la verdad',
@@ -167,6 +177,27 @@ export function auditHeadline(headline: string): AuditResult {
     if (n > 15) {
       issues.push({ rule: 'long-listicle', severity: 'medium', message: `Listicle de ${n} ítems. Listicles >15 funcionan peor en ES/FR.`, suggestion: 'Reducir a ≤10.' });
     }
+  }
+
+  // 9.5. Muletilla IA en titular
+  const aiHit = AI_TELLS_HEADLINE.find(w => lower.includes(normalize(w)));
+  if (aiHit) {
+    issues.push({
+      rule: 'ai-tell',
+      severity: 'high',
+      message: `"${aiHit}" — muletilla IA. Suena artificial en titular.`,
+      suggestion: 'Suprimir y empezar directamente con la entidad o el dato.',
+    });
+  }
+
+  // 9.7. Raya media (em-dash) en titular — tic IA muy reconocible
+  if ((trimmed.match(/—/g) || []).length >= 1) {
+    issues.push({
+      rule: 'em-dash',
+      severity: 'medium',
+      message: 'Raya media (—) en titular. Tic reconocible de IA.',
+      suggestion: 'Sustituir por coma, punto o dos puntos.',
+    });
   }
 
   // 10. Demasiados signos de exclamación

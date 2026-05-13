@@ -110,6 +110,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'patrones-categoria', label: 'Patrones · Categoría' },
     { id: 'datacategoria', label: 'Datacategoría' },
     { id: 'auditor', label: 'Auditor titular' },
+    { id: 'auditor-texto', label: 'Audita texto' },
     { id: 'kg', label: 'Knowledge Graph' },
     { id: 'historico', label: 'Histórico' },
     { id: 'predicciones', label: 'Predicciones' },
@@ -972,6 +973,12 @@ function App() {
       'reglas extraídas del research 1492.vision sobre pipelines Discover ES/FR',
       <AuditorView />
     );
+  } else if (activeNav === 'auditor-texto') {
+    body = viewSinglePanel(
+      'Audita texto · detector anti-IA',
+      'muletillas, rayas medias, adjetivos vacíos, cierres plásticos, paralelismo estructural',
+      <TextAuditorView />
+    );
   } else if (activeNav === 'kg') {
     body = viewSinglePanel(
       'Knowledge Graph · enrichment Wikidata',
@@ -1544,6 +1551,124 @@ function AuditorView() {
                 <div style={{ fontFamily: 'var(--sans)', fontSize: 13, color: 'var(--ink)', marginTop: 4, lineHeight: 1.4 }}>
                   {iss.message}
                 </div>
+                {iss.suggestion && (
+                  <div style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink-3)', marginTop: 4, fontStyle: 'italic' }}>
+                    → {iss.suggestion}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {result?.error && (
+        <div style={{ color: 'var(--danger)', fontFamily: 'var(--mono)', fontSize: 12 }}>Error: {result.error}</div>
+      )}
+    </div>
+  );
+}
+
+function TextAuditorView() {
+  const [text, setText] = useState('');
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const audit = async () => {
+    if (!text.trim()) return;
+    setLoading(true);
+    try {
+      const r = await fetch(`/api/audit-text`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ text: text.trim() }),
+      });
+      const j = await r.json();
+      setResult(j);
+    } catch (e) {
+      setResult({ error: e.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sevColor = (s) => s === 'high' ? 'var(--danger)' : s === 'medium' ? 'var(--warn)' : 'var(--ink-3)';
+  const verdictColor = result?.verdict === 'humano' ? 'var(--ok)' : result?.verdict === 'revisar' ? 'var(--warn)' : 'var(--danger)';
+  const verdictLabel = { humano: '✓ HUMANO', revisar: '⚠ REVISAR', reescribir: '✗ REESCRIBIR' };
+
+  return (
+    <div style={{ maxWidth: 1000 }}>
+      <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', lineHeight: 1.5, marginBottom: 14 }}>
+        Pega un texto completo (cuerpo de noticia, párrafo, columna) y obtén un diagnóstico
+        anti-IA: muletillas conectoras, rayas medias, adjetivos abstractos vacíos, cierres
+        plásticos, paralelismo estructural, hedges, frases uniformes. Filtro local —
+        cero llamadas a GPT, instantáneo.
+      </div>
+      <textarea value={text} onChange={e => setText(e.target.value)}
+                placeholder="Cabe destacar que la decisión, sin duda, marca un punto crucial — fundamental para entender el contexto. En definitiva, queda por ver cómo se desarrollará..."
+                rows={10}
+                style={{ width: '100%', padding: '10px 12px', fontFamily: 'var(--sans)', fontSize: 14, border: '1px solid var(--rule)', background: 'var(--paper)', color: 'var(--ink)', lineHeight: 1.5, marginBottom: 8 }} />
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
+        <button onClick={audit} disabled={loading || !text.trim()}
+                style={{ padding: '8px 16px', fontFamily: 'var(--mono)', fontSize: 11, background: 'var(--ink)', color: 'var(--paper)', border: 'none', cursor: 'pointer', letterSpacing: '.05em' }}>
+          {loading ? '…' : 'AUDITAR TEXTO'}
+        </button>
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
+          {text.split(/\s+/).filter(Boolean).length} palabras
+        </div>
+      </div>
+      {result && !result.error && (
+        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 20 }}>
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Score humano-friendly</div>
+              <div style={{ fontFamily: 'var(--serif)', fontSize: 48, fontWeight: 800, color: verdictColor, lineHeight: 1 }}>
+                {result.score}
+              </div>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 13, color: verdictColor, marginTop: 4, fontWeight: 700 }}>
+                {verdictLabel[result.verdict]}
+              </div>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginTop: 8 }}>
+                {result.wordCount} palabras · {result.sentenceCount} frases
+              </div>
+            </div>
+            {(result.positives || []).length > 0 && (
+              <div>
+                <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>Positivos<span className="bar"></span><span className="meta">{result.positives.length}</span></div>
+                {result.positives.map((p, i) => (
+                  <div key={i} style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ok)', padding: '3px 0' }}>
+                    ✓ {p}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div>
+            <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>
+              Issues detectados<span className="bar"></span>
+              <span className="meta">{result.issues.length}</span>
+            </div>
+            {result.issues.length === 0 ? (
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)', padding: 8 }}>
+                Sin issues — el texto huele a humano.
+              </div>
+            ) : result.issues.map((iss, i) => (
+              <div key={i} style={{ padding: '10px 12px', borderLeft: `3px solid ${sevColor(iss.severity)}`, background: 'var(--paper-3)', marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 9, padding: '1px 6px', background: sevColor(iss.severity), color: 'var(--paper)', textTransform: 'uppercase', letterSpacing: '.05em' }}>
+                    {iss.severity}
+                  </span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>{iss.rule}</span>
+                  {iss.count != null && <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>×{iss.count}</span>}
+                </div>
+                <div style={{ fontFamily: 'var(--sans)', fontSize: 13, color: 'var(--ink)', marginTop: 4, lineHeight: 1.4 }}>
+                  {iss.message}
+                </div>
+                {iss.examples && iss.examples.length > 0 && (
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>
+                    {iss.examples.join(' · ')}
+                  </div>
+                )}
                 {iss.suggestion && (
                   <div style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink-3)', marginTop: 4, fontStyle: 'italic' }}>
                     → {iss.suggestion}
