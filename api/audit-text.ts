@@ -11,6 +11,12 @@ import { auditText } from '../src/analysis/text-auditor.js';
  * paso por ChatGPT.
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Feature gated a la instancia 'sport' — curso de redacción IA Estadio
+  // Deportivo. En main devolvemos 404 para no exponer el endpoint.
+  if ((process.env.INSTANCE_NAME || 'main') !== 'sport') {
+    res.status(404).json({ error: 'not found' });
+    return;
+  }
   let text = '';
   if (req.method === 'POST') {
     const body = typeof req.body === 'string' ? safeParse(req.body) : (req.body || {});

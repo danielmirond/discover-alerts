@@ -92,6 +92,9 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
   const verticalHidden = instance.vertical
     ? new Set(['sucesos', 'boe', 'cultural', 'aemet'])
     : new Set();
+  // 'Audita texto' es feature interna de la instancia sport (curso IA ED).
+  // En main no se ofrece la pestaña ni se rutea la URL.
+  if (instance.name !== 'sport') verticalHidden.add('auditor-texto');
   const navs = [
     { id: 'feed', label: 'Feed en vivo', count: counts.feed },
     { id: 'huecos', label: 'Huecos', count: counts.huecos },
