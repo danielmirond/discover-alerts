@@ -66,6 +66,13 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: `${SITE_URL}/${locale}/${category}`,
+      languages: {
+        es: `${SITE_URL}/es/${category}`,
+        en: `${SITE_URL}/en/${category}`,
+        fr: `${SITE_URL}/fr/${category}`,
+        de: `${SITE_URL}/de/${category}`,
+        "x-default": `${SITE_URL}/en/${category}`,
+      },
     },
   };
 }

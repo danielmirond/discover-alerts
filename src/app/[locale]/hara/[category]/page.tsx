@@ -41,6 +41,13 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: `${SITE_URL}/${locale}/hara/${category}`,
+      languages: {
+        es: `${SITE_URL}/es/hara/${category}`,
+        en: `${SITE_URL}/en/hara/${category}`,
+        fr: `${SITE_URL}/fr/hara/${category}`,
+        de: `${SITE_URL}/de/hara/${category}`,
+        "x-default": `${SITE_URL}/en/hara/${category}`,
+      },
     },
   };
 }

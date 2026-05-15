@@ -48,6 +48,7 @@ export async function generateMetadata({
     title: article.meta.title,
     description: article.meta.description,
     alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://byaevum.com"}/${locale}/${category}/${slug}`,
       languages: Object.fromEntries(
         locales
           .map((l) => {
