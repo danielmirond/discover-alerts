@@ -158,27 +158,44 @@ export function analyzeCountry(snap: InternationalCountrySnap | null | undefined
     .sort((a, b) => b.count - a.count || b.avgScore - a.avgScore)
     .slice(0, 15);
 
-  // ── Trigramas (3-5 palabras) ─────────────────────────────────────────────
-  const ngAgg = new Map<string, { count: number; examples: Set<string> }>();
-  for (const p of pages) {
-    const t = (p.title || '').trim();
-    if (!t) continue;
-    const tokens = tokenize(t);
-    for (const n of [3, 4, 5]) {
-      for (const g of ngrams(tokens, n)) {
-        let e = ngAgg.get(g);
-        if (!e) { e = { count: 0, examples: new Set() }; ngAgg.set(g, e); }
-        e.count++;
-        if (e.examples.size < 3) e.examples.add(t);
+  // ── Trigramas (3-5 palabras) — fallback a bigramas si poco volumen ──────
+  const buildNgAgg = (sizes: number[]) => {
+    const agg = new Map<string, { count: number; examples: Set<string> }>();
+    for (const p of pages) {
+      const t = (p.title || '').trim();
+      if (!t) continue;
+      const tokens = tokenize(t);
+      for (const n of sizes) {
+        for (const g of ngrams(tokens, n)) {
+          let e = agg.get(g);
+          if (!e) { e = { count: 0, examples: new Set() }; agg.set(g, e); }
+          e.count++;
+          if (e.examples.size < 3) e.examples.add(t);
+        }
       }
     }
-  }
-  // Filtrar: solo n-gramas con ≥2 apariciones, ordenar por count desc, luego longitud.
-  const trigrams: TrigramHit[] = [...ngAgg.entries()]
+    return agg;
+  };
+  let ngAgg = buildNgAgg([3, 4, 5]);
+  let trigrams: TrigramHit[] = [...ngAgg.entries()]
     .filter(([, v]) => v.count >= 2)
     .map(([ngram, v]) => ({ ngram, count: v.count, examples: [...v.examples] }))
     .sort((a, b) => b.count - a.count || b.ngram.split(' ').length - a.ngram.split(' ').length)
     .slice(0, 15);
+  // Países con pocas pages (US, KR, JP…) suelen tener <2 hits en trigramas →
+  // bajar a bigramas para no dejar el panel vacío.
+  if (trigrams.length < 5) {
+    const biAgg = buildNgAgg([2]);
+    const bigrams: TrigramHit[] = [...biAgg.entries()]
+      .filter(([, v]) => v.count >= 2)
+      .map(([ngram, v]) => ({ ngram, count: v.count, examples: [...v.examples] }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 12);
+    // Mezclar trigramas existentes + bigramas, sin duplicar
+    const seen = new Set(trigrams.map(t => t.ngram));
+    for (const b of bigrams) if (!seen.has(b.ngram)) trigrams.push(b);
+    trigrams = trigrams.slice(0, 15);
+  }
 
   // ── Fórmulas estructurales ───────────────────────────────────────────────
   const formulas: FormulaHit[] = FORMULAS.map(f => {
