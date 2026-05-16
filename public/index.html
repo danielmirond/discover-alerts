@@ -2182,6 +2182,66 @@ function InternationalView() {
         </div>
       </div>
 
+      {/* Ranking Audience — top 10 mundiales por categoría */}
+      <div style={{ marginTop: 28 }}>
+        <div className="kicker">
+          Ranking Audience · top 10 mundial por categoría
+          <span className="bar"></span>
+          <span className="meta">
+            {(s.data?.audienceStats?.totalTracked || 0)} pages tracked ·
+            {' '}{(s.data?.audienceStats?.activeNow || 0)} activas ·
+            {' '}{(s.data?.audienceStats?.categories || 0)} categorías
+          </span>
+        </div>
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 10, lineHeight: 1.5 }}>
+          Score Audience = maxScore × √pollsSeen. Premia score alto y tiempo
+          en feed simultáneamente (sublineal en tiempo para no dejar fuera
+          noticias frescas). Polls cada ~30 min · ventana de retención 48h.
+        </div>
+        {(s.data?.audienceRanking || []).length === 0 ? (
+          <div style={{ padding: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>
+            Aún no hay tracking acumulado. Necesita ≥2 polls (1h) para arrancar.
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: 18 }}>
+            {(s.data?.audienceRanking || []).slice(0, 8).map(group => (
+              <div key={group.category}>
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', padding: '6px 0', borderBottom: '2px solid var(--ink)', marginBottom: 6 }}>
+                  <span style={{ fontFamily: 'var(--serif)', fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>{group.category}</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>{group.count} pages</span>
+                </div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+                  <tbody>
+                    {group.top.slice(0, 10).map((p, i) => (
+                      <tr key={p.url} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                        <td style={{ padding: '4px 4px', width: 22, textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>{i + 1}.</td>
+                        <td style={{ padding: '4px 4px', width: 26, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>{labels[p.country]?.split(' ')[0] || p.country}</td>
+                        <td style={{ padding: '4px 6px', minWidth: 0 }}>
+                          <a href={p.url} target="_blank" rel="noreferrer"
+                             style={{ color: 'var(--ink)', textDecoration: 'none', display: 'block', lineHeight: 1.3, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                             title={p.title}>
+                            {p.title}
+                          </a>
+                          <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', marginTop: 1 }}>
+                            {(p.domain || '').replace(/^www\./, '')}
+                          </div>
+                        </td>
+                        <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--accent)', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                          {p.audienceScore}
+                        </td>
+                        <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', whiteSpace: 'nowrap' }}>
+                          s{p.maxScore} · {p.hoursInFeed}h
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Análisis editorial — publishers, trigramas, fórmulas */}
       <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20 }}>
         {/* Publishers del país */}

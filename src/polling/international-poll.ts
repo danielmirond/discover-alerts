@@ -1,6 +1,34 @@
-import { updateState, saveState, loadState } from '../state/store.js';
+import { updateState, saveState, loadState, getState } from '../state/store.js';
 import { fetchLiveEntities, fetchLivePages, fetchCategoriesList } from '../sources/discoversnoop.js';
 import type { DiscoverEntity, DiscoverPage } from '../types.js';
+
+/** Tracking persistente de pages internacionales: vida en el feed para el
+ * Ranking Audience. Una page entra en este map la primera vez que la vemos
+ * en cualquier poll y se mantiene actualizada hasta que desaparece del feed
+ * y supera la ventana de retención. */
+export interface InternationalTrackedPage {
+  country: string;
+  url: string;
+  title: string;
+  image?: string;
+  domain?: string;
+  publisher?: string;
+  category?: string;
+  /** Score más alto observado durante su vida en el feed. */
+  maxScore: number;
+  /** Score actual (último poll donde aún aparecía). */
+  lastScore: number;
+  /** Score medio. */
+  avgScore: number;
+  /** Posición más alta (mejor) observada. */
+  bestPosition: number;
+  /** Polls en los que ha aparecido. */
+  pollsSeen: number;
+  firstSeen: string;
+  lastSeen: string;
+  /** Sigue presente en el último poll. */
+  active: boolean;
+}
 
 /**
  * Poll DiscoverSnoop para varios países, filtrando por categoría /Sports.
@@ -127,7 +155,77 @@ export async function runInternationalPoll(): Promise<void> {
       console.warn(`[intl]   ${COUNTRIES[i].code} skipped`);
     }
   });
-  updateState({ internationalSport: out, lastPollInternational: new Date().toISOString() } as any);
+  // ── Tracking de vida en el feed (para Ranking Audience) ─────────────────
+  const now = new Date().toISOString();
+  const nowMs = Date.now();
+  const RETENTION_MS = 48 * 3600_000; // 48h sin verse → se purga
+  const state = getState() as any;
+  const prev: Record<string, InternationalTrackedPage> = state.internationalTracking || {};
+  const next: Record<string, InternationalTrackedPage> = {};
+
+  // Pages activas en este poll
+  const activeKeys = new Set<string>();
+  for (const [code, snap] of Object.entries(out)) {
+    for (const p of snap.pages) {
+      const key = `${code}::${p.url}`;
+      activeKeys.add(key);
+      const existing = prev[key];
+      const score = p.score || 0;
+      const pos = typeof p.position === 'number' ? p.position : 999;
+      if (existing) {
+        const polls = existing.pollsSeen + 1;
+        next[key] = {
+          ...existing,
+          title: p.title || existing.title,
+          image: p.image || existing.image,
+          domain: p.domain || existing.domain,
+          publisher: p.publisher || existing.publisher,
+          category: (typeof p.category === 'string' ? p.category : undefined) || existing.category,
+          maxScore: Math.max(existing.maxScore, score),
+          lastScore: score,
+          avgScore: Math.round(((existing.avgScore * existing.pollsSeen) + score) / polls),
+          bestPosition: Math.min(existing.bestPosition, pos),
+          pollsSeen: polls,
+          lastSeen: now,
+          active: true,
+        };
+      } else {
+        next[key] = {
+          country: code,
+          url: p.url,
+          title: p.title || '',
+          image: p.image,
+          domain: p.domain,
+          publisher: p.publisher,
+          category: typeof p.category === 'string' ? p.category : undefined,
+          maxScore: score,
+          lastScore: score,
+          avgScore: score,
+          bestPosition: pos,
+          pollsSeen: 1,
+          firstSeen: now,
+          lastSeen: now,
+          active: true,
+        };
+      }
+    }
+  }
+  // Pages que estaban tracked pero no aparecieron en este poll: mantener si no
+  // han superado la retención. Marcar active=false.
+  for (const [key, entry] of Object.entries(prev)) {
+    if (activeKeys.has(key)) continue;
+    const lastSeenMs = new Date(entry.lastSeen).getTime();
+    if (nowMs - lastSeenMs > RETENTION_MS) continue;
+    next[key] = { ...entry, active: false };
+  }
+
+  console.log(`[intl] tracking: ${Object.keys(next).length} pages (${Object.values(next).filter(p => p.active).length} active)`);
+
+  updateState({
+    internationalSport: out,
+    internationalTracking: next,
+    lastPollInternational: new Date().toISOString(),
+  } as any);
   try { await saveState(); } catch (err) { console.error('[intl] saveState:', err); }
   console.log('[intl] Poll complete');
 }
