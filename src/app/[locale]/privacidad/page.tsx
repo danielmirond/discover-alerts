@@ -159,20 +159,6 @@ const content: Record<Locale, {
     ],
     closing: "Your privacy is not a product. It's a right we actively protect.",
   },
-  fr: {
-    eyebrow: "Légal",
-    title: "Politique de confidentialité",
-    subtitle: "Comment nous collectons, utilisons et protégeons vos informations personnelles.",
-    lastUpdated: "Dernière mise à jour : avril 2026",
-    cookieLinkLabel: "politique de cookies",
-    sections: [
-      {
-        heading: "Responsable du traitement",
-        body: [
-          "Aevum est un projet éditorial indépendant. Responsable : Daniel Mirón. Contact : privacy@byaevum.com",
-          "Enregistré en Espagne. Le traitement des données est effectué conformément au RGPD (UE 2016/679).",
-        ],
-      },
       {
         heading: "Données collectées",
         body: [
@@ -204,20 +190,6 @@ const content: Record<Locale, {
     ],
     closing: "Votre vie privée n'est pas un produit. C'est un droit que nous protégeons activement.",
   },
-  de: {
-    eyebrow: "Rechtliches",
-    title: "Datenschutzerklärung",
-    subtitle: "Wie wir deine persönlichen Daten erheben, verwenden und schützen.",
-    lastUpdated: "Letzte Aktualisierung: April 2026",
-    cookieLinkLabel: "Cookie-Richtlinie",
-    sections: [
-      {
-        heading: "Verantwortlicher",
-        body: [
-          "Aevum ist ein unabhängiges redaktionelles Projekt. Verantwortlicher: Daniel Mirón. Kontakt: privacy@byaevum.com",
-          "Registriert in Spanien. Die Datenverarbeitung erfolgt gemäß der DSGVO (EU 2016/679).",
-        ],
-      },
       {
         heading: "Welche Daten wir erheben",
         body: [

@@ -117,19 +117,6 @@ const content: Record<Locale, {
     ],
     closing: "Transparency isn't just a word — it's how we handle your data.",
   },
-  fr: {
-    eyebrow: "Légal",
-    title: "Politique de cookies",
-    subtitle: "Quels cookies nous utilisons, pourquoi nous en avons besoin et comment les gérer.",
-    lastUpdated: "Dernière mise à jour : avril 2026",
-    sections: [
-      {
-        heading: "Qu'est-ce qu'un cookie",
-        body: [
-          "Les cookies sont de petits fichiers texte stockés dans votre navigateur par les sites web. Ils permettent de mémoriser vos préférences, d'analyser le trafic et d'améliorer l'expérience de navigation.",
-          "Aevum utilise les cookies de manière limitée et transparente, en privilégiant toujours votre vie privée.",
-        ],
-      },
       {
         heading: "Cookies que nous utilisons",
         body: [
@@ -169,19 +156,6 @@ const content: Record<Locale, {
     ],
     closing: "La transparence n'est pas qu'un mot — c'est la façon dont nous traitons vos données.",
   },
-  de: {
-    eyebrow: "Rechtliches",
-    title: "Cookie-Richtlinie",
-    subtitle: "Welche Cookies wir verwenden, warum wir sie brauchen und wie du sie verwalten kannst.",
-    lastUpdated: "Letzte Aktualisierung: April 2026",
-    sections: [
-      {
-        heading: "Was sind Cookies",
-        body: [
-          "Cookies sind kleine Textdateien, die Websites in deinem Browser speichern. Sie ermöglichen es, Einstellungen zu speichern, den Datenverkehr zu analysieren und das Nutzererlebnis zu verbessern.",
-          "Aevum verwendet Cookies in begrenztem und transparentem Umfang und priorisiert stets deine Privatsphäre.",
-        ],
-      },
       {
         heading: "Cookies, die wir verwenden",
         body: [

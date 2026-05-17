@@ -86,18 +86,6 @@ const content: Record<Locale, {
     ],
     closing: "Editorial trust is our only asset. Every part of the Aevum business model is designed to protect it.",
   },
-  fr: {
-    eyebrow: "Transparence",
-    title: "Politique d'affiliation",
-    subtitle: "Comment Aevum est financé et pourquoi cela importe pour l'intégrité éditoriale.",
-    sections: [
-      {
-        heading: "Comment nous monétisons",
-        body: [
-          "Aevum opère comme un média indépendant. Nous ne recevons aucun financement d'une marque ou industrie. Notre seul modèle de revenus est l'affiliation : lorsque vous achetez un produit recommandé via les liens de nos articles, nous recevons une petite commission (généralement 3–15% du prix).",
-          "Ce modèle nous permet de maintenir Aevum sans publicité invasive ni contenu sponsorisé déguisé.",
-        ],
-      },
       {
         heading: "Programmes d'affiliation",
         body: [
@@ -123,18 +111,6 @@ const content: Record<Locale, {
     ],
     closing: "La confiance éditoriale est notre seul actif.",
   },
-  de: {
-    eyebrow: "Transparenz",
-    title: "Affiliate-Richtlinie",
-    subtitle: "Wie Aevum finanziert wird und warum das für die redaktionelle Integrität wichtig ist.",
-    sections: [
-      {
-        heading: "Wie wir monetarisieren",
-        body: [
-          "Aevum arbeitet als unabhängiges Medium. Wir erhalten keine Finanzierung von Marken oder der Industrie. Unser einziges Geschäftsmodell sind Affiliate-Links: Wenn du ein empfohlenes Produkt über die Links in unseren Reviews kaufst, erhalten wir eine kleine Provision (typischerweise 3–15% des Preises).",
-          "Dieses Modell ermöglicht es uns, Aevum ohne invasive Werbung oder versteckte Sponsored Content zu betreiben.",
-        ],
-      },
       {
         heading: "Affiliate-Programme",
         body: [
