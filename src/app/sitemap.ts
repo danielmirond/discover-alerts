@@ -4,17 +4,38 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
+interface ArticleMeta {
+  date?: string;
+  updated?: string;
+  alternates?: Record<string, string>;
+}
+
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://byaevum.com";
 
-function getArticleDate(filePath: string): Date {
+function getArticleMeta(filePath: string): { date: Date; alternates?: Record<string, string> } {
   try {
     const raw = fs.readFileSync(filePath, "utf-8");
-    const { data } = matter(raw);
+    const { data } = matter(raw) as { data: ArticleMeta };
     const dateStr = data.updated || data.date;
-    return dateStr ? new Date(dateStr) : new Date();
+    return {
+      date: dateStr ? new Date(dateStr) : new Date(),
+      alternates: data.alternates,
+    };
   } catch {
-    return new Date();
+    return { date: new Date() };
   }
+}
+
+function buildAlternates(alternates?: Record<string, string>, isHara = false) {
+  if (!alternates) return undefined;
+  const prefix = isHara ? "/hara/" : "/";
+  return {
+    languages: Object.fromEntries(
+      Object.entries(alternates)
+        .filter(([l]) => (locales as readonly string[]).includes(l))
+        .map(([l, path]) => [l, `${BASE_URL}/${l}${isHara ? "/hara/" : "/"}${path}`])
+    ),
+  };
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -84,11 +105,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
             const files = fs.readdirSync(subDir).filter((f) => f.endsWith(".mdx"));
             for (const file of files) {
               const slug = file.replace(".mdx", "");
+              const meta = getArticleMeta(path.join(subDir, file));
               entries.push({
                 url: `${BASE_URL}/${locale}/${category}/${subCat}/${slug}`,
-                lastModified: getArticleDate(path.join(subDir, file)),
+                lastModified: meta.date,
                 changeFrequency: "monthly",
                 priority: 0.8,
+                alternates: buildAlternates(meta.alternates, true),
               });
             }
           }
@@ -109,13 +132,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
         for (const file of files) {
           const slug = file.replace(".mdx", "");
           const filePath = path.join(catDir, file);
-          const lastMod = getArticleDate(filePath);
+          const meta = getArticleMeta(filePath);
 
           entries.push({
             url: `${BASE_URL}/${locale}/${category}/${slug}`,
-            lastModified: lastMod,
+            lastModified: meta.date,
             changeFrequency: "monthly",
             priority: 0.8,
+            alternates: buildAlternates(meta.alternates),
           });
         }
       }
