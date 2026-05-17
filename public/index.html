@@ -41,6 +41,60 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 const D = window.DA_DATA;
 
 /* ---------------- Theme switch ---------------- */
+// ─── Importados (LocalStorage) ───────────────────────────────────────────
+// Material que el redactor marca para llevarse a Claude/ChatGPT. Persistente
+// por dispositivo. Estructura: { news: [{id,...}], patterns: [{id,...}] }
+const IMPORTS_KEY = 'ed-imports-v1';
+function loadImports() {
+  try {
+    const raw = localStorage.getItem(IMPORTS_KEY);
+    if (!raw) return { news: [], patterns: [] };
+    const j = JSON.parse(raw);
+    return { news: Array.isArray(j.news) ? j.news : [], patterns: Array.isArray(j.patterns) ? j.patterns : [] };
+  } catch { return { news: [], patterns: [] }; }
+}
+function saveImports(imp) {
+  try { localStorage.setItem(IMPORTS_KEY, JSON.stringify(imp)); } catch {}
+  // Disparamos un event para que cualquier componente con useImports se entere
+  window.dispatchEvent(new Event('ed-imports-changed'));
+}
+function useImports() {
+  const [imp, setImp] = useState(loadImports());
+  useEffect(() => {
+    const handler = () => setImp(loadImports());
+    window.addEventListener('ed-imports-changed', handler);
+    window.addEventListener('storage', handler);
+    return () => {
+      window.removeEventListener('ed-imports-changed', handler);
+      window.removeEventListener('storage', handler);
+    };
+  }, []);
+  const addNews = (item) => {
+    const cur = loadImports();
+    if (cur.news.find(n => n.id === item.id)) return; // dedupe
+    cur.news.unshift({ ...item, importedAt: new Date().toISOString() });
+    saveImports(cur);
+  };
+  const addPattern = (item) => {
+    const cur = loadImports();
+    if (cur.patterns.find(p => p.id === item.id)) return;
+    cur.patterns.unshift({ ...item, importedAt: new Date().toISOString() });
+    saveImports(cur);
+  };
+  const removeNews = (id) => {
+    const cur = loadImports();
+    cur.news = cur.news.filter(n => n.id !== id);
+    saveImports(cur);
+  };
+  const removePattern = (id) => {
+    const cur = loadImports();
+    cur.patterns = cur.patterns.filter(p => p.id !== id);
+    saveImports(cur);
+  };
+  const clearAll = () => saveImports({ news: [], patterns: [] });
+  return { imp, addNews, addPattern, removeNews, removePattern, clearAll };
+}
+
 function ThemeSwitch() {
   const [active, setActive] = useState(document.body.dataset.theme || 'light');
   const themes = [
@@ -92,9 +146,12 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
   const verticalHidden = instance.vertical
     ? new Set(['sucesos', 'boe', 'cultural', 'aemet'])
     : new Set();
-  // 'Audita texto' es feature interna de la instancia sport (curso IA ED).
-  // En main no se ofrece la pestaña ni se rutea la URL.
-  if (instance.name !== 'sport') verticalHidden.add('auditor-texto');
+  // 'Audita texto' e 'Importados' son features internas de la instancia
+  // sport (curso IA ED). En main no se ofrece la pestaña ni se rutea la URL.
+  if (instance.name !== 'sport') {
+    verticalHidden.add('auditor-texto');
+    verticalHidden.add('importados');
+  }
   const navs = [
     { id: 'feed', label: 'Feed en vivo', count: counts.feed },
     { id: 'huecos', label: 'Huecos', count: counts.huecos },
@@ -114,6 +171,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'datacategoria', label: 'Datacategoría' },
     { id: 'auditor', label: 'Auditor titular' },
     { id: 'auditor-texto', label: 'Audita texto' },
+    { id: 'importados', label: 'Importados' },
     { id: 'kg', label: 'Knowledge Graph' },
     { id: 'historico', label: 'Histórico' },
     { id: 'predicciones', label: 'Predicciones' },
@@ -982,6 +1040,12 @@ function App() {
       'muletillas, rayas medias, adjetivos vacíos, cierres plásticos, paralelismo estructural',
       <TextAuditorView />
     );
+  } else if (activeNav === 'importados') {
+    body = viewSinglePanel(
+      'Importados · noticias y patrones para Claude/ChatGPT',
+      'material seleccionado desde Ranking Audience y Fórmulas internacionales',
+      <ImportadosView />
+    );
   } else if (activeNav === 'kg') {
     body = viewSinglePanel(
       'Knowledge Graph · enrichment Wikidata',
@@ -1689,6 +1753,190 @@ function TextAuditorView() {
   );
 }
 
+function ImportadosView() {
+  const { imp, removeNews, removePattern, clearAll } = useImports();
+  const total = imp.news.length + imp.patterns.length;
+
+  const buildMarkdown = () => {
+    const date = new Date().toLocaleString('es-ES');
+    const lines = [];
+    lines.push(`# Dossier Estadio Deportivo — ${date}`);
+    lines.push('');
+    lines.push('> Material extraído del Ranking Audience internacional + fórmulas detectadas en Discover.');
+    lines.push('> Pégalo en Claude o ChatGPT con el prompt sugerido al final.');
+    lines.push('');
+    if (imp.news.length > 0) {
+      lines.push(`## Noticias internacionales para adaptar (${imp.news.length})`);
+      lines.push('');
+      imp.news.forEach((n, i) => {
+        lines.push(`### ${i + 1}. [${n.countryLabel || n.country}] ${n.title}`);
+        lines.push(`- **Categoría:** ${n.category || '—'}`);
+        lines.push(`- **Medio:** ${n.domain || n.publisher || '—'}`);
+        lines.push(`- **Audience score:** ${n.audienceScore} (max ${n.maxScore} · ${n.hoursInFeed}h en feed)`);
+        lines.push(`- **Link:** ${n.url}`);
+        lines.push('');
+      });
+    }
+    if (imp.patterns.length > 0) {
+      lines.push(`## Patrones y fórmulas detectados (${imp.patterns.length})`);
+      lines.push('');
+      const formulas = imp.patterns.filter(p => p.kind === 'formula');
+      const trigrams = imp.patterns.filter(p => p.kind === 'trigram');
+      if (formulas.length > 0) {
+        lines.push('### Fórmulas estructurales');
+        lines.push('');
+        formulas.forEach(f => {
+          lines.push(`- **${f.label}** _(${f.countryLabel}, ×${f.count})_`);
+          (f.examples || []).slice(0, 3).forEach(ex => lines.push(`  - ${ex}`));
+        });
+        lines.push('');
+      }
+      if (trigrams.length > 0) {
+        lines.push('### N-gramas recurrentes');
+        lines.push('');
+        trigrams.forEach(t => {
+          lines.push(`- **"${t.ngram}"** _(${t.countryLabel}, ×${t.count})_`);
+          (t.examples || []).slice(0, 2).forEach(ex => lines.push(`  - ${ex}`));
+        });
+        lines.push('');
+      }
+    }
+    lines.push('---');
+    lines.push('');
+    lines.push('## Prompt sugerido (pegar en Claude/ChatGPT después de este dossier)');
+    lines.push('');
+    lines.push('```');
+    lines.push('Soy redactor de Estadio Deportivo. Te paso un dossier con noticias internacionales de alta audiencia y fórmulas editoriales detectadas hoy en mercados extranjeros.');
+    lines.push('');
+    lines.push('Tu tarea:');
+    lines.push('1. Identifica las 3 noticias con mayor potencial para audiencia ES (público fútbol/deporte).');
+    lines.push('2. Para cada una propón un titular ES adaptado (60-70 chars, sin clickbait, con entidad + verbo).');
+    lines.push('3. Sugiere ángulo lateral diferenciado de la cobertura obvia.');
+    lines.push('4. Si alguna fórmula encaja con la noticia, aplícala explícitamente.');
+    lines.push('');
+    lines.push('No inventes datos. Si falta contexto, márcalo como "verificar".');
+    lines.push('```');
+    return lines.join('\n');
+  };
+
+  const download = () => {
+    const md = buildMarkdown();
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dossier-ed-${new Date().toISOString().slice(0,16).replace(/[:T]/g,'')}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const copyClipboard = () => {
+    navigator.clipboard.writeText(buildMarkdown())
+      .then(() => alert('Dossier copiado al portapapeles — pega en Claude/ChatGPT'))
+      .catch(() => alert('No se pudo copiar — usa Descargar .md'));
+  };
+
+  return (
+    <div>
+      <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', lineHeight: 1.5, marginBottom: 14 }}>
+        Material seleccionado desde <strong>Ranking Audience</strong> (botón <code>+</code> en cada
+        noticia) y <strong>Fórmulas/Trigramas internacionales</strong> (botón <code>+</code> al lado
+        del recuento). Guardado en este dispositivo (LocalStorage). Exporta como dossier
+        Markdown listo para pegar en Claude o ChatGPT con prompt incluido.
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+        <button onClick={download} disabled={total === 0}
+                style={{ padding: '8px 14px', fontFamily: 'var(--mono)', fontSize: 11, background: total > 0 ? 'var(--ink)' : 'var(--rule)', color: 'var(--paper)', border: 'none', cursor: total > 0 ? 'pointer' : 'default', letterSpacing: '.05em' }}>
+          ↓ DESCARGAR .MD
+        </button>
+        <button onClick={copyClipboard} disabled={total === 0}
+                style={{ padding: '8px 14px', fontFamily: 'var(--mono)', fontSize: 11, background: 'transparent', color: 'var(--ink)', border: '1px solid var(--ink)', cursor: total > 0 ? 'pointer' : 'default', letterSpacing: '.05em', opacity: total > 0 ? 1 : 0.4 }}>
+          ⎘ COPIAR AL PORTAPAPELES
+        </button>
+        {total > 0 && (
+          <button onClick={() => { if (confirm('¿Limpiar todos los importados?')) clearAll(); }}
+                  style={{ padding: '8px 14px', fontFamily: 'var(--mono)', fontSize: 11, background: 'transparent', color: 'var(--danger)', border: '1px solid var(--danger)', cursor: 'pointer', letterSpacing: '.05em' }}>
+            ✕ LIMPIAR TODO
+          </button>
+        )}
+        <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginLeft: 'auto' }}>
+          {imp.news.length} noticias · {imp.patterns.length} patrones
+        </span>
+      </div>
+
+      {total === 0 && (
+        <div style={{ padding: 20, fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-4)', background: 'var(--paper-3)', border: '1px dashed var(--rule)', textAlign: 'center' }}>
+          Aún no has importado nada. Ve a <strong style={{ color: 'var(--accent)' }}>Internacional</strong> y pulsa <code>+</code> en las noticias del Ranking Audience o en las fórmulas detectadas.
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px, 1fr))', gap: 20 }}>
+        {imp.news.length > 0 && (
+          <div>
+            <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>
+              Noticias importadas<span className="bar"></span>
+              <span className="meta">{imp.news.length}</span>
+            </div>
+            {imp.news.map(n => (
+              <div key={n.id} style={{ padding: '8px 10px', borderLeft: '3px solid var(--accent)', background: 'var(--paper-3)', marginBottom: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'baseline' }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>
+                    {n.countryLabel || n.country} · {n.category}
+                  </span>
+                  <button onClick={() => removeNews(n.id)} title="Quitar"
+                          style={{ cursor: 'pointer', fontFamily: 'var(--mono)', fontSize: 11, background: 'transparent', color: 'var(--ink-4)', border: 'none', padding: 0 }}>
+                    ✕
+                  </button>
+                </div>
+                <a href={n.url} target="_blank" rel="noreferrer"
+                   style={{ fontFamily: 'var(--sans)', fontSize: 13, color: 'var(--ink)', fontWeight: 500, textDecoration: 'none', display: 'block', marginTop: 3, lineHeight: 1.3 }}>
+                  {n.title}
+                </a>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginTop: 3 }}>
+                  {n.domain || n.publisher} · audience <strong style={{ color: 'var(--accent)' }}>{n.audienceScore}</strong> · s{n.maxScore} · {n.hoursInFeed}h
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {imp.patterns.length > 0 && (
+          <div>
+            <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>
+              Patrones / fórmulas importados<span className="bar"></span>
+              <span className="meta">{imp.patterns.length}</span>
+            </div>
+            {imp.patterns.map(p => (
+              <div key={p.id} style={{ padding: '6px 10px', borderLeft: `3px solid ${p.kind === 'formula' ? 'var(--warn)' : 'var(--ink-3)'}`, background: 'var(--paper-3)', marginBottom: 6 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'baseline' }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
+                    {p.kind === 'formula' ? 'Fórmula' : 'Trigrama'} · {p.countryLabel || p.country} · ×{p.count}
+                  </span>
+                  <button onClick={() => removePattern(p.id)} title="Quitar"
+                          style={{ cursor: 'pointer', fontFamily: 'var(--mono)', fontSize: 11, background: 'transparent', color: 'var(--ink-4)', border: 'none', padding: 0 }}>
+                    ✕
+                  </button>
+                </div>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)', fontWeight: 600, marginTop: 2 }}>
+                  {p.kind === 'formula' ? p.label : `"${p.ngram}"`}
+                </div>
+                {(p.examples || []).slice(0, 2).map((ex, i) => (
+                  <div key={i} style={{ fontFamily: 'var(--sans)', fontSize: 11, color: 'var(--ink-3)', marginTop: 2, fontStyle: 'italic', lineHeight: 1.3 }}>
+                    · {ex}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function DatacategoriaView({ hist }) {
   const [filter, setFilter] = useState('');
   const [active, setActive] = useState('');
@@ -2094,6 +2342,9 @@ function CompetitorsView({ competitors = [] }) {
 function InternationalView() {
   const [s, setS] = useState({ loading: true, data: null, error: null });
   const [active, setActive] = useState('US');
+  const { imp, addNews, addPattern } = useImports();
+  const isNewsImported = (id) => imp.news.some(n => n.id === id);
+  const isPatImported = (id) => imp.patterns.some(p => p.id === id);
   useEffect(() => {
     let alive = true;
     fetch('/api/international', { credentials: 'same-origin' })
@@ -2212,7 +2463,10 @@ function InternationalView() {
                 </div>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
                   <tbody>
-                    {group.top.slice(0, 10).map((p, i) => (
+                    {group.top.slice(0, 10).map((p, i) => {
+                      const id = `news::${p.country}::${p.url}`;
+                      const imported = isNewsImported(id);
+                      return (
                       <tr key={p.url} style={{ borderBottom: '1px solid var(--rule-2)' }}>
                         <td style={{ padding: '4px 4px', width: 22, textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>{i + 1}.</td>
                         <td style={{ padding: '4px 4px', width: 26, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>{labels[p.country]?.split(' ')[0] || p.country}</td>
@@ -2232,8 +2486,29 @@ function InternationalView() {
                         <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', whiteSpace: 'nowrap' }}>
                           s{p.maxScore} · {p.hoursInFeed}h
                         </td>
+                        <td style={{ padding: '4px 4px', width: 24, textAlign: 'center' }}>
+                          <button
+                            onClick={() => addNews({
+                              id, kind: 'news', country: p.country, countryLabel: labels[p.country] || p.country,
+                              title: p.title, url: p.url, domain: (p.domain || '').replace(/^www\./, ''),
+                              publisher: p.publisher, category: group.category,
+                              audienceScore: p.audienceScore, maxScore: p.maxScore, hoursInFeed: p.hoursInFeed,
+                            })}
+                            disabled={imported}
+                            title={imported ? 'Ya importado' : 'Importar a "Importados"'}
+                            style={{
+                              cursor: imported ? 'default' : 'pointer',
+                              fontFamily: 'var(--mono)', fontSize: 11, padding: '1px 6px',
+                              background: imported ? 'var(--ok)' : 'transparent',
+                              color: imported ? 'var(--paper)' : 'var(--accent)',
+                              border: `1px solid ${imported ? 'var(--ok)' : 'var(--accent)'}`,
+                              lineHeight: 1, opacity: imported ? 0.7 : 1,
+                            }}>
+                            {imported ? '✓' : '+'}
+                          </button>
+                        </td>
                       </tr>
-                    ))}
+                    );})}
                   </tbody>
                 </table>
               </div>
@@ -2283,11 +2558,23 @@ function InternationalView() {
             <div style={{ padding: 8, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin patrones repetidos (≥2).</div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 4 }}>
-              {(cur.trigrams || []).slice(0, 12).map(tg => (
+              {(cur.trigrams || []).slice(0, 12).map(tg => {
+                const id = `tg::${active}::${tg.ngram}`;
+                const imported = isPatImported(id);
+                return (
                 <div key={tg.ngram} style={{ padding: '4px 8px', borderBottom: '1px solid var(--rule-2)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
                     <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)' }}>{tg.ngram}</span>
-                    <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--accent)', fontWeight: 700 }}>×{tg.count}</span>
+                    <span style={{ display: 'flex', gap: 6, alignItems: 'baseline' }}>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--accent)', fontWeight: 700 }}>×{tg.count}</span>
+                      <button
+                        onClick={() => addPattern({ id, kind: 'trigram', country: active, countryLabel: labels[active], ngram: tg.ngram, count: tg.count, examples: tg.examples })}
+                        disabled={imported}
+                        title={imported ? 'Ya importado' : 'Importar patrón'}
+                        style={{ cursor: imported ? 'default' : 'pointer', fontFamily: 'var(--mono)', fontSize: 10, padding: '0 5px', background: imported ? 'var(--ok)' : 'transparent', color: imported ? 'var(--paper)' : 'var(--accent)', border: `1px solid ${imported ? 'var(--ok)' : 'var(--accent)'}`, lineHeight: 1.2 }}>
+                        {imported ? '✓' : '+'}
+                      </button>
+                    </span>
                   </div>
                   {(tg.examples || []).slice(0, 1).map((ex, i) => (
                     <div key={i} style={{ fontFamily: 'var(--sans)', fontSize: 11, color: 'var(--ink-4)', marginTop: 2, fontStyle: 'italic', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -2295,7 +2582,7 @@ function InternationalView() {
                     </div>
                   ))}
                 </div>
-              ))}
+                );})}
             </div>
           )}
         </div>
@@ -2310,11 +2597,23 @@ function InternationalView() {
             <div style={{ padding: 8, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin fórmulas detectadas.</div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 6 }}>
-              {(cur.formulas || []).slice(0, 12).map(f => (
+              {(cur.formulas || []).slice(0, 12).map(f => {
+                const id = `fm::${active}::${f.formula}`;
+                const imported = isPatImported(id);
+                return (
                 <div key={f.formula} style={{ padding: '6px 8px', borderLeft: '3px solid var(--warn)', background: 'var(--paper-3)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
                     <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)', fontWeight: 600 }}>{f.label}</span>
-                    <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--warn)', fontWeight: 700 }}>×{f.count}</span>
+                    <span style={{ display: 'flex', gap: 6, alignItems: 'baseline' }}>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--warn)', fontWeight: 700 }}>×{f.count}</span>
+                      <button
+                        onClick={() => addPattern({ id, kind: 'formula', country: active, countryLabel: labels[active], formula: f.formula, label: f.label, count: f.count, examples: f.examples })}
+                        disabled={imported}
+                        title={imported ? 'Ya importado' : 'Importar fórmula'}
+                        style={{ cursor: imported ? 'default' : 'pointer', fontFamily: 'var(--mono)', fontSize: 10, padding: '0 5px', background: imported ? 'var(--ok)' : 'transparent', color: imported ? 'var(--paper)' : 'var(--warn)', border: `1px solid ${imported ? 'var(--ok)' : 'var(--warn)'}`, lineHeight: 1.2 }}>
+                        {imported ? '✓' : '+'}
+                      </button>
+                    </span>
                   </div>
                   {(f.examples || []).slice(0, 2).map((ex, i) => (
                     <div key={i} style={{ fontFamily: 'var(--sans)', fontSize: 11, color: 'var(--ink-3)', marginTop: 3, lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -2322,7 +2621,7 @@ function InternationalView() {
                     </div>
                   ))}
                 </div>
-              ))}
+                );})}
             </div>
           )}
         </div>
