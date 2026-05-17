@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { NewsletterEmbed } from "@/components/NewsletterEmbed";
 
-type Locale = "es" | "en" | "fr" | "de";
+type Locale = "es" | "en";
 
 const content: Record<Locale, {
   eyebrow: string;

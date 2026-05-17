@@ -98,8 +98,6 @@ function HomeContent({ locale }: { locale: string }) {
               className="text-[11px] text-bronze tracking-[0.2em] uppercase border-b border-bronze/30 hover:border-bronze pb-1 transition-colors"
             >
               {locale === "es" ? "La metodología"
-                : locale === "fr" ? "La méthodologie"
-                : locale === "de" ? "Die Methode"
                 : "The methodology"}
             </Link>
             <div className="flex items-center gap-3 text-[10px] text-stone tracking-[0.2em] uppercase ml-auto">
@@ -196,15 +194,11 @@ function HomeContent({ locale }: { locale: string }) {
               <div className="eyebrow mb-3">Framework</div>
               <h2 className="display-lg">
                 {locale === "es" ? "Los seis pilares"
-                  : locale === "fr" ? "Les six piliers"
-                  : locale === "de" ? "Die sechs Säulen"
                   : "The six pillars"}
               </h2>
             </div>
             <span className="font-serif italic text-stone text-[14px] hidden md:inline">
               {locale === "es" ? "Arquitectura de longevidad"
-                : locale === "fr" ? "Architecture de longévité"
-                : locale === "de" ? "Architektur der Langlebigkeit"
                 : "Architecture of longevity"}
             </span>
           </div>
@@ -234,16 +228,12 @@ function HomeContent({ locale }: { locale: string }) {
       {/* QUOTE / EDITORIAL MANIFESTO */}
       <section className="max-w-[900px] mx-auto px-8 py-32 text-center">
         <div className="eyebrow mb-8">
-          {locale === "es" ? "Filosofía" : locale === "fr" ? "Philosophie" : locale === "de" ? "Philosophie" : "Philosophy"}
+          {locale === "es" ? "Filosofía" : "Philosophy"}
         </div>
         <blockquote className="font-serif text-[clamp(26px,3.5vw,40px)] font-extralight leading-[1.35] text-charcoal tracking-[-0.01em] italic">
           &ldquo;{locale === "es"
-            ? "La longevidad no es un destino — es la arquitectura silenciosa de decisiones diarias, respaldadas por la ciencia"
-            : locale === "fr"
-            ? "La longévité n'est pas une destination — c'est l'architecture silencieuse de décisions quotidiennes, soutenues par la science"
-            : locale === "de"
-            ? "Langlebigkeit ist kein Ziel — sie ist die stille Architektur täglicher Entscheidungen, gestützt auf Wissenschaft"
-            : "Longevity is not a destination — it's the quiet architecture of daily decisions, backed by science"}&rdquo;.
+            ? "La longevidad no es un destino. es la arquitectura silenciosa de decisiones diarias, respaldadas por la ciencia"
+            : "Longevity is not a destination. it's the quiet architecture of daily decisions, backed by science"}&rdquo;.
         </blockquote>
         <div className="ornament mt-10 text-[10px] tracking-[0.3em] uppercase max-w-[400px] mx-auto">
           <span>Aevum</span>

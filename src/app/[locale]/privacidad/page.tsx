@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 
-type Locale = "es" | "en" | "fr" | "de";
+type Locale = "es" | "en";
 
 const content: Record<Locale, {
   eyebrow: string;

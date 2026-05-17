@@ -112,7 +112,7 @@ export default async function LocaleLayout({
             "@type": "WebSite",
             name: "Aevum",
             url: SITE_URL,
-            inLanguage: ["es", "en", "fr", "de"],
+            inLanguage: ["es", "en"],
             publisher: { "@type": "Organization", name: "Aevum" },
           }) }}
         />

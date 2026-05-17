@@ -125,10 +125,6 @@ function CategoryContent({
             <div className="font-serif italic text-[24px] text-stone">
               {locale === "es"
                 ? "Próximamente nuevos artículos en esta categoría"
-                : locale === "fr"
-                ? "De nouveaux articles arrivent bientôt"
-                : locale === "de"
-                ? "Neue Artikel folgen in Kürze"
                 : "New articles coming soon"}
             </div>
           </div>

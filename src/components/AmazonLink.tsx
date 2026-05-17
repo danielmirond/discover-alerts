@@ -1,19 +1,15 @@
 import { getLocale } from "next-intl/server";
 
-type Locale = "es" | "en" | "fr" | "de";
+type Locale = "es" | "en";
 
 const domainByLocale: Record<Locale, string> = {
   es: "amazon.es",
   en: "amazon.com",
-  fr: "amazon.fr",
-  de: "amazon.de",
 };
 
 const storeLabel: Record<Locale, string> = {
   es: "Amazon.es",
   en: "Amazon",
-  fr: "Amazon.fr",
-  de: "Amazon.de",
 };
 
 function getTagForLocale(locale: Locale): string {

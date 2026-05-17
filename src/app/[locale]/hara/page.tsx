@@ -92,7 +92,7 @@ function HaraContent({ locale }: { locale: string }) {
         <div className="flex items-center gap-4 text-bengara">
           <span className="flex-1 h-px bg-bengara/30" />
           <span className="font-serif italic text-[14px] normal-case tracking-normal">
-            {locale === "es" ? "Tres pilares" : locale === "fr" ? "Trois piliers" : locale === "de" ? "Drei Säulen" : "Three pillars"}
+            {locale === "es" ? "Tres pilares" : "Three pillars"}
           </span>
           <span className="flex-1 h-px bg-bengara/30" />
         </div>
@@ -117,7 +117,7 @@ function HaraContent({ locale }: { locale: string }) {
                 {t(`hara.categories.${key}.description`)}
               </p>
               <span className="text-[11px] text-bengara tracking-[0.2em] uppercase flex items-center gap-2">
-                {locale === "es" ? "Explorar" : locale === "fr" ? "Explorer" : locale === "de" ? "Entdecken" : "Explore"}
+                {locale === "es" ? "Explorar" : "Explore"}
                 <span className="w-6 h-px bg-bengara group-hover:w-10 transition-all" />
               </span>
             </Link>
@@ -131,7 +131,7 @@ function HaraContent({ locale }: { locale: string }) {
           <div className="max-w-[1200px] mx-auto">
             <div className="text-[10px] tracking-[0.22em] uppercase text-bengara font-medium mb-3">Hara</div>
             <h2 className="display-lg mb-12">
-              {locale === "es" ? "Últimas publicaciones" : locale === "fr" ? "Dernières publications" : locale === "de" ? "Neueste Artikel" : "Latest articles"}
+              {locale === "es" ? "Últimas publicaciones" : "Latest articles"}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
               {articles.slice(0, 6).map((article) => (

@@ -8,8 +8,6 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://byaevum.com";
 const langMap: Record<string, string> = {
   es: "es",
   en: "en",
-  fr: "fr",
-  de: "de",
 };
 
 interface NewsEntry {

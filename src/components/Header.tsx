@@ -11,17 +11,11 @@ export function Header() {
   const locale = useLocale();
   const [open, setOpen] = useState(false);
 
-  const aboutLabel =
-    locale === "es" ? "Sobre"
-    : locale === "fr" ? "À propos"
-    : locale === "de" ? "Über"
-    : "About";
+  const aboutLabel = locale === "es" ? "Sobre" : "About";
 
   const paths: Record<string, Record<string, string>> = {
     es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners", ingredients: "ingredientes" },
     en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners", ingredients: "ingredients" },
-    fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners", ingredients: "ingredients" },
-    de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners", ingredients: "inhaltsstoffe" },
   };
   const p = paths[locale] || paths.en;
 

@@ -9,8 +9,6 @@ export function Footer() {
   const paths: Record<string, Record<string, string>> = {
     es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners", ingredients: "ingredientes" },
     en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners", ingredients: "ingredients" },
-    fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners", ingredients: "ingredients" },
-    de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners", ingredients: "inhaltsstoffe" },
   };
   const p = paths[locale] || paths.en;
 
@@ -40,8 +38,6 @@ export function Footer() {
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
                 {locale === "es" ? "Protocolos & Ciencia"
-                  : locale === "fr" ? "Protocoles & Science"
-                  : locale === "de" ? "Protokolle & Wissenschaft"
                   : "Protocols & Science"}
               </Link>
               <Link
@@ -55,8 +51,6 @@ export function Footer() {
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
                 {locale === "es" ? "Mente & Cognición"
-                  : locale === "fr" ? "Esprit & Cognition"
-                  : locale === "de" ? "Geist & Kognition"
                   : "Mind & Cognition"}
               </Link>
               <Link
@@ -64,8 +58,6 @@ export function Footer() {
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
                 {locale === "es" ? "Tribu & Conexión"
-                  : locale === "fr" ? "Tribu & Connexion"
-                  : locale === "de" ? "Gemeinschaft & Verbindung"
                   : "Tribe & Connection"}
               </Link>
               <Link
@@ -73,8 +65,6 @@ export function Footer() {
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
                 {locale === "es" ? "Reposo & Recuperación"
-                  : locale === "fr" ? "Repos & Récupération"
-                  : locale === "de" ? "Erholung & Regeneration"
                   : "Rest & Recovery"}
               </Link>
               <Link
@@ -82,8 +72,6 @@ export function Footer() {
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
                 {locale === "es" ? "Ingredientes Longevity"
-                  : locale === "fr" ? "Ingrédients Longévité"
-                  : locale === "de" ? "Longevity-Inhaltsstoffe"
                   : "Longevity Ingredients"}
               </Link>
               <Link
@@ -103,8 +91,6 @@ export function Footer() {
                 className="text-[13px] text-slate hover:text-bengara transition-colors"
               >
                 {locale === "es" ? "Wellness asiático"
-                  : locale === "fr" ? "Bien-être asiatique"
-                  : locale === "de" ? "Asiatisches Wellness"
                   : "Asian wellness"}
               </Link>
               <Link
@@ -114,21 +100,17 @@ export function Footer() {
                 K-Beauty
               </Link>
               <Link
-                href={`/${locale}/hara/${locale === "es" ? "bebidas-funcionales" : locale === "fr" ? "boissons-fonctionnelles" : locale === "de" ? "funktionale-getraenke" : "functional-drinks"}`}
+                href={`/${locale}/hara/${locale === "es" ? "bebidas-funcionales" : "functional-drinks"}`}
                 className="text-[13px] text-slate hover:text-bengara transition-colors"
               >
                 {locale === "es" ? "Bebidas Funcionales"
-                  : locale === "fr" ? "Boissons Fonctionnelles"
-                  : locale === "de" ? "Funktionale Getränke"
                   : "Functional Drinks"}
               </Link>
               <Link
-                href={`/${locale}/hara/${locale === "es" ? "healthspan-asiatico" : locale === "fr" ? "sante-asiatique" : locale === "de" ? "asiatische-gesundheit" : "asian-healthspan"}`}
+                href={`/${locale}/hara/${locale === "es" ? "healthspan-asiatico" : "asian-healthspan"}`}
                 className="text-[13px] text-slate hover:text-bengara transition-colors"
               >
                 {locale === "es" ? "Healthspan Asiático"
-                  : locale === "fr" ? "Santé Asiatique"
-                  : locale === "de" ? "Asiatischer Healthspan"
                   : "Asian Healthspan"}
               </Link>
             </div>
@@ -142,8 +124,6 @@ export function Footer() {
                 className="text-[13px] text-slate hover:text-emerald transition-colors"
               >
                 {locale === "es" ? "Sobre Aevum"
-                  : locale === "fr" ? "À propos d'Aevum"
-                  : locale === "de" ? "Über Aevum"
                   : "About Aevum"}
               </Link>
               <Link
