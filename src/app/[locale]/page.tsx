@@ -9,8 +9,6 @@ import { NewsletterEmbed } from "@/components/NewsletterEmbed";
 const categoryHrefs: Record<string, Record<string, string>> = {
   es: { protocols: "protocolos", skin: "skin", mind: "mente", tribe: "tribu", rest: "reposo", practitioners: "practitioners", ingredients: "ingredientes" },
   en: { protocols: "protocols", skin: "skin", mind: "mind", tribe: "tribe", rest: "rest", practitioners: "practitioners", ingredients: "ingredients" },
-  fr: { protocols: "protocoles", skin: "skin", mind: "esprit", tribe: "tribu", rest: "repos", practitioners: "practitioners", ingredients: "ingredients" },
-  de: { protocols: "protokolle", skin: "skin", mind: "geist", tribe: "gemeinschaft", rest: "erholung", practitioners: "practitioners", ingredients: "inhaltsstoffe" },
 };
 
 const categoryConfig = [
@@ -101,7 +99,7 @@ function HomeContent({ locale }: { locale: string }) {
                 : "The methodology"}
             </Link>
             <div className="flex items-center gap-3 text-[10px] text-stone tracking-[0.2em] uppercase ml-auto">
-              <span>ES · EN · FR · DE</span>
+              <span>ES · EN</span>
             </div>
           </div>
         </div>
