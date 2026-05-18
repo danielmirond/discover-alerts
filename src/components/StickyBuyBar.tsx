@@ -36,7 +36,7 @@ export function StickyBuyBar({
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-40 md:hidden bg-bg border-t border-line shadow-[0_-4px_24px_rgba(10,77,60,0.08)] transition-transform duration-300 ${
+      className={`fixed bottom-0 left-0 right-0 z-40 bg-bg border-t border-line shadow-[0_-4px_24px_rgba(10,77,60,0.08)] transition-transform duration-300 ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
       role="complementary"
@@ -60,7 +60,7 @@ export function StickyBuyBar({
           rel="nofollow noopener sponsored"
           className="bg-charcoal text-bg px-5 py-3 text-[12px] tracking-wide font-medium whitespace-nowrap shrink-0"
         >
-          {cta || "Comprar →"}
+          {cta || "Buy →"}
         </a>
       </div>
     </div>

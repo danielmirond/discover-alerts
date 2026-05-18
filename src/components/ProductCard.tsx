@@ -92,9 +92,24 @@ export function ProductCard({
         {category && (
           <div className="eyebrow mb-2">{category}</div>
         )}
-        <h3 className="font-serif text-[26px] md:text-[30px] font-light text-charcoal tracking-[-0.01em] mb-3 leading-tight">
-          {name}
-        </h3>
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <h3 className="font-serif text-[26px] md:text-[30px] font-light text-charcoal tracking-[-0.01em] leading-tight">
+            {name}
+          </h3>
+          {ctas?.[0] && (
+            <a
+              href={ctas[0].url}
+              target="_blank"
+              rel="nofollow noopener sponsored"
+              className="shrink-0 hidden sm:inline-flex items-center gap-2 bg-emerald text-bg px-4 py-2 text-[11px] tracking-[0.12em] uppercase font-medium hover:bg-emerald/90 transition-colors mt-1"
+            >
+              <span>{price}</span>
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                <path d="M4 2L8 6L4 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
+              </svg>
+            </a>
+          )}
+        </div>
         <p className="text-slate text-[14px] leading-[1.7] mb-5 max-w-[480px]">
           {description}
         </p>
@@ -131,7 +146,7 @@ export function ProductCard({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <div className="text-[10px] tracking-[0.2em] uppercase text-stone mb-1">
-              Desde
+              From
             </div>
             <div className="font-serif text-[36px] font-light text-charcoal leading-none">
               {price}
