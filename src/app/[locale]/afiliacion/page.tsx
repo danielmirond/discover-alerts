@@ -86,56 +86,6 @@ const content: Record<Locale, {
     ],
     closing: "Editorial trust is our only asset. Every part of the Aevum business model is designed to protect it.",
   },
-      {
-        heading: "Programmes d'affiliation",
-        body: [
-          "Aevum participe aux programmes suivants : Amazon Partenaires (Amazon.fr, Amazon.co.uk, Amazon.com, Amazon.es, Amazon.de), programmes directs de marques sélectionnées comme Oura, WHOOP, Thorne, Plunge, Sunlighten, Mito Red Light, et réseaux comme Impact, ShareASale et Awin.",
-          "En tant que Partenaire Amazon, Aevum gagne des revenus grâce aux achats éligibles.",
-        ],
-      },
-      {
-        heading: "Nos engagements",
-        body: [
-          "Indépendance éditoriale — Les marques ne paient pas pour des avis positifs.",
-          "Transparence totale — Tous les liens d'affiliation portent l'attribut rel=\"nofollow sponsored\".",
-          "Nous ne recommandons pas ce que nous n'achèterions pas.",
-          "Mises à jour continues — Tests révisés tous les 6 mois.",
-        ],
-      },
-      {
-        heading: "Ce que vous pouvez faire",
-        body: [
-          "Si vous voulez nous soutenir sans coût supplémentaire, utilisez nos liens lorsque vous décidez d'acheter un produit que nous avons recommandé.",
-        ],
-      },
-    ],
-    closing: "La confiance éditoriale est notre seul actif.",
-  },
-      {
-        heading: "Affiliate-Programme",
-        body: [
-          "Aevum nimmt an folgenden Programmen teil: Amazon PartnerNet (Amazon.de, Amazon.co.uk, Amazon.com, Amazon.es, Amazon.fr), direkte Programme ausgewählter Marken wie Oura, WHOOP, Thorne, Plunge, Sunlighten, Mito Red Light, sowie Netzwerke wie Impact, ShareASale und Awin.",
-          "Als Amazon-Partner verdient Aevum an qualifizierten Käufen.",
-        ],
-      },
-      {
-        heading: "Unsere Verpflichtungen",
-        body: [
-          "Redaktionelle Unabhängigkeit — Marken zahlen nicht für positive Reviews.",
-          "Volle Transparenz — Alle Affiliate-Links tragen das Attribut rel=\"nofollow sponsored\".",
-          "Wir empfehlen nichts, was wir nicht selbst kaufen würden.",
-          "Kontinuierliche Aktualisierungen — Reviews werden alle 6 Monate überprüft.",
-        ],
-      },
-      {
-        heading: "Was du tun kannst",
-        body: [
-          "Wenn du uns ohne zusätzliche Kosten unterstützen möchtest, nutze unsere Links, wenn du ein von uns empfohlenes Produkt kaufen willst.",
-        ],
-      },
-    ],
-    closing: "Redaktionelles Vertrauen ist unser einziger Vermögenswert.",
-  },
 };
 
 export async function generateMetadata({

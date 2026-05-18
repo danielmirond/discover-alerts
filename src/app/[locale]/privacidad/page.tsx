@@ -159,68 +159,6 @@ const content: Record<Locale, {
     ],
     closing: "Your privacy is not a product. It's a right we actively protect.",
   },
-      {
-        heading: "Données collectées",
-        body: [
-          "Données de navigation — Nous utilisons Plausible Analytics, sans cookies personnels, sans données personnelles, sans fingerprinting. Les données sont agrégées et anonymes.",
-          "Données d'abonnement — Si vous vous abonnez à Aevum Briefing, nous collectons votre adresse email via Beehiiv.",
-          "Données d'affiliation — Nous ne collectons pas de données d'achat. Les transactions se font directement sur le site du vendeur.",
-        ],
-      },
-      {
-        heading: "Base légale",
-        body: [
-          "Consentement (Art. 6.1.a RGPD) — Pour les newsletters et cookies non essentiels.",
-          "Intérêt légitime (Art. 6.1.f RGPD) — Pour l'analyse web anonyme et les cookies nécessaires.",
-        ],
-      },
-      {
-        heading: "Vos droits",
-        body: [
-          "Conformément au RGPD : accès, rectification, suppression, limitation, opposition et portabilité de vos données. Contact : privacy@byaevum.com",
-          "Vous pouvez également déposer une plainte auprès de la CNIL (www.cnil.fr).",
-        ],
-      },
-      {
-        heading: "Sécurité",
-        body: [
-          "Aevum met en œuvre des mesures techniques et organisationnelles pour protéger vos données : hébergement HTTPS, chiffrement en transit, accès restreint.",
-        ],
-      },
-    ],
-    closing: "Votre vie privée n'est pas un produit. C'est un droit que nous protégeons activement.",
-  },
-      {
-        heading: "Welche Daten wir erheben",
-        body: [
-          "Browsing-Daten — Wir verwenden Plausible Analytics, ohne persönliche Cookies, ohne personenbezogene Daten, ohne Fingerprinting. Die Daten sind aggregiert und anonym.",
-          "Abo-Daten — Wenn du dich für das Aevum Briefing anmeldest, erheben wir deine E-Mail-Adresse über Beehiiv.",
-          "Affiliate-Daten — Wir erheben keine Kaufdaten. Transaktionen finden direkt auf der Website des Verkäufers statt.",
-        ],
-      },
-      {
-        heading: "Rechtsgrundlage",
-        body: [
-          "Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) — Für Newsletter und nicht wesentliche Cookies.",
-          "Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO) — Für anonyme Webanalyse und unbedingt erforderliche Cookies.",
-        ],
-      },
-      {
-        heading: "Deine Rechte",
-        body: [
-          "Gemäß DSGVO hast du das Recht auf: Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Datenübertragbarkeit. Kontakt: privacy@byaevum.com",
-          "Du kannst auch eine Beschwerde bei der zuständigen Datenschutzbehörde einreichen.",
-        ],
-      },
-      {
-        heading: "Sicherheit",
-        body: [
-          "Aevum setzt technische und organisatorische Maßnahmen zum Schutz deiner Daten um: HTTPS-Hosting, Verschlüsselung, eingeschränkter Zugriff.",
-        ],
-      },
-    ],
-    closing: "Deine Privatsphäre ist kein Produkt. Sie ist ein Recht, das wir aktiv schützen.",
-  },
 };
 
 export async function generateMetadata({
