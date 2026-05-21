@@ -249,7 +249,9 @@
     const media = api.topMedia || [];
     const total = media.reduce((s, m) => s + (m.articleCount || 0), 0) || 1;
     return media.slice(0, 30).map(m => ({
-      name: m.feedName,
+      name: m.feedName, // ahora ES el dominio (publisher unificado)
+      domain: m.domain || m.feedName,
+      sources: m.sources || [],
       pubs: m.articleCount,
       share: Math.round((m.articleCount / total) * 100),
       topDiscoverPages: m.topDiscoverPages || [],

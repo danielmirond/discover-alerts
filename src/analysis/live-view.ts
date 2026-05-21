@@ -168,7 +168,15 @@ interface LiveTopMediaEntity {
 }
 
 interface LiveTopMedia {
+  /** Dominio raíz (publisher). Antes era feedName (cada RSS por separado);
+   * unificado para que p.ej. todas las secciones de Mundo Deportivo cuenten
+   * como un único publisher. Compat: mantenemos `feedName` con un label
+   * legible (publisher.toUpperCase) para no romper el front antiguo. */
   feedName: string;
+  /** Dominio canónico — clave de agrupación. */
+  domain?: string;
+  /** Lista de nombres de feeds RSS / sitemap que han contribuido a esta entrada. */
+  sources?: string[];
   articleCount: number;
   entities: LiveTopMediaEntity[];
   topDiscoverPages?: Array<{
@@ -864,10 +872,20 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     const refTs = !isNaN(pubTs) ? pubTs : new Date(a.firstSeen).getTime();
     return (nowMs - refTs) <= topMediaMaxAgeMs;
   });
-  const perFeed: Record<string, {
+  // Antes: clave por feedName → cada RSS contaba aparte (MD Home, MD Futbol,
+  // MD Real Madrid, … figuraban como 20 publishers distintos).
+  // Ahora: clave por dominio raíz extraído del article.link → todas las
+  // secciones de un publisher cuentan juntas (mundodeportivo.com).
+  const perPublisher: Record<string, {
+    domain: string;
+    sources: Set<string>;
     articleCount: number;
     entityCounts: Map<string, number>;
   }> = {};
+
+  function domainOf(link: string): string | null {
+    try { return new URL(link).hostname.replace(/^www\./, '').toLowerCase(); } catch { return null; }
+  }
 
   // Pre-normalize Discover entities for substring matching
   const normalizedEntities = Object.keys(state.entities).map(name => ({
@@ -880,37 +898,27 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
   const xNorms = Object.keys(state.xTrends).map(t => normalize(t.replace(/^#/, ''))).filter(t => t.length > 2);
 
   for (const art of mediaArticlesArr) {
-    if (!art.feedName || !art.title) continue;
-    if (!perFeed[art.feedName]) {
-      perFeed[art.feedName] = { articleCount: 0, entityCounts: new Map() };
+    if (!art.title || !art.link) continue;
+    const dom = domainOf(art.link);
+    if (!dom) continue;
+    if (!perPublisher[dom]) {
+      perPublisher[dom] = { domain: dom, sources: new Set(), articleCount: 0, entityCounts: new Map() };
     }
-    perFeed[art.feedName].articleCount++;
+    const entry = perPublisher[dom];
+    if (art.feedName) entry.sources.add(art.feedName);
+    entry.articleCount++;
 
     const titleNorm = normalize(art.title);
     for (const e of normalizedEntities) {
       if (titleNorm.includes(e.norm)) {
-        const cur = perFeed[art.feedName].entityCounts.get(e.name) ?? 0;
-        perFeed[art.feedName].entityCounts.set(e.name, cur + 1);
+        const cur = entry.entityCounts.get(e.name) ?? 0;
+        entry.entityCounts.set(e.name, cur + 1);
       }
     }
   }
 
-  // Construir mapa feedName → dominios vistos (extraídos de article.link).
-  // Necesario para enganchar cada medio con sus pages de Discover por dominio.
-  const feedDomains: Record<string, Set<string>> = {};
-  for (const art of mediaArticlesArr) {
-    if (!art.feedName || !art.link) continue;
-    try {
-      const host = new URL(art.link).hostname.replace(/^www\./, '').toLowerCase();
-      if (!feedDomains[art.feedName]) feedDomains[art.feedName] = new Set();
-      feedDomains[art.feedName].add(host);
-    } catch { /* noop */ }
-  }
-
-  // Top 10 páginas Discover por medio (ventana rolling 48h, ordenadas por score).
-  function topDiscoverPagesForFeed(feedName: string): Array<{ url: string; title: string; image?: string; score: number; position?: number; lastUpdated?: string; firstSeen?: string }> {
-    const domains = feedDomains[feedName];
-    if (!domains || domains.size === 0) return [];
+  // Top 10 páginas Discover por dominio (ventana rolling 48h, ordenadas por score).
+  function topDiscoverPagesForDomain(dom: string): Array<{ url: string; title: string; image?: string; score: number; position?: number; lastUpdated?: string; firstSeen?: string }> {
     const candidates: Array<{ url: string; title: string; image?: string; score: number; position?: number; lastUpdated?: string; firstSeen?: string }> = [];
     for (const [url, ps] of Object.entries(state.pages || {})) {
       if (!ps.title) continue;
@@ -918,8 +926,7 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       if (!pdom) {
         try { pdom = new URL(url).hostname.replace(/^www\./, '').toLowerCase(); } catch {}
       }
-      const match = [...domains].some(d => pdom === d || pdom.endsWith('.' + d));
-      if (match) {
+      if (pdom === dom || pdom.endsWith('.' + dom)) {
         candidates.push({ url, title: ps.title, image: ps.image, score: ps.score || 0, position: ps.position, lastUpdated: ps.lastUpdated, firstSeen: (ps as any).firstSeen });
       }
     }
@@ -927,8 +934,8 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     return candidates.slice(0, 10);
   }
 
-  const topMedia: LiveTopMedia[] = Object.entries(perFeed)
-    .map(([feedName, info]) => {
+  const topMedia: LiveTopMedia[] = Object.values(perPublisher)
+    .map(info => {
       const entities: LiveTopMediaEntity[] = Array.from(info.entityCounts.entries())
         .map(([name, count]) => {
           const nameNorm = normalize(name);
@@ -943,10 +950,14 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
         .sort((a, b) => b.count - a.count)
         .slice(0, 15);
       return {
-        feedName,
+        // feedName ahora es el dominio (label de display); sources lista los RSS/sitemap
+        // individuales que han contribuido (legible en el drawer/detalle).
+        feedName: info.domain,
+        domain: info.domain,
+        sources: [...info.sources].sort(),
         articleCount: info.articleCount,
         entities,
-        topDiscoverPages: topDiscoverPagesForFeed(feedName),
+        topDiscoverPages: topDiscoverPagesForDomain(info.domain),
       } as LiveTopMedia;
     })
     .sort((a, b) => b.articleCount - a.articleCount)

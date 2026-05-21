@@ -233,18 +233,28 @@ function TopMediaPanel({ media }) {
       <div className="kicker">
         Medios más activos
         <Help>
-          Cabeceras RSS con más artículos en las últimas 12h + hasta 10 páginas suyas
-          que entraron en Discover en las últimas 48h (ventana rolling). Son
-          <strong> medios</strong> (ABC, El País, Marca…), no entidades.
+          <strong>Publishers</strong> (dominios) ordenados por nº artículos en
+          últimas 12h. Cada publisher unifica todas sus secciones RSS + sitemap-news
+          bajo un mismo dominio (p.ej. <em>mundodeportivo.com</em> agrupa Home,
+          Fútbol, Real Madrid, etc.). Debajo, hasta 10 páginas suyas que entraron
+          en Discover en las últimas 48h.
         </Help>
         <span className="bar"></span>
-        <span className="meta">RSS 12h · Discover rolling 48h · hasta 10 cards/medio</span>
+        <span className="meta">Publisher · RSS 12h · Discover rolling 48h</span>
       </div>
       {media.map((m, i) => (
         <div key={i} style={{ padding: '12px 0', borderBottom: '1px solid var(--rule-2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
             <span className="rank" style={{ minWidth: 28 }}>{String(i + 1).padStart(2, '0')}</span>
-            <span className="label" style={{ flex: 1, fontWeight: 600 }}>{m.name}</span>
+            <span className="label" style={{ flex: 1, fontWeight: 600, fontFamily: 'var(--mono)' }}>
+              {m.name}
+              {(m.sources || []).length > 0 && (
+                <span title={`Fuentes que contribuyen:\n${m.sources.join('\n')}`}
+                      style={{ marginLeft: 8, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', fontWeight: 400 }}>
+                  {m.sources.length} {m.sources.length === 1 ? 'fuente' : 'fuentes'}
+                </span>
+              )}
+            </span>
             <div className="mini-bar" style={{ width: 60 }}>
               <div className="fill" style={{ width: `${(m.pubs / max) * 100}%` }}></div>
             </div>
