@@ -1,5 +1,27 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { loadState, getState } from '../src/state/store.js';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+/** Carga lazy de los dominios monitorizados desde feeds-sport.json (1× por
+ * proceso). El bundler/vercel.json incluye este JSON en includeFiles. */
+let monitoredDomainsCache: Set<string> | null = null;
+function getMonitoredDomains(): Set<string> {
+  if (monitoredDomainsCache) return monitoredDomainsCache;
+  try {
+    const path = resolve(process.cwd(), 'feeds-sport.json');
+    const raw = JSON.parse(readFileSync(path, 'utf-8'));
+    const set = new Set<string>();
+    for (const f of raw.feeds || []) {
+      if (f.domain) set.add(String(f.domain).toLowerCase().replace(/^www\./, ''));
+    }
+    monitoredDomainsCache = set;
+    return set;
+  } catch {
+    monitoredDomainsCache = new Set();
+    return monitoredDomainsCache;
+  }
+}
 
 /**
  * GET /api/production-vs-discover
@@ -24,11 +46,13 @@ function extractDomain(url: string): string | null {
 interface PublisherRow {
   domain: string;
   publisher?: string;
+  /** True si el publisher está en feeds-sport.json (lo monitorizamos por RSS). */
+  monitored: boolean;
   /** Artículos publicados (sitemap + RSS) en últimas 24h. */
   production: number;
   /** Pages que han estado en Discover en últimas 24h. */
   discoverHits: number;
-  /** Ratio = discoverHits / production en %. */
+  /** Ratio = discoverHits / production en %. Si no monitorizado, null. */
   ratio: number;
   /** Score Discover medio de las pages que entraron. */
   avgDiscoverScore: number;
@@ -48,11 +72,17 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     const windowMs = 24 * 3600_000;
 
     // ── Producción 24h: agrupar mediaArticles por dominio ────────────────
+    // CLAVE: usamos pubDate cuando existe (fuente de verdad del publisher).
+    // firstSeen solo dice "cuándo lo vimos NOSOTROS" — distorsiona al
+    // incorporar un sitemap nuevo (todos quedan firstSeen=ahora aunque
+    // publicados hace días). Si pubDate falta o es inválido, fallback a firstSeen.
     const articles = (s.mediaArticles || {}) as Record<string, any>;
     const prodByDomain = new Map<string, { titles: string[]; links: Set<string> }>();
     for (const [, a] of Object.entries(articles)) {
-      const firstMs = new Date(a.firstSeen).getTime();
-      if (isNaN(firstMs) || nowMs - firstMs > windowMs) continue;
+      const pubMs = a.pubDate ? new Date(a.pubDate).getTime() : NaN;
+      const firstMs = a.firstSeen ? new Date(a.firstSeen).getTime() : NaN;
+      const refMs = !isNaN(pubMs) ? pubMs : firstMs;
+      if (isNaN(refMs) || nowMs - refMs > windowMs) continue;
       const dom = extractDomain(a.link);
       if (!dom) continue;
       let entry = prodByDomain.get(dom);
@@ -122,6 +152,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
       }
       rows.push({
         domain: dom,
+        monitored: getMonitoredDomains().has(dom),
         production,
         discoverHits,
         ratio,

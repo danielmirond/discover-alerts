@@ -1764,7 +1764,7 @@ function TextAuditorView() {
 function ProduccionDiscoverView() {
   const [st, setSt] = useState({ loading: true, data: null, error: null });
   const [sortBy, setSortBy] = useState('ratio'); // ratio | discoverHits | production
-  const [filter, setFilter] = useState('all');   // all | with-hits | no-hits
+  const [filter, setFilter] = useState('monitored');   // monitored | all | with-hits | no-hits | discover-only
 
   useEffect(() => {
     let alive = true;
@@ -1779,8 +1779,10 @@ function ProduccionDiscoverView() {
   if (st.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {st.error}</div>;
   const d = st.data || {};
   let rows = d.rows || [];
-  if (filter === 'with-hits') rows = rows.filter(r => r.discoverHits > 0);
-  else if (filter === 'no-hits') rows = rows.filter(r => r.discoverHits === 0);
+  if (filter === 'monitored') rows = rows.filter(r => r.monitored && r.production > 0);
+  else if (filter === 'with-hits') rows = rows.filter(r => r.discoverHits > 0);
+  else if (filter === 'no-hits') rows = rows.filter(r => r.discoverHits === 0 && r.production > 0);
+  else if (filter === 'discover-only') rows = rows.filter(r => !r.monitored && r.discoverHits > 0);
   rows = [...rows].sort((a, b) => {
     if (sortBy === 'ratio') return b.ratio - a.ratio || b.discoverHits - a.discoverHits;
     if (sortBy === 'discoverHits') return b.discoverHits - a.discoverHits;
@@ -1798,8 +1800,14 @@ function ProduccionDiscoverView() {
           {' '}<strong style={{ color: 'var(--ink)' }}>{d.totalProduction}</strong> artículos producidos ·
           {' '}<strong style={{ color: 'var(--accent)' }}>{d.totalDiscoverHits}</strong> pages en Discover
         </div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          {[{ id: 'all', label: 'Todos' }, { id: 'with-hits', label: 'Con hits' }, { id: 'no-hits', label: 'Sin hits' }].map(o => (
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {[
+            { id: 'monitored', label: 'Monitorizados' },
+            { id: 'with-hits', label: 'Con hits' },
+            { id: 'no-hits', label: 'Producen sin entrar' },
+            { id: 'discover-only', label: 'En Discover, no monitor.' },
+            { id: 'all', label: 'Todos' },
+          ].map(o => (
             <span key={o.id} onClick={() => setFilter(o.id)}
                   style={{ cursor: 'pointer', padding: '3px 10px', fontFamily: 'var(--mono)', fontSize: 10, border: '1px solid var(--rule)', background: filter === o.id ? 'var(--accent)' : 'transparent', color: filter === o.id ? '#fff' : 'var(--ink)' }}>
               {o.label}
@@ -1834,6 +1842,7 @@ function ProduccionDiscoverView() {
             {rows.map(r => (
               <tr key={r.domain} style={{ borderBottom: '1px solid var(--rule-2)' }}>
                 <td style={{ padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)', fontWeight: 600 }}>
+                  {r.monitored ? '' : <span title="No monitorizamos este publisher por RSS/sitemap" style={{ color: 'var(--ink-4)', marginRight: 4 }}>○</span>}
                   {r.domain}
                 </td>
                 <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-3)' }}>
