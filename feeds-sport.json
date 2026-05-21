@@ -1583,62 +1583,6 @@
       "scope": "nacional"
     },
     {
-      "name": "El Pais Deportes",
-      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/deportes/portada",
-      "category": "deportivo-generalista",
-      "domain": "elpais.com",
-      "scope": "nacional"
-    },
-    {
-      "name": "El Mundo Deportes",
-      "url": "https://e00-elmundo.uecdn.es/rss/deportes.xml",
-      "category": "deportivo-generalista",
-      "domain": "elmundo.es",
-      "scope": "nacional"
-    },
-    {
-      "name": "La Vanguardia Deportes",
-      "url": "https://www.lavanguardia.com/rss/deportes.xml",
-      "category": "deportivo-generalista",
-      "domain": "lavanguardia.com",
-      "scope": "nacional"
-    },
-    {
-      "name": "20 Minutos Deportes",
-      "url": "https://www.20minutos.es/rss/deportes/",
-      "category": "deportivo-generalista",
-      "domain": "20minutos.es",
-      "scope": "nacional"
-    },
-    {
-      "name": "ABC Deportes",
-      "url": "https://www.abc.es/rss/feeds/abc_Deportes.xml",
-      "category": "deportivo-generalista",
-      "domain": "abc.es",
-      "scope": "nacional"
-    },
-    {
-      "name": "RTVE Deportes",
-      "url": "https://www.rtve.es/rss/temas_deportes.xml",
-      "category": "deportivo-generalista",
-      "domain": "rtve.es",
-      "scope": "nacional"
-    },
-    {
-      "name": "OKdiario Deportes",
-      "url": "https://okdiario.com/deportes/feed",
-      "category": "deportivo-generalista",
-      "domain": "okdiario.com",
-      "scope": "nacional"
-    },
-    {
-      "name": "Huffington Post Deportes",
-      "url": "https://www.huffingtonpost.es/feeds/index.xml?ch=deportes",
-      "category": "deportivo-generalista",
-      "domain": "huffingtonpost.es",
-      "scope": "nacional"
-    },
-    {
       "name": "Le Monde Sport",
       "url": "https://www.lemonde.fr/sport/rss_full.xml",
       "category": "deportivo",
@@ -1662,14 +1606,6 @@
       "type": "news-sitemap"
     },
     {
-      "name": "BBC Sport Sitemap News",
-      "url": "https://www.bbc.co.uk/sitemaps/https-sitemap-com-news-1.xml",
-      "category": "internacional",
-      "domain": "bbc.co.uk",
-      "scope": "internacional",
-      "type": "news-sitemap"
-    },
-    {
       "name": "The Guardian Sitemap News",
       "url": "https://www.theguardian.com/sitemaps/news.xml",
       "category": "internacional",
@@ -1683,6 +1619,206 @@
       "category": "internacional",
       "domain": "lemonde.fr",
       "scope": "internacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Amp.Elperiodico Sitemap News",
+      "url": "https://www.elperiodico.com/es/sitemapNews.xml",
+      "category": "generalista",
+      "domain": "amp.elperiodico.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Ara Sitemap News",
+      "url": "https://www.ara.cat/sitemap_google_news_ee125.xml",
+      "category": "generalista",
+      "domain": "ara.cat",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Bbc Sitemap News",
+      "url": "https://www.bbc.co.uk/sitemaps/https-index-uk-news.xml",
+      "category": "deportivo",
+      "domain": "bbc.co.uk",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Cronista Sitemap News",
+      "url": "https://www.cronista.com/arc/outboundfeeds/sitemap-news/latest/?outputType=xml",
+      "category": "generalista",
+      "domain": "cronista.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Eldiario Sitemap News",
+      "url": "https://www.eldiario.es/sitemap_google_news_25b87.xml",
+      "category": "generalista",
+      "domain": "eldiario.es",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Elespanol Sitemap News",
+      "url": "https://www.elespanol.com/sitemap_google_news.xml",
+      "category": "generalista",
+      "domain": "elespanol.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Estadiodeportivo Sitemap News",
+      "url": "https://www.estadiodeportivo.com/sitemaps/news.xml",
+      "category": "deportivo",
+      "domain": "estadiodeportivo.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Infobae Sitemap News",
+      "url": "https://www.infobae.com/arc/outboundfeeds/news-sitemap2/",
+      "category": "generalista",
+      "domain": "infobae.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Informacion Sitemap News",
+      "url": "https://www.informacion.es/sitemapNews.xml",
+      "category": "generalista",
+      "domain": "informacion.es",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Lanacion.Ar Sitemap News",
+      "url": "https://www.lanacion.com.ar/sitemap-news.xml",
+      "category": "generalista",
+      "domain": "lanacion.com.ar",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Levante-Emv Sitemap News",
+      "url": "https://www.levante-emv.com/sitemapNews.xml",
+      "category": "generalista",
+      "domain": "levante-emv.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Libertaddigital Sitemap News",
+      "url": "https://www.libertaddigital.com/sitemaps/last-news.xml",
+      "category": "generalista",
+      "domain": "libertaddigital.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Noticiastrabajo.Huffingtonpost Sitemap News",
+      "url": "https://noticiastrabajo.huffingtonpost.es/google-news.xml",
+      "category": "generalista",
+      "domain": "noticiastrabajo.huffingtonpost.es",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Rtve Sitemap News",
+      "url": "https://www.rtve.es/sitemaps/sitemaps-news.xml",
+      "category": "deportivo",
+      "domain": "rtve.es",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Sport Sitemap News",
+      "url": "https://www.sport.es/es/sitemapNews.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Tn.Ar Sitemap News",
+      "url": "https://tn.com.ar/arc/outboundfeeds/news-sitemap/?outputType=xml",
+      "category": "generalista",
+      "domain": "tn.com.ar",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Xataka Sitemap News",
+      "url": "https://www.xataka.com/sitemap_news.xml",
+      "category": "generalista",
+      "domain": "xataka.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "As Sitemap News",
+      "url": "https://www.as.com/sitemaps/news.xml",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Elpais Sitemap News",
+      "url": "https://www.elpais.com/sitemaps/news.xml",
+      "category": "generalista",
+      "domain": "elpais.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Abc Sitemap News",
+      "url": "https://www.abc.es/sitemap_news.xml",
+      "category": "generalista",
+      "domain": "abc.es",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "20Minutos Sitemap News",
+      "url": "https://www.20minutos.es/sitemap-google-news.xml",
+      "category": "generalista",
+      "domain": "20minutos.es",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Lavanguardia Sitemap News",
+      "url": "https://www.lavanguardia.com/sitemap-news.xml",
+      "category": "generalista",
+      "domain": "lavanguardia.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Huffingtonpost Sitemap News",
+      "url": "https://www.huffingtonpost.es/sitemap-google-news.xml",
+      "category": "generalista",
+      "domain": "huffingtonpost.es",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Larazon Sitemap News",
+      "url": "https://www.larazon.es/sitemaps/news.xml",
+      "category": "generalista",
+      "domain": "larazon.es",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Publico Sitemap News",
+      "url": "https://www.publico.es/sitemap-google-news.xml",
+      "category": "generalista",
+      "domain": "publico.es",
+      "scope": "nacional",
       "type": "news-sitemap"
     }
   ]
