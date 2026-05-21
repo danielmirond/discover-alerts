@@ -151,6 +151,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
   if (instance.name !== 'sport') {
     verticalHidden.add('auditor-texto');
     verticalHidden.add('importados');
+    verticalHidden.add('produccion-discover');
   }
   const navs = [
     { id: 'feed', label: 'Feed en vivo', count: counts.feed },
@@ -171,6 +172,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'datacategoria', label: 'Datacategoría' },
     { id: 'auditor', label: 'Auditor titular' },
     { id: 'auditor-texto', label: 'Audita texto' },
+    { id: 'produccion-discover', label: 'Producción / Discover' },
     { id: 'importados', label: 'Importados' },
     { id: 'kg', label: 'Knowledge Graph' },
     { id: 'historico', label: 'Histórico' },
@@ -1046,6 +1048,12 @@ function App() {
       'material seleccionado desde Ranking Audience y Fórmulas internacionales',
       <ImportadosView />
     );
+  } else if (activeNav === 'produccion-discover') {
+    body = viewSinglePanel(
+      'Producción vs Discover · eficiencia editorial por publisher',
+      'cruce 24h: artículos publicados (RSS + sitemap-news) vs pages en Discover',
+      <ProduccionDiscoverView />
+    );
   } else if (activeNav === 'kg') {
     body = viewSinglePanel(
       'Knowledge Graph · enrichment Wikidata',
@@ -1748,6 +1756,107 @@ function TextAuditorView() {
       )}
       {result?.error && (
         <div style={{ color: 'var(--danger)', fontFamily: 'var(--mono)', fontSize: 12 }}>Error: {result.error}</div>
+      )}
+    </div>
+  );
+}
+
+function ProduccionDiscoverView() {
+  const [st, setSt] = useState({ loading: true, data: null, error: null });
+  const [sortBy, setSortBy] = useState('ratio'); // ratio | discoverHits | production
+  const [filter, setFilter] = useState('all');   // all | with-hits | no-hits
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/production-vs-discover', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(d => alive && setSt({ loading: false, data: d, error: null }))
+      .catch(e => alive && setSt({ loading: false, data: null, error: e.message }));
+    return () => { alive = false; };
+  }, []);
+
+  if (st.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando…</div>;
+  if (st.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {st.error}</div>;
+  const d = st.data || {};
+  let rows = d.rows || [];
+  if (filter === 'with-hits') rows = rows.filter(r => r.discoverHits > 0);
+  else if (filter === 'no-hits') rows = rows.filter(r => r.discoverHits === 0);
+  rows = [...rows].sort((a, b) => {
+    if (sortBy === 'ratio') return b.ratio - a.ratio || b.discoverHits - a.discoverHits;
+    if (sortBy === 'discoverHits') return b.discoverHits - a.discoverHits;
+    return b.production - a.production;
+  });
+
+  const ratioColor = (r) => r >= 20 ? 'var(--ok)' : r >= 10 ? 'var(--warn)' : 'var(--danger)';
+
+  return (
+    <div>
+      <div style={{ padding: '10px 12px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>
+          Ventana <strong style={{ color: 'var(--ink)' }}>{d.windowHours}h</strong> ·
+          {' '}<strong style={{ color: 'var(--ink)' }}>{d.totalPublishers}</strong> publishers ·
+          {' '}<strong style={{ color: 'var(--ink)' }}>{d.totalProduction}</strong> artículos producidos ·
+          {' '}<strong style={{ color: 'var(--accent)' }}>{d.totalDiscoverHits}</strong> pages en Discover
+        </div>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {[{ id: 'all', label: 'Todos' }, { id: 'with-hits', label: 'Con hits' }, { id: 'no-hits', label: 'Sin hits' }].map(o => (
+            <span key={o.id} onClick={() => setFilter(o.id)}
+                  style={{ cursor: 'pointer', padding: '3px 10px', fontFamily: 'var(--mono)', fontSize: 10, border: '1px solid var(--rule)', background: filter === o.id ? 'var(--accent)' : 'transparent', color: filter === o.id ? '#fff' : 'var(--ink)' }}>
+              {o.label}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 8, lineHeight: 1.5 }}>
+        Ratio = (pages en Discover últimas 24h / artículos publicados últimas 24h) × 100.
+        Producción cuenta artículos RSS + sitemap-news con firstSeen ≤ 24h.
+        Verde ≥20% (foco editorial), ámbar ≥10% (medio), rojo &lt;10% (volumen ineficiente o publisher fuera del scope Discover).
+      </div>
+
+      {rows.length === 0 ? (
+        <div style={{ padding: 14, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>
+          Sin datos. Necesita al menos 1 ciclo completo de media-poll + discover-poll.
+        </div>
+      ) : (
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+          <thead>
+            <tr style={{ borderBottom: '2px solid var(--ink)' }}>
+              <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Publisher</th>
+              <th onClick={() => setSortBy('production')} style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: sortBy === 'production' ? 'var(--accent)' : 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em', cursor: 'pointer' }}>Producción</th>
+              <th onClick={() => setSortBy('discoverHits')} style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: sortBy === 'discoverHits' ? 'var(--accent)' : 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em', cursor: 'pointer' }}>Discover</th>
+              <th onClick={() => setSortBy('ratio')} style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: sortBy === 'ratio' ? 'var(--accent)' : 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em', cursor: 'pointer' }}>Ratio</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Avg / Max</th>
+              <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Top en Discover</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(r => (
+              <tr key={r.domain} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                <td style={{ padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)', fontWeight: 600 }}>
+                  {r.domain}
+                </td>
+                <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-3)' }}>
+                  {r.production}
+                </td>
+                <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 12, color: r.discoverHits > 0 ? 'var(--accent)' : 'var(--ink-4)', fontWeight: r.discoverHits > 0 ? 700 : 400 }}>
+                  {r.discoverHits}
+                </td>
+                <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: ratioColor(r.ratio) }}>
+                  {r.ratio}%
+                </td>
+                <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
+                  {r.discoverHits > 0 ? `s${r.avgDiscoverScore} / ${r.maxDiscoverScore}` : '—'}
+                </td>
+                <td style={{ padding: '6px 6px', color: 'var(--ink-3)', fontSize: 11, lineHeight: 1.4, maxWidth: 400 }}>
+                  {(r.topDiscoverTitles || []).slice(0, 2).map((t, i) => (
+                    <div key={i} style={{ display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>· {t}</div>
+                  ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

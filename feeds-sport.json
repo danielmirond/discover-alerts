@@ -1644,6 +1644,46 @@
       "category": "deportivo",
       "domain": "lemonde.fr",
       "scope": "internacional"
+    },
+    {
+      "name": "Mundo Deportivo Sitemap News",
+      "url": "https://www.mundodeportivo.com/sitemap-news-v7.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "OKDiario Sitemap News",
+      "url": "https://okdiario.com/sitemaps/okd-sitemap-google-news.xml",
+      "category": "generalista",
+      "domain": "okdiario.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "BBC Sport Sitemap News",
+      "url": "https://www.bbc.co.uk/sitemaps/https-sitemap-com-news-1.xml",
+      "category": "internacional",
+      "domain": "bbc.co.uk",
+      "scope": "internacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "The Guardian Sitemap News",
+      "url": "https://www.theguardian.com/sitemaps/news.xml",
+      "category": "internacional",
+      "domain": "theguardian.com",
+      "scope": "internacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Le Monde Sitemap News",
+      "url": "https://www.lemonde.fr/sitemap_news.xml",
+      "category": "internacional",
+      "domain": "lemonde.fr",
+      "scope": "internacional",
+      "type": "news-sitemap"
     }
   ]
 }
