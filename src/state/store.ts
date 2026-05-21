@@ -124,9 +124,13 @@ function trimByRecency<T extends { firstSeen?: string; pubDate?: string; lastUpd
 ): Record<string, T> {
   const json = JSON.stringify(obj);
   if (json.length <= maxBytes) return obj;
-  // Ordenar por tiempo (más reciente primero) y añadir hasta llenar
+  // Ordenar por tiempo (más reciente primero) y añadir hasta llenar.
+  // Priorizamos pubDate (fecha real del publisher) sobre firstSeen (cuándo
+  // lo vimos NOSOTROS). Al cargar un sitemap-news nuevo con cientos de
+  // artículos, todos tienen firstSeen=ahora pero pubDate variado — usar
+  // pubDate evita que un publisher monopolice el shard.
   const entries = Object.entries(obj);
-  const ts = (v: T) => Date.parse(v.lastUpdated || v.firstSeen || v.pubDate || v.timestamp || '') || 0;
+  const ts = (v: T) => Date.parse(v.pubDate || v.lastUpdated || v.firstSeen || v.timestamp || '') || 0;
   entries.sort(([, a], [, b]) => ts(b) - ts(a));
   const out: Record<string, T> = {};
   let acc = 2; // '{}'
