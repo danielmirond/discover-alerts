@@ -91,14 +91,14 @@ export default async function ArticlePage({
       disclosure: {
         es: "Este artículo contiene enlaces de afiliado. Si compras a través de ellos, ganamos una comisión sin coste adicional para ti.",
         en: "This article contains affiliate links. If you purchase through them, we earn a commission at no extra cost to you.",
-        fr: "Cet article contient des liens d'affiliation. Si vous achetez via ces liens, nous percevons une commission sans frais supplémentaires pour vous.",
-        de: "Dieser Artikel enthält Affiliate-Links. Wenn du über diese Links kaufst, erhalten wir eine Provision ohne zusätzliche Kosten für dich.",
+      },
+      disclaimer: {
+        es: "Este contenido es exclusivamente informativo y educativo. No constituye consejo médico, diagnóstico ni tratamiento. Consulta siempre con un profesional sanitario cualificado antes de iniciar cualquier suplemento, protocolo o cambio en tu rutina de salud. Aevum no es un servicio médico.",
+        en: "This content is for informational and educational purposes only. It does not constitute medical advice, diagnosis or treatment. Always consult a qualified healthcare professional before starting any supplement, protocol or change in your health routine. Aevum is not a medical service.",
       },
       related: {
         es: "Continúa leyendo",
         en: "Continue reading",
-        fr: "Continuer la lecture",
-        de: "Weiterlesen",
       },
     };
     return translations[key]?.[locale] || translations[key]?.["en"] || key;
@@ -212,6 +212,20 @@ export default async function ArticlePage({
           <MDXRemote source={article.content} components={mdxComponents} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
         </div>
       </div>
+
+      {/* MEDICAL DISCLAIMER */}
+      {article.meta.affiliate && (
+        <div className="max-w-[640px] mx-auto px-8 mb-12">
+          <div className="border border-line bg-ivory/50 p-6">
+            <div className="text-[10px] tracking-[0.2em] uppercase text-stone mb-2 font-medium">
+              {locale === "es" ? "Aviso" : "Disclaimer"}
+            </div>
+            <p className="text-[12px] text-stone leading-[1.7]">
+              {t("disclaimer")}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* NEWSLETTER */}
       <section className="max-w-[1200px] mx-auto px-8 py-16">
