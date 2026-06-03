@@ -152,6 +152,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     verticalHidden.add('auditor-texto');
     verticalHidden.add('importados');
     verticalHidden.add('produccion-discover');
+    verticalHidden.add('mundial');
   }
   const navs = [
     { id: 'feed', label: 'Feed en vivo', count: counts.feed },
@@ -170,6 +171,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'patrones', label: 'Patrones' },
     { id: 'patrones-categoria', label: 'Patrones · Categoría' },
     { id: 'datacategoria', label: 'Datacategoría' },
+    { id: 'mundial', label: 'Mundial' },
     { id: 'auditor', label: 'Auditor titular' },
     { id: 'auditor-texto', label: 'Audita texto' },
     { id: 'produccion-discover', label: 'Producción / Discover' },
@@ -1048,6 +1050,12 @@ function App() {
       'material seleccionado desde Ranking Audience y Fórmulas internacionales',
       <ImportadosView />
     );
+  } else if (activeNav === 'mundial') {
+    body = viewSinglePanel(
+      'Mundial · cobertura cross-source',
+      'todo lo que matchea con World Cup / Mundial / Selección en titulares + URL',
+      <MundialView />
+    );
   } else if (activeNav === 'produccion-discover') {
     body = viewSinglePanel(
       'Producción vs Discover · eficiencia editorial por publisher',
@@ -1756,6 +1764,197 @@ function TextAuditorView() {
       )}
       {result?.error && (
         <div style={{ color: 'var(--danger)', fontFamily: 'var(--mono)', fontSize: 12 }}>Error: {result.error}</div>
+      )}
+    </div>
+  );
+}
+
+function MundialView() {
+  const [st, setSt] = useState({ loading: true, data: null, error: null });
+  const [section, setSection] = useState('discover'); // discover | rss | entities | international
+  const { imp, addNews } = useImports();
+  const isImported = (id) => imp.news.some(n => n.id === id);
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/mundial', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(d => alive && setSt({ loading: false, data: d, error: null }))
+      .catch(e => alive && setSt({ loading: false, data: null, error: e.message }));
+    return () => { alive = false; };
+  }, []);
+
+  if (st.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando…</div>;
+  if (st.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {st.error}</div>;
+  const d = st.data || {};
+  const sum = d.summary || {};
+
+  const importBtn = (item) => {
+    const id = `news::mundial::${item.url || item.link}`;
+    const imported = isImported(id);
+    const payload = {
+      id, kind: 'news',
+      country: item.country || 'ES',
+      countryLabel: item.country ? item.country : 'Mundial · ES',
+      title: item.title, url: item.url || item.link,
+      domain: item.domain || (item.link && (() => { try { return new URL(item.link).hostname.replace(/^www\./,''); } catch { return ''; }})()) || '',
+      category: `Mundial · ${item.keyword || ''}`,
+      audienceScore: item.score || 0, maxScore: item.score || 0, hoursInFeed: 0,
+    };
+    return (
+      <button onClick={() => addNews(payload)} disabled={imported}
+              title={imported ? 'Ya importado' : 'Importar'}
+              style={{
+                cursor: imported ? 'default' : 'pointer',
+                fontFamily: 'var(--mono)', fontSize: 10, padding: '0 6px',
+                background: imported ? 'var(--ok)' : 'transparent',
+                color: imported ? 'var(--paper)' : 'var(--accent)',
+                border: `1px solid ${imported ? 'var(--ok)' : 'var(--accent)'}`,
+                lineHeight: 1.4, marginLeft: 6,
+              }}>
+        {imported ? '✓' : '+'}
+      </button>
+    );
+  };
+
+  const sectionTabs = [
+    { id: 'discover', label: 'Discover ES', count: sum.pages },
+    { id: 'rss', label: 'RSS + Sitemap', count: sum.articles },
+    { id: 'entities', label: 'Entidades DS', count: sum.entities },
+    { id: 'international', label: 'Mundial × País', count: sum.internationalPages },
+  ];
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 14, padding: '8px 12px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', flexWrap: 'wrap', alignItems: 'baseline' }}>
+        <span><strong style={{ color: 'var(--ink)' }}>{sum.articles || 0}</strong> RSS</span>
+        <span><strong style={{ color: 'var(--accent)' }}>{sum.pages || 0}</strong> Discover</span>
+        <span><strong style={{ color: 'var(--ink)' }}>{sum.entities || 0}</strong> entidades</span>
+        <span><strong style={{ color: 'var(--ink)' }}>{sum.internationalPages || 0}</strong> intl pages</span>
+        <span style={{ marginLeft: 'auto', color: 'var(--ink-4)' }}>ventana {d.windowHours}h</span>
+      </div>
+
+      {/* Keywords + publishers a la cabeza */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 14 }}>
+        <div>
+          <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>Keywords activas<span className="bar"></span><span className="meta">{(d.keywordsTop || []).length}</span></div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            {(d.keywordsTop || []).map(k => (
+              <span key={k.keyword} style={{ display: 'inline-block', padding: '3px 8px', fontFamily: 'var(--mono)', fontSize: 11, background: 'var(--paper-3)', color: 'var(--ink)', border: '1px solid var(--rule)' }}>
+                {k.keyword} <strong style={{ color: 'var(--accent)' }}>×{k.count}</strong>
+              </span>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>Publishers cubriendo<span className="bar"></span><span className="meta">{(d.publisherSummary || []).length}</span></div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            {(d.publisherSummary || []).slice(0, 14).map(p => (
+              <span key={p.domain} style={{ display: 'inline-block', padding: '3px 8px', fontFamily: 'var(--mono)', fontSize: 11, background: 'var(--paper-3)', color: 'var(--ink)', border: '1px solid var(--rule)' }}>
+                {p.domain} <strong style={{ color: 'var(--accent)' }}>{p.count}</strong>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+        {sectionTabs.map(t => (
+          <span key={t.id} onClick={() => setSection(t.id)}
+                style={{ cursor: 'pointer', padding: '4px 12px', fontFamily: 'var(--mono)', fontSize: 11, border: '1px solid var(--rule)', background: section === t.id ? 'var(--accent)' : 'transparent', color: section === t.id ? '#fff' : 'var(--ink)' }}>
+            {t.label} {typeof t.count === 'number' && <strong style={{ opacity: 0.8 }}>{t.count}</strong>}
+          </span>
+        ))}
+      </div>
+
+      {section === 'discover' && (
+        (d.matchedPages || []).length === 0 ? (
+          <div style={{ padding: 14, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin pages Discover con match.</div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+            {(d.matchedPages || []).map(p => (
+              <div key={p.url} style={{ border: '1px solid var(--rule)', background: 'var(--paper)' }}>
+                {p.image
+                  ? <img src={p.image} alt="" style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block', borderBottom: '1px solid var(--rule)' }} />
+                  : <div style={{ width: '100%', aspectRatio: '16/9', borderBottom: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontFamily: 'var(--mono)', fontSize: 10 }}>sin imagen</div>}
+                <div style={{ padding: '8px 10px' }}>
+                  <a href={p.url} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)', textDecoration: 'none', fontSize: 13, fontWeight: 500, lineHeight: 1.3, display: 'block' }}>
+                    {p.title}
+                  </a>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginTop: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>{(p.domain || '').replace(/^www\./, '')} · #{p.position} · s{p.score}</span>
+                    {importBtn(p)}
+                  </div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--accent)', marginTop: 2 }}>kw: {p.keyword}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {section === 'rss' && (
+        (d.matchedArticles || []).length === 0 ? (
+          <div style={{ padding: 14, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin artículos RSS/sitemap con match en últimas 24h.</div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+            <tbody>
+              {(d.matchedArticles || []).map((a, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                  <td style={{ padding: '5px 6px', width: 110, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>{a.domain}</td>
+                  <td style={{ padding: '5px 6px' }}>
+                    <a href={a.link} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)', textDecoration: 'none', display: 'block', lineHeight: 1.3 }}>{a.title}</a>
+                  </td>
+                  <td style={{ padding: '5px 6px', width: 110, fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--accent)' }}>{a.keyword}</td>
+                  <td style={{ padding: '5px 6px', width: 28 }}>{importBtn(a)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
+      )}
+
+      {section === 'entities' && (
+        (d.matchedEntities || []).length === 0 ? (
+          <div style={{ padding: 14, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin entidades DS con match.</div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+            <tbody>
+              {(d.matchedEntities || []).map(e => (
+                <tr key={e.name} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                  <td style={{ padding: '5px 6px', width: 28, textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--accent)', fontWeight: 700 }}>#{e.position}</td>
+                  <td style={{ padding: '5px 6px', fontWeight: 500, color: 'var(--ink)' }}>{e.name}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>s{e.score}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>{e.publications} pubs</td>
+                  <td style={{ padding: '5px 6px', width: 110, fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--accent)' }}>{e.keyword}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
+      )}
+
+      {section === 'international' && (
+        (d.internationalHits || []).length === 0 ? (
+          <div style={{ padding: 14, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin hits mundiales en países tracked.</div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+            <tbody>
+              {(d.internationalHits || []).map((p, i) => (
+                <tr key={p.url + i} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                  <td style={{ padding: '5px 6px', width: 36, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>{p.country}</td>
+                  <td style={{ padding: '5px 6px' }}>
+                    <a href={p.url} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)', textDecoration: 'none', display: 'block', lineHeight: 1.3 }}>{p.title}</a>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', marginTop: 2 }}>{(p.domain || '').replace(/^www\./, '')}</div>
+                  </td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>s{p.score}</td>
+                  <td style={{ padding: '5px 6px', width: 110, fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--accent)' }}>{p.keyword}</td>
+                  <td style={{ padding: '5px 6px', width: 28 }}>{importBtn(p)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
       )}
     </div>
   );

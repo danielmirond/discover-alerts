@@ -1419,8 +1419,19 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
           }
         }
       } catch { /* noop */ }
-      // Fallback: completar con feedDomains observado (de mediaArticles 12h)
-      for (const [feedName, doms] of Object.entries(feedDomains || {})) {
+      // Fallback: re-derivar dominios observados de mediaArticles para los
+      // feeds que no estén en feeds.json. Tras el refactor que unificó topMedia
+      // por dominio, ya no hay un `feedDomains` global; lo recomputamos local.
+      const feedDomainsObserved: Record<string, Set<string>> = {};
+      for (const art of mediaArticlesArr) {
+        if (!art.feedName || !art.link) continue;
+        try {
+          const host = new URL(art.link).hostname.replace(/^www\./, '').toLowerCase();
+          if (!feedDomainsObserved[art.feedName]) feedDomainsObserved[art.feedName] = new Set();
+          feedDomainsObserved[art.feedName].add(host);
+        } catch { /* noop */ }
+      }
+      for (const [feedName, doms] of Object.entries(feedDomainsObserved)) {
         if (feedToPublisher.has(feedName)) continue;
         const arr = [...doms];
         if (arr.length === 0) continue;
