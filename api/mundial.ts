@@ -32,7 +32,9 @@ const HARD_KEYWORDS = [
   'la roja', 'albiceleste', 'canarinha', 'canarinho', 'azzurri', 'squadra azzurra',
   'equipe de france', 'mannschaft', 'three lions', 'oranje',
   'samurai blue', 'tri mexicano', 'la blanquirroja', 'la verde',
-  'bafana bafana', 'la sele',
+  'bafana bafana',
+  // 'la sele' lo movemos a SHORT_PATTERNS abajo para usar word-boundary
+  // estricto y evitar enganchar 'Selectividad'.
   // ── Compuestas selección + país ────────────────────────────────────────
   'mundial de futbol', 'mundial de fútbol', 'mundial femenino', 'mundial masculino',
   'mundial sub-', 'seleccion española', 'selección española',
@@ -58,9 +60,18 @@ const HARD_KEYWORDS = [
 ];
 
 // SOFT: palabras genéricas que sólo cuentan con contexto deportivo claro.
+// 'convocatoria' suelta queda fuera para evitar 'convocar Audiencia Nacional',
+// 'convocatoria pública' etc.; las variantes compuestas con mundial/copa/squad
+// ya están en HARD.
 const SOFT_KEYWORDS = [
   'mundial', 'seleccion', 'selección', 'fifa', 'wm', 'wk', 'panini',
-  'convocatoria', 'convocação', 'convocatória',
+];
+
+// SHORT_PATTERNS: keywords cortas o coloquiales que exigen word-boundary
+// estricto para evitar match parcial dentro de otra palabra (p.ej. 'la sele'
+// dentro de 'la selectividad').
+const SHORT_PATTERNS: RegExp[] = [
+  /\bla sele\b/i,        // selección costarricense (y nickname general)
 ];
 
 // Contexto deportivo: el titular o URL debe contener alguno para que las
@@ -88,15 +99,20 @@ function matchKeyword(title: string, url: string): string | null {
       return k;
     }
   }
-  // SOFT: matchea solo con contexto deportivo. Eso descarta "población mundial",
-  // "Selectividad", "El Corte Inglés en la selección de productos", etc.
+  // Patterns cortos con word-boundary obligatorio
+  for (const re of SHORT_PATTERNS) {
+    if (re.test(t) || re.test(u)) return re.source.replace(/[\\b]/g, '');
+  }
+  // SOFT: requiere que la keyword esté en el TITULAR (no URL-only — evita
+  // que un path como /seleccion-productos/ active el match) Y que exista
+  // contexto deportivo en titular o URL.
   const hasSportContext = SPORT_CONTEXT_RE.test(t) || URL_SPORT_CONTEXT_RE.test(u);
   if (!hasSportContext) return null;
   for (const k of NORM_SOFT) {
     if (k.length <= 3) {
       const re = new RegExp(`\\b${k}\\b`);
-      if (re.test(t) || re.test(u)) return k;
-    } else if (t.includes(k) || u.includes(k)) {
+      if (re.test(t)) return k;
+    } else if (t.includes(k)) {
       return k;
     }
   }
