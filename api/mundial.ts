@@ -15,34 +15,59 @@ import { loadState, getState } from '../src/state/store.js';
  * Gated a la instancia 'sport' (en main devuelve 404).
  */
 
-// HARD: matchea siempre. Términos inequívocos del Mundial / selecciones.
+// HARD: matchea siempre. Términos inequívocos del Mundial / selecciones /
+// coleccionismo / convocatorias. Diccionario enriquecido con Google Trends
+// "Copa Mundial de la FIFA 2026 (3/5/26-3/6/26, mundial)" de junio 2026.
 const HARD_KEYWORDS = [
-  // Frases completas multi-idioma
-  'world cup', 'copa del mundo', 'copa mundial', 'copa do mundo',
-  'coupe du monde', 'mondiale', 'mundial 2026', 'mundial-2026',
-  'weltmeisterschaft', 'fifa world',
-  // Selecciones con nombre distintivo (no palabras de uso común)
-  'la roja', 'albiceleste', 'canarinha', 'azzurri', 'squadra azzurra',
+  // ── Frases núcleo multi-idioma ──────────────────────────────────────────
+  'world cup', 'world cup 2026', '2026 world cup', '2026 fifa world cup',
+  'fifa world cup', 'fifa world', 'fifa 2026',
+  'copa del mundo', 'copa mundial', 'copa mundo 2026', 'copa 2026',
+  'copa do mundo', 'copa do mundo 2026', 'copa de 2026',
+  'mundial 2026', 'mundial-2026',
+  'coupe du monde', 'coupe du monde 2026',
+  'mondiale 2026', 'weltmeisterschaft', 'wm 2026', 'wk 2026',
+  'ワールドカップ', 'ワールド カップ',
+  // ── Selecciones con nombre distintivo ──────────────────────────────────
+  'la roja', 'albiceleste', 'canarinha', 'canarinho', 'azzurri', 'squadra azzurra',
   'equipe de france', 'mannschaft', 'three lions', 'oranje',
   'samurai blue', 'tri mexicano', 'la blanquirroja', 'la verde',
-  // Compuestas seguras
-  'mundial de futbol', 'mundial de fútbol', 'mundial femenino',
-  'mundial masculino', 'mundial sub-', 'seleccion española',
-  'selección española', 'seleccion argentina', 'selección argentina',
-  'seleccion mexicana', 'selección mexicana', 'seleccion brasileña',
-  'seleção brasileira', 'national team',
+  'bafana bafana', 'la sele',
+  // ── Compuestas selección + país ────────────────────────────────────────
+  'mundial de futbol', 'mundial de fútbol', 'mundial femenino', 'mundial masculino',
+  'mundial sub-', 'seleccion española', 'selección española',
+  'seleccion argentina', 'selección argentina', 'seleccion mexicana',
+  'selección mexicana', 'seleccion brasileña', 'seleção brasileira',
+  'national team',
+  // ── Convocatorias / listas / squad (RISING en Trends, alta intención) ──
+  'convocatoria mundial', 'convocatoria copa', 'lista de convocados',
+  'lista dos convocados', 'lista convocados', 'prelista mundial',
+  'pre lista', 'pré lista', 'convocação', 'convocatória',
+  'world cup squad', 'wm kader', 'kader deutschland', 'liste deschamps',
+  'liste bresil', 'liste angleterre', 'england squad',
+  'squad for world cup', 'squad world cup',
+  // ── Coleccionismo: Panini / figurinhas / álbumes ───────────────────────
+  'panini mundial', 'panini 2026', 'panini wm', 'album mundial',
+  'album del mundial', 'album da copa', 'album panini',
+  'figurinha copa', 'figurinhas da copa', 'figurinha da copa',
+  'tapa dura mundial', 'pasta dura mundial',
+  'monedas del mundial', 'cromos mundial',
+  // ── Fixtures / horarios ────────────────────────────────────────────────
+  'partidos mundial', 'partidos del mundial', 'jogos brasil copa',
+  'world cup schedule', 'jogos copa', 'calendario mundial',
 ];
 
-// SOFT: ruidosas (mundial, seleccion, fifa) — solo matchean si el contexto
-// del titular o la URL es claramente futbolístico/deportivo.
+// SOFT: palabras genéricas que sólo cuentan con contexto deportivo claro.
 const SOFT_KEYWORDS = [
-  'mundial', 'seleccion', 'selección', 'fifa', 'wm',
+  'mundial', 'seleccion', 'selección', 'fifa', 'wm', 'wk', 'panini',
+  'convocatoria', 'convocação', 'convocatória',
 ];
 
-// Contexto deportivo: si el haystack contiene alguno de estos términos,
-// las SOFT keywords pasan a contar. En URL captura paths típicos.
-const SPORT_CONTEXT_RE = /\b(futbol|fútbol|football|soccer|liga|laliga|champions|jugador|jugadora|seleccionador|entrenador|estadio|partido|gol|goles|delantero|delantera|portero|guardameta|fc |club|copa america|eurocopa|euro 2024|euro 2025|euro 2026|mundial 2026)\b/;
-const URL_SPORT_CONTEXT_RE = /\/(futbol|football|soccer|seleccion|seleccao|squadra|equipe|laliga|champions|copa-?mundial|world-?cup|mundial)(\/|-|$)/;
+// Contexto deportivo: el titular o URL debe contener alguno para que las
+// SOFT keywords cuenten. Evita "Selectividad", "población mundial",
+// "selección de productos", etc.
+const SPORT_CONTEXT_RE = /\b(futbol|fútbol|football|soccer|liga|laliga|champions|jugador|jugadora|seleccionador|entrenador|estadio|partido|gol|goles|delantero|delantera|portero|guardameta|fc |club|copa america|eurocopa|euro 2024|euro 2025|euro 2026|mundial 2026|copa 2026|world cup|copa do mundo|coupe du monde|wm 2026|wk 2026)\b/;
+const URL_SPORT_CONTEXT_RE = /\/(futbol|football|soccer|seleccion|seleccao|squadra|equipe|laliga|champions|copa-?mundial|copa-?do-?mundo|world-?cup|mundial|coupe-?du-?monde|wm-?2026|panini)(\/|-|$)/;
 
 function normalize(s: string): string {
   return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
