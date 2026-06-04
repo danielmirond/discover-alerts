@@ -251,6 +251,8 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
 
     res.setHeader('Cache-Control', 's-maxage=300');
     res.json({
+      _v: 'v3-no-convocatoria-soft',
+      _softKeywords: SOFT_KEYWORDS,
       windowHours: 24,
       computedAt: new Date().toISOString(),
       summary: {
