@@ -29,9 +29,10 @@ const RETENTION_DAYS = 30;
 const TOP_N = 80;
 
 function isSportCategory(c: string | number | undefined): boolean {
-  if (c == null) return false;
-  if (typeof c === 'number') return false; // se resuelve a string en el state
+  if (c == null) return true; // pages sin categoría pasan (instancia sport ya filtra a /Sports en discover-poll)
+  if (typeof c === 'number') return true;
   const lower = String(c).toLowerCase();
+  if (lower === '' || lower === '-') return true;
   return lower.includes('/sports') || lower.startsWith('sports') || lower.includes('/news/sports');
 }
 
