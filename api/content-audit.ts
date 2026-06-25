@@ -133,8 +133,11 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     // Por categoría
     const byCatMap = new Map<string, any[]>();
     for (const a of all) {
-      const cat = (a.category as string) || '— sin categoría';
-      const label = cat.replace(/^\//, '').split('/').slice(0, 3).join(' · ');
+      const cat = a.category;
+      let label: string;
+      if (cat == null || cat === '') label = '— sin categoría';
+      else if (typeof cat === 'number') label = `cat ${cat}`;
+      else label = String(cat).replace(/^\//, '').split('/').slice(0, 3).join(' · ');
       if (!byCatMap.has(label)) byCatMap.set(label, []);
       byCatMap.get(label)!.push(a);
     }
