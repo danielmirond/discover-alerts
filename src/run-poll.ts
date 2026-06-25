@@ -11,6 +11,7 @@ import { runAemetPoll } from './polling/aemet-poll.js';
 import { runInternationalPoll } from './polling/international-poll.js';
 import { runHistoricalPatternsPoll } from './polling/historical-patterns-poll.js';
 import { runWikidataPoll } from './polling/wikidata-poll.js';
+import { runContentAuditPoll } from './polling/content-audit-poll.js';
 
 const target = process.argv[2]; // discover | trends | media | boe | x | meneame | wikipedia | cultural | aemet | all
 
@@ -59,6 +60,9 @@ async function main() {
         break;
       case 'wikidata':
         await runWikidataPoll();
+        break;
+      case 'content-audit':
+        await runContentAuditPoll();
         break;
       case 'all':
         await runDiscoverPoll();
