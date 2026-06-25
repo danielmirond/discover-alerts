@@ -1866,6 +1866,12 @@ function ContentAuditView() {
               { label: 'Videos', sub: `μ ${s.videos?.mean} · ${s.videos?.withVideoPct}% con video`, p: `${s.videos?.withVideo} pages con video`, color: 'var(--danger)' },
               { label: 'Párrafos', sub: `μ ${s.paragraphs?.mean} · med ${s.paragraphs?.median}`, p: '', color: 'var(--ink-3)' },
               { label: 'AMP', sub: `${s.ampPct}% pages AMP`, p: `${s.amp} de ${s.sample}`, color: 'var(--ink-3)' },
+              {
+                label: 'Selector de cuerpo',
+                sub: `${(s.bodySource?.article || 0) + (s.bodySource?.itemprop || 0) + (s.bodySource?.main || 0)}/${s.sample} semánticos`,
+                p: `article ${s.bodySource?.article || 0} · itemprop ${s.bodySource?.itemprop || 0} · main ${s.bodySource?.main || 0} · full ${s.bodySource?.full || 0}`,
+                color: 'var(--ink-3)',
+              },
             ].map((c, i) => (
               <div key={i} style={{ padding: 10, background: 'var(--paper-3)', borderLeft: `3px solid ${c.color}` }}>
                 <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>{c.label}</div>

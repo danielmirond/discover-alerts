@@ -78,8 +78,18 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     const vids = all.map(a => a.videos);
     const paras = all.map(a => a.paragraphs);
 
+    // Distribución de selector de body (article > itemprop > main > full).
+    // Útil para saber qué % de pages tienen markup semántico vs cuántas
+    // siguen contando con strip de chrome (más ruidoso).
+    const bodySrc: Record<string, number> = { article: 0, itemprop: 0, main: 0, full: 0 };
+    for (const a of all) {
+      const src = a.bodySource || 'full';
+      bodySrc[src] = (bodySrc[src] || 0) + 1;
+    }
+
     const summary = {
       sample: all.length,
+      bodySource: bodySrc,
       wordCount: { mean: mean(wc), median: median(wc), p25: percentile(wc, 0.25), p75: percentile(wc, 0.75), p90: percentile(wc, 0.9) },
       h1: { mean: mean(h1), median: median(h1) },
       h2: { mean: mean(h2), median: median(h2), p75: percentile(h2, 0.75) },
@@ -170,7 +180,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
         scoreSnapshot: a.scoreSnapshot, positionSnapshot: a.positionSnapshot,
         wordCount: a.wordCount, h1: a.h1, h2: a.h2, h3: a.h3,
         images: a.images, videos: a.videos, paragraphs: a.paragraphs,
-        lists: a.lists, amp: a.amp,
+        lists: a.lists, amp: a.amp, bodySource: a.bodySource || 'full',
         auditedAt: a.auditedAt,
       }))
       .sort((a, b) => (b.scoreSnapshot || 0) - (a.scoreSnapshot || 0));

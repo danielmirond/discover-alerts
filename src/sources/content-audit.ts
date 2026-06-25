@@ -31,6 +31,10 @@ export interface ContentAuditResult {
   paragraphs: number;
   lists: number;
   amp: boolean;
+  /** Qué selector se usó para aislar el cuerpo: article | itemprop | main |
+   * full (fallback con strip de chrome). Permite saber cuántas pages tienen
+   * markup semántico vs cuántas caen al fallback ruidoso. */
+  bodySource?: 'article' | 'itemprop' | 'main' | 'full';
   /** Tiempo de fetch en ms (debug). */
   fetchMs: number;
   /** Si algo falló, mensaje. wordCount/etc serán 0. */
@@ -42,6 +46,49 @@ const UA = 'Mozilla/5.0 (compatible; DiscoverAlertsAuditBot/1.0; +https://discov
 function stripBlock(html: string, tag: string): string {
   const re = new RegExp(`<${tag}\\b[^>]*>[\\s\\S]*?<\\/${tag}>`, 'gi');
   return html.replace(re, ' ');
+}
+
+/** Extrae el contenido entre <tag> y su </tag> respetando anidamiento.
+ * Devuelve el primer match útil — para `<article>` los medios suelen tener
+ * uno solo. Para casos como `<section>` o `<div>` no usar (demasiados).
+ * Si no hay match, devuelve null. */
+function extractBalancedTag(html: string, tag: string): string | null {
+  const openRe = new RegExp(`<${tag}\\b[^>]*>`, 'gi');
+  const closeRe = new RegExp(`<\\/${tag}\\s*>`, 'gi');
+  const openMatch = openRe.exec(html);
+  if (!openMatch) return null;
+  const start = openMatch.index + openMatch[0].length;
+
+  // Buscar el cierre balanceado contando aperturas/cierres a partir de start
+  let depth = 1;
+  let pos = start;
+  while (depth > 0 && pos < html.length) {
+    openRe.lastIndex = pos;
+    closeRe.lastIndex = pos;
+    const nextOpen = openRe.exec(html);
+    const nextClose = closeRe.exec(html);
+    if (!nextClose) return null;
+    if (nextOpen && nextOpen.index < nextClose.index) {
+      depth++;
+      pos = nextOpen.index + nextOpen[0].length;
+    } else {
+      depth--;
+      if (depth === 0) return html.slice(start, nextClose.index);
+      pos = nextClose.index + nextClose[0].length;
+    }
+  }
+  return null;
+}
+
+/** Busca el bloque `<div itemprop="articleBody">…</div>` (schema.org). */
+function extractArticleBodyByItemprop(html: string): string | null {
+  const re = /<(\w+)\b[^>]*\bitemprop\s*=\s*["']articleBody["'][^>]*>/i;
+  const m = re.exec(html);
+  if (!m) return null;
+  const tag = m[1].toLowerCase();
+  // Reutilizar extractBalancedTag desde el offset del match
+  const rest = html.slice(m.index);
+  return extractBalancedTag(rest, tag);
 }
 
 function countTag(html: string, tag: string): number {
@@ -62,11 +109,16 @@ function extractPublisher(url: string): string {
   } catch { return ''; }
 }
 
-/** Quita todo lo que NO sea cuerpo editorial: scripts, estilos, navegación,
- * pie, sidebar, comentarios. Lo que queda es una buena aproximación al
- * texto del artículo. */
-function extractBodyText(html: string): string {
-  let s = html;
+/** Limpia un fragmento HTML conservando solo texto editorial:
+ *  - elimina scripts/styles/noscript/svg
+ *  - elimina headers/footers/navs/asides anidados (algunos <article> incluyen
+ *    "related" o "share" bars marcados como <aside>)
+ *  - elimina forms
+ *  - quita resto de tags
+ *  - decodifica entities
+ */
+function cleanFragmentText(fragment: string): string {
+  let s = fragment;
   s = stripBlock(s, 'script');
   s = stripBlock(s, 'style');
   s = stripBlock(s, 'noscript');
@@ -76,12 +128,24 @@ function extractBodyText(html: string): string {
   s = stripBlock(s, 'nav');
   s = stripBlock(s, 'aside');
   s = stripBlock(s, 'form');
-  // Strip HTML tags
   s = s.replace(/<[^>]+>/g, ' ');
-  // Decode common entities suficiente para conteo
   s = s.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#\d+;/g, ' ');
   s = s.replace(/\s+/g, ' ').trim();
   return s;
+}
+
+/** Selecciona el fragmento HTML que representa el cuerpo del artículo y
+ * además devuelve qué selector usó. Si nada matchea, usa el HTML completo
+ * marcado como 'full' (fallback ruidoso).
+ */
+function pickArticleFragment(html: string): { fragment: string; source: ContentAuditResult['bodySource'] } {
+  const article = extractBalancedTag(html, 'article');
+  if (article && article.trim().length > 200) return { fragment: article, source: 'article' };
+  const itemprop = extractArticleBodyByItemprop(html);
+  if (itemprop && itemprop.trim().length > 200) return { fragment: itemprop, source: 'itemprop' };
+  const main = extractBalancedTag(html, 'main');
+  if (main && main.trim().length > 200) return { fragment: main, source: 'main' };
+  return { fragment: html, source: 'full' };
 }
 
 function countWords(text: string): number {
@@ -144,19 +208,27 @@ export async function auditUrl(url: string, timeoutMs = 12_000): Promise<Content
     const ct = r.headers.get('content-type') || '';
     if (!ct.includes('html')) throw new Error(`content-type ${ct}`);
     const html = await r.text();
-    const bodyText = extractBodyText(html);
+    // AMP se detecta sobre el HTML completo (la etiqueta <html> está fuera del article)
+    const amp = /<html[^>]+(?:⚡|amp\s*=)/i.test(html) || /<link[^>]+rel=["']amphtml["']/i.test(html);
+    // Aislar cuerpo del artículo. Todo el conteo se hace SOLO sobre este
+    // fragmento — fuera quedan "lo más leído", "relacionadas", comentarios,
+    // breadcrumbs, share bars, footers de autor.
+    const picked = pickArticleFragment(html);
+    const body = picked.fragment;
+    const bodyText = cleanFragmentText(body);
     return {
       ...base,
       title: extractTitle(html),
+      bodySource: picked.source,
       wordCount: countWords(bodyText),
-      h1: countTag(html, 'h1'),
-      h2: countTag(html, 'h2'),
-      h3: countTag(html, 'h3'),
-      images: countImages(html),
-      videos: countVideos(html),
-      paragraphs: countTag(html, 'p'),
-      lists: countTag(html, 'ul') + countTag(html, 'ol'),
-      amp: /<html[^>]+(?:⚡|amp\s*=)/i.test(html) || /<link[^>]+rel=["']amphtml["']/i.test(html),
+      h1: countTag(body, 'h1'),
+      h2: countTag(body, 'h2'),
+      h3: countTag(body, 'h3'),
+      images: countImages(body),
+      videos: countVideos(body),
+      paragraphs: countTag(body, 'p'),
+      lists: countTag(body, 'ul') + countTag(body, 'ol'),
+      amp,
       fetchMs: Date.now() - t0,
     };
   } catch (err: any) {
