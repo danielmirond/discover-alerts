@@ -1860,8 +1860,11 @@ function ContentAuditView() {
           {/* Stats cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 18 }}>
             {[
-              { label: 'Word count', sub: `μ ${s.wordCount?.mean} · med ${s.wordCount?.median}`, p: `p75 ${s.wordCount?.p75} · p90 ${s.wordCount?.p90}`, color: 'var(--accent)' },
+              { label: 'Palabras titular', sub: `μ ${s.titleWordCount?.mean} · med ${s.titleWordCount?.median}`, p: `p25 ${s.titleWordCount?.p25} · p75 ${s.titleWordCount?.p75}`, color: 'var(--accent)' },
+              { label: 'Word count cuerpo', sub: `μ ${s.wordCount?.mean} · med ${s.wordCount?.median}`, p: `p75 ${s.wordCount?.p75} · p90 ${s.wordCount?.p90}`, color: 'var(--accent)' },
               { label: 'H2 (subtítulos)', sub: `μ ${s.h2?.mean} · med ${s.h2?.median}`, p: `p75 ${s.h2?.p75}`, color: 'var(--ok)' },
+              { label: 'Amplitud subtítulo', sub: `1º μ ${s.firstSubtitleWordCount?.mean} pal.`, p: `media H2: ${s.avgSubtitleWordCount?.mean} pal. · n=${s.firstSubtitleWordCount?.sample || 0}`, color: 'var(--ok)' },
+              { label: 'Enlaces en cuerpo', sub: `μ ${s.links?.mean} · med ${s.links?.median}`, p: `p75 ${s.links?.p75} · p90 ${s.links?.p90}`, color: 'var(--ink-2)' },
               { label: 'Imágenes', sub: `μ ${s.images?.mean} · med ${s.images?.median}`, p: `p75 ${s.images?.p75} · p90 ${s.images?.p90}`, color: 'var(--warn)' },
               { label: 'Videos', sub: `μ ${s.videos?.mean} · ${s.videos?.withVideoPct}% con video`, p: `${s.videos?.withVideo} pages con video`, color: 'var(--danger)' },
               { label: 'Párrafos', sub: `μ ${s.paragraphs?.mean} · med ${s.paragraphs?.median}`, p: '', color: 'var(--ink-3)' },
@@ -1869,7 +1872,7 @@ function ContentAuditView() {
               {
                 label: 'Selector de cuerpo',
                 sub: `${(s.bodySource?.article || 0) + (s.bodySource?.itemprop || 0) + (s.bodySource?.main || 0)}/${s.sample} semánticos`,
-                p: `article ${s.bodySource?.article || 0} · itemprop ${s.bodySource?.itemprop || 0} · main ${s.bodySource?.main || 0} · full ${s.bodySource?.full || 0}`,
+                p: `article ${s.bodySource?.article || 0} · itemprop ${s.bodySource?.itemprop || 0} · main ${s.bodySource?.main || 0} · full ${s.bodySource?.full || 0}${s.excludedEmbeds ? ' · ' + s.excludedEmbeds + ' embeds excluidos' : ''}`,
                 color: 'var(--ink-3)',
               },
             ].map((c, i) => (
@@ -1883,8 +1886,11 @@ function ContentAuditView() {
 
           {/* Histogramas */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 18 }}>
-            {dist.wordCount && renderHist(dist.wordCount, 'Distribución · Word count', 'var(--accent)')}
+            {dist.titleWordCount && renderHist(dist.titleWordCount, 'Distribución · Palabras del titular', 'var(--accent)')}
+            {dist.wordCount && renderHist(dist.wordCount, 'Distribución · Word count cuerpo', 'var(--accent)')}
             {dist.h2 && renderHist(dist.h2, 'Distribución · H2 (subtítulos)', 'var(--ok)')}
+            {dist.firstSubtitleWordCount && renderHist(dist.firstSubtitleWordCount, 'Distribución · Amplitud 1er subtítulo', 'var(--ok)')}
+            {dist.links && renderHist(dist.links, 'Distribución · Enlaces en cuerpo', 'var(--ink-2)')}
             {dist.images && renderHist(dist.images, 'Distribución · Imágenes', 'var(--warn)')}
             {dist.videos && renderHist(dist.videos, 'Distribución · Videos', 'var(--danger)')}
           </div>
@@ -1892,13 +1898,17 @@ function ContentAuditView() {
       )}
 
       {section === 'publishers' && (
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+        <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12, minWidth: 780 }}>
           <thead>
             <tr style={{ borderBottom: '2px solid var(--ink)' }}>
               <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase' }}>Publisher</th>
               <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase' }}>n</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase' }} title="Palabras del titular (H1)">Tit μ</th>
               <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase' }}>Words μ</th>
               <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase' }}>H2 μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase' }} title="Palabras del primer H2 (amplitud subtítulo)">Subt μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase' }}>Links μ</th>
               <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase' }}>Img μ</th>
               <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase' }}>Video %</th>
               <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase' }}>AMP %</th>
@@ -1910,8 +1920,11 @@ function ContentAuditView() {
               <tr key={p.publisher} style={{ borderBottom: '1px solid var(--rule-2)' }}>
                 <td style={{ padding: '5px 6px', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)', fontWeight: 600 }}>{p.publisher}</td>
                 <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>{p.count}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{p.titleWordCount?.mean ?? '—'}</td>
                 <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{p.wordCount.mean}</td>
                 <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{p.h2.mean}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{p.firstSubtitleWordCount?.mean || '—'}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{p.links?.mean ?? '—'}</td>
                 <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{p.images.mean}</td>
                 <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: p.videos.withVideoPct >= 30 ? 'var(--accent)' : 'var(--ink-3)' }}>{p.videos.withVideoPct}%</td>
                 <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>{p.ampPct}%</td>
@@ -1920,6 +1933,7 @@ function ContentAuditView() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
 
       {section === 'category' && (
@@ -1961,8 +1975,11 @@ function ContentAuditView() {
                 {p.title || p.url}
               </a>
               <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', marginTop: 4, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <span title="Palabras del titular">🔠 <strong style={{ color: 'var(--ink)' }}>{p.titleWordCount || '—'}</strong> tit</span>
                 <span>📝 <strong style={{ color: 'var(--ink)' }}>{p.wordCount}</strong> words</span>
                 <span>📑 H2:{p.h2} H3:{p.h3}</span>
+                <span title="Palabras del 1er subtítulo">📜 <strong style={{ color: 'var(--ink)' }}>{p.firstSubtitleWordCount || '—'}</strong> subt</span>
+                <span>🔗 <strong style={{ color: 'var(--ink)' }}>{p.links ?? '—'}</strong> links</span>
                 <span>🖼️ <strong style={{ color: 'var(--ink)' }}>{p.images}</strong> imgs</span>
                 <span>🎬 <strong style={{ color: p.videos > 0 ? 'var(--accent)' : 'var(--ink-4)' }}>{p.videos}</strong> videos</span>
                 {p.amp && <span style={{ color: 'var(--warn)' }}>AMP</span>}
@@ -1976,20 +1993,24 @@ function ContentAuditView() {
         <div>
           <div style={{ marginBottom: 8, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
             Ordenar por:
-            {['scoreSnapshot', 'wordCount', 'h2', 'images', 'videos'].map(k => (
+            {['scoreSnapshot', 'titleWordCount', 'wordCount', 'h2', 'firstSubtitleWordCount', 'links', 'images', 'videos'].map(k => (
               <span key={k} onClick={() => setSortKey(k)} style={{ cursor: 'pointer', marginLeft: 8, color: sortKey === k ? 'var(--accent)' : 'var(--ink-3)', textDecoration: sortKey === k ? 'underline' : 'none' }}>
                 {k}
               </span>
             ))}
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 11 }}>
+          <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 11, minWidth: 880 }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--ink)' }}>
                 <th style={{ textAlign: 'left', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>Titular</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>s</th>
+                <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }} title="Palabras del titular">tit</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>words</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>H2</th>
+                <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }} title="Palabras del 1er subtítulo">subt</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>H3</th>
+                <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>links</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>img</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>vid</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>amp</th>
@@ -1997,17 +2018,20 @@ function ContentAuditView() {
             </thead>
             <tbody>
               {rows.map(r => (
-                <tr key={r.url} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                <tr key={r.url} style={{ borderBottom: '1px solid var(--rule-2)', opacity: r.isEmbed ? 0.55 : 1 }}>
                   <td style={{ padding: '4px 4px', maxWidth: 380 }}>
                     <a href={r.url} target="_blank" rel="noreferrer" title={r.title} style={{ color: 'var(--ink)', textDecoration: 'none', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {r.title || r.url}
                     </a>
-                    <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)' }}>{r.publisher}</div>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)' }}>{r.publisher}{r.isEmbed ? ' · embed' : ''}</div>
                   </td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)', color: 'var(--accent)', fontWeight: 700 }}>{r.scoreSnapshot}</td>
+                  <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{r.titleWordCount || '—'}</td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{r.wordCount}</td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{r.h2}</td>
+                  <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{r.firstSubtitleWordCount || '—'}</td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{r.h3}</td>
+                  <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{r.links ?? '—'}</td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{r.images}</td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)', color: r.videos > 0 ? 'var(--accent)' : 'var(--ink-4)' }}>{r.videos}</td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)', color: r.amp ? 'var(--warn)' : 'var(--ink-4)' }}>{r.amp ? '✓' : ''}</td>
@@ -2015,6 +2039,7 @@ function ContentAuditView() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

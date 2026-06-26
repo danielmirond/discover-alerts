@@ -22,12 +22,22 @@ export interface ContentAuditResult {
   url: string;
   publisher?: string;
   title?: string;
+  /** Nº de palabras del titular extraído (preferimos <h1> dentro del article;
+   * fallback a <title>). 0 si vacío. */
+  titleWordCount: number;
   wordCount: number;
   h1: number;
   h2: number;
   h3: number;
+  /** Nº de palabras del PRIMER subtítulo H2 — sirve como proxy de "amplitud
+   * de entradilla". Muchos medios usan el primer H2 como gancho post-titular. */
+  firstSubtitleWordCount: number;
+  /** Media de palabras por H2 a lo largo del artículo. */
+  avgSubtitleWordCount: number;
   images: number;
   videos: number;
+  /** Nº de enlaces `<a>` dentro del cuerpo del article (excluye anchor sin href). */
+  links: number;
   paragraphs: number;
   lists: number;
   amp: boolean;
@@ -175,6 +185,45 @@ function countVideos(html: string): number {
   return n;
 }
 
+/** Extrae el texto de la PRIMERA aparición de un tag (con regex no balanceado).
+ * Suficiente para H1/H2 cortos (no anidan). Devuelve string sin tags. */
+function firstTagText(html: string, tag: string): string {
+  const re = new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i');
+  const m = re.exec(html);
+  if (!m) return '';
+  return m[1].replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&\w+;/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/** Extrae el texto de TODAS las apariciones de un tag y devuelve un array. */
+function allTagTexts(html: string, tag: string): string[] {
+  const re = new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'gi');
+  const out: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html))) {
+    const text = m[1].replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&\w+;/g, ' ').replace(/\s+/g, ' ').trim();
+    if (text) out.push(text);
+  }
+  return out;
+}
+
+/** Cuenta enlaces editoriales dentro del cuerpo. Excluye:
+ *   - <a> sin href (ancla pura)
+ *   - href que empieza por # (in-page jump)
+ *   - href javascript:/mailto:/tel:
+ */
+function countLinks(html: string): number {
+  const re = /<a\b[^>]*\bhref\s*=\s*["']([^"']+)["'][^>]*>/gi;
+  let n = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html))) {
+    const href = m[1].trim();
+    if (!href) continue;
+    if (href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) continue;
+    n++;
+  }
+  return n;
+}
+
 function countImages(html: string): number {
   // <img>, <picture><source> y <amp-img>
   let n = countTag(html, 'img');
@@ -194,8 +243,11 @@ export async function auditUrl(url: string, timeoutMs = 12_000): Promise<Content
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   const base: ContentAuditResult = {
     url, publisher: extractPublisher(url),
+    titleWordCount: 0,
     wordCount: 0, h1: 0, h2: 0, h3: 0,
-    images: 0, videos: 0, paragraphs: 0, lists: 0, amp: false,
+    firstSubtitleWordCount: 0, avgSubtitleWordCount: 0,
+    images: 0, videos: 0, links: 0,
+    paragraphs: 0, lists: 0, amp: false,
     fetchMs: 0,
   };
   try {
@@ -216,16 +268,30 @@ export async function auditUrl(url: string, timeoutMs = 12_000): Promise<Content
     const picked = pickArticleFragment(html);
     const body = picked.fragment;
     const bodyText = cleanFragmentText(body);
+    // Titular: preferir el <h1> dentro del article (más fiable que <title>,
+    // que incluye sufijos del medio tipo " | Marca" o " - El País").
+    const h1Text = firstTagText(body, 'h1') || extractTitle(html) || '';
+    const titleWordCount = countWords(h1Text);
+    // Subtítulos H2 dentro del article — primero y media de palabras.
+    const h2Texts = allTagTexts(body, 'h2');
+    const firstSubtitleWordCount = h2Texts[0] ? countWords(h2Texts[0]) : 0;
+    const avgSubtitleWordCount = h2Texts.length > 0
+      ? Math.round(h2Texts.reduce((s, t) => s + countWords(t), 0) / h2Texts.length)
+      : 0;
     return {
       ...base,
       title: extractTitle(html),
       bodySource: picked.source,
+      titleWordCount,
       wordCount: countWords(bodyText),
       h1: countTag(body, 'h1'),
       h2: countTag(body, 'h2'),
       h3: countTag(body, 'h3'),
+      firstSubtitleWordCount,
+      avgSubtitleWordCount,
       images: countImages(body),
       videos: countVideos(body),
+      links: countLinks(body),
       paragraphs: countTag(body, 'p'),
       lists: countTag(body, 'ul') + countTag(body, 'ol'),
       amp,

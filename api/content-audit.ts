@@ -56,7 +56,16 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     await loadState();
     const s = getState() as any;
     const audits = (s.contentAudits || {}) as Record<string, any>;
-    const all = Object.values(audits).filter((a: any) => !a.error && a.wordCount > 0) as any[];
+    // Dominios que son embeds de video (no contenido editorial). Los
+    // mantenemos en rows para drilldown pero NO entran en el summary,
+    // distribuciones, byPublisher ni byCategory — sesgaban a la baja.
+    const EMBED_DOMAINS = new Set(['youtube.com', 'youtu.be', 'twitter.com', 'x.com', 'tiktok.com', 'instagram.com']);
+    const isEmbed = (a: any) => EMBED_DOMAINS.has((a.publisher || '').replace(/^www\./, '').toLowerCase());
+
+    const allAudited = Object.values(audits).filter((a: any) => !a.error && a.wordCount > 0) as any[];
+    // `all` se usa para agregados editoriales — sin embeds.
+    const all = allAudited.filter(a => !isEmbed(a));
+    const embedCount = allAudited.length - all.length;
     const lastPoll = s.lastPollContentAudit || null;
 
     if (all.length === 0) {
@@ -77,6 +86,10 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     const imgs = all.map(a => a.images);
     const vids = all.map(a => a.videos);
     const paras = all.map(a => a.paragraphs);
+    const titleWc = all.map(a => a.titleWordCount || 0).filter(n => n > 0);
+    const subFirst = all.map(a => a.firstSubtitleWordCount || 0).filter(n => n > 0);
+    const subAvg = all.map(a => a.avgSubtitleWordCount || 0).filter(n => n > 0);
+    const links = all.map(a => a.links || 0);
 
     // Distribución de selector de body (article > itemprop > main > full).
     // Útil para saber qué % de pages tienen markup semántico vs cuántas
@@ -89,11 +102,22 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
 
     const summary = {
       sample: all.length,
+      excludedEmbeds: embedCount,
       bodySource: bodySrc,
+      titleWordCount: titleWc.length > 0
+        ? { mean: mean(titleWc), median: median(titleWc), p25: percentile(titleWc, 0.25), p75: percentile(titleWc, 0.75) }
+        : { mean: 0, median: 0, p25: 0, p75: 0 },
       wordCount: { mean: mean(wc), median: median(wc), p25: percentile(wc, 0.25), p75: percentile(wc, 0.75), p90: percentile(wc, 0.9) },
       h1: { mean: mean(h1), median: median(h1) },
       h2: { mean: mean(h2), median: median(h2), p75: percentile(h2, 0.75) },
       h3: { mean: mean(h3), median: median(h3) },
+      firstSubtitleWordCount: subFirst.length > 0
+        ? { mean: mean(subFirst), median: median(subFirst), p75: percentile(subFirst, 0.75), sample: subFirst.length }
+        : { mean: 0, median: 0, p75: 0, sample: 0 },
+      avgSubtitleWordCount: subAvg.length > 0
+        ? { mean: mean(subAvg), median: median(subAvg), sample: subAvg.length }
+        : { mean: 0, median: 0, sample: 0 },
+      links: { mean: mean(links), median: median(links), p75: percentile(links, 0.75), p90: percentile(links, 0.9) },
       images: { mean: mean(imgs), median: median(imgs), p75: percentile(imgs, 0.75), p90: percentile(imgs, 0.9) },
       videos: { mean: mean(vids), median: median(vids), withVideo: vids.filter(v => v > 0).length, withVideoPct: Math.round((vids.filter(v => v > 0).length / vids.length) * 100) },
       paragraphs: { mean: mean(paras), median: median(paras) },
@@ -103,6 +127,9 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
 
     // Distributions (histogramas)
     const distributions = {
+      titleWordCount: histogram(titleWc, [
+        [0, 4, '≤4'], [5, 7, '5-7'], [8, 10, '8-10'], [11, 13, '11-13'], [14, 18, '14-18'], [19, 99, '≥19'],
+      ]),
       wordCount: histogram(wc, [
         [0, 199, '<200'], [200, 399, '200-399'], [400, 699, '400-699'],
         [700, 999, '700-999'], [1000, 1499, '1000-1499'], [1500, 2499, '1500-2499'],
@@ -110,6 +137,12 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
       ]),
       h2: histogram(h2, [
         [0, 0, '0'], [1, 2, '1-2'], [3, 5, '3-5'], [6, 9, '6-9'], [10, 99, '≥10'],
+      ]),
+      firstSubtitleWordCount: histogram(subFirst, [
+        [0, 3, '≤3'], [4, 6, '4-6'], [7, 10, '7-10'], [11, 15, '11-15'], [16, 99, '≥16'],
+      ]),
+      links: histogram(links, [
+        [0, 0, '0'], [1, 3, '1-3'], [4, 7, '4-7'], [8, 14, '8-14'], [15, 29, '15-29'], [30, 999, '≥30'],
       ]),
       images: histogram(imgs, [
         [0, 0, '0'], [1, 1, '1'], [2, 3, '2-3'], [4, 7, '4-7'], [8, 14, '8-14'], [15, 999, '≥15'],
@@ -130,8 +163,12 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
       .map(([publisher, items]) => ({
         publisher,
         count: items.length,
+        titleWordCount: { mean: mean(items.map(a => a.titleWordCount || 0)) },
         wordCount: { mean: mean(items.map(a => a.wordCount)), median: median(items.map(a => a.wordCount)) },
         h2: { mean: mean(items.map(a => a.h2)) },
+        firstSubtitleWordCount: { mean: mean(items.map(a => a.firstSubtitleWordCount || 0).filter((n: number) => n > 0)) },
+        avgSubtitleWordCount: { mean: mean(items.map(a => a.avgSubtitleWordCount || 0).filter((n: number) => n > 0)) },
+        links: { mean: mean(items.map(a => a.links || 0)) },
         images: { mean: mean(items.map(a => a.images)) },
         videos: { mean: mean(items.map(a => a.videos)), withVideoPct: Math.round((items.filter(a => a.videos > 0).length / items.length) * 100) },
         ampPct: Math.round((items.filter(a => a.amp).length / items.length) * 100),
@@ -163,22 +200,32 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
       .filter(c => c.count >= 2)
       .sort((a, b) => b.count - a.count);
 
-    // Top winners (score Discover más alto)
-    const topWinners = [...all]
+    // Top winners (score Discover más alto). Aquí SÍ incluimos embeds para
+    // que el redactor pueda ver YouTube/TikTok como casos sueltos.
+    const topWinners = [...allAudited]
       .sort((a, b) => (b.scoreSnapshot || 0) - (a.scoreSnapshot || 0))
       .slice(0, 20)
       .map(a => ({
         url: a.url, title: a.title, publisher: a.publisher,
         scoreSnapshot: a.scoreSnapshot, category: a.category,
-        wordCount: a.wordCount, h2: a.h2, h3: a.h3, images: a.images, videos: a.videos, amp: a.amp,
+        titleWordCount: a.titleWordCount,
+        wordCount: a.wordCount, h2: a.h2, h3: a.h3,
+        firstSubtitleWordCount: a.firstSubtitleWordCount,
+        links: a.links,
+        images: a.images, videos: a.videos, amp: a.amp,
       }));
 
-    // Rows (drilldown completo)
-    const rows = all
+    // Rows (drilldown completo). Incluye embeds para inspección.
+    const rows = allAudited
       .map(a => ({
         url: a.url, title: a.title, publisher: a.publisher, category: a.category,
+        isEmbed: isEmbed(a),
         scoreSnapshot: a.scoreSnapshot, positionSnapshot: a.positionSnapshot,
+        titleWordCount: a.titleWordCount,
         wordCount: a.wordCount, h1: a.h1, h2: a.h2, h3: a.h3,
+        firstSubtitleWordCount: a.firstSubtitleWordCount,
+        avgSubtitleWordCount: a.avgSubtitleWordCount,
+        links: a.links,
         images: a.images, videos: a.videos, paragraphs: a.paragraphs,
         lists: a.lists, amp: a.amp, bodySource: a.bodySource || 'full',
         auditedAt: a.auditedAt,
