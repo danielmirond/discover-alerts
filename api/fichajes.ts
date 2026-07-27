@@ -21,27 +21,32 @@ import { loadState, getState } from '../src/state/store.js';
 // ── Diccionarios ─────────────────────────────────────────────────────────
 
 // Confirmado: hecho consumado o inminente en horas
+// (evitamos keywords demasiado cortas o ambiguas tipo 'es del', 'oficial'
+// suelto, 'contrato con' — meten mucho ruido)
 const CONFIRMED = [
   // ES
-  'oficial', 'ficha por', 'ficha con', 'ya es del', 'nuevo jugador del',
-  'es del', 'nueva incorporación', 'presentación oficial', 'presentado como',
-  'firma con', 'firma por', 'firma su nuevo contrato', 'contrato con',
+  'ficha por', 'ficha con', 'ya es del', 'ya es nuevo', 'nuevo jugador del',
+  'nueva incorporación del', 'presentación oficial de', 'presentado como nuevo',
+  'firma con el', 'firma por el', 'firma su nuevo contrato con',
   'revision medica', 'revisión médica', 'pasa reconocimiento medico',
-  'anuncio oficial', 'confirmado el fichaje', 'confirmado como nuevo',
-  'ya luce', 'posa con', 'estampa su firma', 'sella su llegada',
-  'sella su fichaje', 'oficial:', 'traspaso oficial',
+  'anuncio oficial del fichaje', 'confirmado el fichaje', 'confirmado como nuevo',
+  'ya posa con', 'estampa su firma', 'sella su llegada',
+  'sella su fichaje', 'oficial:', 'oficial,', 'traspaso oficial',
+  'fichaje oficial', 'es nuevo jugador', 'nuevo entrenador del',
+  'nueva incorporación',
   // EN
-  'here we go', 'done deal', 'signs for', 'officially joins', 'unveiled',
+  'here we go', 'done deal', 'signs for', 'officially joins', 'unveiled as',
   'completes move to', 'medical done', 'medical completed',
-  'signed a', 'has signed', 'officially announced', 'joins on',
+  'has signed for', 'has signed with', 'officially announced', 'joins on',
+  'joins from', 'new signing',
   // IT
-  'ufficiale', 'firma con', 'firmato', 'nuovo acquisto',
+  'ufficiale:', 'ufficializzato', 'firma con il', 'firmato con', 'nuovo acquisto del',
   // FR
-  'officiel', 'signe avec', 'signe pour', 'officialisé',
+  'officiel :', 'officialisé', 'signe avec le', 'signe pour le',
   // DE
-  'wechselt zu', 'verpflichtet', 'unterschreibt', 'unterzeichnet',
+  'wechselt zu', 'verpflichtet', 'unterschreibt bei', 'unterzeichnet bei',
   // PT
-  'contratação oficial', 'assina com', 'assina pelo', 'oficializa',
+  'contratação oficial', 'assina com o', 'assina pelo', 'oficializa contratação',
 ];
 
 // Avanzado: acuerdo cerrado pero no oficial (medical soon, agreed terms)
@@ -69,35 +74,41 @@ const ADVANCED = [
   'acordo fechado', 'acordo alcançado', 'próximo de fechar',
 ];
 
-// Rumor / interés / sondeo
+// Rumor / interés / sondeo.
+// Palabras como 'objetivo', 'target', 'candidato' solas eran demasiado
+// genéricas (matcheaban titulares de salud, política, etc.). Usamos
+// compuestas donde sea posible.
 const RUMOR = [
   // ES
-  'sondea', 'sondeo', 'primeros contactos', 'primer contacto', 'gusta',
-  'interesado en', 'interés por', 'interés en', 'apunta a',
-  'sigue a', 'sigue al', 'sigue de cerca', 'sigue los pasos',
+  'sondea a', 'sondea al', 'sondeo por', 'primeros contactos con',
+  'primer contacto con', 'primer contacto por',
+  'interesado en fichar', 'interés por fichar', 'interés en el fichaje',
+  'sigue de cerca a', 'sigue de cerca al', 'sigue los pasos de',
   'estudia el fichaje', 'estudia fichar', 'estudia la incorporación',
-  'quiere fichar', 'quiere a', 'quiere al', 'busca fichar',
-  'suena para', 'suena como', 'suena en', 'suena para el',
-  'candidato al banquillo', 'candidato a', 'objetivo', 'objetivo prioritario',
-  'objetivo del', 'objetivo para', 'en el punto de mira',
-  'en la agenda', 'en el radar', 'entra en la agenda',
-  'oferta por', 'ofrece por', 'prepara oferta', 'lanza oferta',
-  'presentará oferta', 'ofrecen', 'oferta rechazada',
-  'rumor', 'rumores', 'se rumorea',
-  'entra en escena', 'irrumpe',
+  'quiere fichar a', 'quiere fichar al', 'quiere al jugador', 'busca fichar',
+  'suena para el', 'suena para fichar', 'suena como nuevo', 'suena en el',
+  'candidato al banquillo', 'candidato a fichar',
+  'objetivo prioritario del', 'objetivo del', 'gran objetivo del',
+  'objetivo para el ataque', 'objetivo para reforzar',
+  'en el punto de mira del', 'en la agenda del', 'en el radar del',
+  'entra en la agenda',
+  'oferta por', 'ofrece por', 'prepara oferta por', 'lanza oferta por',
+  'presentará oferta', 'oferta rechazada', 'rechaza oferta',
+  'se rumorea', 'rumor de fichaje', 'rumor sobre el fichaje',
   // EN
-  'linked with', 'target', 'targets', 'wants to sign', 'want to sign',
-  'wanted by', 'in for', 'monitoring', 'interested in', 'in the running',
+  'linked with', 'linked to', 'transfer target', 'summer target',
+  'winter target', 'top target', 'wants to sign', 'want to sign',
+  'wanted by', 'monitoring', 'interested in signing',
   'bid rejected', 'bid accepted', 'submitted a bid', 'made a bid',
-  'transfer target', 'summer target', 'winter target', 'top target',
   // IT
-  'obiettivo', 'sondaggio', 'piace', 'nel mirino', 'seguito da',
+  'obiettivo del', 'obiettivo di mercato', 'sondaggio del', 'piace al',
+  'nel mirino del', 'seguito dal',
   // FR
-  'piste', 'cible', 'suit de près', 'intéresse', 'intérêt pour',
+  'piste du', 'cible du', 'suit de près', 'intéresse le', 'intérêt pour',
   // DE
-  'im visier', 'interesse an', 'wunschspieler',
+  'im visier von', 'interesse an', 'wunschspieler',
   // PT
-  'sondagem', 'interessa', 'olho em', 'agrada',
+  'sondagem do', 'interessa ao', 'olho em', 'agrada ao',
 ];
 
 // Contexto de movimiento
@@ -124,6 +135,11 @@ const MOVE_RENEWAL_HINTS = [
 // Contexto deportivo (para SOFT keywords)
 const SPORT_CONTEXT_RE = /\b(futbol|fútbol|football|soccer|liga|laliga|champions|jugador|jugadora|seleccionador|entrenador|estadio|partido|gol|goles|delantero|delantera|mediocampista|centrocampista|centrocampo|portero|guardameta|defensa|fc |real madrid|barcelona|atletico|athletic|betis|sevilla|valencia|villarreal|man united|manchester|arsenal|liverpool|chelsea|tottenham|city|psg|bayern|inter|milan|juventus|napoli|serie a|premier league|bundesliga|ligue 1|ligue1|europa league|conference)\b/;
 const URL_SPORT_CONTEXT_RE = /\/(futbol|football|soccer|fichajes|transfer|transfers|mercato|mercado|calciomercato|premier|laliga|champions|serie-?a|bundesliga|ligue-?1)(\/|-|$)/;
+
+// Blacklist: si el titular contiene alguno de estos términos, descartamos
+// el hit — cubre casos de fichajes matcheados dentro de contexto NO editorial
+// de mercado (salud, política, sucesos, virales, entrevistas retro…).
+const BLACKLIST_RE = /\b(padre de|madre de|hijo de|urologo|urólogo|entrenador personal|salud|fallece|muere|muerte|funeral|hospital|denuncia|robaron|robado|cárcel|carcel|prision|prisión|tribunal|juicio|acusado|abogado|abogados|declara ante|declaraciones|entrevista con|entrevista a|viral|voltou a viralizar|se hace viral|meme|memes|humor|opinión|opinion|editorial)\b/;
 
 function normalize(s: string): string {
   return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
@@ -153,6 +169,10 @@ function detectHit(title: string, url: string): Hit | null {
   // Requerir contexto deportivo para minimizar falsos positivos
   const hasSportCtx = SPORT_CONTEXT_RE.test(t) || URL_SPORT_CONTEXT_RE.test(u);
   if (!hasSportCtx) return null;
+
+  // Descartar si el titular pertenece a contextos NO editoriales de mercado
+  // (salud, política, sucesos, virales, entrevistas retro…)
+  if (BLACKLIST_RE.test(t)) return null;
 
   // Precedencia: confirmed > advanced > rumor
   let intensity: Intensity | null = null;
