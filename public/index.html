@@ -154,6 +154,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     verticalHidden.add('produccion-discover');
     verticalHidden.add('mundial');
     verticalHidden.add('content-audit');
+    verticalHidden.add('fichajes');
   }
   const navs = [
     { id: 'feed', label: 'Feed en vivo', count: counts.feed },
@@ -173,6 +174,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'patrones-categoria', label: 'Patrones · Categoría' },
     { id: 'datacategoria', label: 'Datacategoría' },
     { id: 'mundial', label: 'Mundial' },
+    { id: 'fichajes', label: 'Fichajes' },
     { id: 'content-audit', label: 'Content audit' },
     { id: 'auditor', label: 'Auditor titular' },
     { id: 'auditor-texto', label: 'Audita texto' },
@@ -1057,6 +1059,12 @@ function App() {
       'Mundial · cobertura cross-source',
       'todo lo que matchea con World Cup / Mundial / Selección en titulares + URL',
       <MundialView />
+    );
+  } else if (activeNav === 'fichajes') {
+    body = viewSinglePanel(
+      'Fichajes · rumores y transfers cross-source',
+      'clasifica cada hit por intensidad (rumor / avanzado / confirmado) y movimiento (entrada / salida / renovación)',
+      <FichajesView />
     );
   } else if (activeNav === 'content-audit') {
     body = viewSinglePanel(
@@ -2041,6 +2049,236 @@ function ContentAuditView() {
           </table>
           </div>
         </div>
+      )}
+    </div>
+  );
+}
+
+function FichajesView() {
+  const [st, setSt] = useState({ loading: true, data: null, error: null });
+  const [source, setSource] = useState('discover'); // discover | rss | international
+  const [intensity, setIntensity] = useState('all'); // all | confirmed | advanced | rumor
+  const [movement, setMovement] = useState('all');   // all | in | out | renewal
+  const { imp, addNews } = useImports();
+  const isImported = (id) => imp.news.some(n => n.id === id);
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/fichajes', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(d => alive && setSt({ loading: false, data: d, error: null }))
+      .catch(e => alive && setSt({ loading: false, data: null, error: e.message }));
+    return () => { alive = false; };
+  }, []);
+
+  if (st.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando…</div>;
+  if (st.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {st.error}</div>;
+  const d = st.data || {};
+  const sum = d.summary || {};
+
+  const filterList = (arr) => (arr || []).filter(h => {
+    if (intensity !== 'all' && h.intensity !== intensity) return false;
+    if (movement !== 'all' && h.movement !== movement) return false;
+    return true;
+  });
+
+  const intensityColor = (i) => i === 'confirmed' ? 'var(--danger)' : i === 'advanced' ? 'var(--warn)' : 'var(--ink-3)';
+  const intensityLabel = { confirmed: 'HERE WE GO', advanced: 'ACUERDO', rumor: 'RUMOR' };
+  const movementIcon = { in: '↗ FICHA', out: '↘ SALE', renewal: '↻ RENUEVA', unknown: '· —' };
+  const movementColor = (m) => m === 'in' ? 'var(--accent)' : m === 'out' ? 'var(--danger)' : m === 'renewal' ? 'var(--ok)' : 'var(--ink-4)';
+
+  const importBtn = (item) => {
+    const id = `news::fichaje::${item.url || item.link}`;
+    const imported = isImported(id);
+    return (
+      <button onClick={() => addNews({
+        id, kind: 'news', country: item.country || 'ES',
+        countryLabel: item.country || 'Fichajes',
+        title: item.title, url: item.url || item.link,
+        domain: item.domain || '',
+        category: `Fichaje · ${item.intensity} · ${item.movement}`,
+        audienceScore: item.score || 0, maxScore: item.score || 0, hoursInFeed: 0,
+      })} disabled={imported}
+        title={imported ? 'Ya importado' : 'Importar'}
+        style={{
+          cursor: imported ? 'default' : 'pointer',
+          fontFamily: 'var(--mono)', fontSize: 10, padding: '0 6px',
+          background: imported ? 'var(--ok)' : 'transparent',
+          color: imported ? 'var(--paper)' : 'var(--accent)',
+          border: `1px solid ${imported ? 'var(--ok)' : 'var(--accent)'}`,
+          lineHeight: 1.4, marginLeft: 6,
+        }}>
+        {imported ? '✓' : '+'}
+      </button>
+    );
+  };
+
+  const sourceTabs = [
+    { id: 'discover', label: 'Discover ES', count: sum.pages },
+    { id: 'rss', label: 'RSS + Sitemap', count: sum.articles },
+    { id: 'international', label: 'Cross-país', count: sum.internationalPages },
+  ];
+
+  const badge = (h) => (
+    <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
+      <span style={{ fontFamily: 'var(--mono)', fontSize: 9, padding: '1px 5px', background: intensityColor(h.intensity), color: 'var(--paper)', fontWeight: 700, letterSpacing: '.03em' }}>
+        {intensityLabel[h.intensity]}
+      </span>
+      <span style={{ fontFamily: 'var(--mono)', fontSize: 9, color: movementColor(h.movement), fontWeight: 700 }}>
+        {movementIcon[h.movement]}
+      </span>
+    </span>
+  );
+
+  return (
+    <div>
+      {/* Stats top */}
+      <div style={{ display: 'flex', gap: 14, padding: '8px 12px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 12, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', flexWrap: 'wrap', alignItems: 'baseline' }}>
+        <span><strong style={{ color: 'var(--ink)' }}>{sum.total || 0}</strong> hits totales</span>
+        <span style={{ color: intensityColor('confirmed') }}><strong>{sum.byIntensity?.confirmed || 0}</strong> confirmed</span>
+        <span style={{ color: intensityColor('advanced') }}><strong>{sum.byIntensity?.advanced || 0}</strong> avanzados</span>
+        <span style={{ color: intensityColor('rumor') }}><strong>{sum.byIntensity?.rumor || 0}</strong> rumores</span>
+        <span style={{ color: 'var(--accent)' }}><strong>{sum.byMovement?.in || 0}</strong> ↗ entradas</span>
+        <span style={{ color: 'var(--danger)' }}><strong>{sum.byMovement?.out || 0}</strong> ↘ salidas</span>
+        <span style={{ color: 'var(--ok)' }}><strong>{sum.byMovement?.renewal || 0}</strong> ↻ renovaciones</span>
+        <span style={{ marginLeft: 'auto', color: 'var(--ink-4)' }}>ventana {d.windowHours}h</span>
+      </div>
+
+      {/* Keywords + publishers */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 14 }}>
+        <div>
+          <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>Keywords activas<span className="bar"></span><span className="meta">{(d.keywordsTop || []).length}</span></div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            {(d.keywordsTop || []).map(k => (
+              <span key={k.keyword} style={{ display: 'inline-block', padding: '3px 8px', fontFamily: 'var(--mono)', fontSize: 11, background: 'var(--paper-3)', color: 'var(--ink)', border: '1px solid var(--rule)' }}>
+                {k.keyword} <strong style={{ color: 'var(--accent)' }}>×{k.count}</strong>
+              </span>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>Publishers cubriendo<span className="bar"></span><span className="meta">{(d.publisherSummary || []).length}</span></div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            {(d.publisherSummary || []).slice(0, 14).map(p => (
+              <span key={p.domain} style={{ display: 'inline-block', padding: '3px 8px', fontFamily: 'var(--mono)', fontSize: 11, background: 'var(--paper-3)', color: 'var(--ink)', border: '1px solid var(--rule)' }}>
+                {p.domain} <strong style={{ color: 'var(--accent)' }}>{p.count}</strong>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Filtros */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {sourceTabs.map(t => (
+            <span key={t.id} onClick={() => setSource(t.id)}
+              style={{ cursor: 'pointer', padding: '4px 12px', fontFamily: 'var(--mono)', fontSize: 11, border: '1px solid var(--rule)', background: source === t.id ? 'var(--accent)' : 'transparent', color: source === t.id ? '#fff' : 'var(--ink)' }}>
+              {t.label} {typeof t.count === 'number' && <strong style={{ opacity: 0.8 }}>{t.count}</strong>}
+            </span>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 4, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>
+          intensidad:
+          {['all', 'confirmed', 'advanced', 'rumor'].map(v => (
+            <span key={v} onClick={() => setIntensity(v)} style={{ cursor: 'pointer', padding: '2px 6px', border: '1px solid var(--rule)', background: intensity === v ? 'var(--ink)' : 'transparent', color: intensity === v ? 'var(--paper)' : 'var(--ink)' }}>{v}</span>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 4, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>
+          movim.:
+          {['all', 'in', 'out', 'renewal'].map(v => (
+            <span key={v} onClick={() => setMovement(v)} style={{ cursor: 'pointer', padding: '2px 6px', border: '1px solid var(--rule)', background: movement === v ? 'var(--ink)' : 'transparent', color: movement === v ? 'var(--paper)' : 'var(--ink)' }}>{v}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Listas por source */}
+      {source === 'discover' && (
+        (filterList(d.matchedPages).length === 0) ? (
+          <div style={{ padding: 14, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin pages Discover que matcheen.</div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+            {filterList(d.matchedPages).map(p => (
+              <div key={p.url} style={{ border: '1px solid var(--rule)', background: 'var(--paper)', borderLeft: `3px solid ${intensityColor(p.intensity)}` }}>
+                {p.image
+                  ? <img src={p.image} alt="" style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block', borderBottom: '1px solid var(--rule)' }} />
+                  : <div style={{ width: '100%', aspectRatio: '16/9', borderBottom: '1px dashed var(--rule-2)', display: 'grid', placeItems: 'center', color: 'var(--ink-4)', fontFamily: 'var(--mono)', fontSize: 10 }}>sin imagen</div>}
+                <div style={{ padding: '8px 10px' }}>
+                  <div style={{ marginBottom: 4 }}>{badge(p)}</div>
+                  <a href={p.url} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)', textDecoration: 'none', fontSize: 13, fontWeight: 500, lineHeight: 1.3, display: 'block' }}>
+                    {p.title}
+                  </a>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginTop: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>{(p.domain || '').replace(/^www\./, '')} · #{p.position} · s{p.score}</span>
+                    {importBtn(p)}
+                  </div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--accent)', marginTop: 2 }}>kw: {p.keyword}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {source === 'rss' && (
+        (filterList(d.matchedArticles).length === 0) ? (
+          <div style={{ padding: 14, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin artículos RSS/sitemap.</div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12, tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: 130 }} />
+              <col style={{ width: 110 }} />
+              <col />
+              <col style={{ width: 100 }} />
+              <col style={{ width: 30 }} />
+            </colgroup>
+            <tbody>
+              {filterList(d.matchedArticles).map((a, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                  <td style={{ padding: '5px 6px' }}>{badge(a)}</td>
+                  <td style={{ padding: '5px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.domain}</td>
+                  <td style={{ padding: '5px 6px', overflow: 'hidden' }}>
+                    <a href={a.link} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)', textDecoration: 'none', display: 'block', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={a.title}>{a.title}</a>
+                  </td>
+                  <td style={{ padding: '5px 6px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--accent)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.keyword}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'center' }}>{importBtn(a)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
+      )}
+
+      {source === 'international' && (
+        (filterList(d.internationalHits).length === 0) ? (
+          <div style={{ padding: 14, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-4)' }}>Sin hits internacionales.</div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12, tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: 40 }} />
+              <col style={{ width: 130 }} />
+              <col />
+              <col style={{ width: 50 }} />
+              <col style={{ width: 100 }} />
+              <col style={{ width: 30 }} />
+            </colgroup>
+            <tbody>
+              {filterList(d.internationalHits).map((p, i) => (
+                <tr key={p.url + i} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                  <td style={{ padding: '5px 6px', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>{p.country}</td>
+                  <td style={{ padding: '5px 6px' }}>{badge(p)}</td>
+                  <td style={{ padding: '5px 6px', overflow: 'hidden' }}>
+                    <a href={p.url} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)', textDecoration: 'none', display: 'block', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={p.title}>{p.title}</a>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(p.domain || '').replace(/^www\./, '')}</div>
+                  </td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>s{p.score}</td>
+                  <td style={{ padding: '5px 6px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--accent)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.keyword}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'center' }}>{importBtn(p)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
       )}
     </div>
   );
