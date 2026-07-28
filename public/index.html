@@ -155,6 +155,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     verticalHidden.add('mundial');
     verticalHidden.add('content-audit');
     verticalHidden.add('fichajes');
+    verticalHidden.add('weekly-sports');
   }
   const navs = [
     { id: 'feed', label: 'Feed en vivo', count: counts.feed },
@@ -176,6 +177,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'mundial', label: 'Mundial' },
     { id: 'fichajes', label: 'Fichajes' },
     { id: 'content-audit', label: 'Content audit' },
+    { id: 'weekly-sports', label: 'Análisis semanal' },
     { id: 'auditor', label: 'Auditor titular' },
     { id: 'auditor-texto', label: 'Audita texto' },
     { id: 'produccion-discover', label: 'Producción / Discover' },
@@ -1065,6 +1067,12 @@ function App() {
       'Fichajes · rumores y transfers cross-source',
       'clasifica cada hit por intensidad (rumor / avanzado / confirmado) y movimiento (entrada / salida / renovación)',
       <FichajesView />
+    );
+  } else if (activeNav === 'weekly-sports') {
+    body = viewSinglePanel(
+      'Análisis semanal · patrones y fórmulas de titulados /Sports',
+      'agregado 7d sobre state.contentAudits: n-gramas + fórmulas de titular + estructura del contenido + comparativa vs semana anterior',
+      <WeeklySportsView />
     );
   } else if (activeNav === 'content-audit') {
     body = viewSinglePanel(
@@ -2048,6 +2056,244 @@ function ContentAuditView() {
             </tbody>
           </table>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WeeklySportsView() {
+  const [st, setSt] = useState({ loading: true, data: null, error: null });
+  const [section, setSection] = useState('resumen'); // resumen | ngramas | formulas | dias | publishers
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/weekly-sports-analysis', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(d => alive && setSt({ loading: false, data: d, error: null }))
+      .catch(e => alive && setSt({ loading: false, data: null, error: e.message }));
+    return () => { alive = false; };
+  }, []);
+
+  if (st.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando…</div>;
+  if (st.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {st.error}</div>;
+  const d = st.data || {};
+
+  if (!d.weekly) {
+    return (
+      <div style={{ padding: 20, fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-4)', background: 'var(--paper-3)', border: '1px dashed var(--rule)', textAlign: 'center' }}>
+        {d.note || 'Sin datos en los últimos 7 días.'}
+        <br /><br />
+        <span style={{ color: 'var(--ink-3)' }}>Lánzalo desde GitHub Actions: <code>workflow_dispatch</code> de <strong>[Sport] Content Audit Poll</strong></span>
+      </div>
+    );
+  }
+
+  const w = d.weekly;
+  const p = d.previous;
+  const deltas = d.deltas || {};
+
+  const deltaBadge = (val) => {
+    if (val == null) return null;
+    const color = val > 0 ? 'var(--ok)' : val < 0 ? 'var(--danger)' : 'var(--ink-4)';
+    const sign = val > 0 ? '+' : '';
+    return <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color, marginLeft: 6 }}>{sign}{val}% vs prev</span>;
+  };
+
+  const tabs = [
+    { id: 'resumen', label: 'Resumen' },
+    { id: 'ngramas', label: `N-gramas titulares (${(d.ngrams || []).length})` },
+    { id: 'formulas', label: `Fórmulas (${(d.formulas || []).length})` },
+    { id: 'dias', label: `Por día (${(d.byDay || []).length})` },
+    { id: 'publishers', label: `Publishers (${(d.byPublisher || []).length})` },
+  ];
+
+  const renderHist = (label, data, color = 'var(--accent)') => {
+    if (!data || data.length === 0) return null;
+    const max = Math.max(...data.map(x => x.value), 1);
+    return (
+      <div>
+        <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>{label}<span className="bar"></span></div>
+        {data.map((x, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '2px 0', fontFamily: 'var(--mono)', fontSize: 11 }}>
+            <span style={{ width: 100, color: 'var(--ink-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{x.label}</span>
+            <span style={{ flex: 1, height: 10, background: 'var(--paper-3)', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${(x.value / max) * 100}%`, background: color }}></span>
+            </span>
+            <span style={{ width: 40, textAlign: 'right', color: 'var(--ink)' }}>{x.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {/* Cabecera */}
+      <div style={{ padding: '8px 12px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 14, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>
+        <span>
+          Ventana <strong style={{ color: 'var(--ink)' }}>7d</strong> ·
+          {' '}<strong style={{ color: 'var(--ink)' }}>{d.sample}</strong> pages · comparativa vs
+          {' '}<strong style={{ color: 'var(--ink)' }}>{d.previousSample}</strong> pages semana previa
+        </span>
+        <span style={{ color: 'var(--ink-4)' }}>último poll: {d.lastPoll ? new Date(d.lastPoll).toLocaleString('es-ES') : '(nunca)'}</span>
+      </div>
+
+      {/* Sub-tabs */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
+        {tabs.map(t => (
+          <span key={t.id} onClick={() => setSection(t.id)}
+            style={{ cursor: 'pointer', padding: '4px 12px', fontFamily: 'var(--mono)', fontSize: 11, border: '1px solid var(--rule)', background: section === t.id ? 'var(--accent)' : 'transparent', color: section === t.id ? '#fff' : 'var(--ink)' }}>
+            {t.label}
+          </span>
+        ))}
+      </div>
+
+      {section === 'resumen' && (
+        <div>
+          {/* Stat cards con Δ vs previous */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 18 }}>
+            {[
+              { label: 'Word count cuerpo', main: w.wordCount.mean, sub: `med ${w.wordCount.median} · p75 ${w.wordCount.p75}`, delta: deltas.wordCount, color: 'var(--accent)' },
+              { label: 'Palabras titular', main: w.titleWordCount.mean, sub: `med ${w.titleWordCount.median} · p75 ${w.titleWordCount.p75}`, delta: deltas.titleWordCount, color: 'var(--accent)' },
+              { label: 'Subtítulos (H2)', main: w.h2.mean, sub: `med ${w.h2.median} · p75 ${w.h2.p75}`, delta: deltas.h2, color: 'var(--ok)' },
+              { label: 'Amplitud 1er subt.', main: w.firstSubtitleWordCount.mean, sub: `med ${w.firstSubtitleWordCount.median} · n=${w.firstSubtitleWordCount.sample}`, delta: deltas.firstSubtitleWordCount, color: 'var(--ok)' },
+              { label: 'Enlaces externos', main: w.links.mean, sub: `med ${w.links.median} · p75 ${w.links.p75}`, delta: deltas.links, color: 'var(--ink-2)' },
+              { label: 'Imágenes', main: w.images.mean, sub: `med ${w.images.median} · p75 ${w.images.p75}`, delta: deltas.images, color: 'var(--warn)' },
+              { label: 'Videos', main: `${w.videos.withVideoPct}%`, sub: `${w.videos.withVideoPct}% pages · μ ${w.videos.mean}`, delta: null, color: 'var(--danger)' },
+              { label: 'AMP', main: `${w.ampPct}%`, sub: `${w.ampPct}% pages`, delta: deltas.ampPct, color: 'var(--ink-3)' },
+            ].map((c, i) => (
+              <div key={i} style={{ padding: 10, background: 'var(--paper-3)', borderLeft: `3px solid ${c.color}` }}>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>{c.label}</div>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 18, color: 'var(--ink)', fontWeight: 700, marginTop: 4 }}>μ {c.main}</div>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', marginTop: 2 }}>{c.sub}{deltaBadge(c.delta)}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Top 5 n-gramas y fórmulas como resumen rápido */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 18 }}>
+            <div>
+              <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>Top n-gramas de titular esta semana<span className="bar"></span><span className="meta">{(d.ngrams || []).length}</span></div>
+              {(d.ngrams || []).slice(0, 8).map(n => (
+                <div key={n.ngram} style={{ padding: '4px 8px', borderBottom: '1px solid var(--rule-2)', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)' }}>{n.ngram}</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--accent)', fontWeight: 700 }}>×{n.count}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>Top fórmulas de titulado<span className="bar"></span><span className="meta">{(d.formulas || []).length}</span></div>
+              {(d.formulas || []).slice(0, 8).map(f => (
+                <div key={f.id} style={{ padding: '4px 8px', borderBottom: '1px solid var(--rule-2)', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)' }}>{f.label}</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--warn)', fontWeight: 700 }}>×{f.count} ({f.pct}%)</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {section === 'ngramas' && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 6 }}>
+          {(d.ngrams || []).map(n => (
+            <div key={n.ngram} style={{ padding: '6px 10px', borderLeft: '3px solid var(--accent)', background: 'var(--paper-3)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--ink)', fontWeight: 600 }}>{n.ngram}</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--accent)', fontWeight: 700 }}>×{n.count}</span>
+              </div>
+              {(n.examples || []).slice(0, 2).map((ex, i) => (
+                <div key={i} style={{ fontFamily: 'var(--sans)', fontSize: 11, color: 'var(--ink-3)', marginTop: 2, fontStyle: 'italic', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>· {ex}</div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {section === 'formulas' && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 6 }}>
+          {(d.formulas || []).map(f => (
+            <div key={f.id} style={{ padding: '8px 10px', borderLeft: '3px solid var(--warn)', background: 'var(--paper-3)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--ink)', fontWeight: 600 }}>{f.label}</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--warn)', fontWeight: 700 }}>×{f.count} · {f.pct}% del total</span>
+              </div>
+              {(f.examples || []).slice(0, 3).map((ex, i) => (
+                <div key={i} style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink-3)', marginTop: 3, lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>· {ex}</div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {section === 'dias' && (
+        <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12, minWidth: 780 }}>
+          <thead>
+            <tr style={{ borderBottom: '2px solid var(--ink)' }}>
+              <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Día</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>n</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Words μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Tit μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>H2 μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Subt μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Links μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Img μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Score μ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(d.byDay || []).map(x => (
+              <tr key={x.day} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                <td style={{ padding: '5px 6px', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)' }}>{x.day}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>{x.sample}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.wordCount}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.titleWordCount}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.h2}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.firstSubtitleWordCount || '—'}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.links}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.images}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--accent)', fontWeight: 700 }}>{x.avgDiscoverScore}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        </div>
+      )}
+
+      {section === 'publishers' && (
+        <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12, minWidth: 780 }}>
+          <thead>
+            <tr style={{ borderBottom: '2px solid var(--ink)' }}>
+              <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Publisher</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>n</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Tit μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Words μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>H2 μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Subt μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Links μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Img μ</th>
+              <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Score μ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(d.byPublisher || []).map(x => (
+              <tr key={x.publisher} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                <td style={{ padding: '5px 6px', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)', fontWeight: 600 }}>{x.publisher}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>{x.count}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.titleWordCount}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.wordCount}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.h2}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.firstSubtitleWordCount || '—'}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.links}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink)' }}>{x.images}</td>
+                <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--accent)', fontWeight: 700 }}>{x.avgDiscoverScore}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
         </div>
       )}
     </div>
