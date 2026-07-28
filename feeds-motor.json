@@ -1,0 +1,332 @@
+{
+  "feeds": [
+    {
+      "name": "Mundo Deportivo Motor",
+      "url": "https://www.mundodeportivo.com/rss/motor.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo F1",
+      "url": "https://www.mundodeportivo.com/rss/motor/f1.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo MotoGP",
+      "url": "https://www.mundodeportivo.com/rss/motor/motogp.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Mundo Deportivo Motociclismo",
+      "url": "https://www.mundodeportivo.com/rss/motor/motociclismo.xml",
+      "category": "deportivo",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca F1",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/formula1.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca MotoGP",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/motogp.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Rallies",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/rallies.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Dakar",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/dakar.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Coches",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/modelos-coches.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Marca Mas Motor",
+      "url": "https://objetos.estaticos-marca.com/rss/motor/mas-motor.xml",
+      "category": "deportivo",
+      "domain": "marca.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Motor",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/motor/portada/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS F1",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/motor/subsection/formula_1/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Moto",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/motor/subsection/motociclismo/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "AS Mas Motor",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/motor/subsection/mas_motor/",
+      "category": "deportivo",
+      "domain": "as.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport F1",
+      "url": "https://www.sport.es/es/rss/formula-1/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Mundo Motor",
+      "url": "https://www.sport.es/es/rss/mundo-motor/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Motor",
+      "url": "https://www.sport.es/es/rss/motor/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Sport Mas Motor",
+      "url": "https://www.sport.es/es/rss/mas-motor/rss.xml",
+      "category": "deportivo",
+      "domain": "sport.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Motorpasión",
+      "url": "https://feeds.weblogssl.com/motorpasion",
+      "category": "motor",
+      "domain": "motorpasion.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Diariomotor",
+      "url": "https://www.diariomotor.com/feed/",
+      "category": "motor",
+      "domain": "diariomotor.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "FormulaTV",
+      "url": "https://www.formulatv.com/rss/noticias.xml",
+      "category": "entretenimiento",
+      "domain": "formulatv.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Motorpasion",
+      "url": "https://www.motorpasion.com/feedburner.xml",
+      "category": "motor",
+      "domain": "motorpasion.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Motorpasion Moto",
+      "url": "https://www.motorpasionmoto.com/feedburner.xml",
+      "category": "motor",
+      "domain": "motorpasionmoto.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Motor.es",
+      "url": "https://www.motor.es/feed",
+      "category": "motor",
+      "domain": "motor.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Motor16",
+      "url": "https://www.motor16.com/feed/",
+      "category": "motor",
+      "domain": "motor16.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Coches.com Noticias",
+      "url": "https://noticias.coches.com/feed",
+      "category": "motor",
+      "domain": "coches.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "ABC Motor",
+      "url": "https://www.abc.es/rss/feeds/abc_motor.xml",
+      "category": "motor",
+      "domain": "abc.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "20 Minutos Motor",
+      "url": "https://www.20minutos.es/rss/motor/",
+      "category": "motor",
+      "domain": "20minutos.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Autofacil",
+      "url": "https://www.autofacil.es/feed/",
+      "category": "motor",
+      "domain": "autofacil.es",
+      "scope": "nacional"
+    },
+    {
+      "name": "Motorsport ES · all",
+      "url": "https://es.motorsport.com/rss/all/news/",
+      "category": "motor-competicion",
+      "domain": "motorsport.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Motorsport ES · F1",
+      "url": "https://es.motorsport.com/rss/f1/news/",
+      "category": "motor-competicion",
+      "domain": "motorsport.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Motorsport ES · MotoGP",
+      "url": "https://es.motorsport.com/rss/motogp/news/",
+      "category": "motor-competicion",
+      "domain": "motorsport.com",
+      "scope": "nacional"
+    },
+    {
+      "name": "Motorsport EN · all",
+      "url": "https://www.motorsport.com/rss/all/news/",
+      "category": "motor-competicion",
+      "domain": "motorsport.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Motorsport EN · F1",
+      "url": "https://www.motorsport.com/rss/f1/news/",
+      "category": "motor-competicion",
+      "domain": "motorsport.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Motorsport EN · MotoGP",
+      "url": "https://www.motorsport.com/rss/motogp/news/",
+      "category": "motor-competicion",
+      "domain": "motorsport.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Autosport (UK)",
+      "url": "https://www.autosport.com/rss/all/news/",
+      "category": "motor-competicion",
+      "domain": "autosport.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "FormulaPassion (IT)",
+      "url": "https://www.formulapassion.it/feed",
+      "category": "motor-competicion",
+      "domain": "formulapassion.it",
+      "scope": "internacional"
+    },
+    {
+      "name": "GPOne",
+      "url": "https://www.gpone.com/en/rss.xml",
+      "category": "motor-competicion",
+      "domain": "gpone.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Motor1 EN",
+      "url": "https://www.motor1.com/rss/",
+      "category": "motor",
+      "domain": "motor1.com",
+      "scope": "internacional"
+    },
+    {
+      "name": "Autocar (UK)",
+      "url": "https://www.autocar.co.uk/rss",
+      "category": "motor",
+      "domain": "autocar.co.uk",
+      "scope": "internacional"
+    },
+    {
+      "name": "Autocar Sitemap News",
+      "url": "https://www.autocar.co.uk/googlenews.xml",
+      "category": "motor",
+      "domain": "autocar.co.uk",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Diariomotor Sitemap News",
+      "url": "https://www.diariomotor.com/sitemap-news-v3.xml",
+      "category": "motor",
+      "domain": "diariomotor.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Motorpasion Sitemap News",
+      "url": "https://www.motorpasion.com/sitemap_news.xml",
+      "category": "motor",
+      "domain": "motorpasion.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Motorpasionmoto Sitemap News",
+      "url": "https://www.motorpasionmoto.com/sitemap_news.xml",
+      "category": "motor",
+      "domain": "motorpasionmoto.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Mundodeportivo Sitemap News",
+      "url": "https://www.mundodeportivo.com/sitemap-news-v7.xml",
+      "category": "motor",
+      "domain": "mundodeportivo.com",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    },
+    {
+      "name": "Sport Sitemap News",
+      "url": "https://www.sport.es/es/sitemapNews.xml",
+      "category": "motor",
+      "domain": "sport.es",
+      "scope": "nacional",
+      "type": "news-sitemap"
+    }
+  ]
+}

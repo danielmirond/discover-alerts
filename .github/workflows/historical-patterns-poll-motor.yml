@@ -1,0 +1,30 @@
+name: "[Motor] Historical Patterns Poll"
+
+on:
+  schedule:
+    - cron: '45 4 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: historical-patterns-poll-motor
+  cancel-in-progress: true
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production-motor
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --prefer-offline
+      - run: npx tsx src/run-poll.ts historical-patterns
+        env:
+          DISCOVERSNOOP_TOKEN: ${{ secrets.DISCOVERSNOOP_TOKEN }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          DS_CATEGORY_FILTER: '/Autos & Vehicles,/News/Automotive'
