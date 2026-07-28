@@ -51,14 +51,23 @@ const FORMULAS: Array<{ id: string; label: string; re: RegExp }> = [
 ];
 
 function normalizeText(s: string): string {
-  return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return (s || '')
+    // Decode entidades HTML comunes ANTES de normalizar — así "quot" no
+    // aparece como token independiente en los n-gramas.
+    .replace(/&(quot|apos|amp|nbsp|lt|gt);/gi, ' ')
+    .replace(/&#\d+;/g, ' ')
+    // Eliminar cualquier fragmento con pinta de URL
+    .replace(/https?:\/\/\S+/g, ' ')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');
 }
 
 function tokenize(s: string): string[] {
   return normalizeText(s)
     .replace(/[^a-z0-9\s]/g, ' ')
     .split(/\s+/)
-    .filter(w => w.length >= 3 && !STOPWORDS_ES.has(w));
+    .filter(w => w.length >= 3 && !STOPWORDS_ES.has(w) && !NGRAM_BLACKLIST.has(w));
 }
 
 function ngrams(words: string[], n: number): string[] {
@@ -112,8 +121,11 @@ interface AuditEntry {
   category?: string | number;
 }
 
-const EMBED_DOMAINS = new Set(['youtube.com','youtu.be','twitter.com','x.com','tiktok.com','instagram.com']);
+const EMBED_DOMAINS = new Set(['youtube.com','youtu.be','twitter.com','x.com','tiktok.com','instagram.com','threads.com','threads.net','facebook.com','fb.watch','vm.tiktok.com']);
 const isEmbed = (a: AuditEntry) => EMBED_DOMAINS.has((a.publisher || '').replace(/^www\./, '').toLowerCase());
+
+// Palabras basura por artefactos de parsing HTML — descartar en n-gramas
+const NGRAM_BLACKLIST = new Set(['quot','apos','amp','nbsp','https','http','www','com','html']);
 
 function aggregate(items: AuditEntry[]) {
   const wc = items.map(a => a.wordCount);

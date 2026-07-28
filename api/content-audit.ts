@@ -59,7 +59,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     // Dominios que son embeds de video (no contenido editorial). Los
     // mantenemos en rows para drilldown pero NO entran en el summary,
     // distribuciones, byPublisher ni byCategory — sesgaban a la baja.
-    const EMBED_DOMAINS = new Set(['youtube.com', 'youtu.be', 'twitter.com', 'x.com', 'tiktok.com', 'instagram.com']);
+    const EMBED_DOMAINS = new Set(['youtube.com', 'youtu.be', 'twitter.com', 'x.com', 'tiktok.com', 'instagram.com', 'threads.com', 'threads.net', 'facebook.com', 'fb.watch', 'vm.tiktok.com']);
     const isEmbed = (a: any) => EMBED_DOMAINS.has((a.publisher || '').replace(/^www\./, '').toLowerCase());
 
     const allAudited = Object.values(audits).filter((a: any) => !a.error && a.wordCount > 0) as any[];
