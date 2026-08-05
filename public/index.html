@@ -146,15 +146,22 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
   const verticalHidden = instance.vertical
     ? new Set(['sucesos', 'boe', 'cultural', 'aemet'])
     : new Set();
-  // 'Audita texto' e 'Importados' son features internas de la instancia
-  // sport (curso IA ED). En main no se ofrece la pestaña ni se rutea la URL.
+  // Gating por instancia:
+  // - 'mundial' + 'fichajes': sport-only (semántica fútbol/selecciones)
+  // - 'auditor-texto' + 'importados': curso IA ED (sport-only)
+  // - 'produccion-discover': sport-only
+  // - 'content-audit' + 'weekly-sports': cualquier vertical que corra
+  //   content-audit-poll (sport y motor). En main sin poll → ocultos.
+  const isVertical = instance.name === 'sport' || instance.name === 'motor';
   if (instance.name !== 'sport') {
     verticalHidden.add('auditor-texto');
     verticalHidden.add('importados');
     verticalHidden.add('produccion-discover');
     verticalHidden.add('mundial');
-    verticalHidden.add('content-audit');
     verticalHidden.add('fichajes');
+  }
+  if (!isVertical) {
+    verticalHidden.add('content-audit');
     verticalHidden.add('weekly-sports');
   }
   const navs = [
