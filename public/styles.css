@@ -163,6 +163,119 @@ body[data-instance="sport"] .masthead::after {
   font-weight: 700;
 }
 
+/* ============ MOTOR — aspecto motor.es ================================
+ * Paleta motor.es:
+ *   - Azul royal profundo #1E3A8A como base del masthead
+ *   - Naranja motor.es #F58120 como acento (dominio ".es" del logo + CTA)
+ *   - Blanco puro para navegación sobre azul
+ *   - Tipografía italic condensada para wordmark, similar al lock-up del site
+ * Se activa automáticamente cuando body[data-instance="motor"].
+ */
+[data-instance="motor"] {
+  --accent: #F58120;             /* naranja motor.es */
+  --accent-deep: #C55E00;
+  --accent-soft: #FDE8D5;
+  --warn: #F58120;
+  --ok: #0AA84F;
+  --viral: #DC2626;
+  --ink: #0E0E0F;
+  --ink-2: #1A2540;              /* azul motor.es oscuro para textos fuerte */
+  --rule: #F5812020;
+}
+/* Masthead sobre fondo azul royal motor.es */
+body[data-instance="motor"] .masthead {
+  background: linear-gradient(180deg, #1E3A8A 0%, #1B348A 100%);
+  color: #fff;
+  padding-bottom: 0;
+}
+body[data-instance="motor"] .masthead-row,
+body[data-instance="motor"] .datetime {
+  color: #E5EAF5;
+}
+body[data-instance="motor"] .datetime .live {
+  background: #F58120;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+/* Wordmark: "DISCOVER" blanco + ".ALERTS" naranja imitando "motor.es" */
+body[data-instance="motor"] .wordmark {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-transform: lowercase;
+}
+body[data-instance="motor"] .wordmark .dot {
+  background: #F58120;
+}
+/* Nav items en blanco sobre azul, con hover naranja */
+body[data-instance="motor"] .masthead-nav {
+  background: #1B348A;
+  padding: 0 12px;
+}
+body[data-instance="motor"] .nav-item {
+  color: #E5EAF5;
+  border-bottom-color: transparent;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+body[data-instance="motor"] .nav-item:hover { color: #F58120; }
+body[data-instance="motor"] .nav-item.active {
+  color: #fff;
+  border-bottom-color: #F58120;
+  font-weight: 700;
+}
+body[data-instance="motor"] .nav-item .count {
+  background: #F58120;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+/* Banda tipo cintillo con tagline motor */
+body[data-instance="motor"] .masthead::after {
+  content: 'MOTOR + COMPETICIÓN · DISCOVER ES';
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #F58120;
+  padding: 4px 0;
+  text-align: center;
+  font-weight: 700;
+}
+/* Ranking chips en naranja */
+body[data-instance="motor"] .rank,
+body[data-instance="motor"] [data-rank] {
+  background: #F58120;
+  color: #fff;
+  font-weight: 800;
+  padding: 2px 6px;
+  letter-spacing: 0.04em;
+}
+/* Velocity badges */
+body[data-instance="motor"] .velocity.rising  { background: #F58120; color: #fff; }
+body[data-instance="motor"] .velocity.peaking { background: #1E3A8A; color: #fff; font-weight: 800; }
+body[data-instance="motor"] .velocity.fading  { background: #6B7180; color: #fff; opacity: 0.85; }
+body[data-instance="motor"] .velocity.new     { background: var(--viral); color: #fff; }
+/* Titulares con más carácter */
+body[data-instance="motor"] .alert-headline,
+body[data-instance="motor"] h1,
+body[data-instance="motor"] .ent-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+/* Elemento wordmark: renderizar "discover" + "·alerts" como motor.es */
+body[data-instance="motor"] .wordmark::before {
+  content: '';
+}
+
 /* ============ TERMINAL — aspecto tech/data (Bloomberg-ish) ============
  * Tema dark con paleta phosphor amber + cyan, mono dominante, scanlines
  * sutiles. Override de CSS variables existentes, sin reescribir rules.

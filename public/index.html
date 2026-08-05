@@ -196,7 +196,9 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
       <div className="masthead-row">
         <div className="wordmark">
           <span className="dot"></span>
-          DISCOVER<span style={{ color: 'var(--accent)' }}>·</span>ALERTS
+          {instance.name === 'motor'
+            ? <>discover<span style={{ color: 'var(--accent)' }}>.alerts</span></>
+            : <>DISCOVER<span style={{ color: 'var(--accent)' }}>·</span>ALERTS</>}
         </div>
         <div className="datetime">
           <span>{fmtDate.toUpperCase()}</span>
