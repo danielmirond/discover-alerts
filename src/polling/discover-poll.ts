@@ -79,14 +79,18 @@ export async function runDiscoverPoll(): Promise<void> {
 
     // Filtrado opcional por categoría DS para instancias verticales (ej: sport).
     // Acepta prefijos: DS_CATEGORY_FILTER="/Sports" filtra todo /Sports/...
+    // Soporta CSV: "/Sports,/News/Sports" hace match si el nombre empieza por
+    // cualquiera de los prefijos indicados.
     const dsFilter = process.env.DS_CATEGORY_FILTER;
     if (dsFilter && dsFilter.length > 0) {
+      const prefixes = dsFilter.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
       const cnames = await getCategoryNames();
       const matchesFilter = (c: string | number | undefined): boolean => {
         if (c == null) return false;
         const name = typeof c === 'number' ? cnames[c] : c;
         if (!name) return false;
-        return name.toLowerCase().startsWith(dsFilter.toLowerCase());
+        const lower = name.toLowerCase();
+        return prefixes.some(p => lower.startsWith(p));
       };
       const beforePages = pag.length;
       const beforeCats = cat.length;
