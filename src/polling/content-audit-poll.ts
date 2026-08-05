@@ -28,12 +28,25 @@ export interface ContentAuditEntry extends ContentAuditResult {
 const RETENTION_DAYS = 30;
 const TOP_N = 80;
 
-function isSportCategory(c: string | number | undefined): boolean {
-  if (c == null) return true; // pages sin categoría pasan (instancia sport ya filtra a /Sports en discover-poll)
+/** Devuelve los prefijos de categoría a auditar. Si DS_CATEGORY_FILTER está
+ * definido (motor, sport, etc.) usa esos prefijos. Si no, acepta todo.
+ * El discover-poll ya filtra las pages a la categoría de la instancia, así
+ * que este filtro es una red de seguridad extra (por si state.pages tiene
+ * residuos de configuraciones anteriores). */
+function getPrefixes(): string[] | null {
+  const env = process.env.DS_CATEGORY_FILTER;
+  if (env && env.trim()) {
+    return env.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  }
+  return null;
+}
+function isInScope(c: string | number | undefined, prefixes: string[] | null): boolean {
+  if (!prefixes) return true; // sin filter: aceptar todo
+  if (c == null) return true; // page sin categoría → asumimos que discover-poll ya la filtró
   if (typeof c === 'number') return true;
   const lower = String(c).toLowerCase();
   if (lower === '' || lower === '-') return true;
-  return lower.includes('/sports') || lower.startsWith('sports') || lower.includes('/news/sports');
+  return prefixes.some(p => lower.startsWith(p));
 }
 
 export async function runContentAuditPoll(): Promise<void> {
@@ -42,9 +55,10 @@ export async function runContentAuditPoll(): Promise<void> {
   const state = getState() as any;
   const pages = (state.pages || {}) as Record<string, any>;
 
-  // Seleccionar top N pages /Sports vigentes ordenadas por score desc
+  // Seleccionar top N pages en scope (categoría del vertical) ordenadas por score desc
+  const prefixes = getPrefixes();
   const sportPages = Object.entries(pages)
-    .filter(([, p]) => isSportCategory(p.category))
+    .filter(([, p]) => isInScope(p.category, prefixes))
     .map(([url, p]) => ({ url, ...p }))
     .sort((a, b) => (b.score || 0) - (a.score || 0))
     .slice(0, TOP_N);

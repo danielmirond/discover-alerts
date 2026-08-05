@@ -212,7 +212,7 @@ interface LiveViewResponse {
   competitors?: Array<{
     name: string;
     domain: string;
-    kind: 'sport' | 'general';
+    kind: 'sport' | 'general' | 'motor';
     pagesToday: number;
     pages48h: number;
     pagesHistorical: number;
@@ -1546,6 +1546,30 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       // - Main (sin filter): generalistas españoles (los 10 más relevantes en
       //   competencia editorial Discover).
       // Override: COMPETITORS_DOMAINS env var con "name|domain,name|domain,..."
+      const motorList: Array<{ name: string; domain: string; kind: 'motor' }> = [
+        // Especialistas motor ES
+        { name: 'Motor.es', domain: 'motor.es', kind: 'motor' },
+        { name: 'Motorpasion', domain: 'motorpasion.com', kind: 'motor' },
+        { name: 'Diariomotor', domain: 'diariomotor.com', kind: 'motor' },
+        { name: 'Motor16', domain: 'motor16.com', kind: 'motor' },
+        { name: 'Coches.com', domain: 'coches.com', kind: 'motor' },
+        { name: 'Autofacil', domain: 'autofacil.es', kind: 'motor' },
+        { name: 'Autobild ES', domain: 'autobild.es', kind: 'motor' },
+        { name: 'Híbridos y Eléctricos', domain: 'hibridosyelectricos.com', kind: 'motor' },
+        { name: 'Coches Net', domain: 'coches.net', kind: 'motor' },
+        { name: 'Motorpasion Moto', domain: 'motorpasionmoto.com', kind: 'motor' },
+        // Secciones motor de generalistas/deportivos
+        { name: 'Marca Motor', domain: 'marca.com', kind: 'motor' },
+        { name: 'AS Motor', domain: 'as.com', kind: 'motor' },
+        { name: 'ABC Motor', domain: 'abc.es', kind: 'motor' },
+        { name: '20 Minutos Motor', domain: '20minutos.es', kind: 'motor' },
+        // Competición
+        { name: 'Motorsport ES', domain: 'motorsport.com', kind: 'motor' },
+        { name: 'SoyMotor', domain: 'soymotor.com', kind: 'motor' },
+        { name: 'FormulaPassion', domain: 'formulapassion.it', kind: 'motor' },
+        { name: 'GPOne', domain: 'gpone.com', kind: 'motor' },
+        { name: 'Autosport (UK)', domain: 'autosport.com', kind: 'motor' },
+      ];
       const sportList: Array<{ name: string; domain: string; kind: 'sport' }> = [
         { name: 'AS', domain: 'as.com', kind: 'sport' },
         { name: 'MARCA', domain: 'marca.com', kind: 'sport' },
@@ -1589,16 +1613,21 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
       ];
       // Override opcional vía env var
       const override = (process.env.COMPETITORS_DOMAINS || '').trim();
-      let list: Array<{ name: string; domain: string; kind: 'sport' | 'general' }>;
+      let list: Array<{ name: string; domain: string; kind: 'sport' | 'general' | 'motor' }>;
+      const instance = (process.env.INSTANCE_NAME || 'main').toLowerCase();
       if (override) {
         list = override.split(',').map(s => {
           const parts = s.split('|').map(x => (x || '').trim());
           if (parts.length < 2) return null;
           const [name, domain, kind] = parts;
           if (!name || !domain) return null;
-          return { name, domain, kind: (kind === 'sport' ? 'sport' : 'general') };
-        }).filter(Boolean) as Array<{ name: string; domain: string; kind: 'sport' | 'general' }>;
-      } else if (process.env.DS_CATEGORY_FILTER) {
+          const k: 'sport' | 'general' | 'motor' = kind === 'sport' ? 'sport' : kind === 'motor' ? 'motor' : 'general';
+          return { name, domain, kind: k };
+        }).filter(Boolean) as Array<{ name: string; domain: string; kind: 'sport' | 'general' | 'motor' }>;
+      } else if (instance === 'motor') {
+        // Motor: solo publishers motor
+        list = motorList;
+      } else if (instance === 'sport' || process.env.DS_CATEGORY_FILTER?.toLowerCase().includes('/sports')) {
         // Sport: solo deportivos
         list = sportList;
       } else {

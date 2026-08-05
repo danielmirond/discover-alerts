@@ -64,9 +64,17 @@ const COUNTRIES = [
   { code: 'KR', label: 'Corea Sur' },
 ];
 
-/** Categorías que consideramos deportivas (case-insensitive prefix match).
- * Algunos países (US, BR, JP) clasifican deporte bajo /News/Sports en DS. */
-const SPORT_PREFIXES = ['/sports', '/news/sports'];
+/** Prefijos de categoría a incluir (case-insensitive). Se leen de DS_CATEGORY_FILTER
+ * (CSV con prefijos DS). Backward compat: si no hay env, usa /Sports por defecto
+ * para mantener la instancia sport funcionando igual. Motor usa
+ * '/Autos & Vehicles,/Sports/Motor Sports'. */
+function getCategoryPrefixes(): string[] {
+  const env = process.env.DS_CATEGORY_FILTER;
+  if (env && env.trim()) {
+    return env.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  }
+  return ['/sports', '/news/sports'];
+}
 
 let categoryNamesCache: Record<number, string> | null = null;
 async function getCategoryNames(): Promise<Record<number, string>> {
@@ -85,15 +93,15 @@ async function getCategoryNames(): Promise<Record<number, string>> {
   }
 }
 
-function isSportCategory(c: string | number | undefined, names: Record<number, string>): boolean {
+function isTrackedCategory(c: string | number | undefined, names: Record<number, string>, prefixes: string[]): boolean {
   if (c == null) return false;
   const name = typeof c === 'number' ? names[c] : c;
   if (!name) return false;
   const lower = name.toLowerCase();
-  return SPORT_PREFIXES.some(p => lower.startsWith(p));
+  return prefixes.some(p => lower.startsWith(p));
 }
 
-async function fetchOne(code: string, names: Record<number, string>): Promise<InternationalCountrySnap | null> {
+async function fetchOne(code: string, names: Record<number, string>, prefixes: string[]): Promise<InternationalCountrySnap | null> {
   try {
     const [ent, pag] = await Promise.allSettled([
       fetchLiveEntities(code),
@@ -102,9 +110,9 @@ async function fetchOne(code: string, names: Record<number, string>): Promise<In
     const allEnts = ent.status === 'fulfilled' ? (ent.value as DiscoverEntity[]) : [];
     const allPages = pag.status === 'fulfilled' ? (pag.value as DiscoverPage[]) : [];
 
-    // Filtrar pages a /Sports
-    const sportPages = allPages.filter(p => isSportCategory(p.category, names));
-    // Entities permitidas: las que aparecen en sportPages
+    // Filtrar pages a las categorías configuradas del vertical
+    const sportPages = allPages.filter(p => isTrackedCategory(p.category, names, prefixes));
+    // Entities permitidas: las que aparecen en las pages filtradas
     const allowedNames = new Set<string>();
     for (const p of sportPages) {
       const raw = (p.entities as unknown as any[]) || [];
@@ -145,7 +153,9 @@ export async function runInternationalPoll(): Promise<void> {
   await loadState();
   console.log('[intl] Starting international sport poll...');
   const names = await getCategoryNames();
-  const results = await Promise.allSettled(COUNTRIES.map(c => fetchOne(c.code, names)));
+  const prefixes = getCategoryPrefixes();
+  console.log(`[intl] category prefixes: ${prefixes.join(', ')}`);
+  const results = await Promise.allSettled(COUNTRIES.map(c => fetchOne(c.code, names, prefixes)));
   const out: Record<string, InternationalCountrySnap> = {};
   results.forEach((r, i) => {
     if (r.status === 'fulfilled' && r.value) {
