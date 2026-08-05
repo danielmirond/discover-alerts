@@ -157,7 +157,8 @@ function delta(current: number, prev: number): number | null {
 }
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
-  if ((process.env.INSTANCE_NAME || 'main') !== 'sport') {
+  const inst = (process.env.INSTANCE_NAME || 'main').toLowerCase();
+  if (inst !== 'sport' && inst !== 'motor') {
     res.status(404).json({ error: 'not found' });
     return;
   }

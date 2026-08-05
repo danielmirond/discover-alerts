@@ -48,7 +48,9 @@ function histogram(values: number[], buckets: Array<[number, number, string]>): 
 }
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
-  if ((process.env.INSTANCE_NAME || 'main') !== 'sport') {
+  const inst = (process.env.INSTANCE_NAME || 'main').toLowerCase();
+  // Endpoint abierto para verticales que corren content-audit-poll (sport, motor)
+  if (inst !== 'sport' && inst !== 'motor') {
     res.status(404).json({ error: 'not found' });
     return;
   }
