@@ -439,7 +439,7 @@ export async function auditUrl(url: string, timeoutMs = 12_000): Promise<Content
       h1Count,
       h2Count: countTag(body, 'h2'),
       imagesInBody,
-      bodySource: picked.source,
+      bodySource: picked.source || 'full',
     });
 
     return {
