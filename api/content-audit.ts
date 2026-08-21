@@ -102,10 +102,28 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
       bodySrc[src] = (bodySrc[src] || 0) + 1;
     }
 
+    // Encoding score distribución (marco Empty Shelves/Recall)
+    const encScores = all.map(a => a.encodingScore || 0).filter(n => n > 0);
+    const jsonLdOk = all.filter(a => a.jsonLdOk).length;
+    const authorUrlOk = all.filter(a => a.hasAuthorUrl).length;
+    const imageWidthOk = all.filter(a => a.imageWidthOk).length;
+
     const summary = {
       sample: all.length,
       excludedEmbeds: embedCount,
       bodySource: bodySrc,
+      encoding: {
+        scoreMean: encScores.length > 0 ? mean(encScores) : 0,
+        scoreMedian: encScores.length > 0 ? median(encScores) : 0,
+        // Buckets estándar de encoding
+        excellent: encScores.filter(n => n >= 80).length,     // 80-100
+        good: encScores.filter(n => n >= 60 && n < 80).length, // 60-79
+        weak: encScores.filter(n => n >= 40 && n < 60).length, // 40-59
+        broken: encScores.filter(n => n < 40).length,          // <40
+        jsonLdOkPct: all.length > 0 ? Math.round((jsonLdOk / all.length) * 100) : 0,
+        authorUrlOkPct: all.length > 0 ? Math.round((authorUrlOk / all.length) * 100) : 0,
+        imageWidthOkPct: all.length > 0 ? Math.round((imageWidthOk / all.length) * 100) : 0,
+      },
       titleWordCount: titleWc.length > 0
         ? { mean: mean(titleWc), median: median(titleWc), p25: percentile(titleWc, 0.25), p75: percentile(titleWc, 0.75) }
         : { mean: 0, median: 0, p25: 0, p75: 0 },
@@ -215,6 +233,8 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
         firstSubtitleWordCount: a.firstSubtitleWordCount,
         links: a.links,
         images: a.images, videos: a.videos, amp: a.amp,
+        encodingScore: a.encodingScore, encodingIssues: a.encodingIssues,
+        jsonLdOk: a.jsonLdOk, hasAuthorUrl: a.hasAuthorUrl, imageWidthOk: a.imageWidthOk,
       }));
 
     // Rows (drilldown completo). Incluye embeds para inspección.
@@ -230,6 +250,8 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
         links: a.links,
         images: a.images, videos: a.videos, paragraphs: a.paragraphs,
         lists: a.lists, amp: a.amp, bodySource: a.bodySource || 'full',
+        encodingScore: a.encodingScore, encodingIssues: a.encodingIssues,
+        jsonLdOk: a.jsonLdOk, hasAuthorUrl: a.hasAuthorUrl, imageWidthOk: a.imageWidthOk,
         auditedAt: a.auditedAt,
       }))
       .sort((a, b) => (b.scoreSnapshot || 0) - (a.scoreSnapshot || 0));

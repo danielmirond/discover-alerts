@@ -168,12 +168,35 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
       .filter(r => r.production >= 2 || r.discoverHits >= 1)
       .sort((a, b) => b.ratio - a.ratio || b.discoverHits - a.discoverHits);
 
+    // Cruzar con state.contentAudits para "encoded" (marco Empty Shelves).
+    // Una URL producida es "encoded" si su encoding score audit >=60.
+    // Recall_rate real = discoverHits / encoded (no / production).
+    const audits = (s.contentAudits || {}) as Record<string, any>;
+    const encodedByDomain = new Map<string, number>();
+    for (const [, a] of Object.entries(audits)) {
+      if ((a as any).error || (a as any).encodingScore == null) continue;
+      if ((a as any).encodingScore < 60) continue;
+      const dom = extractDomain((a as any).url);
+      if (!dom) continue;
+      encodedByDomain.set(dom, (encodedByDomain.get(dom) || 0) + 1);
+    }
+    for (const r of filtered) {
+      const enc = encodedByDomain.get(r.domain) || 0;
+      (r as any).encoded = enc;
+      // recall_rate: prefer /encoded si tenemos audits, sino /production
+      const denom = enc > 0 ? enc : r.production;
+      (r as any).recallRate = denom > 0 ? Math.round((r.discoverHits / denom) * 1000) / 10 : 0;
+      (r as any).recallDenominator = enc > 0 ? 'encoded' : 'production';
+    }
+
     res.setHeader('Cache-Control', 's-maxage=300');
     res.json({
       windowHours: 24,
       computedAt: new Date().toISOString(),
+      framework: 'Empty Shelves / Recall (arXiv 2602.14080). Encoded = URLs producidas con encoding score audit ≥60. Recall = discover hits. Recall rate = hits / encoded si hay audits, si no / production.',
       totalPublishers: filtered.length,
       totalProduction: rows.reduce((s, r) => s + r.production, 0),
+      totalEncoded: [...encodedByDomain.values()].reduce((s, n) => s + n, 0),
       totalDiscoverHits: rows.reduce((s, r) => s + r.discoverHits, 0),
       rows: filtered,
     });

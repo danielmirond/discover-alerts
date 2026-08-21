@@ -217,6 +217,16 @@ interface LiveViewResponse {
     pages48h: number;
     pagesHistorical: number;
     pagesHistoricalWindow: string;
+    /** DCG (Discounted Cumulative Gain) ponderado por posición Discover.
+     * Suma de 1/log2(pos+1) sobre las pages del competidor. Aparecer #1
+     * pesa exponencialmente más que aparecer #20. */
+    dcg48h?: number;
+    dcgToday?: number;
+    /** Cuota % del DCG total del feed — share of visibility ponderada. */
+    shareDcg48h?: number;
+    shareDcgToday?: number;
+    /** Posición media en Discover cuando aparecen (menor = mejor). */
+    avgPosition?: number | null;
     topCategories: Array<{ name: string; count: number }>;
     topPatterns: Array<{ ngram: string; count: number }>;
     samples: Array<{ url: string; title: string; image?: string; score: number; firstSeen?: string; category?: string }>;
@@ -1653,6 +1663,27 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
         const h = host.toLowerCase().replace(/^(www|amp|m|noticias)\./, '');
         return h === target || h.endsWith('.' + target);
       };
+      // DCG (Discounted Cumulative Gain) weight por posición:
+      // weight = 1 / log2(position + 1)
+      // Una aparición #1 pesa 1.0; una #20 pesa 0.23. Aparecer alto vale
+      // exponencialmente más que aparecer bajo. Métrica estándar en
+      // rankings editoriales (usada por Discovermonitor y otros).
+      const dcgWeight = (pos: number | undefined): number => {
+        const p = typeof pos === 'number' && pos > 0 ? pos : 30;
+        return 1 / Math.log2(p + 1);
+      };
+
+      // Primero: acumulador global de DCG (denominador para share).
+      let totalDcg48h = 0;
+      let totalDcgToday = 0;
+      for (const [, ps] of Object.entries(state.pages || {})) {
+        if (!ps.title) continue;
+        const w = dcgWeight((ps as any).position);
+        totalDcg48h += w;
+        const ts = Date.parse((ps as any).firstSeen || ps.lastUpdated || '');
+        if (ts && ts >= dayMs) totalDcgToday += w;
+      }
+
       return list.map(comp => {
         const matchedPages: Array<{ url: string; ps: any }> = [];
         for (const [url, ps] of Object.entries(state.pages || {})) {
@@ -1668,6 +1699,19 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
           const ts = Date.parse((ps as any).firstSeen || ps.lastUpdated || '');
           return ts && ts >= dayMs;
         }).length;
+        // DCG del competidor: suma ponderada por posición
+        const dcg48h = matchedPages.reduce((acc, { ps }) => acc + dcgWeight((ps as any).position), 0);
+        const dcgToday = matchedPages.reduce((acc, { ps }) => {
+          const ts = Date.parse((ps as any).firstSeen || ps.lastUpdated || '');
+          return (ts && ts >= dayMs) ? acc + dcgWeight((ps as any).position) : acc;
+        }, 0);
+        // Cuota DCG % (share of visibility ponderada)
+        const shareDcg48h = totalDcg48h > 0 ? Math.round((dcg48h / totalDcg48h) * 1000) / 10 : 0;
+        const shareDcgToday = totalDcgToday > 0 ? Math.round((dcgToday / totalDcgToday) * 1000) / 10 : 0;
+        // Posición media (calidad de aparición)
+        const avgPosition = matchedPages.length > 0
+          ? Math.round(matchedPages.reduce((acc, { ps }) => acc + ((ps as any).position || 30), 0) / matchedPages.length)
+          : null;
         // Categorías por count
         const catCount = new Map<string, number>();
         for (const { ps } of matchedPages) {
@@ -1697,7 +1741,15 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
             firstSeen: (ps as any).firstSeen,
             category: getCatName((ps as any).category),
           }));
-        return { name: comp.name, domain: comp.domain, kind: comp.kind, pagesToday, pages48h, pagesHistorical, pagesHistoricalWindow, topCategories, topPatterns, samples };
+        return {
+          name: comp.name, domain: comp.domain, kind: comp.kind,
+          pagesToday, pages48h, pagesHistorical, pagesHistoricalWindow,
+          dcg48h: Math.round(dcg48h * 100) / 100,
+          dcgToday: Math.round(dcgToday * 100) / 100,
+          shareDcg48h, shareDcgToday,
+          avgPosition,
+          topCategories, topPatterns, samples,
+        };
       });
     })(),
 

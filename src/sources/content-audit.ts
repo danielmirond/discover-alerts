@@ -45,6 +45,20 @@ export interface ContentAuditResult {
    * full (fallback con strip de chrome). Permite saber cuántas pages tienen
    * markup semántico vs cuántas caen al fallback ruidoso. */
   bodySource?: 'article' | 'itemprop' | 'main' | 'full';
+  /** Encoding score 0-100 (checklist de elegibilidad Discover).
+   * Marco Empty Shelves / Recall del paper Google Research 2602.14080:
+   *  Encoding = ¿es tu URL elegible para el feed?
+   *  Puntúa AMP, JSON-LD NewsArticle, image ≥1200px, headline OK,
+   *  H1 presente, word count razonable. */
+  encodingScore?: number;
+  /** Issues que faltan para el encoding perfect. */
+  encodingIssues?: string[];
+  /** JSON-LD detectado. */
+  jsonLdOk?: boolean;
+  /** Author URL declarado en JSON-LD (señal author profile Google). */
+  hasAuthorUrl?: boolean;
+  /** Image principal >=1200px (recomendación Discover). */
+  imageWidthOk?: boolean;
   /** Tiempo de fetch en ms (debug). */
   fetchMs: number;
   /** Si algo falló, mensaje. wordCount/etc serán 0. */
@@ -52,6 +66,138 @@ export interface ContentAuditResult {
 }
 
 const UA = 'Mozilla/5.0 (compatible; DiscoverAlertsAuditBot/1.0; +https://discover-alerts.vercel.app)';
+
+/** Extrae y parsea todos los <script type="application/ld+json"> del HTML.
+ * Devuelve array de objetos (algunos publishers meten varios blobs). */
+function extractJsonLd(html: string): any[] {
+  const re = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  const out: any[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html))) {
+    try {
+      const raw = m[1].trim();
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) out.push(...parsed);
+      else out.push(parsed);
+      // Soporta @graph con array de nodes
+      const graph = (parsed as any)?.['@graph'];
+      if (Array.isArray(graph)) out.push(...graph);
+    } catch { /* ignore malformed json-ld */ }
+  }
+  return out;
+}
+
+/** Detecta si algún JSON-LD es NewsArticle/Article y qué campos tiene. */
+function analyzeJsonLd(blobs: any[]) {
+  let hasNewsArticle = false;
+  let hasAuthorUrl = false;
+  let hasDatePublished = false;
+  let hasHeadline = false;
+  let hasImage = false;
+  let imageWidth: number | null = null;
+  for (const b of blobs) {
+    const type = b?.['@type'];
+    const isArticle = type === 'NewsArticle' || type === 'Article' || type === 'ReportageNewsArticle' ||
+      (Array.isArray(type) && type.some((t: string) => /Article/i.test(t)));
+    if (!isArticle) continue;
+    hasNewsArticle = true;
+    if (b.datePublished) hasDatePublished = true;
+    if (b.headline) hasHeadline = true;
+    const author = Array.isArray(b.author) ? b.author[0] : b.author;
+    if (author && (author.url || author.sameAs)) hasAuthorUrl = true;
+    const img = Array.isArray(b.image) ? b.image[0] : b.image;
+    if (img) {
+      hasImage = true;
+      const w = typeof img === 'object' ? (img.width || img.contentWidth) : null;
+      if (w) {
+        const n = typeof w === 'number' ? w : parseInt(String(w).replace(/[^\d]/g, ''), 10);
+        if (!isNaN(n)) imageWidth = Math.max(imageWidth || 0, n);
+      }
+    }
+  }
+  return { hasNewsArticle, hasAuthorUrl, hasDatePublished, hasHeadline, hasImage, imageWidth };
+}
+
+/** Estima el ancho del primer <img> significativo (og:image o el mayor del article). */
+function extractOgImageWidth(html: string): number | null {
+  const og = html.match(/<meta[^>]+property=["']og:image:width["'][^>]+content=["'](\d+)["']/i);
+  if (og) return parseInt(og[1], 10);
+  // Fallback: primer <img width="X"> con X numérico
+  const img = html.match(/<img[^>]+width=["'](\d+)["']/i);
+  if (img) return parseInt(img[1], 10);
+  return null;
+}
+
+/** Calcula encoding_score 0-100 con checklist explícita. */
+function computeEncodingScore(inputs: {
+  amp: boolean;
+  jsonLd: ReturnType<typeof analyzeJsonLd>;
+  ogImageWidth: number | null;
+  wordCount: number;
+  titleWordCount: number;
+  h1Count: number;
+  h2Count: number;
+  imagesInBody: number;
+  bodySource: string;
+}): { score: number; issues: string[]; imageWidthOk: boolean } {
+  const issues: string[] = [];
+  let score = 0;
+
+  // 1. Markup semántico (article/main/itemprop) — 10
+  if (['article', 'itemprop', 'main'].includes(inputs.bodySource)) score += 10;
+  else issues.push('sin markup semántico <article>');
+
+  // 2. JSON-LD NewsArticle presente — 15
+  if (inputs.jsonLd.hasNewsArticle) score += 15;
+  else issues.push('falta JSON-LD NewsArticle');
+
+  // 3. author.url en JSON-LD — 10 (señal Search Profile / autoría reconocida)
+  if (inputs.jsonLd.hasAuthorUrl) score += 10;
+  else if (inputs.jsonLd.hasNewsArticle) issues.push('falta author.url en JSON-LD');
+
+  // 4. datePublished — 5
+  if (inputs.jsonLd.hasDatePublished) score += 5;
+  else if (inputs.jsonLd.hasNewsArticle) issues.push('falta datePublished');
+
+  // 5. headline en JSON-LD — 5
+  if (inputs.jsonLd.hasHeadline) score += 5;
+  else if (inputs.jsonLd.hasNewsArticle) issues.push('falta headline en JSON-LD');
+
+  // 6. image en JSON-LD — 5
+  if (inputs.jsonLd.hasImage) score += 5;
+  else if (inputs.jsonLd.hasNewsArticle) issues.push('falta image en JSON-LD');
+
+  // 7. image ≥1200px (recomendación Discover) — 15
+  const declaredWidth = inputs.jsonLd.imageWidth || inputs.ogImageWidth || 0;
+  const imageWidthOk = declaredWidth >= 1200;
+  if (imageWidthOk) score += 15;
+  else if (declaredWidth > 0) issues.push(`imagen ${declaredWidth}px < 1200px`);
+  else issues.push('no se pudo verificar ancho de imagen');
+
+  // 8. Titular en el rango 40-90 chars aprox (6-12 palabras) — 10
+  if (inputs.titleWordCount >= 6 && inputs.titleWordCount <= 14) score += 10;
+  else if (inputs.titleWordCount > 0) issues.push(`titular ${inputs.titleWordCount} palabras fuera del rango 6-14`);
+
+  // 9. H1 presente exactamente 1 — 5
+  if (inputs.h1Count === 1) score += 5;
+  else if (inputs.h1Count === 0) issues.push('sin H1');
+  else issues.push(`${inputs.h1Count} H1 (debe ser 1)`);
+
+  // 10. AMP o canonical con AMP alt — 5
+  if (inputs.amp) score += 5;
+
+  // 11. Word count razonable (300-2500) — 10
+  if (inputs.wordCount >= 300 && inputs.wordCount <= 2500) score += 10;
+  else if (inputs.wordCount < 300) issues.push(`solo ${inputs.wordCount} palabras (mínimo 300)`);
+  else issues.push(`${inputs.wordCount} palabras (excede 2500)`);
+
+  // 12. ≥1 imagen dentro del cuerpo — 5
+  if (inputs.imagesInBody >= 1) score += 5;
+  else issues.push('sin imágenes en el cuerpo');
+
+  return { score, issues, imageWidthOk };
+}
 
 function stripBlock(html: string, tag: string): string {
   const re = new RegExp(`<${tag}\\b[^>]*>[\\s\\S]*?<\\/${tag}>`, 'gi');
@@ -278,23 +424,46 @@ export async function auditUrl(url: string, timeoutMs = 12_000): Promise<Content
     const avgSubtitleWordCount = h2Texts.length > 0
       ? Math.round(h2Texts.reduce((s, t) => s + countWords(t), 0) / h2Texts.length)
       : 0;
+    // Encoding score (marco Empty Shelves / Recall)
+    const jsonLdBlobs = extractJsonLd(html);
+    const jsonLdAnalysis = analyzeJsonLd(jsonLdBlobs);
+    const ogImageWidth = extractOgImageWidth(html);
+    const imagesInBody = countImages(body);
+    const h1Count = countTag(body, 'h1');
+    const encoding = computeEncodingScore({
+      amp,
+      jsonLd: jsonLdAnalysis,
+      ogImageWidth,
+      wordCount: countWords(bodyText),
+      titleWordCount,
+      h1Count,
+      h2Count: countTag(body, 'h2'),
+      imagesInBody,
+      bodySource: picked.source,
+    });
+
     return {
       ...base,
       title: extractTitle(html),
       bodySource: picked.source,
       titleWordCount,
       wordCount: countWords(bodyText),
-      h1: countTag(body, 'h1'),
+      h1: h1Count,
       h2: countTag(body, 'h2'),
       h3: countTag(body, 'h3'),
       firstSubtitleWordCount,
       avgSubtitleWordCount,
-      images: countImages(body),
+      images: imagesInBody,
       videos: countVideos(body),
       links: countLinks(body),
       paragraphs: countTag(body, 'p'),
       lists: countTag(body, 'ul') + countTag(body, 'ol'),
       amp,
+      encodingScore: encoding.score,
+      encodingIssues: encoding.issues,
+      jsonLdOk: jsonLdAnalysis.hasNewsArticle,
+      hasAuthorUrl: jsonLdAnalysis.hasAuthorUrl,
+      imageWidthOk: encoding.imageWidthOk,
       fetchMs: Date.now() - t0,
     };
   } catch (err: any) {

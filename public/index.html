@@ -1900,6 +1900,18 @@ function ContentAuditView() {
                 p: `article ${s.bodySource?.article || 0} · itemprop ${s.bodySource?.itemprop || 0} · main ${s.bodySource?.main || 0} · full ${s.bodySource?.full || 0}${s.excludedEmbeds ? ' · ' + s.excludedEmbeds + ' embeds excluidos' : ''}`,
                 color: 'var(--ink-3)',
               },
+              {
+                label: 'Encoding Score (elegibilidad)',
+                sub: `μ ${s.encoding?.scoreMean || 0}/100 · med ${s.encoding?.scoreMedian || 0}`,
+                p: `excellent ${s.encoding?.excellent || 0} · good ${s.encoding?.good || 0} · weak ${s.encoding?.weak || 0} · broken ${s.encoding?.broken || 0}`,
+                color: (s.encoding?.scoreMean || 0) >= 60 ? 'var(--ok)' : (s.encoding?.scoreMean || 0) >= 40 ? 'var(--warn)' : 'var(--danger)',
+              },
+              {
+                label: 'JSON-LD NewsArticle',
+                sub: `${s.encoding?.jsonLdOkPct || 0}% de las pages`,
+                p: `author.url ${s.encoding?.authorUrlOkPct || 0}% · image ≥1200px ${s.encoding?.imageWidthOkPct || 0}%`,
+                color: (s.encoding?.jsonLdOkPct || 0) >= 80 ? 'var(--ok)' : 'var(--warn)',
+              },
             ].map((c, i) => (
               <div key={i} style={{ padding: 10, background: 'var(--paper-3)', borderLeft: `3px solid ${c.color}` }}>
                 <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>{c.label}</div>
@@ -2018,7 +2030,7 @@ function ContentAuditView() {
         <div>
           <div style={{ marginBottom: 8, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
             Ordenar por:
-            {['scoreSnapshot', 'titleWordCount', 'wordCount', 'h2', 'firstSubtitleWordCount', 'links', 'images', 'videos'].map(k => (
+            {['scoreSnapshot', 'encodingScore', 'titleWordCount', 'wordCount', 'h2', 'firstSubtitleWordCount', 'links', 'images', 'videos'].map(k => (
               <span key={k} onClick={() => setSortKey(k)} style={{ cursor: 'pointer', marginLeft: 8, color: sortKey === k ? 'var(--accent)' : 'var(--ink-3)', textDecoration: sortKey === k ? 'underline' : 'none' }}>
                 {k}
               </span>
@@ -2030,6 +2042,7 @@ function ContentAuditView() {
               <tr style={{ borderBottom: '2px solid var(--ink)' }}>
                 <th style={{ textAlign: 'left', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>Titular</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>s</th>
+                <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }} title="Encoding score (elegibilidad Discover)">enc</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }} title="Palabras del titular">tit</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>words</th>
                 <th style={{ textAlign: 'right', padding: '4px 4px', fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-3)' }}>H2</th>
@@ -2051,6 +2064,10 @@ function ContentAuditView() {
                     <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)' }}>{r.publisher}{r.isEmbed ? ' · embed' : ''}</div>
                   </td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)', color: 'var(--accent)', fontWeight: 700 }}>{r.scoreSnapshot}</td>
+                  <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)', color: (r.encodingScore || 0) >= 80 ? 'var(--ok)' : (r.encodingScore || 0) >= 60 ? 'var(--warn)' : (r.encodingScore || 0) >= 40 ? 'var(--ink-3)' : 'var(--danger)', fontWeight: 700 }}
+                      title={(r.encodingIssues || []).join(' · ') || 'sin issues'}>
+                    {r.encodingScore != null ? r.encodingScore : '—'}
+                  </td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{r.titleWordCount || '—'}</td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{r.wordCount}</td>
                   <td style={{ padding: '4px 4px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{r.h2}</td>
@@ -2766,8 +2783,9 @@ function ProduccionDiscoverView() {
         <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>
           Ventana <strong style={{ color: 'var(--ink)' }}>{d.windowHours}h</strong> ·
           {' '}<strong style={{ color: 'var(--ink)' }}>{d.totalPublishers}</strong> publishers ·
-          {' '}<strong style={{ color: 'var(--ink)' }}>{d.totalProduction}</strong> artículos producidos ·
-          {' '}<strong style={{ color: 'var(--accent)' }}>{d.totalDiscoverHits}</strong> pages en Discover
+          {' '}<strong style={{ color: 'var(--ink)' }}>{d.totalProduction}</strong> producidos ·
+          {' '}<strong style={{ color: 'var(--warn)' }}>{d.totalEncoded ?? 0}</strong> encoded ·
+          {' '}<strong style={{ color: 'var(--accent)' }}>{d.totalDiscoverHits}</strong> en Discover
         </div>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {[
@@ -2786,9 +2804,13 @@ function ProduccionDiscoverView() {
       </div>
 
       <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 8, lineHeight: 1.5 }}>
-        Ratio = (pages en Discover últimas 24h / artículos publicados últimas 24h) × 100.
-        Producción cuenta artículos RSS + sitemap-news con firstSeen ≤ 24h.
-        Verde ≥20% (foco editorial), ámbar ≥10% (medio), rojo &lt;10% (volumen ineficiente o publisher fuera del scope Discover).
+        Marco <strong style={{ color: 'var(--ink-2)' }}>Empty Shelves / Recall</strong> (arXiv 2602.14080):
+        <br />
+        · <strong>Producción</strong> = artículos RSS + sitemap-news últimas 24h
+        · <strong>Encoded</strong> = producidos que pasan checklist técnica (encoding score ≥60)
+        · <strong>Discover</strong> = pages recuperadas por Google en el feed 24h
+        · <strong>Ratio</strong> = discoverHits / producción (bruto)
+        · <strong>Recall rate</strong> = discoverHits / encoded (el KPI real: qué % de mi contenido elegible entra)
       </div>
 
       {rows.length === 0 ? (
@@ -2801,8 +2823,10 @@ function ProduccionDiscoverView() {
             <tr style={{ borderBottom: '2px solid var(--ink)' }}>
               <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Publisher</th>
               <th onClick={() => setSortBy('production')} style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: sortBy === 'production' ? 'var(--accent)' : 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em', cursor: 'pointer' }}>Producción</th>
+              <th onClick={() => setSortBy('encoded')} style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: sortBy === 'encoded' ? 'var(--accent)' : 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em', cursor: 'pointer' }} title="Producidos con encoding score audit >=60">Encoded</th>
               <th onClick={() => setSortBy('discoverHits')} style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: sortBy === 'discoverHits' ? 'var(--accent)' : 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em', cursor: 'pointer' }}>Discover</th>
-              <th onClick={() => setSortBy('ratio')} style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: sortBy === 'ratio' ? 'var(--accent)' : 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em', cursor: 'pointer' }}>Ratio</th>
+              <th onClick={() => setSortBy('ratio')} style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: sortBy === 'ratio' ? 'var(--accent)' : 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em', cursor: 'pointer' }} title="discoverHits / producción">Ratio</th>
+              <th onClick={() => setSortBy('recallRate')} style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: sortBy === 'recallRate' ? 'var(--accent)' : 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em', cursor: 'pointer' }} title="discoverHits / encoded — el KPI real Recall">Recall</th>
               <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Avg / Max</th>
               <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Top en Discover</th>
             </tr>
@@ -2817,11 +2841,20 @@ function ProduccionDiscoverView() {
                 <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink-3)' }}>
                   {r.production}
                 </td>
+                <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 12, color: r.encoded > 0 ? 'var(--warn)' : 'var(--ink-4)' }}
+                    title={r.encoded > 0 ? `${r.encoded} URLs con encoding score ≥60` : 'Sin audits todavía — el poll content-audit corre 1×/día'}>
+                  {r.encoded ?? '—'}
+                </td>
                 <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 12, color: r.discoverHits > 0 ? 'var(--accent)' : 'var(--ink-4)', fontWeight: r.discoverHits > 0 ? 700 : 400 }}>
                   {r.discoverHits}
                 </td>
                 <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: ratioColor(r.ratio) }}>
                   {r.ratio}%
+                </td>
+                <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: r.recallDenominator === 'encoded' ? ratioColor(r.recallRate) : 'var(--ink-4)' }}
+                    title={r.recallDenominator === 'encoded' ? 'discoverHits / encoded' : 'sin audits: mismo valor que Ratio'}>
+                  {r.recallRate != null ? r.recallRate + '%' : '—'}
+                  {r.recallDenominator === 'production' && <span style={{ marginLeft: 4, color: 'var(--ink-4)', fontSize: 9 }}>~</span>}
                 </td>
                 <td style={{ padding: '6px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
                   {r.discoverHits > 0 ? `s${r.avgDiscoverScore} / ${r.maxDiscoverScore}` : '—'}
@@ -3354,8 +3387,8 @@ function CompetitorsView({ competitors = [] }) {
               )}
             </div>
 
-            {/* Stats numéricos */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 10 }}>
+            {/* Stats numéricos: counts + DCG-weighted share */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 6 }}>
               <div>
                 <div title="Páginas en Discover en las últimas 24h"
                      style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>24h</div>
@@ -3372,6 +3405,31 @@ function CompetitorsView({ competitors = [] }) {
                   {c.pagesHistoricalWindow === '90d' ? '90 días' : '30 días'}
                 </div>
                 <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 700, color: 'var(--ink)' }}>{c.pagesHistorical || 0}</div>
+              </div>
+            </div>
+
+            {/* DCG-weighted share of visibility */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 10, padding: '6px 8px', background: 'var(--paper-3)', borderLeft: '2px solid var(--accent)' }}>
+              <div>
+                <div title="Cuota DCG (share of visibility ponderada por posición) — últimas 24h. Aparecer #1 pesa exponencialmente más que #20."
+                     style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>DCG 24h</div>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: c.shareDcgToday > 0 ? 'var(--accent)' : 'var(--ink-4)' }}>
+                  {c.shareDcgToday != null ? c.shareDcgToday.toFixed(1) + '%' : '—'}
+                </div>
+              </div>
+              <div>
+                <div title="Cuota DCG ponderada por posición — últimas 48h"
+                     style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>DCG 48h</div>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: 'var(--ink)' }}>
+                  {c.shareDcg48h != null ? c.shareDcg48h.toFixed(1) + '%' : '—'}
+                </div>
+              </div>
+              <div>
+                <div title="Posición media Discover cuando aparecen (menor = mejor)"
+                     style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Pos avg</div>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: c.avgPosition && c.avgPosition <= 10 ? 'var(--ok)' : 'var(--ink)' }}>
+                  {c.avgPosition ? '#' + c.avgPosition : '—'}
+                </div>
               </div>
             </div>
 
