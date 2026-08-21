@@ -68,27 +68,54 @@ export interface ContentAuditResult {
 const UA = 'Mozilla/5.0 (compatible; DiscoverAlertsAuditBot/1.0; +https://discover-alerts.vercel.app)';
 
 /** Extrae y parsea todos los <script type="application/ld+json"> del HTML.
- * Devuelve array de objetos (algunos publishers meten varios blobs). */
+ * Devuelve array de objetos (algunos publishers meten varios blobs).
+ * Casos soportados:
+ *  - blob único {@type: NewsArticle}
+ *  - blob único {@graph: [{...}, {...}]} (schema.org format estándar)
+ *  - array raíz [{...}, {...}] (El Español y algunos otros)
+ *  - array con nodes que a su vez traen @graph anidado
+ *  - CDATA / whitespace / comentarios HTML dentro del script
+ */
 function extractJsonLd(html: string): any[] {
-  const re = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  // Regex más permisiva: acepta espacios en type=, comillas dobles/simples/sin,
+  // y espacios extras entre atributos.
+  const re = /<script\b[^>]*\btype\s*=\s*["']?\s*application\/ld\+json\s*["']?[^>]*>([\s\S]*?)<\/script>/gi;
   const out: any[] = [];
   let m: RegExpExecArray | null;
+  const push = (obj: any) => {
+    if (!obj || typeof obj !== 'object') return;
+    out.push(obj);
+    // Expandir @graph anidado recursivamente
+    const graph = obj['@graph'];
+    if (Array.isArray(graph)) {
+      for (const node of graph) push(node);
+    }
+  };
   while ((m = re.exec(html))) {
     try {
-      const raw = m[1].trim();
+      let raw = m[1].trim();
+      // Quitar CDATA / comentarios HTML si envuelven el JSON
+      raw = raw.replace(/^\/\*<!\[CDATA\[\*\/|\/\*\]\]>\*\/$/g, '').trim();
+      raw = raw.replace(/^<!--|-->\s*$/g, '').trim();
+      raw = raw.replace(/^<!\[CDATA\[|\]\]>$/g, '').trim();
       if (!raw) continue;
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) out.push(...parsed);
-      else out.push(parsed);
-      // Soporta @graph con array de nodes
-      const graph = (parsed as any)?.['@graph'];
-      if (Array.isArray(graph)) out.push(...graph);
+      if (Array.isArray(parsed)) {
+        for (const p of parsed) push(p);
+      } else {
+        push(parsed);
+      }
     } catch { /* ignore malformed json-ld */ }
   }
   return out;
 }
 
-/** Detecta si algún JSON-LD es NewsArticle/Article y qué campos tiene. */
+/** Detecta si algún JSON-LD es NewsArticle/Article-like y qué campos tiene.
+ * Acepta variantes: NewsArticle, Article, ReportageNewsArticle,
+ * LiveBlogPosting, AnalysisNewsArticle, BackgroundNewsArticle, OpinionNewsArticle,
+ * ReviewNewsArticle, SatiricalArticle, AdvertiserContentArticle. */
+const ARTICLE_TYPE_RE = /^(NewsArticle|Article|ReportageNewsArticle|LiveBlogPosting|AnalysisNewsArticle|BackgroundNewsArticle|OpinionNewsArticle|ReviewNewsArticle|SatiricalArticle|AdvertiserContentArticle)$/i;
+
 function analyzeJsonLd(blobs: any[]) {
   let hasNewsArticle = false;
   let hasAuthorUrl = false;
@@ -97,36 +124,66 @@ function analyzeJsonLd(blobs: any[]) {
   let hasImage = false;
   let imageWidth: number | null = null;
   for (const b of blobs) {
-    const type = b?.['@type'];
-    const isArticle = type === 'NewsArticle' || type === 'Article' || type === 'ReportageNewsArticle' ||
-      (Array.isArray(type) && type.some((t: string) => /Article/i.test(t)));
+    if (!b || typeof b !== 'object') continue;
+    const type = b['@type'];
+    const isArticle = (typeof type === 'string' && ARTICLE_TYPE_RE.test(type)) ||
+      (Array.isArray(type) && type.some((t: any) => typeof t === 'string' && ARTICLE_TYPE_RE.test(t)));
     if (!isArticle) continue;
     hasNewsArticle = true;
-    if (b.datePublished) hasDatePublished = true;
-    if (b.headline) hasHeadline = true;
-    const author = Array.isArray(b.author) ? b.author[0] : b.author;
-    if (author && (author.url || author.sameAs)) hasAuthorUrl = true;
-    const img = Array.isArray(b.image) ? b.image[0] : b.image;
-    if (img) {
+    if (b.datePublished || b.dateCreated) hasDatePublished = true;
+    if (b.headline || b.name) hasHeadline = true;
+    // Author puede ser Person, Organization, array, o string. sameAs es acepable.
+    const authors = Array.isArray(b.author) ? b.author : (b.author ? [b.author] : []);
+    for (const a of authors) {
+      if (!a) continue;
+      if (typeof a === 'object' && (a.url || a.sameAs || a['@id'])) { hasAuthorUrl = true; break; }
+    }
+    // Image puede ser: string URL, object ImageObject, array de cualquiera.
+    const imgs = Array.isArray(b.image) ? b.image : (b.image ? [b.image] : []);
+    for (const img of imgs) {
+      if (!img) continue;
       hasImage = true;
-      const w = typeof img === 'object' ? (img.width || img.contentWidth) : null;
-      if (w) {
-        const n = typeof w === 'number' ? w : parseInt(String(w).replace(/[^\d]/g, ''), 10);
-        if (!isNaN(n)) imageWidth = Math.max(imageWidth || 0, n);
+      if (typeof img === 'object') {
+        const w = img.width || img.contentWidth;
+        if (w) {
+          const n = typeof w === 'number' ? w : parseInt(String(w).replace(/[^\d]/g, ''), 10);
+          if (!isNaN(n)) imageWidth = Math.max(imageWidth || 0, n);
+        }
       }
     }
+    // primaryImageOfPage fallback
+    if (!hasImage && b.primaryImageOfPage) hasImage = true;
   }
   return { hasNewsArticle, hasAuthorUrl, hasDatePublished, hasHeadline, hasImage, imageWidth };
 }
 
-/** Estima el ancho del primer <img> significativo (og:image o el mayor del article). */
+/** Estima el mayor ancho de imagen documentado en el HTML.
+ * Fuentes por orden de fiabilidad:
+ *   - <meta property="og:image:width">
+ *   - <meta property="twitter:image:width">
+ *   - <img srcset="url 1600w, url 800w..."> → toma el max
+ *   - <img width="X">  (menos fiable, muchos meten thumbnails)
+ *   - URLs de imagen con dimensiones en el path (marca.com, elpais.com hacen /600x/)
+ */
 function extractOgImageWidth(html: string): number | null {
+  let max = 0;
   const og = html.match(/<meta[^>]+property=["']og:image:width["'][^>]+content=["'](\d+)["']/i);
-  if (og) return parseInt(og[1], 10);
-  // Fallback: primer <img width="X"> con X numérico
-  const img = html.match(/<img[^>]+width=["'](\d+)["']/i);
-  if (img) return parseInt(img[1], 10);
-  return null;
+  if (og) max = Math.max(max, parseInt(og[1], 10));
+  const tw = html.match(/<meta[^>]+(?:name|property)=["']twitter:image:width["'][^>]+content=["'](\d+)["']/i);
+  if (tw) max = Math.max(max, parseInt(tw[1], 10));
+  // srcset del article (varias entries "url 1200w, url 1600w")
+  const srcsetMatches = html.match(/srcset=["'][^"']+["']/gi) || [];
+  for (const s of srcsetMatches.slice(0, 5)) {
+    const widths = [...s.matchAll(/(\d{3,4})w/g)].map(m => parseInt(m[1], 10));
+    if (widths.length > 0) max = Math.max(max, ...widths);
+  }
+  // <img width="X"> (primer significativo, >=200)
+  const imgWidths = [...html.matchAll(/<img[^>]+width=["'](\d{3,4})["']/gi)].map(m => parseInt(m[1], 10));
+  if (imgWidths.length > 0) max = Math.max(max, ...imgWidths.filter(w => w >= 200));
+  // Path-based (marca.com/rc/xxxxxxxx_1200x630/...) o similar
+  const pathW = [...html.matchAll(/[_\/](\d{3,4})x\d{3,4}\b/g)].map(m => parseInt(m[1], 10));
+  if (pathW.length > 0) max = Math.max(max, ...pathW.filter(w => w >= 400));
+  return max > 0 ? max : null;
 }
 
 /** Calcula encoding_score 0-100 con checklist explícita. */
