@@ -185,6 +185,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'fichajes', label: 'Fichajes' },
     { id: 'content-audit', label: 'Content audit' },
     { id: 'weekly-sports', label: 'Análisis semanal' },
+    { id: 'discover-analysis', label: 'Head/Tail · Denominador' },
     { id: 'auditor', label: 'Auditor titular' },
     { id: 'auditor-texto', label: 'Audita texto' },
     { id: 'produccion-discover', label: 'Producción / Discover' },
@@ -1082,6 +1083,12 @@ function App() {
       'Análisis semanal · patrones y fórmulas de titulados /Sports',
       'agregado 7d sobre state.contentAudits: n-gramas + fórmulas de titular + estructura del contenido + comparativa vs semana anterior',
       <WeeklySportsView />
+    );
+  } else if (activeNav === 'discover-analysis') {
+    body = viewSinglePanel(
+      'Head vs Long-tail · Denominador contextual · Share of card/citation',
+      'Marco Empty Shelves/Recall (arXiv 2602.14080) + DiscoverMonitor DCG. Diagnóstico automático de posición editorial por publisher.',
+      <DiscoverAnalysisView />
     );
   } else if (activeNav === 'content-audit') {
     body = viewSinglePanel(
@@ -2082,6 +2089,174 @@ function ContentAuditView() {
             </tbody>
           </table>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DiscoverAnalysisView() {
+  const [st, setSt] = useState({ loading: true, data: null, error: null });
+  const [tab, setTab] = useState('cohorts');
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/discover-analysis', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+      .then(d => alive && setSt({ loading: false, data: d, error: null }))
+      .catch(e => alive && setSt({ loading: false, data: null, error: e.message }));
+    return () => { alive = false; };
+  }, []);
+  if (st.loading) return <div style={{ padding: 16, fontFamily: 'var(--mono)', color: 'var(--ink-3)' }}>Cargando…</div>;
+  if (st.error) return <div style={{ padding: 16, color: 'var(--danger)' }}>Error: {st.error}</div>;
+  const d = st.data || {};
+  const sum = d.summary || {};
+
+  const diagnosisColor = (dx) => {
+    if (dx?.includes('dominante')) return 'var(--ok)';
+    if (dx?.includes('competitivo en head')) return 'var(--accent)';
+    if (dx?.includes('fuerte en cola')) return 'var(--warn)';
+    if (dx?.includes('marginal')) return 'var(--danger)';
+    return 'var(--ink-3)';
+  };
+
+  return (
+    <div>
+      {/* Header con framework */}
+      <div style={{ padding: '8px 12px', background: 'var(--paper-3)', border: '1px solid var(--rule)', marginBottom: 14, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>
+        <div>
+          <strong style={{ color: 'var(--ink)' }}>Framework:</strong> {d.framework}
+        </div>
+        <div style={{ color: 'var(--ink-4)' }}>
+          computed {d.computedAt ? new Date(d.computedAt).toLocaleString('es-ES') : '—'}
+        </div>
+      </div>
+
+      {/* Summary cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 18 }}>
+        <div style={{ padding: 10, background: 'var(--paper-3)', borderLeft: '3px solid var(--accent)' }}>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase' }}>Entidades DS analizadas</div>
+          <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 800, color: 'var(--ink)' }}>{sum.totalEntities}</div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', marginTop: 2 }}>
+            head <strong style={{ color: 'var(--accent)' }}>{sum.headCount}</strong> · tail <strong>{sum.tailCount}</strong>
+          </div>
+        </div>
+        <div style={{ padding: 10, background: 'var(--paper-3)', borderLeft: '3px solid var(--warn)' }}>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase' }}>Total pages Discover</div>
+          <div style={{ fontFamily: 'var(--serif)', fontSize: 22, fontWeight: 800, color: 'var(--ink)' }}>{sum.totalPages}</div>
+        </div>
+        <div style={{ padding: 10, background: 'var(--paper-3)', borderLeft: '3px solid var(--ok)' }}>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 9, color: 'var(--ink-4)', textTransform: 'uppercase' }} title="Card = 1 entidad clara (card propia). Citation = 4+ entidades → probable digest/resumen agrupado.">Share Card / Citation</div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>
+            {sum.cardVsCitation?.card} card · <span style={{ color: 'var(--accent)' }}>{sum.cardVsCitation?.citation} citation</span>
+          </div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)', marginTop: 2 }}>
+            citación = <strong style={{ color: 'var(--accent)' }}>{sum.cardVsCitation?.citationPct}%</strong>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
+        {[
+          { id: 'cohorts', label: `Head/Tail publisher (${(d.publisherCohorts || []).length})` },
+          { id: 'entities', label: `Denominador por entidad (${(d.entityDenominators || []).length})` },
+          { id: 'head', label: `Head cabecera (${(d.headEntities || []).length})` },
+        ].map(t => (
+          <span key={t.id} onClick={() => setTab(t.id)}
+            style={{ cursor: 'pointer', padding: '4px 12px', fontFamily: 'var(--mono)', fontSize: 11, border: '1px solid var(--rule)', background: tab === t.id ? 'var(--accent)' : 'transparent', color: tab === t.id ? '#fff' : 'var(--ink)' }}>
+            {t.label}
+          </span>
+        ))}
+      </div>
+
+      {tab === 'cohorts' && (
+        <div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 8 }}>
+            Head = top 20% de entidades por DCG total (los temas cabecera). Tail = resto (nichos, cola larga).
+            Un publisher <strong style={{ color: 'var(--accent)' }}>competitivo en head</strong> pero débil en tail está bien posicionado en lo que trend pero pierde autoridad en su vertical.
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid var(--ink)' }}>
+                <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Publisher</th>
+                <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>DCG head</th>
+                <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Share head %</th>
+                <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>DCG tail</th>
+                <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Share tail %</th>
+                <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Diagnóstico</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(d.publisherCohorts || []).map(p => (
+                <tr key={p.domain} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                  <td style={{ padding: '5px 6px', fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--ink)', fontWeight: 600 }}>{p.domain}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', color: 'var(--accent)' }}>{p.dcgHead}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontWeight: 700, color: p.shareHead >= 5 ? 'var(--accent)' : 'var(--ink)' }}>{p.shareHead}%</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', color: 'var(--warn)' }}>{p.dcgTail}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', fontWeight: 700, color: p.shareTail >= 5 ? 'var(--warn)' : 'var(--ink)' }}>{p.shareTail}%</td>
+                  <td style={{ padding: '5px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: diagnosisColor(p.diagnosis), fontWeight: 700 }}>{p.diagnosis}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {tab === 'entities' && (
+        <div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 8 }}>
+            Por cada entidad DS: cuántos publishers compiten y qué % de la visibilidad ponderada captura el líder. Denominador contextual — sabes si es tema saturado o hueco.
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid var(--ink)' }}>
+                <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Entidad</th>
+                <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>DCG total</th>
+                <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>N publishers</th>
+                <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Top publishers (share %)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(d.entityDenominators || []).map(e => (
+                <tr key={e.entity} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                  <td style={{ padding: '5px 6px', fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink)', fontWeight: 500 }}>{e.entity}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', color: 'var(--accent)', fontWeight: 700 }}>{e.dcgTotal}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', color: e.publishersCount >= 3 ? 'var(--warn)' : 'var(--ok)' }}>{e.publishersCount}</td>
+                  <td style={{ padding: '5px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>
+                    {(e.topPublishers || []).map((p, i) => (
+                      <span key={i}>{p.domain}<span style={{ color: 'var(--accent)' }}> {p.sharePct}%</span>{i < e.topPublishers.length - 1 ? ' · ' : ''}</span>
+                    ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {tab === 'head' && (
+        <div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', marginBottom: 8 }}>
+            Cohort <strong style={{ color: 'var(--accent)' }}>head</strong>: los temas cabecera del feed ahora mismo (top 20% por DCG).
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--sans)', fontSize: 12 }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid var(--ink)' }}>
+                <th style={{ textAlign: 'left', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>Entidad head</th>
+                <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>DCG total</th>
+                <th style={{ textAlign: 'right', padding: '6px 6px', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-3)' }}>N publishers</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(d.headEntities || []).map(e => (
+                <tr key={e.entity} style={{ borderBottom: '1px solid var(--rule-2)' }}>
+                  <td style={{ padding: '5px 6px', fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink)', fontWeight: 600 }}>{e.entity}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)', color: 'var(--accent)', fontWeight: 700 }}>{e.dcgTotal}</td>
+                  <td style={{ padding: '5px 6px', textAlign: 'right', fontFamily: 'var(--mono)' }}>{e.publishersCount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
