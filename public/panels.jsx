@@ -346,7 +346,17 @@ function TopMediaPanel({ media }) {
 }
 
 function CategoriesPanel({ categories }) {
-  const all = [...(categories || [])].sort((a, b) => (b.score || 0) - (a.score || 0));
+  // Ordenamos priorizando categorías con contenido real (topPages + topEntities).
+  // Sin esto, la raíz '/Sports' (score alto pero siempre 0 pages, porque están
+  // en subcategorías como /Sports/Soccer) aparecería primero y daría sensación
+  // de panel vacío.
+  const hasContent = (c) => (c.topPages || []).length + (c.topEntities || []).length;
+  const all = [...(categories || [])].sort((a, b) => {
+    const ca = hasContent(a), cb = hasContent(b);
+    if ((ca > 0) !== (cb > 0)) return cb - ca;      // primero las que tienen contenido
+    if (ca > 0 && cb > 0) return cb - ca;            // dentro de las llenas: por cantidad
+    return (b.score || 0) - (a.score || 0);          // vacías: por score
+  });
   // Agrupar por primer segmento del path DS (e.g. "/Sports/Team Sports/Soccer" → "Sports")
   const groups = React.useMemo(() => {
     const g = {};
@@ -360,9 +370,11 @@ function CategoriesPanel({ categories }) {
     return g;
   }, [all]);
   const groupNames = React.useMemo(() => Object.keys(groups).sort((a, b) => {
-    const sA = (groups[a][0]?.score || 0);
-    const sB = (groups[b][0]?.score || 0);
-    return sB - sA;
+    // Primero grupos con al menos 1 categoría con contenido
+    const catsA = groups[a].filter(c => (c.topPages || []).length + (c.topEntities || []).length > 0).length;
+    const catsB = groups[b].filter(c => (c.topPages || []).length + (c.topEntities || []).length > 0).length;
+    if (catsA !== catsB) return catsB - catsA;
+    return (groups[b][0]?.score || 0) - (groups[a][0]?.score || 0);
   }), [groups]);
   const [activeGroup, setActiveGroup] = useState(groupNames[0] || 'Otros');
   // Cuando cambia la lista (nuevo poll), seguir en activo si sigue existiendo
@@ -492,7 +504,8 @@ function CategoriesPanel({ categories }) {
               </div>
             ) : (
               <div style={{ marginLeft: 40, fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)' }}>
-                Sin páginas con esta categoría en el último poll.
+                Sin páginas atribuidas directamente. {(c.name || '').split('/').filter(Boolean).length === 1 &&
+                  <span style={{ color: 'var(--ink-3)' }}>· Es categoría raíz — mira las subcategorías debajo.</span>}
               </div>
             )}
           </div>
