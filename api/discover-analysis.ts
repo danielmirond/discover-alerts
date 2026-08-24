@@ -33,6 +33,50 @@ function normalize(s: string): string {
   return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
+/** Blacklist de sustantivos comunes ES/EN que DS a veces trata como entidades
+ * pero no aportan editorialmente. Ampliada tras observar top entities en
+ * motor/sport (Casa, Ajo, Parabrisas, Vinagre, Tormenta…). */
+const ENTITY_BLACKLIST = new Set([
+  'casa','ajo','vinagre','parabrisas','sancion','sanción','tormenta','trabajo','trabajador',
+  'diesel','diésel','madera','tela','perro','gato','pollo','carne','pescado','pan','agua',
+  'sol','luna','fuego','tierra','aire','viento','lluvia','nieve','calor','frio','frío',
+  'coche','moto','tren','avion','avión','barco','autobus','autobús','taxi','bici','bicicleta',
+  'padre','madre','hijo','hija','abuelo','abuela','esposa','marido','familia','amigo',
+  'salud','enfermedad','muerte','vida','amor','odio','miedo','felicidad','tristeza',
+  'jubilacion','jubilación','pension','pensión','sueldo','salario','impuesto','multa',
+  'hospital','clinica','clínica','farmacia','banco','tienda','supermercado','mercado',
+  'peligro','riesgo','error','problema','solucion','solución','clave','razon','razón',
+  'motivo','causa','efecto','consecuencia','opinion','opinión','idea','tema',
+  'primera','segunda','tercera','ultima','última','mejor','peor','antes','ahora','hoy',
+  'espana','españa','europa','mundo','pais','país','ciudad','pueblo','barrio',
+]);
+
+/** Determina si una entidad es editorialmente útil.
+ * Combina KG Wikidata (si disponible) + heurísticas de forma. */
+function isValidEntity(name: string, kg?: any): boolean {
+  if (!name) return false;
+  const trimmed = name.trim();
+  if (trimmed.length < 4) return false;
+  const norm = normalize(trimmed);
+  if (ENTITY_BLACKLIST.has(norm)) return false;
+  // Si tenemos KG, priorizar Person/Organization/Place/Event/Work
+  if (kg && kg.type) {
+    if (['Person', 'Organization', 'Place', 'Event', 'Work'].includes(kg.type)) return true;
+    if (kg.type === 'Other') {
+      // Filtrar 'Other' si el KG dice que es clase-común (Q144 Perro, Q287 Madera, Q123414 Estrés)
+      const desc = (kg.description || '').toLowerCase();
+      if (/clase de|tipo de|especialidad|campo de estudio|modo de fallo|type of|kind of|class of/i.test(desc)) return false;
+    }
+  }
+  // Si es minúscula-inicial y una sola palabra → probablemente sustantivo común
+  const isSingleLower = /^[a-záéíóúñü]+$/i.test(trimmed) && !/^[A-ZÁÉÍÓÚÑÜ]/.test(trimmed);
+  if (isSingleLower) return false;
+  // Al menos empieza con mayúscula O tiene ≥2 palabras
+  const hasCapital = /^[A-ZÁÉÍÓÚÑÜ]/.test(trimmed);
+  const isMultiword = trimmed.split(/\s+/).length >= 2;
+  return hasCapital || isMultiword;
+}
+
 interface EntityStat {
   entity: string;
   score: number;
@@ -51,7 +95,13 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     await loadState();
     const s = getState() as any;
     const pages = (s.pages || {}) as Record<string, any>;
-    const entities = (s.entities || {}) as Record<string, any>;
+    const entitiesRaw = (s.entities || {}) as Record<string, any>;
+    const kg = (s.entityKgEnrichment || {}) as Record<string, any>;
+    // Filtrar entidades editorialmente útiles (KG + heurísticas)
+    const entities: Record<string, any> = {};
+    for (const [name, e] of Object.entries(entitiesRaw)) {
+      if (isValidEntity(name, kg[name])) entities[name] = e;
+    }
 
     // ── 1. Análisis por entidad (denominador contextual) ─────────────────
     // Para cada entidad DS: cuántos publishers la cubren, DCG total, share del top.

@@ -2126,8 +2126,14 @@ function DiscoverAnalysisView() {
         <div>
           <strong style={{ color: 'var(--ink)' }}>Framework:</strong> {d.framework}
         </div>
-        <div style={{ color: 'var(--ink-4)' }}>
-          computed {d.computedAt ? new Date(d.computedAt).toLocaleString('es-ES') : '—'}
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <a href="/api/report-weekly?format=md" download
+             style={{ fontFamily: 'var(--mono)', fontSize: 10, padding: '4px 10px', background: 'var(--accent)', color: '#fff', textDecoration: 'none', letterSpacing: '.06em', textTransform: 'uppercase' }}>
+            ↓ Informe .md
+          </a>
+          <span style={{ color: 'var(--ink-4)' }}>
+            {d.computedAt ? new Date(d.computedAt).toLocaleString('es-ES') : '—'}
+          </span>
         </div>
       </div>
 
