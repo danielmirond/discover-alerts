@@ -1822,16 +1822,24 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     entities: (() => {
       let out = entities;
       if (process.env.DS_CATEGORY_FILTER) {
-        const f = process.env.DS_CATEGORY_FILTER.toLowerCase();
-        out = out.filter(e => (e.category || '').toLowerCase().startsWith(f));
+        const prefixes = process.env.DS_CATEGORY_FILTER.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+        out = out.filter(e => {
+          const c = (e.category || '').toLowerCase();
+          return prefixes.some(p => c.startsWith(p));
+        });
       }
       return out.slice(0, 100);
     })(),
     categories: (() => {
       let out = categories;
       if (process.env.DS_CATEGORY_FILTER) {
-        const f = process.env.DS_CATEGORY_FILTER.toLowerCase();
-        out = out.filter(c => (c.name || '').toLowerCase().startsWith(f));
+        // DS_CATEGORY_FILTER puede ser CSV: "/Autos & Vehicles,/Sports/Motor Sports"
+        // → split y matchea si empieza por CUALQUIER prefijo.
+        const prefixes = process.env.DS_CATEGORY_FILTER.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+        out = out.filter(c => {
+          const n = (c.name || '').toLowerCase();
+          return prefixes.some(p => n.startsWith(p));
+        });
       }
       return out.slice(0, 50);
     })(),
@@ -1842,19 +1850,18 @@ export async function buildLiveView(): Promise<LiveViewResponse> {
     headlinePatterns4d,
     recentAlerts: (() => {
       if (!process.env.DS_CATEGORY_FILTER) return recentAlerts;
-      const f = process.env.DS_CATEGORY_FILTER.toLowerCase();
+      // CSV soportado: /Sports,/News/Sports — matchea si empieza por cualquiera
+      const prefixes = process.env.DS_CATEGORY_FILTER.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+      const matchesAny = (v: string) => prefixes.some(p => v.startsWith(p));
       return recentAlerts.filter(r => {
-        // Keep alerts whose category matches OR which are entity-derived and match via map
         const c = (r.category || '').toLowerCase();
-        if (c.startsWith(f)) return true;
-        // Discard schema_news_match (sucesos/legal) and other non-sport types
+        if (matchesAny(c)) return true;
         if (['schema_news_match', 'category', 'stale_data'].includes(r.type)) {
-          return c.startsWith(f);
+          return matchesAny(c);
         }
-        // For entity alerts without category, look up in state.entityCategoryMap
         const a = (r as any).title || (r as any).entityName;
         if (a && state.entityCategoryMap[a]) {
-          return state.entityCategoryMap[a].toLowerCase().startsWith(f);
+          return matchesAny(state.entityCategoryMap[a].toLowerCase());
         }
         return false;
       });
