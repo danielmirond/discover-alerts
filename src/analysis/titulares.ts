@@ -344,6 +344,9 @@ async function llamarClaude(system: string, user: string): Promise<any> {
 
 async function llamarOllama(system: string, user: string): Promise<any> {
   const url = process.env.OLLAMA_URL || 'http://localhost:11434';
+  if (process.env.VERCEL && !process.env.OLLAMA_URL) {
+    throw new Error('Este despliegue no tiene modelo configurado: añade ANTHROPIC_API_KEY (o OLLAMA_URL) en las variables del proyecto en Vercel.');
+  }
   const r = await fetch(`${url}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
