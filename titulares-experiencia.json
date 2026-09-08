@@ -1,0 +1,49 @@
+{
+  "_nota": "Experiencia medida en Search Console (Discover) sobre corpus reales. Se expresa sin nombrar cabeceras: el sistema habla de 'experiencia medida'. Los ejemplos vivos salen del estado de la app (competencia en Discover); los de aquí son respaldo estructural. Regenerar cuando haya datos nuevos.",
+  "actualidad": {
+    "nombre": "Actualidad · experiencia medida en Discover (2.577 URL, 41 millones de clics, 17 meses)",
+    "rangos": { "discover": [103, 156], "search": [55, 70], "portada": [40, 60], "redes": [0, 120] },
+    "reglas_medidas": [
+      "La estructura «Nombre, cargo: “cita”» es el 24% de las piezas y el 67% de los clics. Mediana de 5.333 clics por pieza frente a 1.171 del resto. Es la forma que más rinde en Discover.",
+      "Autoridad cotidiana en el titular (mecánico, gasolinera, profesor, guardia civil, abogado, catedrático, el que estaba delante): 13% de las piezas, 38% de los clics. Pesa más que el experto genérico.",
+      "Longitud: los titulares de más de 150 caracteres son el 21% de las piezas y el 55% de los clics. El rango ganador en Discover es 103–156. Por debajo de 90 caracteres el CTR cae al 6%.",
+      "Abrir por nombre propio concentra el 74% de los clics; abrir por artículo (el, la, los) el 18% con la mitad de CTR.",
+      "La cita entrecomillada está en el 78% de los clics (CTR 11,4% frente a 9,5% sin cita). La cita tiene que ser literal del texto.",
+      "Tiempo verbal: domina el presente de indicativo (64% de los clics). La anécdota en pasado dentro de la cita («casi me mato», «me compré uno hace cuatro años») tiene el CTR más alto (12,3%).",
+      "La cifra sola no tira: 30% de los clics con CTR por debajo de la media. Funciona cuando es consecuencia para el lector (lo que le cuesta, lo que cambia), no dato de ficha.",
+      "Aperturas quemadas (muchas piezas, rendimiento bajo): «Así es…» (CTR 4%), «Probamos el…» (mediana 58 clics), «El nuevo…», «Estos son…».",
+      "Pregunta en el titular: 2% de los clics. Evitar salvo que sea la duda literal del lector.",
+      "Lo que arrastra tracción en Discover en todos los medios: «Ya es oficial:», «Oficial |», «el Gobierno cambia las normas», un cambio con fecha y la consecuencia concreta para el lector. Palanca consecuencia con cifra ancla."
+    ],
+    "ejemplos": [
+      "Scotty Kilmer, mecánico: “Una de las estafas más comunes cuando vas al mecánico es decirte que necesitas amortiguadores nuevos”",
+      "Claudia Romero, abogada: “Cuando un radar no está operado por un agente, en la multa tiene que haber dos fotos, y una no puede ser válida”",
+      "Un profesor de matemáticas explica por qué no compensa circular a 140 km/h para reducir tiempo: “De ir a una velocidad legal a una ilegal se ganan tres minutos”",
+      "Entra en vigor el 1 de octubre: el Gobierno cambia las normas y obligará a los conductores a reducir 20 km/h y guardar 5 metros de distancia con los ciclistas",
+      "Adiós a la baliza V-16: la DGT reconoce que 'es bueno hacer una reflexión' tras la propuesta oficial en el Congreso",
+      "Qué es el 'efecto canguro': por qué frenar bruscamente ante un radar ya no funciona para evitar las multas de tráfico"
+    ]
+  },
+  "motor": {
+    "nombre": "Motor · experiencia medida en Discover (538 URL, 1,15 millones de clics, un mes) y categoría Autos de todos los medios",
+    "rangos": { "discover": [94, 116], "search": [55, 70], "portada": [40, 60], "redes": [0, 120] },
+    "reglas_medidas": [
+      "Mediana de los titulares que entran: 103 caracteres, 19 palabras. La franja 105–119 concentra el 38% de los clics.",
+      "La cita «» sube el CTR: 9,5% con cita frente a 6,8% sin. La forma «Nombre: «cita»» es la de más CTR (10%).",
+      "Fórmula 1 es el 40% de los clics con el 22% de las piezas: piloto, ingeniero, equipo y motorista. En F1 la cita suma; la cifra no.",
+      "Las pruebas rinden más por pieza (mediana 2.751 clics), sobre todo en primera persona («Pruebo el mejor coche del mundo…», «Me voy de vacaciones con…»).",
+      "Entidad (marca, modelo, piloto) en las cinco primeras palabras: 75% de los clics.",
+      "En la categoría Autos de Discover (todos los medios), normativa y DGT acaparan el 46% de la tracción con «Ya es oficial:», «Oficial |», «el Gobierno cambia las normas» y una consecuencia con fecha; los titulares ganadores pasan de 120 caracteres.",
+      "Un medio especializado en motor no gana en normativa genérica: le rinden F1, pruebas, ofertas con marca y modelo concretos, y la industria china (marcas, fábricas, concesionarios).",
+      "Contraste esperado/real es la palanca natural de las pruebas: autonomía homologada frente a la real, consumo de ficha frente al medido."
+    ],
+    "ejemplos": [
+      "Como un Mercedes GLC pero 40.000 € más barato, es con 428 CV, turbo, tracción total y hasta siete plazas una alternativa que sorprende",
+      "Honda lanza su nueva scooter crossover de 2,3 L/100km, equipadísima, a precio de moto china porque es allí precisamente donde se fabrica",
+      "Ya es oficial: el Gobierno cambia las normas y, a partir del 1 de octubre, prohíbe a los conductores pasar un semáforo en ámbar",
+      "Los coches chinos arrasan en España, pero tienen un problema que preocupa ya al 54 % de sus compradores",
+      "El motor diésel de Jaguar y Land Rover que compraron miles de clientes esconde un problema que puede destruirlo",
+      "Montoya pone cifras al 'milagro' de Newey en Aston Martin: de perder 4 segundos a quedarse a 1 con el nuevo motor Honda"
+    ]
+  }
+}

@@ -186,6 +186,7 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     { id: 'content-audit', label: 'Content audit' },
     { id: 'weekly-sports', label: 'Análisis semanal' },
     { id: 'discover-analysis', label: 'Head/Tail · Denominador' },
+    { id: 'titulares', label: 'Titulares' },
     { id: 'auditor', label: 'Auditor titular' },
     { id: 'auditor-texto', label: 'Audita texto' },
     { id: 'produccion-discover', label: 'Producción / Discover' },
@@ -1048,6 +1049,12 @@ function App() {
     body = viewPanelOnly(
       <DatacategoriaView hist={(data._raw && data._raw.patternsByCategoryHistorical) || null} />
     );
+  } else if (activeNav === 'titulares') {
+    body = viewSinglePanel(
+      'Titulares · alternativas con la experiencia medida',
+      'pega tu titular y el texto: palanca, estructura, tiempo verbal, longitud y porqué · aprende de lo que entra en Discover esta semana',
+      <TitularesView />
+    );
   } else if (activeNav === 'auditor') {
     body = viewSinglePanel(
       'Auditor de titular pre-publicación',
@@ -1584,6 +1591,147 @@ function KgView({ entities, kg }) {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function TitularesView() {
+  const [titular, setTitular] = useState('');
+  const [texto, setTexto] = useState('');
+  const [canales, setCanales] = useState({ discover: true, search: true, portada: true, redes: false });
+  const [res, setRes] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [segs, setSegs] = useState(0);
+  const [elegida, setElegida] = useState(null);
+
+  useEffect(() => {
+    if (!loading) return;
+    const t0 = Date.now();
+    const i = setInterval(() => setSegs(Math.round((Date.now() - t0) / 1000)), 500);
+    return () => clearInterval(i);
+  }, [loading]);
+
+  const generar = async () => {
+    if (!titular.trim()) return;
+    setLoading(true); setRes(null); setElegida(null);
+    try {
+      const r = await fetch('/api/titulares', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titular: titular.trim(), texto, canales: Object.keys(canales).filter(k => canales[k]) }),
+      });
+      setRes(await r.json());
+    } catch (e) {
+      setRes({ error: e.message });
+    } finally { setLoading(false); }
+  };
+
+  const estadoColor = (s) => s === 'PASA' ? 'var(--ok)' : s === 'AVISO' ? 'var(--warn)' : 'var(--danger)';
+  const mono = { fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--ink-4)', textTransform: 'uppercase', letterSpacing: '.05em' };
+  const chip = (txt, color) => (
+    <span style={{ fontFamily: 'var(--mono)', fontSize: 9.5, padding: '1px 6px', border: '1px solid ' + (color || 'var(--rule)'), color: color || 'var(--ink-3)', letterSpacing: '.04em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{txt}</span>
+  );
+  const regla = (n, rango) => {
+    const max = 200, pct = x => Math.min(100, x / max * 100);
+    return (
+      <div style={{ marginTop: 6 }}>
+        <div style={{ position: 'relative', height: 8, background: 'var(--paper-3)', maxWidth: 420 }}>
+          <div style={{ position: 'absolute', top: 0, bottom: 0, left: pct(rango[0]) + '%', width: (pct(rango[1]) - pct(rango[0])) + '%', background: 'var(--accent)', opacity: .25 }} />
+          <div style={{ position: 'absolute', top: -3, width: 2, height: 14, left: pct(n) + '%', background: 'var(--ink)' }} />
+        </div>
+        <div style={{ ...mono, marginTop: 3 }}>{n} caracteres · rango medido {rango[0]}–{rango[1]}</div>
+      </div>
+    );
+  };
+  const medidasChips = (m) => m ? (
+    <>
+      {chip('abre por ' + m.abre_por)}
+      {m.nombre_cargo_cita ? chip('Nombre, cargo: «cita»', 'var(--accent)') : m.cita ? chip('con cita') : null}
+      {m.cifra ? chip('con cifra') : null}
+    </>
+  ) : null;
+
+  return (
+    <div style={{ maxWidth: 1000 }}>
+      <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)', lineHeight: 1.5, marginBottom: 14 }}>
+        Pega tu titular y, si puedes, el texto de la pieza: con el texto se comprueba que cada cita y cada cifra sean literales.
+        Las alternativas se apoyan en reglas medidas en Search Console y en los titulares de la competencia que están entrando en Discover esta semana.
+        Nada se publica solo: elige, edita y publica tú.
+      </div>
+      <input value={titular} onChange={e => setTitular(e.target.value)}
+             onKeyDown={e => e.key === 'Enter' && generar()}
+             placeholder="Pega aquí el titular tal como lo tienes"
+             style={{ width: '100%', padding: '9px 12px', fontFamily: 'var(--sans)', fontSize: 15, border: '1px solid var(--rule)', background: 'var(--paper)', color: 'var(--ink)', marginBottom: 6 }} />
+      <div style={{ ...mono, marginBottom: 10 }}>{titular ? `${titular.length} caracteres · ${titular.trim().split(/\s+/).length} palabras` : ' '}</div>
+      <textarea value={texto} onChange={e => setTexto(e.target.value)}
+                placeholder="Texto de la pieza (opcional). Sin él, el sistema solo puede usar lo que dice el titular."
+                style={{ width: '100%', minHeight: 120, padding: '9px 12px', fontFamily: 'var(--sans)', fontSize: 13, border: '1px solid var(--rule)', background: 'var(--paper)', color: 'var(--ink)', resize: 'vertical' }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '10px 0 16px', flexWrap: 'wrap' }}>
+        {['discover', 'search', 'portada', 'redes'].map(c => (
+          <label key={c} style={{ fontFamily: 'var(--mono)', fontSize: 10.5, textTransform: 'uppercase', letterSpacing: '.05em', color: 'var(--ink-3)', display: 'inline-flex', gap: 5, alignItems: 'center', cursor: 'pointer' }}>
+            <input type="checkbox" checked={!!canales[c]} onChange={e => setCanales({ ...canales, [c]: e.target.checked })} /> {c}
+          </label>
+        ))}
+        <button onClick={generar} disabled={loading || !titular.trim()}
+                style={{ marginLeft: 'auto', padding: '8px 16px', fontFamily: 'var(--mono)', fontSize: 11, background: 'var(--ink)', color: 'var(--paper)', border: 'none', cursor: 'pointer', letterSpacing: '.05em' }}>
+          {loading ? `PENSANDO… ${segs}s` : 'PROPONER ALTERNATIVAS'}
+        </button>
+      </div>
+
+      {res?.error && <div style={{ color: 'var(--danger)', fontFamily: 'var(--mono)', fontSize: 12 }}>Error: {res.error}</div>}
+
+      {res && !res.error && (
+        <>
+          <div style={{ padding: '12px 14px', background: 'var(--paper-3)', borderLeft: '3px solid var(--ink-3)', marginBottom: 16 }}>
+            <div style={mono}>Tu titular</div>
+            <div style={{ fontFamily: 'var(--serif)', fontSize: 18, fontWeight: 600, lineHeight: 1.25, margin: '4px 0 6px', color: 'var(--ink)' }}>{res.original.texto}</div>
+            <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+              {medidasChips(res.original.medidas)}
+              {res.original.analisis?.palanca ? chip('palanca: ' + res.original.analisis.palanca) : null}
+              {res.original.analisis?.estructura ? chip(res.original.analisis.estructura) : null}
+              {res.original.analisis?.tiempo_verbal ? chip('verbo: ' + res.original.analisis.tiempo_verbal) : null}
+            </div>
+            {regla(res.original.medidas.caracteres, res.rangos.discover)}
+            <div style={{ fontFamily: 'var(--sans)', fontSize: 13, color: 'var(--ink)', marginTop: 8, lineHeight: 1.4 }}><strong>Diagnóstico.</strong> {res.original.analisis?.diagnostico}</div>
+            <div style={{ fontFamily: 'var(--sans)', fontSize: 13, color: 'var(--ink-3)', marginTop: 4, lineHeight: 1.4 }}><strong>Lo que conserva.</strong> {res.original.analisis?.que_conserva}</div>
+          </div>
+
+          <div className="kicker" style={{ borderTop: 'none', paddingTop: 0 }}>
+            Alternativas<span className="bar"></span>
+            <span className="meta">{res.propuestas.length} · {res.modelo} · {res.segundos}s · competencia: {res.competencia.ejemplos} titulares de esta semana</span>
+          </div>
+          {res.propuestas.map((p, i) => {
+            const v = p.validador || { estado: 'PASA', bloquea: [], avisa: [] };
+            return (
+              <div key={i} style={{ padding: '10px 12px', borderLeft: `3px solid ${elegida === i ? 'var(--accent)' : estadoColor(v.estado)}`, background: 'var(--paper-3)', marginBottom: 8, opacity: v.estado === 'FALLA' ? .7 : 1 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                  <span style={{ ...mono, color: 'var(--ink-3)' }}>{p.canal} · {p.angulo}</span>
+                  <span style={{ marginLeft: 'auto', fontFamily: 'var(--mono)', fontSize: 9.5, padding: '1px 6px', background: estadoColor(v.estado), color: 'var(--paper)', letterSpacing: '.05em' }}>{v.estado}</span>
+                </div>
+                <div style={{ fontFamily: 'var(--serif)', fontSize: 17, fontWeight: 600, lineHeight: 1.25, margin: '5px 0 6px', color: 'var(--ink)' }}>{p.texto}</div>
+                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                  {chip('palanca: ' + p.palanca, 'var(--accent)')}{chip(p.estructura)}{chip('verbo: ' + p.tiempo_verbal)}{medidasChips(p.medidas)}
+                </div>
+                {p.medidas ? regla(p.medidas.caracteres, res.rangos[p.canal] || res.rangos.discover) : null}
+                <div style={{ fontFamily: 'var(--sans)', fontSize: 12.5, color: 'var(--ink)', marginTop: 6, lineHeight: 1.4 }}>{p.por_que}</div>
+                {p.fuente ? <div style={{ fontFamily: 'var(--sans)', fontSize: 11.5, color: 'var(--ink-3)', marginTop: 4, fontStyle: 'italic' }}>Se apoya en: “{p.fuente}”</div> : null}
+                {v.bloquea.map((b, k) => <div key={'b' + k} style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>✗ {b}</div>)}
+                {v.avisa.map((b, k) => <div key={'a' + k} style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--warn)', marginTop: 4 }}>⚠ {b}</div>)}
+                <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                  <button onClick={() => navigator.clipboard.writeText(p.texto)} style={{ padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 10, background: 'transparent', color: 'var(--ink)', border: '1px solid var(--rule)', cursor: 'pointer' }}>COPIAR</button>
+                  <button onClick={() => setElegida(i)} style={{ padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 10, background: elegida === i ? 'var(--accent)' : 'transparent', color: elegida === i ? 'var(--paper)' : 'var(--ink)', border: '1px solid var(--rule)', cursor: 'pointer' }}>ME QUEDO CON ESTA</button>
+                </div>
+              </div>
+            );
+          })}
+          {res.descartes?.length ? (
+            <div style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink-3)', marginTop: 10, lineHeight: 1.4 }}><strong>Descartado:</strong> {res.descartes.join(' · ')}</div>
+          ) : null}
+          {res.competencia?.formulas?.length ? (
+            <div style={{ ...mono, marginTop: 10 }}>fórmulas dominantes esta semana: {res.competencia.formulas.join(' · ')}</div>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
