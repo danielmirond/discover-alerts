@@ -18,6 +18,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import Anthropic from '@anthropic-ai/sdk';
+import { Redis } from '@upstash/redis';
 import { getState } from '../state/store.js';
 
 export type Canal = 'discover' | 'search' | 'portada' | 'redes';
@@ -306,10 +307,31 @@ const ESQUEMA = {
   required: ['analisis_original', 'propuestas', 'descartes'],
 };
 
+/** Por defecto, modelo local (Ollama) a través del túnel publicado en Redis. Claude solo si se pide. */
 function backend(): 'claude' | 'ollama' {
-  const b = (process.env.TITULARES_BACKEND || '').toLowerCase();
-  if (b === 'ollama' || b === 'claude') return b;
-  return process.env.ANTHROPIC_API_KEY ? 'claude' : 'ollama';
+  return (process.env.TITULARES_BACKEND || '').toLowerCase() === 'claude' ? 'claude' : 'ollama';
+}
+
+interface TunelOllama { url: string; token?: string; modelo?: string; ts: number }
+
+const CLAVE_TUNEL = 'da:titulares:ollama';
+const TUNEL_MAX_EDAD_MS = 3 * 60_000;
+
+/** URL del modelo local: OLLAMA_URL fijo, o el túnel que publica el Mac en Redis (con latido). */
+async function resolverOllama(): Promise<TunelOllama> {
+  if (process.env.OLLAMA_URL) return { url: process.env.OLLAMA_URL, token: process.env.OLLAMA_TOKEN, ts: Date.now() };
+  // TITULARES_REDIS_* permite que varias instancias lean el mismo punto de encuentro
+  // (el Mac publica en un solo Redis); si no está, se usa el Redis de la instancia.
+  const url = process.env.TITULARES_REDIS_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.TITULARES_REDIS_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (url && token) {
+    const r = new Redis({ url, token });
+    const t = await r.get<TunelOllama>(CLAVE_TUNEL);
+    if (t?.url && Date.now() - (t.ts || 0) < TUNEL_MAX_EDAD_MS) return t;
+    if (t?.url) throw new Error(`El modelo local no responde: el último latido del túnel fue hace ${Math.round((Date.now() - t.ts) / 60000)} min. ¿Está encendido el Mac y corriendo el túnel?`);
+  }
+  if (process.env.VERCEL) throw new Error('No hay modelo local publicado: arranca el túnel en el Mac (titulares-tunel) o define OLLAMA_URL en Vercel.');
+  return { url: 'http://localhost:11434', ts: Date.now() };
 }
 
 export function nombreModelo(): string {
@@ -343,23 +365,42 @@ async function llamarClaude(system: string, user: string): Promise<any> {
 }
 
 async function llamarOllama(system: string, user: string): Promise<any> {
-  const url = process.env.OLLAMA_URL || 'http://localhost:11434';
-  if (process.env.VERCEL && !process.env.OLLAMA_URL) {
-    throw new Error('Este despliegue no tiene modelo configurado: añade ANTHROPIC_API_KEY (o OLLAMA_URL) en las variables del proyecto en Vercel.');
-  }
-  const r = await fetch(`${url}/api/chat`, {
+  const tunel = await resolverOllama();
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (tunel.token) headers['Authorization'] = `Bearer ${tunel.token}`;
+  // stream:true para que el túnel reciba bytes de forma continua (Cloudflare corta
+  // las respuestas sin tráfico a los 100 s, y el modelo local tarda más).
+  const r = await fetch(`${tunel.url.replace(/\/$/, '')}/api/chat`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({
-      model: nombreModelo(),
+      model: tunel.modelo || nombreModelo(),
       messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
-      stream: false, format: ESQUEMA, think: false,
+      stream: true, format: ESQUEMA, think: false,
       options: { temperature: 0.7, num_ctx: 12000, num_predict: 1800 },
     }),
   });
-  if (!r.ok) throw new Error(`Ollama ${r.status}: ${(await r.text()).slice(0, 200)}`);
-  const j = await r.json() as { message?: { content?: string } };
-  return parseJson(j.message?.content || '');
+  if (!r.ok || !r.body) throw new Error(`Modelo local ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  const reader = r.body.getReader();
+  const dec = new TextDecoder();
+  let buf = '', contenido = '';
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let nl: number;
+    while ((nl = buf.indexOf('\n')) >= 0) {
+      const linea = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
+      if (!linea) continue;
+      try {
+        const j = JSON.parse(linea);
+        if (j.error) throw new Error(`Modelo local: ${j.error}`);
+        contenido += j.message?.content || '';
+      } catch (e: any) { if (String(e?.message || '').startsWith('Modelo local')) throw e; }
+    }
+  }
+  if (buf.trim()) { try { contenido += JSON.parse(buf).message?.content || ''; } catch { /* resto vacío */ } }
+  return parseJson(contenido);
 }
 
 // ---------------------------------------------------------------- validador
