@@ -3,10 +3,6 @@
   "functions": {
     "api/**/*.ts": {
       "includeFiles": "{feeds.json,topics.json,routing.json,headline-formulas.json,feeds-sport.json,feeds-motor.json,titulares-experiencia.json}"
-    },
-    "api/titulares.ts": {
-      "includeFiles": "{feeds.json,topics.json,routing.json,headline-formulas.json,feeds-sport.json,feeds-motor.json,titulares-experiencia.json}",
-      "maxDuration": 300
     }
   }
 }

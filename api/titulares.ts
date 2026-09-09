@@ -2,6 +2,9 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { loadState } from '../src/state/store.js';
 import { generarTitulares, nombreModelo, perfilInstancia } from '../src/analysis/titulares.js';
 
+// El modelo local tarda 1-3 minutos: hace falta más que los 10 s por defecto.
+export const config = { maxDuration: 300 };
+
 /**
  * POST /api/titulares { titular, texto?, canales?: ['discover','search','portada','redes'], perfil? }
  *
