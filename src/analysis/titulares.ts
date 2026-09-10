@@ -268,7 +268,9 @@ QUÉ DEVUELVES (solo JSON válido, sin texto alrededor ni bloques de código)
   "propuestas": [ { "texto": "…", "canal": "${canales.join('|')}", "angulo": "…", "palanca": "…", "estructura": "por ejemplo: Nombre, cargo: «cita» / Consecuencia con fecha / Entidad + dato concreto / Contraste esperado-real", "tiempo_verbal": "presente | pasado narrativo | futuro | sin verbo", "fuente": "frase literal", "por_que": "una o dos frases que citen la regla medida o el titular de la competencia en que te apoyas" } ],
   "descartes": [ "ángulos considerados y por qué no valen con este material" ]
 }
-Una propuesta por canal pedido (${canales.join(', ')}) y hasta seis en total.`;
+${canales.length === 1 && canales[0] === 'discover'
+    ? `CINCO propuestas, todas para el canal discover, cada una por un ángulo y una palanca distintos: si el texto trae declaraciones, una con la estructura «Nombre, cargo: «cita»»; una de consecuencia para el lector con cifra ancla; una de contraste o detalle revelador; una de autoridad o identificación; y una quinta por el ángulo que mejor case con el material. Todas dentro del rango de longitud de discover, con la entidad en las cinco primeras palabras y abriendo la incógnita sin cerrarla.`
+    : `Una propuesta por canal pedido (${canales.join(', ')}) y hasta seis en total.`}`;
 }
 
 function userPrompt(titular: string, texto: string, canales: Canal[]): string {
@@ -478,7 +480,7 @@ export async function generarTitulares(input: { titular: string; texto?: string;
   const titular = (input.titular || '').trim();
   if (!titular) throw new Error('Falta el titular');
   const texto = input.texto || '';
-  const canales = ((input.canales && input.canales.length ? input.canales : ['discover', 'search', 'portada']) as Canal[])
+  const canales = ((input.canales && input.canales.length ? input.canales : ['discover']) as Canal[])
     .filter(c => ['discover', 'search', 'portada', 'redes'].includes(c));
   const exps = cargarExperiencia();
   const perfil = input.perfil && exps[input.perfil] ? input.perfil : perfilInstancia();

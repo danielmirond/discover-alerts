@@ -1051,8 +1051,8 @@ function App() {
     );
   } else if (activeNav === 'titulares') {
     body = viewSinglePanel(
-      'Titulares · alternativas con la experiencia medida',
-      'pega tu titular y el texto: palanca, estructura, tiempo verbal, longitud y porqué · aprende de lo que entra en Discover esta semana',
+      'Titulares para Discover · alternativas con la experiencia medida',
+      'pega tu titular y el texto: cinco alternativas con palanca, estructura, tiempo verbal, longitud y porqué · aprende de lo que entra en Discover esta semana',
       <TitularesView />
     );
   } else if (activeNav === 'auditor') {
@@ -1598,7 +1598,6 @@ function KgView({ entities, kg }) {
 function TitularesView() {
   const [titular, setTitular] = useState('');
   const [texto, setTexto] = useState('');
-  const [canales, setCanales] = useState({ discover: true, search: true, portada: true, redes: false });
   const [res, setRes] = useState(null);
   const [loading, setLoading] = useState(false);
   const [segs, setSegs] = useState(0);
@@ -1618,7 +1617,7 @@ function TitularesView() {
       const r = await fetch('/api/titulares', {
         method: 'POST', credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ titular: titular.trim(), texto, canales: Object.keys(canales).filter(k => canales[k]) }),
+        body: JSON.stringify({ titular: titular.trim(), texto, canales: ['discover'] }),
       });
       setRes(await r.json());
     } catch (e) {
@@ -1667,11 +1666,9 @@ function TitularesView() {
                 placeholder="Texto de la pieza (opcional). Sin él, el sistema solo puede usar lo que dice el titular."
                 style={{ width: '100%', minHeight: 120, padding: '9px 12px', fontFamily: 'var(--sans)', fontSize: 13, border: '1px solid var(--rule)', background: 'var(--paper)', color: 'var(--ink)', resize: 'vertical' }} />
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '10px 0 16px', flexWrap: 'wrap' }}>
-        {['discover', 'search', 'portada', 'redes'].map(c => (
-          <label key={c} style={{ fontFamily: 'var(--mono)', fontSize: 10.5, textTransform: 'uppercase', letterSpacing: '.05em', color: 'var(--ink-3)', display: 'inline-flex', gap: 5, alignItems: 'center', cursor: 'pointer' }}>
-            <input type="checkbox" checked={!!canales[c]} onChange={e => setCanales({ ...canales, [c]: e.target.checked })} /> {c}
-          </label>
-        ))}
+        <span style={{ fontFamily: 'var(--mono)', fontSize: 10.5, textTransform: 'uppercase', letterSpacing: '.05em', color: 'var(--ink-3)' }}>
+          cinco alternativas para Discover, cada una por un ángulo distinto
+        </span>
         <button onClick={generar} disabled={loading || !titular.trim()}
                 style={{ marginLeft: 'auto', padding: '8px 16px', fontFamily: 'var(--mono)', fontSize: 11, background: 'var(--ink)', color: 'var(--paper)', border: 'none', cursor: 'pointer', letterSpacing: '.05em' }}>
           {loading ? `PENSANDO… ${segs}s` : 'PROPONER ALTERNATIVAS'}
