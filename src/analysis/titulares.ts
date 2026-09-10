@@ -352,10 +352,12 @@ async function llamarClaude(system: string, user: string): Promise<any> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('Falta ANTHROPIC_API_KEY (o pon TITULARES_BACKEND=ollama)');
   const client = new Anthropic({ apiKey });
+  // El system (reglas, palancas, experiencia, competencia) es el mismo para todas las
+  // peticiones de la semana: se cachea y las siguientes pagan una décima parte de esa entrada.
   const res = await client.messages.create({
     model: nombreModelo(),
     max_tokens: 4000,
-    system,
+    system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: user }],
   });
   if (res.stop_reason === 'refusal') throw new Error('El modelo ha rechazado la petición');
