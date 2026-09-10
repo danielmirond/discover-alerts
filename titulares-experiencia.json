@@ -2,7 +2,24 @@
   "_nota": "Experiencia medida en Search Console (Discover) sobre corpus reales. Se expresa sin nombrar cabeceras: el sistema habla de 'experiencia medida'. Los ejemplos vivos salen del estado de la app (competencia en Discover); los de aquí son respaldo estructural. Regenerar cuando haya datos nuevos.",
   "actualidad": {
     "nombre": "Actualidad · experiencia medida en Discover (2.577 URL, 41 millones de clics, 17 meses)",
-    "rangos": { "discover": [103, 156], "search": [55, 70], "portada": [40, 60], "redes": [0, 120] },
+    "rangos": {
+      "discover": [
+        103,
+        156
+      ],
+      "search": [
+        55,
+        70
+      ],
+      "portada": [
+        40,
+        60
+      ],
+      "redes": [
+        0,
+        120
+      ]
+    },
     "reglas_medidas": [
       "La estructura «Nombre, cargo: “cita”» es el 24% de las piezas y el 67% de los clics. Mediana de 5.333 clics por pieza frente a 1.171 del resto. Es la forma que más rinde en Discover.",
       "Autoridad cotidiana en el titular (mecánico, gasolinera, profesor, guardia civil, abogado, catedrático, el que estaba delante): 13% de las piezas, 38% de los clics. Pesa más que el experto genérico.",
@@ -26,7 +43,24 @@
   },
   "motor": {
     "nombre": "Motor · experiencia medida en Discover (538 URL, 1,15 millones de clics, un mes) y categoría Autos de todos los medios",
-    "rangos": { "discover": [94, 116], "search": [55, 70], "portada": [40, 60], "redes": [0, 120] },
+    "rangos": {
+      "discover": [
+        94,
+        116
+      ],
+      "search": [
+        55,
+        70
+      ],
+      "portada": [
+        40,
+        60
+      ],
+      "redes": [
+        0,
+        120
+      ]
+    },
     "reglas_medidas": [
       "Mediana de los titulares que entran: 103 caracteres, 19 palabras. La franja 105–119 concentra el 38% de los clics.",
       "La cita «» sube el CTR: 9,5% con cita frente a 6,8% sin. La forma «Nombre: «cita»» es la de más CTR (10%).",
@@ -44,6 +78,55 @@
       "Los coches chinos arrasan en España, pero tienen un problema que preocupa ya al 54 % de sus compradores",
       "El motor diésel de Jaguar y Land Rover que compraron miles de clientes esconde un problema que puede destruirlo",
       "Montoya pone cifras al 'milagro' de Newey en Aston Martin: de perder 4 segundos a quedarse a 1 con el nuevo motor Honda"
+    ]
+  },
+  "deportes": {
+    "nombre": "Deportes · experiencia medida en Discover (dos cabeceras: 44.596 URL y 68 millones de clics, feb–sep 2026) y categoría Deportes de todos los medios",
+    "rangos": {
+      "discover": [
+        100,
+        140
+      ],
+      "search": [
+        55,
+        70
+      ],
+      "portada": [
+        40,
+        60
+      ],
+      "redes": [
+        0,
+        120
+      ]
+    },
+    "reglas_medidas": [
+      "La estructura «Nombre, cargo: “cita”» es la forma ganadora: 29% de los clics en una cabecera y 32% en la otra, con CTR 13,4% frente a 11,6% de media y 10,3% frente a 8,6%. En la categoría Deportes de Discover concentra el 62% de la tracción de todos los medios.",
+      "La cita literal está en el 39–40% de los clics de ambas cabeceras y es el rasgo con mejor CTR. La cita tiene que ser literal del texto; una cita reformulada es una falsedad atribuida a una persona.",
+      "Longitud: las casas escriben corto (medianas de 65 y 84 caracteres) pero el rendimiento sube de forma continua con la longitud. De 120 a 139 caracteres el CTR es el mejor (13,2% y 10,1%) y de 140 en adelante la mediana de clics es de 627 y 1.036, entre cuatro y siete veces la del corpus. Rango recomendado: 100–140 caracteres, 16 a 22 palabras.",
+      "Lo que más arrastra es lo humano: vida personal (CTR 15,5% y 12,9%, el más alto de todo el corpus), confesión y revelación (12,5% y 10,8%), y la anécdota contada en pasado o imperfecto dentro de la cita («tenía mujer e hijos», «cenaba un bocadillo de jamón york») con CTR 12,6% y 13,6% frente al presente.",
+      "Autoridad lateral y atribución colectiva con identificación: «Los entrenadores coinciden: “Las personas que hacen ejercicio de fuerza…”» ocupa cinco de los diez titulares con más clics de una cabecera; psicólogos, nutricionistas deportivos o expertos en comunicación no verbal lideran la categoría. «Las personas que…» hace que el lector se vea.",
+      "Abrir por la persona rinde más que abrir por el club: el nombre propio concentra el 52–53% de los clics; el artículo («El Barça», «El Sevilla», «El Betis», 300–450 piezas cada uno) el 28–30% y a escala es plantilla. Alcaraz CTR 16%, Rodri mediana 1.438 clics; Real Madrid mediana 140.",
+      "Previa y servicio (horario, alineación, dónde ver) es el formato que peor rinde en Discover: 1% de los clics con CTR 8,5% y 7,9%, el más bajo de cada corpus. Vale para búsqueda, no para Discover.",
+      "Pregunta en el titular: 0,5–1,1% de los clics. Evitar salvo que sea la duda literal del lector.",
+      "Aperturas quemadas (muchas piezas, rendimiento bajo): «La portada» y «Portada de/MD» (mediana 28–271 clics), «Oficial:» (238 piezas, mediana 248; 54 piezas, mediana 42), «El 1x1» (229 piezas, mediana 178, CTR 6%), «Así queda».",
+      "La cifra sola no ayuda: en fútbol casi todo titular lleva un número y el CTR con cifra queda por debajo de la media. Funciona cuando la cifra es consecuencia o anécdota (edad, años, hijos, dinero), no marcador ni dato de ficha.",
+      "Presente de indicativo en el 58–61% de los clics; sin verbo conjugado el 18–23% con el CTR más bajo. Que haya verbo."
+    ],
+    "ejemplos": [
+      "De la Fuente se emociona al recordar su momento más difícil: “Tenía mujer e hijos, necesitaba tener ingresos y volver al fútbol”",
+      "Mourinho, sobre Vinicius: “Una cosa es celebrar un gol con los tuyos y otra cosa es celebrar delante de la afición contraria”",
+      "El presidente de Las Palmas desafía a Marruecos en Ceuta: “Me da igual que digan que Canarias es de ellos. Somos españoles”",
+      "La confesión más dura de Lamine Yamal sobre su infancia, antes de ser la estrella de la Selección campeona del mundo: “Siempre vivíamos donde nos dejaban una habitación”",
+      "Pedro Delgado, sobre la transición a mujer del ciclista Robert Millar: “Cuando la volví a ver me encontré a otra persona. No por ser mujer, sino por su carácter”",
+      "Los preparadores físicos insisten: “Las personas que son constantes en el ejercicio de fuerza son las que más beneficios logran a largo plazo”",
+      "Isi, futbolista del Rayo Vallecano: “Cenaba un bocadillo de jamón york y mayonesa con tinto de verano y merendaba patatas fritas”",
+      "Isabel Díaz Ayuso, 47 años: “Me levanto a las 5 y salgo a correr porque me gusta ver salir el Sol y además es un deporte perfecto”",
+      "Los expertos en salud coinciden: “Las personas que suben escaleras todos los días notan más beneficios que otras que pasan horas en el gimnasio”",
+      "Hamilton, heptacampeón de F1 sobre Madring: “Parece un circuito para vueltas de clasificación”",
+      "Rafa Nadal, sobre los impuestos y tributar en España: «Estoy feliz de ser español, pero cuando llega la factura de los impuestos, lo soy un poco menos»",
+      "Santiago Cañizares: “Tenía 4 hijos, 3 con mi primera mujer y uno con la segunda, quien quería tener otro. A regañadientes fuimos a por el quinto y me cayeron trillizos”",
+      "Perico Delgado, 66 años: “Antes de competir, desayunaba tortilla, carne, pasta o arroz, pan, bollería y café con leche”"
     ]
   }
 }

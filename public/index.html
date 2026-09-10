@@ -164,8 +164,8 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     verticalHidden.add('content-audit');
     verticalHidden.add('weekly-sports');
   }
-  // 'titulares': solo en la instancia motor (decisión 2026-09-10)
-  if (instance.name !== 'motor') {
+  // 'titulares': instancias motor y sport (decisión 2026-09-10); main no.
+  if (instance.name !== 'motor' && instance.name !== 'sport') {
     verticalHidden.add('titulares');
   }
   const navs = [

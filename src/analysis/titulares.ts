@@ -93,7 +93,9 @@ function cargarExperiencia(): Record<string, Experiencia> {
 
 export function perfilInstancia(): string {
   const inst = (process.env.INSTANCE_NAME || 'main').toLowerCase();
-  return inst === 'motor' ? 'motor' : 'actualidad';
+  if (inst === 'motor') return 'motor';
+  if (inst === 'sport') return 'deportes';
+  return 'actualidad';
 }
 
 // ---------------------------------------------------------------- competencia
@@ -115,6 +117,7 @@ export interface Competencia {
 const TOPICS_POR_PERFIL: Record<string, string[]> = {
   actualidad: ['legal', 'sucesos', 'politica', 'economia', 'salud', 'tech', 'entretenimiento'],
   motor: ['motor', 'legal', 'tech', 'economia'],
+  deportes: ['deportes', 'salud', 'sociedad', 'entretenimiento'],
 };
 
 /** Fórmulas editoriales del catálogo (las que alimentan la pestaña Fórmulas). */
