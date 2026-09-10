@@ -356,15 +356,19 @@ async function llamarClaude(system: string, user: string): Promise<any> {
   const client = new Anthropic({ apiKey, ...(workspace ? { defaultHeaders: { 'anthropic-workspace-id': workspace } } : {}) });
   // El system (reglas, palancas, experiencia, competencia) es el mismo para todas las
   // peticiones de la semana: se cachea y las siguientes pagan una décima parte de esa entrada.
+  // Tarea corta y con reglas cerradas: esfuerzo bajo. max_tokens holgado para que el
+  // razonamiento adaptativo no se coma el presupuesto y deje la respuesta vacía.
   const res = await client.messages.create({
     model: nombreModelo(),
-    max_tokens: 4000,
+    max_tokens: 16000,
+    thinking: { type: 'adaptive' },
+    output_config: { effort: 'low' },
     system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: user }],
   });
   if (res.stop_reason === 'refusal') throw new Error('El modelo ha rechazado la petición');
   const text = res.content.filter(b => b.type === 'text').map(b => (b as { type: 'text'; text: string }).text).join('\n');
-  if (!text.trim()) throw new Error('El modelo no devolvió texto');
+  if (!text.trim()) throw new Error(`El modelo no devolvió texto (stop_reason ${res.stop_reason}, bloques ${res.content.map(b => b.type).join(',') || 'ninguno'})`);
   return parseJson(text);
 }
 
