@@ -460,8 +460,11 @@ export function validar(p: Propuesta, rangos: Record<string, [number, number]>, 
   if (negras.length) bloquea.push('lista negra: ' + negras.join(', '));
   if (textoFuente) {
     if (p.fuente && !esta(p.fuente, textoFuente)) bloquea.push('la fuente no aparece literalmente en el texto');
+    // Una cita tiene que estar entera y literal (se admite recortada por el final o
+    // por el principio, nunca reformulada: «km» por «kilómetros» ya es otra cita).
     for (const m of t.matchAll(/[«"“‘']([^»"”’']{12,})[»"”’']/g)) {
-      if (!esta(m[1], textoFuente)) bloquea.push('cita no literal: «' + m[1].slice(0, 50) + '…»');
+      const c = norm(m[1]).replace(/[.…]+$/, '');
+      if (!norm(textoFuente).includes(c)) bloquea.push('cita no literal: «' + m[1].slice(0, 50) + '…»');
     }
     const sinPuntos = textoFuente.replace(/\./g, '');
     for (const m of t.matchAll(/\d[\d.,]*/g)) {
