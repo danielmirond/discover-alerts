@@ -164,6 +164,10 @@ function Masthead({ activeNav, setActiveNav, clock, counts = {}, instance = {} }
     verticalHidden.add('content-audit');
     verticalHidden.add('weekly-sports');
   }
+  // 'titulares': solo en la instancia motor (decisión 2026-09-10)
+  if (instance.name !== 'motor') {
+    verticalHidden.add('titulares');
+  }
   const navs = [
     { id: 'feed', label: 'Feed en vivo', count: counts.feed },
     { id: 'huecos', label: 'Huecos', count: counts.huecos },

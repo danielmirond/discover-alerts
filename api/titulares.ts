@@ -25,6 +25,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(405).json({ error: 'POST { titular, texto?, canales? }' });
     return;
   }
+  // Solo en la instancia motor (decisión 2026-09-10); TITULARES_INSTANCIAS=motor,sport para abrir más.
+  const permitidas = (process.env.TITULARES_INSTANCIAS || 'motor').split(',').map(s => s.trim().toLowerCase());
+  if (!permitidas.includes((process.env.INSTANCE_NAME || 'main').toLowerCase())) {
+    res.status(403).json({ error: 'Titulares no está activo en esta instancia' });
+    return;
+  }
   const body = typeof req.body === 'string' ? safeParse(req.body) : (req.body || {});
   if (!body.titular) {
     res.status(400).json({ error: 'Falta titular' });
