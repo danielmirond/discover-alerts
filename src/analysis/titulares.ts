@@ -351,7 +351,9 @@ function parseJson(raw: string): any {
 async function llamarClaude(system: string, user: string): Promise<any> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('Falta ANTHROPIC_API_KEY (o pon TITULARES_BACKEND=ollama)');
-  const client = new Anthropic({ apiKey });
+  // Una clave sin workspace exige indicar el workspace en cada petición.
+  const workspace = process.env.ANTHROPIC_WORKSPACE_ID;
+  const client = new Anthropic({ apiKey, ...(workspace ? { defaultHeaders: { 'anthropic-workspace-id': workspace } } : {}) });
   // El system (reglas, palancas, experiencia, competencia) es el mismo para todas las
   // peticiones de la semana: se cachea y las siguientes pagan una décima parte de esa entrada.
   const res = await client.messages.create({
