@@ -1608,6 +1608,12 @@ function TitularesView() {
   const [segs, setSegs] = useState(0);
   const [elegida, setElegida] = useState(null);
   const [edicion, setEdicion] = useState('');
+  const [comentarios, setComentarios] = useState({});   // por propuesta (índice) y 'general'
+  const [enviados, setEnviados] = useState({});
+  const enviarComentario = (clave, p) => {
+    const c = (comentarios[clave] || '').trim(); if (!c) return;
+    registrar('comentario', p, { comentario: c }); setEnviados({ ...enviados, [clave]: true });
+  };
 
   // Registro de lo que hace la redacción con las propuestas: es la señal con la
   // que el sistema aprende (qué ángulos eligen, qué acortan, qué quitan).
@@ -1779,9 +1785,25 @@ function TitularesView() {
                     </div>
                   </div>
                 ) : null}
+                <div style={{ display: 'flex', gap: 6, marginTop: 8, alignItems: 'center' }}>
+                  <input value={comentarios[i] || ''} onChange={e => setComentarios({ ...comentarios, [i]: e.target.value })}
+                         onKeyDown={e => e.key === 'Enter' && enviarComentario(i, p)}
+                         placeholder="Comentario sobre esta propuesta: qué le sobra, qué le falta, por qué no la usarías…"
+                         style={{ flex: 1, padding: '6px 10px', fontFamily: 'var(--sans)', fontSize: 12.5, border: '1px dashed var(--rule)', background: 'var(--paper)', color: 'var(--ink)' }} />
+                  <button onClick={() => enviarComentario(i, p)} disabled={!(comentarios[i] || '').trim()}
+                          style={{ padding: '6px 12px', fontFamily: 'var(--mono)', fontSize: 10.5, fontWeight: 700, background: enviados[i] ? 'var(--ok)' : 'var(--paper)', color: enviados[i] ? 'var(--paper)' : 'var(--ink)', border: '2px solid ' + (enviados[i] ? 'var(--ok)' : 'var(--ink)'), cursor: 'pointer', letterSpacing: '.05em' }}>{enviados[i] ? '✓ ENVIADO' : 'COMENTAR'}</button>
+                </div>
               </div>
             );
           })}
+          <div style={{ display: 'flex', gap: 6, marginTop: 10, alignItems: 'center' }}>
+            <input value={comentarios.general || ''} onChange={e => setComentarios({ ...comentarios, general: e.target.value })}
+                   onKeyDown={e => e.key === 'Enter' && enviarComentario('general')}
+                   placeholder="Comentario general: qué te ha parecido el resultado, qué ángulo faltaba, qué harías tú…"
+                   style={{ flex: 1, padding: '8px 12px', fontFamily: 'var(--sans)', fontSize: 13, border: '1px dashed var(--ink-3)', background: 'var(--paper)', color: 'var(--ink)' }} />
+            <button onClick={() => enviarComentario('general')} disabled={!(comentarios.general || '').trim()}
+                    style={{ padding: '8px 16px', fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 700, background: enviados.general ? 'var(--ok)' : 'var(--ink)', color: 'var(--paper)', border: '2px solid ' + (enviados.general ? 'var(--ok)' : 'var(--ink)'), cursor: 'pointer', letterSpacing: '.05em' }}>{enviados.general ? '✓ ENVIADO' : 'ENVIAR COMENTARIO'}</button>
+          </div>
           <div style={{ marginTop: 6 }}>
             <button onClick={() => registrar('ninguna')} style={{ padding: '8px 16px', fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 700, background: 'var(--paper)', color: 'var(--ink)', border: '2px dashed var(--ink-3)', cursor: 'pointer', letterSpacing: '.05em' }}>ME QUEDO CON EL MÍO</button>
           </div>

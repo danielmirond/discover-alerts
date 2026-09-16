@@ -4,7 +4,7 @@ import { Redis } from '@upstash/redis';
 /**
  * Registro de lo que hace la redacción con las propuestas de Titulares.
  *
- * POST /api/titulares-log { tipo: 'eleccion' | 'copia' | 'edicion' | 'ninguna', original, propuesta?, editado?, tipo_propuesta?, angulo?, estructura?, veredicto? }
+ * POST /api/titulares-log { tipo: 'eleccion' | 'copia' | 'edicion' | 'ninguna' | 'comentario', original, propuesta?, editado?, comentario?, tipo_propuesta?, angulo?, estructura?, veredicto? }
  * GET  /api/titulares-log?n=100  → últimos eventos (para analizar qué eligen y qué cambian)
  *
  * Es la señal de aprendizaje: con unos cientos de eventos se ve qué ángulos
@@ -40,6 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     propuesta: body.propuesta ? String(body.propuesta).slice(0, 300) : undefined,
     editado: body.editado ? String(body.editado).slice(0, 300) : undefined,
     tipo_propuesta: body.tipo_propuesta, angulo: body.angulo, estructura: body.estructura, veredicto: body.veredicto,
+    comentario: body.comentario ? String(body.comentario).slice(0, 600) : undefined,
   };
   await r.lpush(CLAVE, evento);
   await r.ltrim(CLAVE, 0, MAX - 1);
