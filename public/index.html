@@ -1741,6 +1741,11 @@ function TitularesView() {
             Alternativas<span className="bar"></span>
             <span className="meta">{res.propuestas.length} · {res.modelo} · {res.segundos}s · competencia: {res.competencia.ejemplos} titulares de esta semana</span>
           </div>
+          <div style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink-3)', margin: '0 0 10px', lineHeight: 1.45 }}>
+            <strong style={{ color: 'var(--ok)' }}>PASA</strong>: cumple las comprobaciones automáticas (citas y cifras literales del texto, sin clickbait, sin muletillas, longitud en el rango medido).
+            <strong style={{ color: 'var(--warn)', marginLeft: 8 }}>AVISO</strong>: vale, pero hay algo que mirar; lo dice debajo (suele ser la longitud o que repite apertura con otra).
+            <strong style={{ color: 'var(--danger)', marginLeft: 8 }}>FALLA</strong>: no usar tal cual; una cita o una cifra no está en el texto, o es clickbait.
+          </div>
           {res.propuestas.map((p, i) => {
             const v = p.validador || { estado: 'PASA', bloquea: [], avisa: [] };
             return (
@@ -1760,8 +1765,8 @@ function TitularesView() {
                 {v.bloquea.map((b, k) => <div key={'b' + k} style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--danger)', marginTop: 4 }}>✗ {b}</div>)}
                 {v.avisa.map((b, k) => <div key={'a' + k} style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--warn)', marginTop: 4 }}>⚠ {b}</div>)}
                 <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
-                  <button onClick={() => { navigator.clipboard.writeText(p.texto); registrar('copia', p); }} style={{ padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 10, background: 'transparent', color: 'var(--ink)', border: '1px solid var(--rule)', cursor: 'pointer' }}>COPIAR</button>
-                  <button onClick={() => { setElegida(i); setEdicion(p.texto); registrar('eleccion', p); }} style={{ padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 10, background: elegida === i ? 'var(--accent)' : 'transparent', color: elegida === i ? 'var(--paper)' : 'var(--ink)', border: '1px solid var(--rule)', cursor: 'pointer' }}>ME QUEDO CON ESTA</button>
+                  <button onClick={() => { navigator.clipboard.writeText(p.texto); registrar('copia', p); }} style={{ padding: '8px 16px', fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 700, background: 'var(--paper)', color: 'var(--ink)', border: '2px solid var(--ink)', cursor: 'pointer', letterSpacing: '.05em' }}>COPIAR</button>
+                  <button onClick={() => { setElegida(i); setEdicion(p.texto); registrar('eleccion', p); }} style={{ padding: '8px 16px', fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 700, background: elegida === i ? 'var(--accent)' : 'var(--ink)', color: 'var(--paper)', border: '2px solid ' + (elegida === i ? 'var(--accent)' : 'var(--ink)'), cursor: 'pointer', letterSpacing: '.05em' }}>{elegida === i ? '✓ ELEGIDA' : 'ME QUEDO CON ESTA'}</button>
                 </div>
                 {elegida === i ? (
                   <div style={{ marginTop: 8 }}>
@@ -1770,7 +1775,7 @@ function TitularesView() {
                       <input value={edicion} onChange={e => setEdicion(e.target.value)}
                              style={{ flex: 1, padding: '6px 10px', fontFamily: 'var(--serif)', fontSize: 14, border: '1px solid var(--accent)', background: 'var(--paper)', color: 'var(--ink)' }} />
                       <button onClick={() => { navigator.clipboard.writeText(edicion); if (edicion.trim() && edicion.trim() !== p.texto) registrar('edicion', p, { editado: edicion.trim() }); }}
-                              style={{ padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 10, background: 'var(--ink)', color: 'var(--paper)', border: 'none', cursor: 'pointer' }}>COPIAR EDITADA</button>
+                              style={{ padding: '8px 16px', fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 700, background: 'var(--accent)', color: 'var(--paper)', border: '2px solid var(--accent)', cursor: 'pointer', letterSpacing: '.05em' }}>COPIAR EDITADA</button>
                     </div>
                   </div>
                 ) : null}
@@ -1778,7 +1783,7 @@ function TitularesView() {
             );
           })}
           <div style={{ marginTop: 6 }}>
-            <button onClick={() => registrar('ninguna')} style={{ padding: '4px 10px', fontFamily: 'var(--mono)', fontSize: 10, background: 'transparent', color: 'var(--ink-3)', border: '1px dashed var(--rule)', cursor: 'pointer' }}>ME QUEDO CON EL MÍO</button>
+            <button onClick={() => registrar('ninguna')} style={{ padding: '8px 16px', fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 700, background: 'var(--paper)', color: 'var(--ink)', border: '2px dashed var(--ink-3)', cursor: 'pointer', letterSpacing: '.05em' }}>ME QUEDO CON EL MÍO</button>
           </div>
           {res.descartes?.length ? (
             <div style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink-3)', marginTop: 10, lineHeight: 1.4 }}><strong>Descartado:</strong> {res.descartes.join(' · ')}</div>
