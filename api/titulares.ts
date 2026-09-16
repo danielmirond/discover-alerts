@@ -39,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // El estado da los titulares de la competencia; si Redis no está, se sigue sin ellos.
     try { await loadState(); } catch (e: any) { console.warn('[titulares] sin estado:', e?.message); }
-    const out = await generarTitulares({ titular: body.titular, texto: body.texto, canales: body.canales, perfil: body.perfil });
+    const out = await generarTitulares({ titular: body.titular, texto: body.texto, canales: body.canales, perfil: body.perfil, instrucciones: body.instrucciones });
     res.json(out);
   } catch (err: any) {
     res.status(500).json({ error: err?.message || String(err) });

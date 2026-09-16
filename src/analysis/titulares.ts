@@ -26,6 +26,7 @@ export type Canal = 'discover' | 'search' | 'portada' | 'redes';
 export interface Propuesta {
   texto: string;
   canal: Canal;
+  tipo?: 'segura' | 'variante' | 'apuesta';
   angulo: string;
   palanca: string;
   estructura: string;
@@ -53,7 +54,7 @@ export interface Validacion {
 }
 
 export interface RespuestaTitulares {
-  original: { texto: string; medidas: Medidas; analisis: Record<string, string> };
+  original: { texto: string; medidas: Medidas; analisis: Record<string, any> };
   propuestas: Propuesta[];
   descartes: string[];
   experiencia: string;
@@ -241,7 +242,10 @@ function systemPrompt(exp: Experiencia, canales: Canal[], comp: Competencia): st
     ? `\n\nPLANTILLAS EDITORIALES QUE HAN FUNCIONADO (estructuras ganadoras; {entity} es la entidad de la pieza; adáptalas al material, no las rellenes mecánicamente)\n${comp.plantillas.map(x => `- ${x}`).join('\n')}`
     : '';
 
-  return `Eres editor jefe de una redacción digital española. Un redactor te pasa un titular (y a veces el texto de la pieza) y tú le devuelves alternativas mejores, explicando por qué. Escribes en castellano.
+  return `Eres editor jefe de una redacción digital española, con criterio propio. Un redactor te pasa un titular (y a veces el texto de la pieza) y tú lo lees como editor, lo valoras con honestidad y le propones alternativas distintas entre sí, explicando por qué. Escribes en castellano.
+
+CÓMO TRABAJAS
+Primero lees la pieza y decides qué es lo más fuerte que tiene: el hecho, la frase, el detalle, la contradicción, lo que sentiría el lector. Solo después miras la experiencia medida, que es un contraste, no un guion: te dice qué ha funcionado, no qué tienes que hacer con esta pieza. Si el titular del redactor ya es bueno, lo dices y propones menos cambios; si la historia está en otra parte, lo dices también. Cada alternativa tiene que sonar a un editor distinto, no a la misma plantilla con otras palabras.
 
 REGLAS QUE NO SE NEGOCIAN
 1. Veracidad: no puedes escribir ningún nombre, cifra, cita, fecha ni dato que no esté en el titular original o en el texto que te pasan. Si no está, no existe. No completes con lo que sepas del tema.
@@ -257,7 +261,7 @@ PALANCAS DE ATENCIÓN (elige UNA dominante por titular)
 ${PALANCAS}
 
 LA EXPERIENCIA MEDIDA — ${exp.nombre}
-Esto no es opinión: está medido en Search Console. Úsalo para decidir estructura, longitud y apertura.
+Está medido en Search Console. Es lo que ha funcionado en Discover a escala; no dice qué necesita esta pieza. Úsalo como contraste y cita una cifra solo cuando sea decisiva para la decisión, no como muletilla en cada propuesta.
 ${reglas}
 
 RANGOS DE LONGITUD POR CANAL (medidos): ${rangos}
@@ -267,33 +271,61 @@ ${ejemplosFijos}${ejemplosVivos}${formulas}${patrones}${plantillas}
 
 QUÉ DEVUELVES (solo JSON válido, sin texto alrededor ni bloques de código)
 {
-  "analisis_original": { "palanca": "…", "estructura": "…", "tiempo_verbal": "…", "diagnostico": "dos frases con lo que le falta según la experiencia medida", "que_conserva": "qué tiene de bueno y hay que mantener" },
-  "propuestas": [ { "texto": "…", "canal": "${canales.join('|')}", "angulo": "…", "palanca": "…", "estructura": "por ejemplo: Nombre, cargo: «cita» / Consecuencia con fecha / Entidad + dato concreto / Contraste esperado-real", "tiempo_verbal": "presente | pasado narrativo | futuro | sin verbo", "fuente": "frase literal", "por_que": "una o dos frases que citen la regla medida o el titular de la competencia en que te apoyas" } ],
+  "analisis_original": {
+    "lectura": "tres o cuatro frases de lectura editorial libre: qué es lo más fuerte de la pieza, qué siente o quiere saber el lector, dónde está la historia. Sin citar reglas ni cifras.",
+    "valoracion": {
+      "precision": { "nota": 1-5, "comentario": "¿dice exactamente lo que pasa, sin exagerar ni quedarse corto?" },
+      "claridad": { "nota": 1-5, "comentario": "¿se entiende a la primera, sin conocer el contexto?" },
+      "gancho": { "nota": 1-5, "comentario": "¿da una razón para entrar o lo cuenta todo?" },
+      "tono": { "nota": 1-5, "comentario": "¿suena a la casa, a un redactor con criterio, o a fórmula?" },
+      "oportunidad": { "nota": 1-5, "comentario": "¿aprovecha lo que hace noticia hoy: el quién, el cuándo, el por qué ahora?" }
+    },
+    "veredicto": "ya es bueno | mejorable | cambia el enfoque",
+    "palanca": "…", "estructura": "…", "tiempo_verbal": "…",
+    "diagnostico": "dos frases, como editor, con lo que cambiarías y por qué. Si el titular ya es bueno, dilo sin rodeos.",
+    "que_conserva": "qué tiene de bueno y hay que mantener"
+  },
+  "propuestas": [ { "texto": "…", "canal": "${canales.join('|')}", "tipo": "segura | variante | apuesta", "angulo": "…", "palanca": "…", "estructura": "por ejemplo: Nombre, cargo: «cita» / Consecuencia con fecha / Entidad + dato concreto / Contraste esperado-real / Escena / Pregunta del lector respondida a medias", "tiempo_verbal": "presente | pasado narrativo | futuro | sin verbo", "fuente": "frase literal", "por_que": "una o dos frases de razonamiento editorial: qué gana este titular frente al original. Solo cita una cifra medida si es decisiva." } ],
   "descartes": [ "ángulos considerados y por qué no valen con este material" ]
 }
 ${canales.length === 1 && canales[0] === 'discover'
-    ? `CINCO propuestas, todas para el canal discover, cada una por un ángulo y una palanca distintos: si el texto trae declaraciones, una con la estructura «Nombre, cargo: «cita»»; una de consecuencia para el lector con cifra ancla; una de contraste o detalle revelador; una de autoridad o identificación; y una quinta por el ángulo que mejor case con el material. Todas de ${Math.round(exp.rangos.discover[0] / 6)} a ${Math.round(exp.rangos.discover[1] / 6)} palabras (${exp.rangos.discover[0]}–${exp.rangos.discover[1]} caracteres): los titulares cortos, de 12 o 13 palabras, rinden peor en Discover según lo medido. Cuenta las palabras de cada propuesta antes de devolverla; si se queda corta, añade el dato concreto que falta (quién, dónde, cuánto, desde cuándo), nunca relleno. Entidad en las cinco primeras palabras y abre la incógnita sin cerrarla.`
+    ? `CINCO propuestas para discover, y tienen que ser distintas entre sí de verdad:
+- Como mucho DOS con la estructura dominante de la experiencia medida («Nombre, cargo: «cita»» o la que sea la ganadora). Si las cinco salen con la misma forma, has fallado.
+- Al menos DOS que rompan el patrón medido: una escena, un contraste, una consecuencia, un detalle que abra la historia por otro sitio, un tono distinto. Márcalas como "variante".
+- UNA "apuesta": la que un editor con criterio se atrevería a poner aunque no sea la forma segura. Márcala como "apuesta".
+- Las demás, "segura".
+- Si el titular del redactor ya es bueno ("ya es bueno"), una de las cinco puede ser el suyo con un retoque mínimo, y dilo.
+Longitud: la experiencia medida dice que en este vertical rinden mejor los titulares de ${Math.round(exp.rangos.discover[0] / 6)} a ${Math.round(exp.rangos.discover[1] / 6)} palabras (${exp.rangos.discover[0]}–${exp.rangos.discover[1]} caracteres) y que los de 12 palabras o menos rinden peor. Es una tendencia, no una obligación: si un titular corto es mejor, propónlo y explica por qué. Cuando alargues, que sea con un dato que falta (quién, dónde, cuánto, desde cuándo), nunca con relleno. La entidad, mejor al principio; la incógnita, abierta.`
     : `Una propuesta por canal pedido (${canales.join(', ')}) y hasta seis en total.`}`;
 }
 
-function userPrompt(titular: string, texto: string, canales: Canal[]): string {
+function userPrompt(titular: string, texto: string, canales: Canal[], instrucciones = ''): string {
   const partes = [`TITULAR DEL REDACTOR:\n${titular}`];
   partes.push(texto.trim()
     ? `TEXTO DE LA PIEZA:\n${texto.trim().slice(0, 6000)}`
     : 'TEXTO DE LA PIEZA: no se ha pasado. Solo puedes usar lo que dice el titular; no añadas datos.');
+  if (instrucciones.trim()) {
+    partes.push(`INDICACIONES DEL REDACTOR (mandan sobre la experiencia medida, nunca sobre las reglas de veracidad):\n${instrucciones.trim().slice(0, 800)}`);
+  }
   partes.push(`CANALES: ${canales.join(', ')}`);
   return partes.join('\n\n');
 }
 
 // ---------------------------------------------------------------- modelo
 
+const NOTA = { type: 'object', properties: { nota: { type: 'integer' }, comentario: { type: 'string' } }, required: ['nota', 'comentario'] };
 const ESQUEMA = {
   type: 'object',
   properties: {
     analisis_original: {
       type: 'object',
-      properties: { palanca: { type: 'string' }, estructura: { type: 'string' }, tiempo_verbal: { type: 'string' }, diagnostico: { type: 'string' }, que_conserva: { type: 'string' } },
-      required: ['palanca', 'estructura', 'tiempo_verbal', 'diagnostico', 'que_conserva'],
+      properties: {
+        lectura: { type: 'string' },
+        valoracion: { type: 'object', properties: { precision: NOTA, claridad: NOTA, gancho: NOTA, tono: NOTA, oportunidad: NOTA }, required: ['precision', 'claridad', 'gancho', 'tono', 'oportunidad'] },
+        veredicto: { type: 'string', enum: ['ya es bueno', 'mejorable', 'cambia el enfoque'] },
+        palanca: { type: 'string' }, estructura: { type: 'string' }, tiempo_verbal: { type: 'string' }, diagnostico: { type: 'string' }, que_conserva: { type: 'string' },
+      },
+      required: ['lectura', 'valoracion', 'veredicto', 'palanca', 'estructura', 'tiempo_verbal', 'diagnostico', 'que_conserva'],
     },
     propuestas: {
       type: 'array',
@@ -301,10 +333,11 @@ const ESQUEMA = {
         type: 'object',
         properties: {
           texto: { type: 'string' }, canal: { type: 'string', enum: ['discover', 'search', 'portada', 'redes'] },
+          tipo: { type: 'string', enum: ['segura', 'variante', 'apuesta'] },
           angulo: { type: 'string' }, palanca: { type: 'string' }, estructura: { type: 'string' },
           tiempo_verbal: { type: 'string' }, fuente: { type: 'string' }, por_que: { type: 'string' },
         },
-        required: ['texto', 'canal', 'angulo', 'palanca', 'estructura', 'tiempo_verbal', 'fuente', 'por_que'],
+        required: ['texto', 'canal', 'tipo', 'angulo', 'palanca', 'estructura', 'tiempo_verbal', 'fuente', 'por_que'],
       },
     },
     descartes: { type: 'array', items: { type: 'string' } },
@@ -482,7 +515,7 @@ export function validar(p: Propuesta, rangos: Record<string, [number, number]>, 
 
 // ---------------------------------------------------------------- entrada
 
-export async function generarTitulares(input: { titular: string; texto?: string; canales?: string[]; perfil?: string }): Promise<RespuestaTitulares> {
+export async function generarTitulares(input: { titular: string; texto?: string; canales?: string[]; perfil?: string; instrucciones?: string }): Promise<RespuestaTitulares> {
   const titular = (input.titular || '').trim();
   if (!titular) throw new Error('Falta el titular');
   const texto = input.texto || '';
@@ -495,7 +528,7 @@ export async function generarTitulares(input: { titular: string; texto?: string;
 
   const t0 = Date.now();
   const system = systemPrompt(exp, canales, comp);
-  const user = userPrompt(titular, texto, canales);
+  const user = userPrompt(titular, texto, canales, input.instrucciones || '');
   const salida = backend() === 'claude' ? await llamarClaude(system, user) : await llamarOllama(system, user);
   const segundos = Math.round((Date.now() - t0) / 100) / 10;
 
@@ -506,7 +539,9 @@ export async function generarTitulares(input: { titular: string; texto?: string;
     q.validador = validar(q, exp.rangos, texto || titular, aperturas);
     return q;
   });
-  const orden = { PASA: 0, AVISO: 1, FALLA: 2 };
+  // Las que fallan van al final; entre las demás se respeta el orden del modelo
+  // para no agrupar las cinco por estado y perder la variedad.
+  const orden = { PASA: 0, AVISO: 0, FALLA: 1 };
   propuestas.sort((a, b) => orden[a.validador!.estado] - orden[b.validador!.estado]);
 
   return {
