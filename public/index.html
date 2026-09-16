@@ -1747,11 +1747,15 @@ function TitularesView() {
             Alternativas<span className="bar"></span>
             <span className="meta">{res.propuestas.length} · {res.modelo} · {res.segundos}s · competencia: {res.competencia.ejemplos} titulares de esta semana</span>
           </div>
-          <div style={{ fontFamily: 'var(--sans)', fontSize: 12, color: 'var(--ink-3)', margin: '0 0 10px', lineHeight: 1.45 }}>
-            <strong style={{ color: 'var(--ok)' }}>PASA</strong>: cumple las comprobaciones automáticas (citas y cifras literales del texto, sin clickbait, sin muletillas, longitud en el rango medido).
-            <strong style={{ color: 'var(--warn)', marginLeft: 8 }}>AVISO</strong>: vale, pero hay algo que mirar; lo dice debajo (suele ser la longitud o que repite apertura con otra).
-            <strong style={{ color: 'var(--danger)', marginLeft: 8 }}>FALLA</strong>: no usar tal cual; una cita o una cifra no está en el texto, o es clickbait.
-          </div>
+          <details style={{ margin: '0 0 12px', fontFamily: 'var(--sans)', fontSize: 12.5, color: 'var(--ink)', lineHeight: 1.5 }}>
+            <summary style={{ cursor: 'pointer', fontFamily: 'var(--mono)', fontSize: 10.5, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--ink-3)' }}>Qué significan PASA, AVISO y FALLA</summary>
+            <div style={{ padding: '8px 12px', background: 'var(--paper-3)', marginTop: 6 }}>
+              <p style={{ margin: '0 0 8px' }}>Cada propuesta pasa por un revisor automático <strong>antes</strong> de llegar aquí. El revisor no opina sobre si el titular es bueno: comprueba que sea <strong>seguro publicarlo</strong>. Mira cinco cosas: que cada frase entre comillas esté palabra por palabra en el texto de la pieza; que cada cifra esté en el texto; que no tenga señales de clickbait (exclamaciones, preguntas, mayúsculas, puntos suspensivos, "increíble", "no te lo pierdas"); que no lleve muletillas; y que la longitud esté en el rango que mejor rinde en Discover.</p>
+              <p style={{ margin: '0 0 6px' }}><strong style={{ color: 'var(--ok)' }}>PASA</strong> — Lo cumple todo. Puedes copiarlo tal cual: lo que dice está en la pieza y no tiene trampas.</p>
+              <p style={{ margin: '0 0 6px' }}><strong style={{ color: 'var(--warn)' }}>AVISO</strong> — Es publicable, pero conviene mirarlo: debajo, en naranja, te dice el porqué. Casi siempre es que se sale del rango de longitud (corto o largo) o que empieza con las mismas palabras que otra propuesta. Tú decides si te importa.</p>
+              <p style={{ margin: 0 }}><strong style={{ color: 'var(--danger)' }}>FALLA</strong> — No lo uses tal cual: hay una cita que no está literal en el texto, una cifra que el texto no dice, o dos señales de clickbait juntas. Es la barrera contra atribuir a alguien una frase que no dijo. Se muestra apagado, por si el ángulo te sirve para reescribirlo tú.</p>
+            </div>
+          </details>
           {res.propuestas.map((p, i) => {
             const v = p.validador || { estado: 'PASA', bloquea: [], avisa: [] };
             return (
