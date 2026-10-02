@@ -59,6 +59,20 @@ function emptyState(): AppState {
 let redis: Redis | null = null;
 let state: AppState = emptyState();
 
+/**
+ * JSON de cada shard tal y como está en Redis (último load o save OK).
+ * Cada poll guardaba los 7 shards enteros (~5 MB) aunque solo hubiese
+ * cambiado `core`. Con ~550 polls/día en motor eso eran GB al día de
+ * bandwidth en Upstash. Ahora solo se reescribe el shard que cambia.
+ */
+const persisted = new Map<string, string>();
+
+/**
+ * Shards cuyo GET falló (timeout, límite de Upstash...). No se escriben:
+ * guardarlos sería pisar el histórico real con un estado vacío.
+ */
+const loadFailed = new Set<string>();
+
 function getRedis(): Redis | null {
   if (redis) return redis;
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -84,14 +98,21 @@ export async function loadState(): Promise<void> {
     return;
   }
   try {
+    persisted.clear();
+    loadFailed.clear();
+    const load = <T>(key: string, name: string): Promise<T | null> =>
+      r.get<T>(key).then(
+        v => { if (v !== null && v !== undefined) persisted.set(key, JSON.stringify(v)); return v; },
+        e => { console.error(`[store] load ${name} failed:`, e); loadFailed.add(key); return null; },
+      );
     const [core, mediaArticles, weeklyHistory, pages, recentAlerts, patternsHist, dedupH] = await Promise.all([
-      r.get<Partial<AppState>>(CORE_KEY).catch(e => { console.error('[store] load core failed:', e); return null; }),
-      r.get<AppState['mediaArticles']>(MEDIA_KEY).catch(e => { console.error('[store] load media failed:', e); return null; }),
-      r.get<AppState['weeklyHistory']>(WEEKLY_KEY).catch(e => { console.error('[store] load weekly failed:', e); return null; }),
-      r.get<AppState['pages']>(PAGES_KEY).catch(e => { console.error('[store] load pages failed:', e); return null; }),
-      r.get<AppState['recentAlerts']>(RECENT_KEY).catch(e => { console.error('[store] load recent failed:', e); return null; }),
-      r.get<AppState['headlinePatternsHistory']>(PATTERNS_HIST_KEY).catch(e => { console.error('[store] load patterns failed:', e); return null; }),
-      r.get<AppState['dedupHashes']>(DEDUP_KEY).catch(e => { console.error('[store] load dedup failed:', e); return null; }),
+      load<Partial<AppState>>(CORE_KEY, 'core'),
+      load<AppState['mediaArticles']>(MEDIA_KEY, 'media'),
+      load<AppState['weeklyHistory']>(WEEKLY_KEY, 'weekly'),
+      load<AppState['pages']>(PAGES_KEY, 'pages'),
+      load<AppState['recentAlerts']>(RECENT_KEY, 'recent'),
+      load<AppState['headlinePatternsHistory']>(PATTERNS_HIST_KEY, 'patterns'),
+      load<AppState['dedupHashes']>(DEDUP_KEY, 'dedup'),
     ]);
     // Migración: si un shard nuevo viene vacío pero el core antiguo (pre-sharding)
     // tenía ese campo, usamos el del core para no perder histórico.
@@ -198,25 +219,38 @@ export async function saveState(): Promise<void> {
   };
   console.log(`[store] save sizes (bytes): core=${sizes.core} media=${sizes.media} weekly=${sizes.weekly} pages=${sizes.pages} recent=${sizes.recent} patterns=${sizes.patterns} dedup=${sizes.dedup}`);
 
-  const results = await Promise.allSettled([
-    r.set(CORE_KEY, core),
-    r.set(MEDIA_KEY, mediaArticles),
-    r.set(WEEKLY_KEY, weeklyHistory),
-    r.set(PAGES_KEY, pages),
-    r.set(RECENT_KEY, recentAlerts),
-    r.set(PATTERNS_HIST_KEY, headlinePatternsHistory || []),
-    r.set(DEDUP_KEY, dedupHashes || {}),
-  ]);
-  const names = ['core', 'media', 'weekly', 'pages', 'recent', 'patterns', 'dedup'];
+  const shards: Array<[string, string, unknown]> = [
+    ['core', CORE_KEY, core],
+    ['media', MEDIA_KEY, mediaArticles],
+    ['weekly', WEEKLY_KEY, weeklyHistory],
+    ['pages', PAGES_KEY, pages],
+    ['recent', RECENT_KEY, recentAlerts],
+    ['patterns', PATTERNS_HIST_KEY, headlinePatternsHistory || []],
+    ['dedup', DEDUP_KEY, dedupHashes || {}],
+  ];
+  const pending = shards.filter(([name, key, value]) => {
+    if (loadFailed.has(key)) {
+      console.warn(`[store] skip save ${name}: its load failed, not overwriting Redis`);
+      return false;
+    }
+    return persisted.get(key) !== JSON.stringify(value);
+  });
+  if (pending.length === 0) {
+    console.log('[store] no shard changed, nothing to save');
+    return;
+  }
+
+  const results = await Promise.allSettled(pending.map(([, key, value]) => r.set(key, value)));
   results.forEach((res, i) => {
+    const [name, key, value] = pending[i];
     if (res.status === 'rejected') {
-      console.error(`[store] save ${names[i]} failed (size=${sizes[names[i] as keyof typeof sizes]}):`, res.reason);
+      console.error(`[store] save ${name} failed (size=${sizes[name as keyof typeof sizes]}):`, res.reason);
+    } else {
+      persisted.set(key, JSON.stringify(value));
     }
   });
   const ok = results.filter(r => r.status === 'fulfilled').length;
-  if (ok < results.length) {
-    console.error(`[store] ${ok}/${results.length} shards saved`);
-  }
+  console.log(`[store] saved ${ok}/${pending.length} changed shards (${pending.map(([n]) => n).join(', ')})`);
 }
 
 export function getState(): AppState {
