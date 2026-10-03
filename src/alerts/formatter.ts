@@ -38,8 +38,8 @@ function headlineAuditBlock(title: string | undefined): SlackBlock | null {
   }
 }
 
-const FORMULA_USAGE_RETENTION_MS = 30 * 24 * 3600_000; // 30 days
-const FORMULA_USAGE_MAX_ENTRIES = 5000;
+const FORMULA_USAGE_RETENTION_MS = 14 * 24 * 3600_000; // 14 days
+const FORMULA_USAGE_MAX_ENTRIES = 1500;
 
 function entityNameOf(a: Alert): string | undefined {
   switch (a.type) {

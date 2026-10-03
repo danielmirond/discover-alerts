@@ -25,8 +25,9 @@ export interface ContentAuditEntry extends ContentAuditResult {
   auditedAt: string;
 }
 
-const RETENTION_DAYS = 30;
+const RETENTION_DAYS = 7;
 const TOP_N = 80;
+const MAX_AUDITS = 400;
 
 /** Devuelve los prefijos de categoría a auditar. Si DS_CATEGORY_FILTER está
  * definido (motor, sport, etc.) usa esos prefijos. Si no, acepta todo.
@@ -112,10 +113,22 @@ export async function runContentAuditPoll(): Promise<void> {
   const topPubs = Object.entries(byPub).sort((a, b) => b[1] - a[1]).slice(0, 8);
   console.log(`[content-audit] ok=${ok} err=${errs} · top pubs: ${topPubs.map(([p, n]) => `${p}=${n}`).join(' · ')}`);
 
-  console.log(`[content-audit] state.contentAudits → ${Object.keys(next).length} entries (retención ${RETENTION_DAYS}d)`);
+  // Cap duro MAX_AUDITS para evitar bloat del shard core: dejar las N más
+  // recientes por auditedAt. Protege contra crecimiento no acotado si varios
+  // publishers rotan rápido.
+  const total = Object.keys(next).length;
+  let trimmed = next;
+  if (total > MAX_AUDITS) {
+    const sorted = Object.entries(next).sort((a, b) =>
+      new Date(b[1].auditedAt).getTime() - new Date(a[1].auditedAt).getTime()
+    );
+    trimmed = Object.fromEntries(sorted.slice(0, MAX_AUDITS));
+    console.log(`[content-audit] trimmed ${total} → ${MAX_AUDITS} (cap)`);
+  }
+  console.log(`[content-audit] state.contentAudits → ${Object.keys(trimmed).length} entries (retención ${RETENTION_DAYS}d, cap ${MAX_AUDITS})`);
 
   updateState({
-    contentAudits: next,
+    contentAudits: trimmed,
     lastPollContentAudit: now,
   } as any);
   try { await saveState(); } catch (err) { console.error('[content-audit] saveState:', err); }

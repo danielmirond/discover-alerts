@@ -92,7 +92,7 @@ interface EntityStat {
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState(['core', 'pages']);
+    await loadState(['core', 'pages', 'kg']);
     const s = getState() as any;
     const pages = (s.pages || {}) as Record<string, any>;
     const entitiesRaw = (s.entities || {}) as Record<string, any>;

@@ -55,7 +55,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     return;
   }
   try {
-    await loadState(['core', 'pages']);
+    await loadState(['audits', 'pages']);
     const s = getState() as any;
     const audits = (s.contentAudits || {}) as Record<string, any>;
     // Dominios que son embeds de video (no contenido editorial). Los

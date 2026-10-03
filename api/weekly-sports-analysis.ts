@@ -163,7 +163,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     return;
   }
   try {
-    await loadState(['core', 'media']);
+    await loadState(['audits', 'media']);
     const s = getState() as any;
     const audits: Record<string, AuditEntry> = s.contentAudits || {};
     const lastPoll = s.lastPollContentAudit || null;

@@ -66,7 +66,7 @@ interface PublisherRow {
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState(['core', 'media', 'pages']);
+    await loadState(['core', 'media', 'pages', 'audits']);
     const s = getState() as any;
     const nowMs = Date.now();
     const windowMs = 24 * 3600_000;

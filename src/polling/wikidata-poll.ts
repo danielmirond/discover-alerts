@@ -34,7 +34,7 @@ export async function runWikidataPoll(): Promise<void> {
   const afterSize = Object.keys(enriched).length;
 
   // Cap total a 5000 entradas para no reventar Redis
-  const MAX_CACHE = 5000;
+  const MAX_CACHE = 2000;
   let final = enriched;
   if (Object.keys(enriched).length > MAX_CACHE) {
     const sorted = Object.entries(enriched).sort(([, a], [, b]) =>

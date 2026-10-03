@@ -26,6 +26,11 @@ const PAGES_KEY = 'discover-alerts:pages';
 const RECENT_KEY = 'discover-alerts:recent';
 const PATTERNS_HIST_KEY = 'discover-alerts:patterns-hist';
 const DEDUP_KEY = 'discover-alerts:dedup';
+// Shards extra añadidos para sacar peso del core y evitar que crezca a MB.
+// Antes vivían dentro de core y lo inflaban a 8MB en instancias activas.
+const AUDITS_KEY = 'discover-alerts:audits';   // contentAudits (max 400, 7d)
+const INTL_KEY = 'discover-alerts:intl';       // internationalSport + tracking
+const KG_KEY = 'discover-alerts:kg';           // entityKgEnrichment (max 2000)
 
 function emptyState(): AppState {
   return {
@@ -73,12 +78,40 @@ function getRedis(): Redis | null {
 
 /** Separa del state completo los campos pesados para que core quepa. */
 function splitShards(s: AppState) {
-  const { mediaArticles, weeklyHistory, pages, recentAlerts, headlinePatternsHistory, dedupHashes, ...core } = s;
-  return { core, mediaArticles, weeklyHistory, pages, recentAlerts, headlinePatternsHistory, dedupHashes };
+  // Sacamos los campos pesados del core: contentAudits (10-30MB),
+  // internationalSport/Tracking (varios MB) y entityKgEnrichment (hasta 2MB).
+  // Cada uno va a su propio shard para que core quepa bien dentro del límite
+  // y las lecturas por endpoint sean mucho más baratas.
+  const anyS = s as any;
+  const contentAudits = anyS.contentAudits || {};
+  const internationalSport = anyS.internationalSport || {};
+  const internationalTracking = anyS.internationalTracking || {};
+  const lastPollInternational = anyS.lastPollInternational || null;
+  const entityKgEnrichment = anyS.entityKgEnrichment || {};
+  const {
+    mediaArticles, weeklyHistory, pages, recentAlerts,
+    headlinePatternsHistory, dedupHashes,
+    ...rest
+  } = s;
+  // Core limpio: sin los campos pesados movidos a shards propios
+  const core: any = { ...rest };
+  delete core.contentAudits;
+  delete core.internationalSport;
+  delete core.internationalTracking;
+  delete core.lastPollInternational;
+  delete core.entityKgEnrichment;
+  return {
+    core,
+    mediaArticles, weeklyHistory, pages, recentAlerts,
+    headlinePatternsHistory, dedupHashes,
+    contentAudits,
+    intlPayload: { internationalSport, internationalTracking, lastPollInternational },
+    entityKgEnrichment,
+  };
 }
 
 /** Shards disponibles. Permite loadState parcial para reducir bandwidth. */
-export type Shard = 'core' | 'media' | 'weekly' | 'pages' | 'recent' | 'patterns' | 'dedup';
+export type Shard = 'core' | 'media' | 'weekly' | 'pages' | 'recent' | 'patterns' | 'dedup' | 'audits' | 'intl' | 'kg';
 
 /** Cache en memoria por shard dentro de un mismo serverless container.
  * Vercel reusa containers por ~5-15 min. Con TTL de 60s evitamos hits
@@ -106,7 +139,7 @@ export async function loadState(shards?: Shard[]): Promise<void> {
     state = emptyState();
     return;
   }
-  const want = new Set<Shard>(shards && shards.length > 0 ? shards : ['core', 'media', 'weekly', 'pages', 'recent', 'patterns', 'dedup']);
+  const want = new Set<Shard>(shards && shards.length > 0 ? shards : ['core', 'media', 'weekly', 'pages', 'recent', 'patterns', 'dedup', 'audits', 'intl', 'kg']);
   const need = (s: Shard) => want.has(s);
 
   async function loadShard<T>(name: Shard, key: string): Promise<T | null> {
@@ -119,7 +152,7 @@ export async function loadState(shards?: Shard[]): Promise<void> {
   }
 
   try {
-    const [core, mediaArticles, weeklyHistory, pages, recentAlerts, patternsHist, dedupH] = await Promise.all([
+    const [core, mediaArticles, weeklyHistory, pages, recentAlerts, patternsHist, dedupH, audits, intl, kg] = await Promise.all([
       loadShard<Partial<AppState>>('core', CORE_KEY),
       loadShard<AppState['mediaArticles']>('media', MEDIA_KEY),
       loadShard<AppState['weeklyHistory']>('weekly', WEEKLY_KEY),
@@ -127,12 +160,32 @@ export async function loadState(shards?: Shard[]): Promise<void> {
       loadShard<AppState['recentAlerts']>('recent', RECENT_KEY),
       loadShard<AppState['headlinePatternsHistory']>('patterns', PATTERNS_HIST_KEY),
       loadShard<AppState['dedupHashes']>('dedup', DEDUP_KEY),
+      loadShard<Record<string, any>>('audits', AUDITS_KEY),
+      loadShard<{ internationalSport?: any; internationalTracking?: any; lastPollInternational?: string | null }>('intl', INTL_KEY),
+      loadShard<Record<string, any>>('kg', KG_KEY),
     ]);
     const coreAny = (core || {}) as any;
     const prev = state;
-    state = {
+    state = ({
       ...prev,
       ...(need('core') ? (core || {}) : {}),
+      // Shards nuevos (audits, intl, kg) con fallback a los campos del core
+      // antiguo cuando aún viven ahí (migración desde el bloat).
+      contentAudits: need('audits')
+        ? ((audits && Object.keys(audits).length > 0) ? audits : ((core as any)?.contentAudits || (prev as any).contentAudits || {}))
+        : ((prev as any).contentAudits || {}),
+      internationalSport: need('intl')
+        ? ((intl?.internationalSport) || (core as any)?.internationalSport || (prev as any).internationalSport || {})
+        : ((prev as any).internationalSport || {}),
+      internationalTracking: need('intl')
+        ? ((intl?.internationalTracking) || (core as any)?.internationalTracking || (prev as any).internationalTracking || {})
+        : ((prev as any).internationalTracking || {}),
+      lastPollInternational: need('intl')
+        ? ((intl?.lastPollInternational) || (core as any)?.lastPollInternational || null)
+        : (((prev as any).lastPollInternational) || null),
+      entityKgEnrichment: need('kg')
+        ? ((kg && Object.keys(kg).length > 0) ? kg : ((core as any)?.entityKgEnrichment || (prev as any).entityKgEnrichment || {}))
+        : ((prev as any).entityKgEnrichment || {}),
       mediaArticles: need('media')
         ? ((mediaArticles && Object.keys(mediaArticles).length > 0) ? mediaArticles : (coreAny.mediaArticles || {}))
         : prev.mediaArticles,
@@ -151,7 +204,7 @@ export async function loadState(shards?: Shard[]): Promise<void> {
       dedupHashes: need('dedup')
         ? ((dedupH && Object.keys(dedupH).length > 0) ? dedupH : (coreAny.dedupHashes || {}))
         : prev.dedupHashes,
-    };
+    } as AppState);
     if (shards) {
       console.log(`[store] loaded shards: ${[...want].join(',')}`);
     } else {
@@ -196,7 +249,7 @@ function trimByRecency<T extends { firstSeen?: string; pubDate?: string; lastUpd
 export async function saveState(): Promise<void> {
   const r = getRedis();
   if (!r) return;
-  let { core, mediaArticles, weeklyHistory, pages, recentAlerts, headlinePatternsHistory, dedupHashes } = splitShards(state);
+  let { core, mediaArticles, weeklyHistory, pages, recentAlerts, headlinePatternsHistory, dedupHashes, contentAudits, intlPayload, entityKgEnrichment } = splitShards(state);
 
   // Auto-trim shards que excedan límite. Mejor guardar parcial que no guardar nada.
   const before = {
@@ -245,8 +298,11 @@ export async function saveState(): Promise<void> {
     recent: JSON.stringify(recentAlerts).length,
     patterns: JSON.stringify(headlinePatternsHistory || []).length,
     dedup: JSON.stringify(dedupHashes || {}).length,
+    audits: JSON.stringify(contentAudits || {}).length,
+    intl: JSON.stringify(intlPayload || {}).length,
+    kg: JSON.stringify(entityKgEnrichment || {}).length,
   };
-  console.log(`[store] save sizes (bytes): core=${sizes.core} media=${sizes.media} weekly=${sizes.weekly} pages=${sizes.pages} recent=${sizes.recent} patterns=${sizes.patterns} dedup=${sizes.dedup}`);
+  console.log(`[store] save sizes (bytes): core=${sizes.core} media=${sizes.media} weekly=${sizes.weekly} pages=${sizes.pages} recent=${sizes.recent} patterns=${sizes.patterns} dedup=${sizes.dedup} audits=${sizes.audits} intl=${sizes.intl} kg=${sizes.kg}`);
 
   // Invalidar cache en memoria antes de sobrescribir — próximos loadState
   // dentro del mismo serverless container deben leer el valor nuevo.
@@ -260,6 +316,9 @@ export async function saveState(): Promise<void> {
     r.set(RECENT_KEY, recentAlerts),
     r.set(PATTERNS_HIST_KEY, headlinePatternsHistory || []),
     r.set(DEDUP_KEY, dedupHashes || {}),
+    r.set(AUDITS_KEY, contentAudits || {}),
+    r.set(INTL_KEY, intlPayload || {}),
+    r.set(KG_KEY, entityKgEnrichment || {}),
   ]);
   const names = ['core', 'media', 'weekly', 'pages', 'recent', 'patterns', 'dedup'];
   results.forEach((res, i) => {
