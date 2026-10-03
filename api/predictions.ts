@@ -15,7 +15,7 @@ import { weekKey } from '../src/analysis/weekly-aggregator.js';
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState();
+    await loadState(['core']);
     const state = getState();
     const target = String(req.query.week || weekKey());
     const tolerance = parseInt(String(req.query.tolerance || '1'), 10);

@@ -8,7 +8,7 @@ import { loadState } from '../src/state/store.js';
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState();
+    await loadState(['core', 'pages']);
     const { getState } = await import('../src/state/store.js');
     const state = getState();
 

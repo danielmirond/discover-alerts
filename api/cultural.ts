@@ -7,7 +7,7 @@ import { loadState, getState } from '../src/state/store.js';
  */
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState();
+    await loadState(['core']);
     const s = getState() as any;
     // Enriquecer con inDiscover vía live-view (reuso para no duplicar lógica)
     const { buildLiveView } = await import('../src/analysis/live-view.js');

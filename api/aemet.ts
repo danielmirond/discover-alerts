@@ -7,7 +7,7 @@ import { loadState, getState } from '../src/state/store.js';
  */
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState();
+    await loadState(['core']);
     const s = getState() as any;
     const avisos = (s.aemetAvisos || []) as Array<{ level: string; region: string; phenomenon: string; raw: string }>;
     const byLevel = { rojo: [] as any[], naranja: [] as any[], amarillo: [] as any[], desconocido: [] as any[] };

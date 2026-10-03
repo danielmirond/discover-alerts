@@ -129,7 +129,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     return;
   }
   try {
-    await loadState();
+    await loadState(['core', 'pages', 'media']);
     const s = getState() as any;
     const nowMs = Date.now();
     const windowMs = 24 * 3600_000;

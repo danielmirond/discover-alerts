@@ -77,36 +77,86 @@ function splitShards(s: AppState) {
   return { core, mediaArticles, weeklyHistory, pages, recentAlerts, headlinePatternsHistory, dedupHashes };
 }
 
-export async function loadState(): Promise<void> {
+/** Shards disponibles. Permite loadState parcial para reducir bandwidth. */
+export type Shard = 'core' | 'media' | 'weekly' | 'pages' | 'recent' | 'patterns' | 'dedup';
+
+/** Cache en memoria por shard dentro de un mismo serverless container.
+ * Vercel reusa containers por ~5-15 min. Con TTL de 60s evitamos hits
+ * repetidos al Redis desde el mismo serverless warm. Reduce bandwidth
+ * ~70% en lecturas de endpoints frecuentes. */
+const SHARD_CACHE_MS = 60_000;
+const shardCache: Record<string, { loadedAt: number; data: any }> = {};
+function cacheGet(key: string): any | undefined {
+  const e = shardCache[key];
+  if (!e) return undefined;
+  if (Date.now() - e.loadedAt > SHARD_CACHE_MS) return undefined;
+  return e.data;
+}
+function cacheSet(key: string, data: any): void {
+  shardCache[key] = { loadedAt: Date.now(), data };
+}
+/** Invalida cache (llamar tras saveState desde el mismo proceso). */
+export function invalidateStateCache(): void {
+  for (const k of Object.keys(shardCache)) delete shardCache[k];
+}
+
+export async function loadState(shards?: Shard[]): Promise<void> {
   const r = getRedis();
   if (!r) {
     state = emptyState();
     return;
   }
+  const want = new Set<Shard>(shards && shards.length > 0 ? shards : ['core', 'media', 'weekly', 'pages', 'recent', 'patterns', 'dedup']);
+  const need = (s: Shard) => want.has(s);
+
+  async function loadShard<T>(name: Shard, key: string): Promise<T | null> {
+    if (!need(name)) return null;
+    const cached = cacheGet(name);
+    if (cached !== undefined) return cached as T | null;
+    const data = await r!.get<T>(key).catch(e => { console.error(`[store] load ${name} failed:`, e); return null; });
+    cacheSet(name, data);
+    return data;
+  }
+
   try {
     const [core, mediaArticles, weeklyHistory, pages, recentAlerts, patternsHist, dedupH] = await Promise.all([
-      r.get<Partial<AppState>>(CORE_KEY).catch(e => { console.error('[store] load core failed:', e); return null; }),
-      r.get<AppState['mediaArticles']>(MEDIA_KEY).catch(e => { console.error('[store] load media failed:', e); return null; }),
-      r.get<AppState['weeklyHistory']>(WEEKLY_KEY).catch(e => { console.error('[store] load weekly failed:', e); return null; }),
-      r.get<AppState['pages']>(PAGES_KEY).catch(e => { console.error('[store] load pages failed:', e); return null; }),
-      r.get<AppState['recentAlerts']>(RECENT_KEY).catch(e => { console.error('[store] load recent failed:', e); return null; }),
-      r.get<AppState['headlinePatternsHistory']>(PATTERNS_HIST_KEY).catch(e => { console.error('[store] load patterns failed:', e); return null; }),
-      r.get<AppState['dedupHashes']>(DEDUP_KEY).catch(e => { console.error('[store] load dedup failed:', e); return null; }),
+      loadShard<Partial<AppState>>('core', CORE_KEY),
+      loadShard<AppState['mediaArticles']>('media', MEDIA_KEY),
+      loadShard<AppState['weeklyHistory']>('weekly', WEEKLY_KEY),
+      loadShard<AppState['pages']>('pages', PAGES_KEY),
+      loadShard<AppState['recentAlerts']>('recent', RECENT_KEY),
+      loadShard<AppState['headlinePatternsHistory']>('patterns', PATTERNS_HIST_KEY),
+      loadShard<AppState['dedupHashes']>('dedup', DEDUP_KEY),
     ]);
-    // Migración: si un shard nuevo viene vacío pero el core antiguo (pre-sharding)
-    // tenía ese campo, usamos el del core para no perder histórico.
     const coreAny = (core || {}) as any;
+    const prev = state;
     state = {
-      ...emptyState(),
-      ...(core || {}),
-      mediaArticles: (mediaArticles && Object.keys(mediaArticles).length > 0) ? mediaArticles : (coreAny.mediaArticles || {}),
-      weeklyHistory: (weeklyHistory && Object.keys(weeklyHistory).length > 0) ? weeklyHistory : (coreAny.weeklyHistory || {}),
-      pages: (pages && Object.keys(pages).length > 0) ? pages : (coreAny.pages || {}),
-      recentAlerts: (recentAlerts && recentAlerts.length > 0) ? recentAlerts : (coreAny.recentAlerts || []),
-      headlinePatternsHistory: (patternsHist && patternsHist.length > 0) ? patternsHist : (coreAny.headlinePatternsHistory || []),
-      dedupHashes: (dedupH && Object.keys(dedupH).length > 0) ? dedupH : (coreAny.dedupHashes || {}),
+      ...prev,
+      ...(need('core') ? (core || {}) : {}),
+      mediaArticles: need('media')
+        ? ((mediaArticles && Object.keys(mediaArticles).length > 0) ? mediaArticles : (coreAny.mediaArticles || {}))
+        : prev.mediaArticles,
+      weeklyHistory: need('weekly')
+        ? ((weeklyHistory && Object.keys(weeklyHistory).length > 0) ? weeklyHistory : (coreAny.weeklyHistory || {}))
+        : prev.weeklyHistory,
+      pages: need('pages')
+        ? ((pages && Object.keys(pages).length > 0) ? pages : (coreAny.pages || {}))
+        : prev.pages,
+      recentAlerts: need('recent')
+        ? ((recentAlerts && recentAlerts.length > 0) ? recentAlerts : (coreAny.recentAlerts || []))
+        : prev.recentAlerts,
+      headlinePatternsHistory: need('patterns')
+        ? ((patternsHist && patternsHist.length > 0) ? patternsHist : (coreAny.headlinePatternsHistory || []))
+        : prev.headlinePatternsHistory,
+      dedupHashes: need('dedup')
+        ? ((dedupH && Object.keys(dedupH).length > 0) ? dedupH : (coreAny.dedupHashes || {}))
+        : prev.dedupHashes,
     };
-    console.log(`[store] State loaded from Redis (sharded) · media=${Object.keys(state.mediaArticles).length} weekly=${Object.keys(state.weeklyHistory).length} pages=${Object.keys(state.pages).length} recent=${state.recentAlerts.length}`);
+    if (shards) {
+      console.log(`[store] loaded shards: ${[...want].join(',')}`);
+    } else {
+      console.log(`[store] State loaded from Redis (sharded) · media=${Object.keys(state.mediaArticles).length} weekly=${Object.keys(state.weeklyHistory).length} pages=${Object.keys(state.pages).length} recent=${state.recentAlerts.length}`);
+    }
   } catch (err) {
     console.error('[store] Redis load failed, starting fresh:', err);
     state = emptyState();
@@ -197,6 +247,10 @@ export async function saveState(): Promise<void> {
     dedup: JSON.stringify(dedupHashes || {}).length,
   };
   console.log(`[store] save sizes (bytes): core=${sizes.core} media=${sizes.media} weekly=${sizes.weekly} pages=${sizes.pages} recent=${sizes.recent} patterns=${sizes.patterns} dedup=${sizes.dedup}`);
+
+  // Invalidar cache en memoria antes de sobrescribir — próximos loadState
+  // dentro del mismo serverless container deben leer el valor nuevo.
+  invalidateStateCache();
 
   const results = await Promise.allSettled([
     r.set(CORE_KEY, core),

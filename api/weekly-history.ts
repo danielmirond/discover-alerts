@@ -12,7 +12,7 @@ import { loadState, getState } from '../src/state/store.js';
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState();
+    await loadState(['core', 'weekly']);
     const state = getState();
     const history = state.weeklyHistory || {};
     const availableWeeks = Object.keys(history).sort().reverse();

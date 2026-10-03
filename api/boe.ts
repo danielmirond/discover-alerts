@@ -11,7 +11,7 @@ import { loadState } from '../src/state/store.js';
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState();
+    await loadState(['core']);
     const items = await fetchBoeSumario();
 
     // Agrupamos por sección para la UI

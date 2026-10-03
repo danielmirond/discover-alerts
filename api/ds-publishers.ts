@@ -14,7 +14,7 @@ import type { MediaFeed } from '../src/types.js';
  */
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState();
+    await loadState(['core', 'pages']);
     const state = getState();
     const pages = state.pages || {};
 

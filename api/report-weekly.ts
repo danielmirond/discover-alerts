@@ -37,7 +37,7 @@ const EMBED_DOMAINS = new Set(['youtube.com','youtu.be','twitter.com','x.com','t
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState();
+    await loadState(['core', 'media', 'pages']);
     const s = getState() as any;
     const format = (req.query.format || 'json') as string;
     const instance = (process.env.INSTANCE_NAME || 'main').toLowerCase();

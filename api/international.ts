@@ -23,7 +23,7 @@ function audienceScore(p: InternationalTrackedPage): number {
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    await loadState();
+    await loadState(['core']);
     const s = getState() as any;
     const countries = s.internationalSport || {};
     const tracking: Record<string, InternationalTrackedPage> = s.internationalTracking || {};

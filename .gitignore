@@ -4,3 +4,4 @@ dist/
 state.json
 .vercel
 .env*.local
+.env*
